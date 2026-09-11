@@ -47,19 +47,19 @@
     </div>
 
     <mount data-component="compositiondisplay"></mount>
-    <mount data-component="keymap"></mount>
-    <mount data-component="monkey"></mount>
 
-    <button
-      id="restartTestButton"
-      aria-label="Restart Test"
-      data-balloon-pos="down"
-      class="text"
-    >
-      <i class="fas fa-fw fa-redo-alt"></i>
-    </button>
+    <div class="testButtons">
+      <button
+        id="restartTestButton"
+        aria-label="Restart Test"
+        data-balloon-pos="down"
+        class="text"
+      >
+        <i class="fas fa-fw fa-redo-alt"></i>
+      </button>
+      <mount data-component="missdrill" class="contents"></mount>
+    </div>
     <mount data-component="livestatstextbottom"></mount>
-    <mount data-component="premid"></mount>
   </div>
   <div class="loading hidden">
     <i class="fas fa-circle-notch fa-spin"></i>

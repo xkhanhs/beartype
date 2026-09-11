@@ -450,6 +450,41 @@ export function updateTodayTracker(): void {
   );
 }
 
+// beartype: best and usual speed over the last tests on this browser, so the
+// number just typed has something to be read against
+function updateRecent(dontSave: boolean): void {
+  const group = qs("#result .stats .history");
+  if (Config.mode === "custom" || Config.mode === "zen") {
+    group?.hide();
+    return;
+  }
+  const summary = DB.recentSummary(
+    {
+      mode: result.mode,
+      mode2: result.mode2,
+      punctuation: result.punctuation ?? false,
+      numbers: result.numbers ?? false,
+      language: result.language,
+      difficulty: result.difficulty,
+      lazyMode: result.lazyMode ?? false,
+    },
+    // an invalid test is not kept, so it does not count here either
+    dontSave ? { wpm: Number.NaN } : { wpm: result.wpm },
+  );
+  const speeds = [summary.best, summary.usual];
+  if (!speeds.every(Number.isFinite)) {
+    group?.hide();
+    return;
+  }
+  group?.show();
+  qs("#result .stats .history .top")?.setText(
+    `tốt nhất · thường (${summary.count} bài)`,
+  );
+  qs("#result .stats .history .bottom")?.setText(
+    speeds.map((wpm) => Format.typingSpeed(wpm)).join(" · "),
+  );
+}
+
 function updateKey(): void {
   qs("#result .stats .key .bottom")?.setText(
     `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
@@ -472,7 +507,8 @@ export function updateCrownText(text: string, wide = false): void {
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
-  if (Config.mode === "quote" || dontSave) {
+  // beartype: a drill from the miss book is practice, not a test with a best
+  if (Config.mode === "quote" || Config.mode === "custom" || dontSave) {
     hideCrown();
     return;
   }
@@ -500,12 +536,14 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       hideCrown();
       console.debug("Hiding crown");
     } else {
-      //show half crown as the pb is not confirmed by the server
-      console.debug("Showing pending crown");
-      showCrown("pending");
+      // beartype: this browser keeps the only record, so a new best is
+      // final -- upstream showed a half crown until its server agreed
+      console.debug("Showing new pb crown");
+      showCrown("normal");
       updateCrownText(
         `+${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
       );
+      if (localPb !== undefined) showConfetti();
     }
   } else {
     const localPb = DB.getLocalPB(
@@ -785,6 +823,7 @@ export async function update(
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
+  updateRecent(dontSave);
   updateKey();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);

@@ -29,22 +29,6 @@
       <div class="group testType">
         <div class="top">test type</div>
         <div class="bottom">-</div>
-        <div class="tags hidden" style="margin-top: 0.5rem">
-          <div class="top">
-            <span>tags</span>
-            <div
-              class="textButton editTagsButton"
-              result-id=""
-              active-tag-ids=""
-              aria-label="Edit tags"
-              role="button"
-              data-balloon-pos="right"
-            >
-              <i class="fas fa-pen fa-fw"></i>
-            </div>
-          </div>
-          <div class="bottom">-</div>
-        </div>
       </div>
       <!-- <div class="group infoAndTags"> -->
       <div class="group info">
@@ -85,48 +69,15 @@
           <div class="timeToday"></div>
         </div>
       </div>
-      <!-- </div> -->
-
-      <div class="group dailyLeaderboard hidden">
-        <div class="top">daily leaderboard</div>
-        <div
-          id="dailyLeaderboardRank"
-          aria-label="Show daily leaderboard"
-          data-balloon-pos="up"
-          class="bottom"
-        >
-          -
-        </div>
+      <div class="group history hidden">
+        <div class="top">20 bài gần nhất</div>
+        <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
       </div>
+      <!-- </div> -->
 
       <div class="group source hidden">
         <div class="top">
           <span style="margin-right: 0.5em">source</span>
-          <span
-            id="reportQuoteButton"
-            class="textButton hidden"
-            aria-label="Report quote"
-            data-balloon-pos="up"
-          >
-            <i class="icon fas fa-fw fa-flag"></i>
-          </span>
-          <span
-            id="favoriteQuoteButton"
-            class="textButton hidden"
-            aria-label="Favorite quote"
-            data-balloon-pos="up"
-          >
-            <i class="icon far fa-fw fa-heart"></i>
-          </span>
-          <span
-            id="rateQuoteButton"
-            class="textButton hidden"
-            aria-label="Rate quote"
-            data-balloon-pos="up"
-          >
-            <i class="icon far fa-fw fa-star"></i>
-            <span class="rating"></span>
-          </span>
         </div>
         <div class="bottom">-</div>
       </div>
@@ -140,10 +91,6 @@
         <button class="text" tabindex="-1" data-id="pbLine">
           <i class="fas fa-crown"></i>
           <div class="text">pb</div>
-        </button>
-        <button class="text" tabindex="-1" data-id="tagPbLine">
-          <i class="fas fa-tag"></i>
-          <div class="text">tag pb</div>
         </button>
         <button class="text" tabindex="-1" data-id="raw">
           <div class="line dashed"></div>
@@ -235,10 +182,6 @@
           <div id="replayWords" class="words"></div>
         </div>
       </div>
-      <button id="retrySavingResultButton" class="danger hidden">
-        <i class="fas fa-redo"></i>
-        Retry saving result
-      </button>
       <div class="buttons">
         <button
           class="text"
@@ -285,44 +228,7 @@
         >
           <i class="fas fa-fw fa-backward"></i>
         </button>
-        <button
-          class="text"
-          id="saveScreenshotButton"
-          aria-label="Copy screenshot to clipboard&#10;(shift click to download)"
-          role="button"
-          data-balloon-pos="down"
-          data-balloon-break
-        >
-          <i class="far fa-fw fa-image"></i>
-        </button>
-        <!-- <button
-          class="text"
-          id="watchVideoAdButton"
-          aria-label="Watch video ad"
-          role="button"
-          data-balloon-pos="down"
-        >
-          <i class="fas fa-fw fa-ad"></i>
-        </button> -->
       </div>
-    </div>
-    <div class="loginTip">
-      <a href="/login" router-link>Sign in</a>
-      to save your result
-    </div>
-    <div class="ssWatermark hidden">monkeytype.com</div>
-  </div>
-  <div class="full-width" style="margin-top: 1rem">
-    <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
-      <div class="iconAndText">
-        <div class="icon"><i class="fas fa-ad"></i></div>
-        <div class="text textRight"></div>
-      </div>
-      <div id="ad-result"></div>
-    </div>
-    <div id="ad-result-small-wrapper" class="ad advertisement ad-h-s">
-      <div class="icon small"><i class="fas fa-ad"></i></div>
-      <div id="ad-result-small"></div>
     </div>
   </div>
 </div>

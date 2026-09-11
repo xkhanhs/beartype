@@ -15,6 +15,7 @@ import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
+import { committedWords, recordMisses } from "../beartype/miss-book";
 import * as Replay from "./replay-ui";
 import * as TodayTracker from "./today-tracker";
 import * as Result from "./result";
@@ -992,10 +993,19 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   await resultUpdatePromise;
-  if (!dontSave) {
+  // a drill from the miss book is practice, not a test to measure against
+  if (!dontSave && Config.mode !== "custom") {
     LocalResults.saveResult(completedEvent);
   }
-  learnToneStyle(getInputHistory(eventLog));
+  // beartype: the words this round missed go into the book behind the drill
+  // button; see beartype/miss-book.ts
+  const history = getInputHistory(eventLog);
+  const round = committedWords(
+    TestWords.words.get().map((word) => word.text),
+    history,
+  );
+  recordMisses(Config.language, round.words, round.typed);
+  learnToneStyle(history);
 }
 
 export function fail(reason: string): void {

@@ -159,3 +159,40 @@ export async function getUserDailyBestOnce(
     ? { wpm: 0, acc: 0 }
     : { wpm: best.wpm, acc: best.acc };
 }
+
+/** How many recent tests the result screen compares against. */
+export const RECENT = 20;
+
+/**
+ * The best and the usual speed over the last `RECENT` tests with the same
+ * settings, `current` included -- it is not saved until the result screen
+ * has been drawn. "Usual" is the median: one interrupted test should not
+ * drag it down the way it drags a mean.
+ */
+export function recentSummary(
+  filter: SettingsFilter,
+  current: { wpm: number },
+): { best: number; usual: number; count: number } {
+  const speeds = [
+    ...matching(filter)
+      .slice(-(RECENT - 1))
+      .map((r) => r.wpm),
+    current.wpm,
+  ].filter(Number.isFinite);
+  if (speeds.length === 0) {
+    return { best: Number.NaN, usual: Number.NaN, count: 0 };
+  }
+  const sorted = [...speeds].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  const usual =
+    sorted.length % 2 === 1
+      ? (sorted[middle] as number)
+      : ((sorted[middle - 1] as number) + (sorted[middle] as number)) / 2;
+  return { best: Math.max(...speeds), usual, count: speeds.length };
+}
+
+export const __testing = {
+  reset: (): void => {
+    storage.set([]);
+  },
+};

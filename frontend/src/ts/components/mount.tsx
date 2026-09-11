@@ -2,6 +2,7 @@ import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
 import { qsa } from "../utils/dom";
+import { MissDrillButton } from "./beartype/MissDrillButton";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
@@ -32,6 +33,7 @@ const components: Record<string, () => JSXElement> = {
   livestatstexttop: () => <LiveStatsTextTop />,
   livestatstextbottom: () => <LiveStatsTextBottom />,
   bartimerprogress: () => <BarTimerProgress />,
+  missdrill: () => <MissDrillButton />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

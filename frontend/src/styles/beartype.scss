@@ -10,3 +10,19 @@
   text-decoration-thickness: 2px;
   text-underline-offset: 0.25em;
 }
+
+// beartype: the restart button shares its row with the miss-book drill.
+// Upstream centres it with auto margins, which in a row would push its
+// neighbour to the edge; the row does the centring instead. Tab still reaches
+// restart first, so tab + enter is unchanged.
+.pageTest .testButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  #restartTestButton {
+    margin: 0;
+  }
+}
