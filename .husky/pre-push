@@ -3,11 +3,12 @@
 
 # A push to main is a deploy: Cloudflare Pages builds it and serves it with
 # no staging in between. So nothing is pushed that does not type-check, pass
-# its tests and build. Never bypass this with --no-verify on main.
+# its tests and build. Never bypass this with --no-verify on main. knip runs
+# too, so code nothing uses cannot pile up again.
 
 # engineStrict wants Node 24; this machine defaults to a newer one
 if [ -d /opt/homebrew/opt/node@24/bin ]; then
   export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 fi
 
-pnpm ts-check && pnpm test && pnpm build
+pnpm ts-check && pnpm knip && pnpm test && pnpm build
