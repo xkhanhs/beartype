@@ -4,7 +4,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
-const mockState = vi.hoisted(() => ({ activeWordIndex: 0, bailedOut: false }));
+const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
   Config: { mode: "words", words: 25, time: 0 },
@@ -47,7 +47,6 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 vi.mock("../../../src/ts/states/test", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
-  getBailedOut: () => mockState.bailedOut,
 }));
 
 import {
@@ -193,7 +192,6 @@ describe("stats.ts", () => {
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     mockState.activeWordIndex = 0;
-    mockState.bailedOut = false;
     TestWords.reset();
     inputPerWord.clear();
   });
@@ -309,22 +307,6 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([]);
-    });
-
-    it("adjusts end in a bailout by removing trailing afk", () => {
-      mockState.bailedOut = true;
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1500, keyDown());
-      logTestEvent("keyup", 1600, keyUp());
-      logTestEvent("timer", 2000, timer("step", 1));
-      logTestEvent("timer", 3000, timer("step", 2));
-      // last keypress at testMs 500, end at testMs 4000 → lkte = 3500
-      logTestEvent("timer", 5000, timer("end", 4));
-
-      const eventLog = buildEventLog();
-      const boundaries = statsTesting.getLaggedTimerBoundaries(eventLog);
-      // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
-      expect(boundaries).toEqual([500]);
     });
 
     it("skips end boundary when endMs rounds up to whole second", () => {
@@ -490,19 +472,6 @@ describe("stats.ts", () => {
       const eventLog = buildEventLog();
       // 15 boundaries, no tail
       expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(15);
-    });
-
-    it("trims bailout trailing afk and caps tick count", () => {
-      mockState.bailedOut = true;
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1500, keyDown());
-      logTestEvent("keyup", 1600, keyUp());
-      // last keypress at testMs 500, end at testMs 4000 → afk = 3500
-      // adjusted endMs = 500 → 0 full ticks, plus tail (500ms >= .5s)
-      logTestEvent("timer", 5000, timer("end", 4));
-
-      const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([500]);
     });
   });
 

@@ -29,9 +29,7 @@ import {
   setIsTestInvalid,
   getActiveWordIndex,
   resetActiveWordIndex,
-  getBailedOut,
   isResultCalculating,
-  setBailedOut,
   setResultCalculating,
   setResultVisible,
   setTestActive,
@@ -165,7 +163,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   TestTimer.clear();
   setIsTestInvalid(false);
   setTestActive(false);
-  setBailedOut(false);
   CompositionState.setComposing(false);
   CompositionState.setData("");
   Strings.clearWordDirectionCache();
@@ -420,7 +417,6 @@ function buildCompletedEvent(
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config),
-    bailedOut: getBailedOut(),
     restartCount: getRestartCount(),
     incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
@@ -508,10 +504,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  let afkDetected = getKeypressesPerSecond(eventLog)
+  const afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (getBailedOut()) afkDetected = false;
   // beartype: a long stop anywhere in the test, not only at its end
   const idle = idleReason(
     eventLog,
@@ -528,7 +523,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !getBailedOut() &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {

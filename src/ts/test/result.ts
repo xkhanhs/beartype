@@ -157,87 +157,37 @@ function updateKey(): void {
   );
 }
 
-function showCrown(type: PbCrown.CrownType): void {
-  PbCrown.show();
-  PbCrown.update(type);
-}
-
 function updateCrownText(text: string): void {
   qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
 }
 
-async function updateCrown(dontSave: boolean): Promise<void> {
+// The crown shows a new best and nothing else: a test that cannot count has
+// no place in the ranking at all.
+function updateCrown(dontSave: boolean): void {
   // beartype: a drill from the miss book is practice, not a test with a best
   if (Config.mode === "custom" || dontSave) {
     hideCrown();
     return;
   }
 
-  let pbDiff = 0;
-  const canGetPb = await resultCanGetPb();
-
-  console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
-
-  if (canGetPb.value) {
-    const localPb = DB.getLocalPB(Config.language);
-    const localPbWpm = localPb?.wpm ?? 0;
-    pbDiff = result.wpm - localPbWpm;
-    console.debug("Local PB", localPb, "diff", pbDiff);
-    if (pbDiff <= 0) {
-      hideCrown();
-      console.debug("Hiding crown");
-    } else {
-      // beartype: this browser keeps the only record, so a new best is
-      // final -- upstream showed a half crown until its server agreed
-      console.debug("Showing new pb crown");
-      showCrown("normal");
-      updateCrownText(
-        `kỷ lục mới +${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
-      );
-      if (localPb !== undefined) showConfetti();
-    }
-  } else {
-    const localPb = DB.getLocalPB(Config.language);
-    const localPbWpm = localPb?.wpm ?? 0;
-    pbDiff = result.wpm - localPbWpm;
-    console.debug("Local PB", localPb, "diff", pbDiff);
-    if (pbDiff <= 0) {
-      // hideCrown();
-      console.debug("Showing warning crown");
-      showCrown("warning");
-      updateCrownText(`bài này không tính kỷ lục (${canGetPb.reason})`);
-    } else {
-      console.debug("Showing ineligible crown");
-      showCrown("ineligible");
-      updateCrownText(
-        `nhanh hơn kỷ lục +${Format.typingSpeed(pbDiff, {
-          showDecimalPlaces: true,
-        })}, nhưng cài đặt này không tính kỷ lục (${canGetPb.reason})`,
-      );
-    }
+  const localPb = DB.getLocalPB(Config.language);
+  const pbDiff = result.wpm - (localPb?.wpm ?? 0);
+  if (pbDiff <= 0) {
+    hideCrown();
+    return;
   }
+
+  // this browser keeps the only record, so a new best is final
+  PbCrown.show();
+  updateCrownText(
+    `kỷ lục mới +${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
+  );
+  if (localPb !== undefined) showConfetti();
 }
 
 function hideCrown(): void {
   PbCrown.hide();
   updateCrownText("");
-}
-
-type CanGetPbObject = {
-  value: boolean;
-  reason?: string;
-};
-
-async function resultCanGetPb(): Promise<CanGetPbObject> {
-  if (!result.bailedOut) {
-    return {
-      value: true,
-    };
-  }
-  return {
-    value: false,
-    reason: "bailed out",
-  };
 }
 
 function showConfetti(): void {
@@ -332,9 +282,6 @@ function updateOther(
   if (result.acc < 75 || result.acc > 100) {
     reasons.push("độ chính xác dưới 75%");
   }
-  if (result.bailedOut) {
-    reasons.push("bỏ dở giữa chừng");
-  }
   // the one check left: a timed test whose clock disagrees with the date
   if (isTestInvalid() && reasons.length === 0) {
     reasons.push("thời gian đo lệch với đồng hồ của máy");
@@ -381,7 +328,7 @@ export async function update(
   updateWords();
   updateKey();
   updateTestType();
-  await updateCrown(dontSave);
+  updateCrown(dontSave);
   updateOther(
     difficultyFailed,
     failReason,

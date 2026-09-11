@@ -65,15 +65,6 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   }
   if (endMs === undefined) return [];
 
-  // bailout: trim trailing afk and cap tickCount to fit the adjusted end
-  if (eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      endMs -= lkte;
-      tickCount = Math.min(tickCount, Math.floor(endMs / 1000));
-    }
-  }
-
   const boundaries: number[] = [];
   for (let i = 1; i <= tickCount; i++) boundaries.push(i * 1000);
 
@@ -98,20 +89,6 @@ function getLaggedTimerBoundaries(eventLog: EventLog): number[] {
       boundaries.push(event.testMs);
     } else if (event.data.event === "end") {
       endMs = event.testMs;
-    }
-  }
-
-  // in bailout, cap to adjusted end to remove trailing afk seconds
-  if (endMs !== undefined && eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      endMs -= lkte;
-      while (
-        boundaries.length > 0 &&
-        (boundaries[boundaries.length - 1] as number) > endMs
-      ) {
-        boundaries.pop();
-      }
     }
   }
 
@@ -169,9 +146,7 @@ export function getStartToFirstKeypressMs(eventLog: EventLog): number {
   return calc < 0 ? 0 : roundTo2(calc);
 }
 
-// raw version is needed internally by getTestDurationMs to adjust
-// duration in a bailout
-function getRawLastKeypressToEndMs(eventLog: EventLog): number {
+export function getLastKeypressToEndMs(eventLog: EventLog): number {
   const { events } = eventLog;
 
   let lastKeypress: number | undefined;
@@ -208,10 +183,6 @@ function getRawLastKeypressToEndMs(eventLog: EventLog): number {
 
   const calc = end - lastKeypress;
   return calc < 0 ? 0 : roundTo2(calc);
-}
-
-export function getLastKeypressToEndMs(eventLog: EventLog): number {
-  return getRawLastKeypressToEndMs(eventLog);
 }
 
 function countPerInterval(
@@ -294,13 +265,6 @@ export function getTestDurationMs(eventLog: EventLog): number {
 
   if (end === undefined) {
     return 0;
-  }
-
-  if (eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      end -= lkte;
-    }
   }
 
   if (eventLog.context.mode !== "custom") {
@@ -397,15 +361,14 @@ export function getChars(
   countPartialLastWord = false,
   testMs?: number,
 ): CharCounts {
-  const { events, context } = eventLog;
-  const { bailedOut } = context;
+  const { events } = eventLog;
 
   const isTimed = isTimedTest(eventLog);
 
   const eventsPerWord = getEventsPerWord(events, testMs);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimed || bailedOut || countPartialLastWord;
+  const countPartial = isTimed || countPartialLastWord;
 
   const acc: CharCounts = {
     allCorrect: 0,
