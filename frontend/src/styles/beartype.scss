@@ -297,10 +297,15 @@ button.bt-options-pill {
 // ----- buttons under the words and on the result -----
 
 // beartype: keybear's `.action`: a flat pill, no rim, the text faint until
-// pointed at, when a shade darker than the page shows behind it. Every one in a row has the
-// same padding and type, so they stand the same height; "next" on the result
-// fills its own with the accent. Selectors carry the element and the page so
-// they outrank upstream's `button.text` and `#result .wrapper button`.
+// pointed at, when a shade darker than the page shows behind it. "next" on
+// the result fills its own with the accent. Selectors carry the element and
+// the page so they outrank upstream's `button.text` and `#result .wrapper
+// button`.
+//
+// Every one in a row stands the same height, 44px: the same padding above
+// and below, and a line as tall as the biggest icon (next's, 1.4rem), so no
+// icon makes its own pill taller. The row's `align-items: stretch` did not
+// even them out on the result.
 .pageTest button.bt-action {
   display: inline-flex;
   gap: 0.45rem;
@@ -313,7 +318,7 @@ button.bt-options-pill {
   color: var(--kb-text-f1);
   background: transparent;
   font-size: 1rem;
-  line-height: 1.2;
+  line-height: 1.4rem;
   // upstream turns the restart button into a block on touch screens, where
   // the label would otherwise break under its icon
   white-space: nowrap;
@@ -344,9 +349,9 @@ button.bt-options-pill {
   }
 
   // "next" is what comes after almost every test, and Enter presses it:
-  // keybear makes it the bigger pill in the row, the text the same size
+  // keybear makes it the wider pill in the row, the text the same size
   &.bt-action-primary {
-    padding: 0.6rem 1.6rem;
+    padding-inline: 1.6rem;
     border-color: var(--main-color);
     color: var(--kb-on-accent);
     background-color: var(--main-color);
@@ -734,7 +739,7 @@ button.bt-settings-choice {
     }
 
     button.bt-action-primary {
-      padding: 0.6rem 1.6rem;
+      padding-inline: 1.6rem;
     }
   }
 }
