@@ -844,12 +844,20 @@ button.bt-settings-choice {
   border-block-start: 2px dashed var(--kb-sunk-rim);
 }
 
+// The whole column, the chart's height tall: it carries the balloon, so every
+// balloon opens at the same height, and it takes the pointer and the focus.
 .bt-chart-slot {
   display: flex;
+  position: relative;
   flex: 1;
   align-items: flex-end;
   align-self: stretch;
   min-inline-size: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--main-color);
+    outline-offset: 2px;
+  }
 }
 
 .bt-chart-bar {
@@ -858,28 +866,17 @@ button.bt-settings-choice {
   justify-content: center;
   inline-size: 100%;
   border-radius: 3px 3px 0 0;
-  // A mix, not opacity: the balloon is the bar's own ::after, and an opacity
-  // on the bar faded it with the bar.
   background-color: color-mix(in srgb, var(--main-color) 40%, var(--bg-color));
-
-  &:hover,
-  &:focus-visible {
-    background-color: color-mix(
-      in srgb,
-      var(--main-color) 75%,
-      var(--bg-color)
-    );
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--main-color);
-    outline-offset: 2px;
-  }
 }
 
-.bt-chart-bar-last,
-.bt-chart-bar-last:hover,
-.bt-chart-bar-last:focus-visible {
+.bt-chart-slot:hover .bt-chart-bar,
+.bt-chart-slot:focus-visible .bt-chart-bar {
+  background-color: color-mix(in srgb, var(--main-color) 75%, var(--bg-color));
+}
+
+.bt-chart-slot-last .bt-chart-bar,
+.bt-chart-slot-last:hover .bt-chart-bar,
+.bt-chart-slot-last:focus-visible .bt-chart-bar {
   background-color: var(--main-color);
 }
 
