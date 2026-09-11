@@ -1,7 +1,5 @@
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
-import { randomElementFromArray } from "../utils/arrays";
-import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 
 import type { Howl } from "howler";
 import { PlaySoundOnClick, PlaySoundOnError } from "../schemas/configs";
@@ -11,8 +9,6 @@ import {
   soundsConfig,
   SupportedOscillatorTypes,
 } from "../constants/sounds";
-import { getModifierState } from "../states/modifiers";
-import { lastTelexKey } from "../beartype/telex-keys";
 
 // Nothing here loads until a sound is switched on: howler itself (its own
 // chunk, see vite.config.ts), then only the files of the set that was picked.
@@ -27,8 +23,6 @@ async function getHowlerModule(): Promise<typeof import("howler")> {
 }
 
 const howlers = new Map<string, Promise<Howl>>();
-/** The sounds whose file has arrived, by path. */
-const loaded = new Map<string, Howl>();
 
 async function loadHowl(src: string): Promise<Howl> {
   const { Howl } = await getHowlerModule();
@@ -36,7 +30,6 @@ async function loadHowl(src: string): Promise<Howl> {
     const howl: Howl = new Howl({
       src,
       onload: () => {
-        loaded.set(src, howl);
         resolve(howl);
       },
       onloaderror: (_id, error) => {
@@ -70,23 +63,12 @@ function playHowl(howl: Howl): void {
   howl.play();
 }
 
-// A key pressed before its file has arrived plays nothing: waiting for the
-// file would queue every such key and play them in one burst when it lands.
-function playLoaded(src: string): void {
-  const howl = loaded.get(src);
-  if (howl === undefined) {
-    getHowl(src).catch(console.error);
-    return;
-  }
-  playHowl(howl);
-}
-
 export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   if (clickId === "off") return;
 
   const config = soundsConfig[clickId];
   if ("oscillatorType" in config) {
-    playNote({ codeOverride: "KeyQ", oscillatorType: config.oscillatorType });
+    playNote(config.oscillatorType);
     return;
   }
 
@@ -100,18 +82,6 @@ export async function previewError(
 ): Promise<void> {
   playHowl(await getHowl(errorSoundFiles[val]));
 }
-
-let currentCode = "KeyA";
-
-// beartype: the note follows the letter typed, not the physical key. An
-// input method that types for the user (VTX in tap mode) posts every key with
-// virtual keycode 0, which the browser reads as `KeyA`, a key with no note.
-document.addEventListener("keydown", (event) => {
-  const key = [...event.key].length === 1 ? lastTelexKey(event.key) : "";
-  currentCode = /^[a-z]$/.test(key)
-    ? `Key${key.toUpperCase()}`
-    : event.code || "KeyQ";
-});
 
 type ValidNotes =
   | "C"
@@ -207,37 +177,19 @@ function initAudioContext(): void {
   }
 }
 
-export async function clearAllSounds(): Promise<void> {
-  // with no sound ever switched on, howler was never loaded: nothing to stop
-  if (howlerModulePromise === null) return;
-  const { Howler } = await howlerModulePromise;
-  Howler.stop();
-}
-
-function playNote(options: {
-  codeOverride?: string;
-  oscillatorType: SupportedOscillatorTypes;
-}): void {
+function playNote(oscillatorType: SupportedOscillatorTypes): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
 
-  currentCode = options.codeOverride ?? currentCode;
-  // keys without a note of their own (a, f, k, space) play the first one
-  if (!(currentCode in codeToNote)) {
-    currentCode = "KeyQ";
-  }
-
   const baseOctave = 3;
-  const { shift } = getModifierState();
-  const octave = baseOctave + (shift || isCapsLockOn() ? 1 : 0);
-  const currentFrequency = codeToNote[currentCode]?.(octave);
+  const currentFrequency = codeToNote["KeyQ"]?.(baseOctave);
 
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
 
-  oscillatorNode.type = options.oscillatorType;
+  oscillatorNode.type = oscillatorType;
   gainNode.gain.value = Config.soundVolume / 10;
 
   oscillatorNode.connect(gainNode);
@@ -247,25 +199,6 @@ function playNote(options: {
   oscillatorNode.start(audioCtx.currentTime);
   gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //remove click sound
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
-}
-
-export async function playClick(codeOverride?: string): Promise<void> {
-  const val = Config.playSoundOnClick;
-  if (val === "off") return;
-
-  const config = soundsConfig[val];
-  if ("oscillatorType" in config) {
-    playNote({ codeOverride, oscillatorType: config.oscillatorType });
-    return;
-  }
-
-  const src = randomElementFromArray(clickSoundFiles(val));
-  if (src !== undefined) playLoaded(src);
-}
-
-export async function playError(): Promise<void> {
-  if (Config.playSoundOnError === "off") return;
-  playLoaded(errorSoundFiles[Config.playSoundOnError]);
 }
 
 async function setVolume(val: number): Promise<void> {

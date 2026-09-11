@@ -84,7 +84,6 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
-import { resetModifierState } from "../states/modifiers";
 
 let failReason = "";
 
@@ -165,7 +164,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  resetModifierState();
   setTestActive(false);
   setBailedOut(false);
   CompositionState.setComposing(false);

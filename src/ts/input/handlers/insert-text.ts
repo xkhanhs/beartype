@@ -176,7 +176,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   });
 
   if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, undefined, goingToNextWord);
+    TestUI.afterTestTextInput(undefined, goingToNextWord);
   }
 
   // going to next word

@@ -14,7 +14,6 @@ import {
   cancelPendingAnimationFramesStartingWith,
   requestDebouncedAnimationFrame,
 } from "../utils/debounced-animation-frame";
-import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "../utils/numbers";
 import * as Focus from "../test/focus";
 import {
@@ -765,20 +764,7 @@ export function getActiveWordTopAndHeightWithDifferentData(data: string): {
 }
 
 // this means input, delete or composition
-function afterAnyTestInput(
-  type: "textInput" | "delete" | "compositionUpdate",
-  correctInput: boolean | null,
-): void {
-  if (type === "textInput" || type === "compositionUpdate") {
-    if (correctInput === true || Config.playSoundOnError === "off") {
-      void SoundController.playClick();
-    } else {
-      void SoundController.playError();
-    }
-  } else if (type === "delete") {
-    void SoundController.playClick();
-  }
-
+function afterAnyTestInput(): void {
   const acc = Numbers.roundTo2(getLiveCachedAccuracy());
   if (!isNaN(acc)) {
     setCurrentLiveStats({ acc });
@@ -790,7 +776,6 @@ function afterAnyTestInput(
 }
 
 export function afterTestTextInput(
-  correct: boolean,
   inputOverride?: string,
   goingToNextWord = false,
 ): void {
@@ -805,7 +790,7 @@ export function afterTestTextInput(
     compositionData: CompositionState.getData(),
   });
 
-  afterAnyTestInput("textInput", correct);
+  afterAnyTestInput();
 }
 
 export function afterTestCompositionUpdate(): void {
@@ -814,8 +799,7 @@ export function afterTestCompositionUpdate(): void {
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
-  // correct needs to be true to get the normal click sound
-  afterAnyTestInput("compositionUpdate", true);
+  afterAnyTestInput();
 }
 
 export function afterTestDelete(): void {
@@ -824,7 +808,7 @@ export function afterTestDelete(): void {
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
-  afterAnyTestInput("delete", null);
+  afterAnyTestInput();
 }
 
 export function beforeTestWordChange(
@@ -922,7 +906,6 @@ export function onTestRestart(_source: "testPage" | "resultPage"): void {
   TestInitFailed.hide();
 
   currentTestLine = 0;
-  void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
 }
