@@ -333,7 +333,8 @@ a.bt-footer-icon {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-end: calc(100% + 0.4rem);
-  z-index: 50;
+  // over upstream's "click here to focus" hint, which sits at 999
+  z-index: 1000;
   flex-direction: column;
   gap: 0.2rem;
   min-inline-size: 100%;
@@ -418,12 +419,14 @@ footer {
 
 // beartype: keybear's settings card: name and hint on the left of each row,
 // the choices on the right, a rule between rows.
+// it opens upward from the gear, the same gap above it as the colour list
 .bt-settings-card {
   display: flex;
-  position: fixed;
-  inset-block-end: 4rem;
+  position: absolute;
+  inset-block-end: calc(100% + 0.4rem);
   inset-inline-start: 50%;
-  z-index: 50;
+  // over upstream's "click here to focus" hint, which sits at 999
+  z-index: 1000;
   flex-direction: column;
   gap: 0.4rem;
   inline-size: max-content;
