@@ -15,7 +15,6 @@ import { getActivePage } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
-  setKoreanStatus,
   setLastEventLog,
   setIsTestRestarting,
   isTestRestarting,
@@ -173,7 +172,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   resetModifierState();
   setTestActive(false);
   setBailedOut(false);
-  setKoreanStatus(false);
   CompositionState.setComposing(false);
   CompositionState.setData("");
   Strings.clearWordDirectionCache();
@@ -295,17 +293,6 @@ async function init(): Promise<boolean> {
   setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
-
-  if (
-    generatedWords
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    setKoreanStatus(true);
-  }
 
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(

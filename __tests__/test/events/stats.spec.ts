@@ -48,7 +48,6 @@ vi.mock("../../../src/ts/states/test", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
   getBailedOut: () => mockState.bailedOut,
-  getKoreanStatus: () => false,
 }));
 
 import {

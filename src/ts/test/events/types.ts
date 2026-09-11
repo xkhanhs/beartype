@@ -144,7 +144,6 @@ type EventLogContext = {
   customTextLimitMode?: CustomTextLimitMode;
   customTextLimitValue?: number;
   bailedOut: boolean;
-  koreanStatus: boolean;
 };
 
 export const EVENT_LOG_VERSION = 1;

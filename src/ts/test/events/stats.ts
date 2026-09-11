@@ -1,9 +1,8 @@
-import { CharCounts, countChars, isSpace } from "../../utils/strings";
+import { CharCounts, isSpace } from "../../utils/strings";
 import { countKeysAsChars } from "../../beartype/scoring";
 import { getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm, roundTo2 } from "../../utils/numbers";
 import { EventLog, TestEventNoMs } from "./types";
-import Hangul from "hangul-js";
 
 // Produces chart x-axis labels for an array of timer boundaries (the perfect
 // grid version). Each bucket is labeled by its index ("1", "2", ...). A
@@ -360,25 +359,12 @@ function countCharsForWordIndex(
   simulatedInput = [...simulatedInput]
     .map((c) => (isSpace(c) ? " " : c))
     .join("");
-  if (eventLog.context.koreanStatus) {
-    simulatedInput = Hangul.disassemble(simulatedInput).join("");
-  }
 
-  let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
-  if (eventLog.context.koreanStatus) {
-    targetWord = Hangul.disassemble(targetWord).join("");
-  }
+  const targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
 
   // beartype: count keys, the way keybear scores Vietnamese. Characters make
   // `ế` worth as much as `e`, and call the `e` typed on the way to it wrong.
-  if (!eventLog.context.koreanStatus) {
-    return countKeysAsChars(
-      simulatedInput,
-      targetWord,
-      lastWord && countPartial,
-    );
-  }
-  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+  return countKeysAsChars(simulatedInput, targetWord, lastWord && countPartial);
 }
 
 function inferActiveWordIndex(
