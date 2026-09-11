@@ -126,13 +126,6 @@ export function qsr<T extends HTMLElement = HTMLElement>(
   return new ElementWithUtils(el);
 }
 
-type ElementWithValue =
-  | HTMLInputElement
-  | HTMLTextAreaElement
-  | HTMLSelectElement;
-
-type ElementWithSelectableValue = HTMLInputElement | HTMLTextAreaElement;
-
 export type OnChildEvent<T extends Event = Event> = T & {
   /**
    * target element matching the selector.
@@ -155,66 +148,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Set disabled attribute to true
-   */
-  disable(): this {
-    this.native.setAttribute("disabled", "true");
-    return this;
-  }
-
-  /**
-   * Remove disabled attribute
-   */
-  enable(): this {
-    this.native.removeAttribute("disabled");
-    return this;
-  }
-
-  /**
-   * Check if the element is disabled
-   */
-  isDisabled(): boolean {
-    return this.native.hasAttribute("disabled");
-  }
-
-  /**
-   * Get attribute value
-   */
-  getAttribute(attribute: string): string | null {
-    return this.native.getAttribute(attribute);
-  }
-
-  /**
-   * Check if the element has the specified attribute
-   */
-  hasAttribute(attribute: string): boolean {
-    return this.native.hasAttribute(attribute);
-  }
-
-  /**
    * Set attribute value
    */
   setAttribute(qualifiedName: string, value: string): this {
     this.native.setAttribute(qualifiedName, value);
     return this;
-  }
-
-  /**
-   * Remove attribute
-   */
-  removeAttribute(qualifiedName: string): this {
-    this.native.removeAttribute(qualifiedName);
-    return this;
-  }
-
-  /**
-   * Check if the input element is checked
-   */
-  isChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
-    if (!(this.native instanceof HTMLInputElement)) {
-      return undefined;
-    }
-    return this.native.checked;
   }
 
   /**
@@ -300,14 +238,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
         .every((cn) => this.hasClass(cn));
     }
     return this.native.classList.contains(className);
-  }
-
-  /**
-   * Toggle a class on the element
-   */
-  toggleClass(className: string, force?: boolean): this {
-    this.native.classList.toggle(className, force);
-    return this;
   }
 
   /**
@@ -447,13 +377,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Check if the element is focused
-   */
-  isFocused(): boolean {
-    return this.native === document.activeElement;
-  }
-
-  /**
    * Query the element for a child element matching the selector
    */
   qs<U extends HTMLElement>(selector: string): ElementWithUtils<U> | null {
@@ -476,20 +399,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Query the element for a child element matching the selector.
-   * This element must exist, otherwise an error is thrown.
-   * @throws Error if the element is not found.
-   */
-  qsr<U extends HTMLElement>(selector: string): ElementWithUtils<U> {
-    checkUniqueSelector(selector, this);
-    const found = this.native.querySelector<U>(selector);
-    if (found === null) {
-      throw new Error(`Required element not found: ${selector}`);
-    }
-    return new ElementWithUtils(found);
-  }
-
-  /**
    * Empty the element's innerHTML
    */
   empty(): this {
@@ -506,49 +415,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Append a child element
-   */
-  append(
-    elementOrElements:
-      | HTMLElement
-      | ElementWithUtils
-      | HTMLElement[]
-      | ElementsWithUtils
-      | ElementWithUtils[],
-  ): this {
-    if (elementOrElements instanceof ElementsWithUtils) {
-      this.native.append(...elementOrElements.native);
-      return this;
-    }
-
-    if (Array.isArray(elementOrElements)) {
-      for (const element of elementOrElements) {
-        if (element instanceof ElementWithUtils) {
-          this.native.append(element.native);
-        } else {
-          this.native.append(element);
-        }
-      }
-      return this;
-    }
-
-    if (elementOrElements instanceof ElementWithUtils) {
-      this.native.appendChild(elementOrElements.native);
-    } else {
-      this.native.append(elementOrElements);
-    }
-    return this;
-  }
-
-  /**
-   * Prepend HTML string to the element's innerHTML
-   */
-  prependHtml(htmlString: string): this {
-    this.native.insertAdjacentHTML("afterbegin", htmlString);
-    return this;
-  }
-
-  /**
    * Dispatch an event on the element
    */
   dispatch(event: keyof HTMLElementEventMap, eventInitDict?: EventInit): this {
@@ -557,165 +423,8 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Get the element's screen bounds: top, left, width and height
-   */
-  screenBounds(): { top: number; left: number; width: number; height: number } {
-    const rect = this.native.getBoundingClientRect();
-    const scrollLeft =
-      window.pageXOffset || document.documentElement.scrollLeft;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return {
-      top: rect.top + scrollTop,
-      left: rect.left + scrollLeft,
-      width: rect.width,
-      height: rect.height,
-    };
-  }
-
-  /**
-   * Wrap the element with the provided HTML string
-   */
-  wrapWith(htmlString: string): ElementWithUtils<T> {
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = htmlString;
-    const wrapperElement = wrapper.firstElementChild;
-    if (wrapperElement === null) {
-      throw new Error("Invalid HTML string provided to wrapWith.");
-    }
-
-    this.native.parentNode?.insertBefore(wrapperElement, this.native);
-    wrapperElement.appendChild(this.native);
-    return new ElementWithUtils(wrapperElement as T);
-  }
-
-  private hasValue(): this is ElementWithUtils<ElementWithValue> {
-    return (
-      this.native instanceof HTMLInputElement ||
-      this.native instanceof HTMLTextAreaElement ||
-      this.native instanceof HTMLSelectElement
-    );
-  }
-
-  private hasSelectableValue(): this is ElementWithUtils<ElementWithSelectableValue> {
-    return (
-      this.native instanceof HTMLInputElement ||
-      this.native instanceof HTMLTextAreaElement
-    );
-  }
-
-  /**
-   * Set value of input or textarea to a string.
-   */
-  setValue(this: ElementWithUtils<ElementWithValue>, value: string): this {
-    if (this.hasValue()) {
-      this.native.value = value;
-    }
-    return this as unknown as this;
-  }
-
-  /**
-   * Get value of input, textarea or select
-   * @returns The value of the element, or undefined if the element is not an input, textarea or select.
-   */
-  getValue(this: ElementWithUtils<ElementWithValue>): string | undefined {
-    if (this.hasValue()) {
-      return this.native.value;
-    }
-    return undefined;
-  }
-
-  /**
-   * Set checked state of input element
-   * @param checked The checked state to set
-   */
-  setChecked(this: ElementWithUtils<HTMLInputElement>, checked: boolean): this {
-    if (this.native instanceof HTMLInputElement) {
-      this.native.checked = checked;
-    }
-    return this as unknown as this;
-  }
-
-  /**
-   * Get checked state of input element
-   * @returns The checked state of the element, or undefined if the element is not an input.
-   */
-  getChecked(this: ElementWithUtils<HTMLInputElement>): boolean | undefined {
-    if (this.native instanceof HTMLInputElement) {
-      return this.native.checked;
-    }
-    return undefined;
-  }
-
-  /**
-   * Set selected state of option element
-   * @param selected The selected state to set
-   */
-  setSelected(
-    this: ElementWithUtils<HTMLOptionElement>,
-    selected: boolean,
-  ): this {
-    if (this.native instanceof HTMLOptionElement) {
-      this.native.selected = selected;
-    }
-    return this as unknown as this;
-  }
-
-  /**
-   * Get selected state of option element
-   * @returns The selected state of the element, or undefined if the element is not an option.
-   */
-  getSelected(this: ElementWithUtils<HTMLOptionElement>): boolean | undefined {
-    if (this.native instanceof HTMLOptionElement) {
-      return this.native.selected;
-    }
-    return undefined;
-  }
-
-  /**
-   * Get the parent element
-   */
-  getParent<U extends HTMLElement = HTMLElement>(): ElementWithUtils<U> | null {
-    if (this.native.parentElement) {
-      return new ElementWithUtils(this.native.parentElement as U);
-    }
-    return null;
-  }
-
-  /**
-   * Get the first parent that matches a selector
-   */
-
-  closestParent(selector: string): ElementWithUtils | null {
-    const closestParent = this.native.parentElement?.closest(
-      selector,
-    ) as HTMLElement;
-    return closestParent !== null ? new ElementWithUtils(closestParent) : null;
-  }
-
-  /**
-   * Check if element matches a selector
-   */
-
-  matches(selector: string): boolean {
-    return this.native.matches(selector);
-  }
-
-  /**
-   * Replace this element with another element
-   */
-  replaceWith(element: HTMLElement | ElementWithUtils): this {
-    if (element instanceof ElementWithUtils) {
-      this.native.replaceWith(element.native);
-    } else {
-      this.native.replaceWith(element);
-    }
-    return this;
-  }
-
-  /**
    * Get the element's height + margin
    */
-
   getOuterHeight(): number {
     const style = getComputedStyle(this.native);
 
@@ -723,20 +432,6 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       this.native.getBoundingClientRect().height +
       parseFloat(style.marginTop) +
       parseFloat(style.marginBottom)
-    );
-  }
-
-  /**
-   * Get The element's width + margin
-   */
-
-  getOuterWidth(): number {
-    const style = getComputedStyle(this.native);
-
-    return (
-      this.native.getBoundingClientRect().width +
-      parseFloat(style.marginLeft) +
-      parseFloat(style.marginRight)
     );
   }
 
@@ -812,102 +507,11 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Animate the element sliding down (expanding height from 0 to full height)
-   * @param duration The duration of the animation in milliseconds (default: 250ms)
-   */
-  async slideDown(duration = 250): Promise<void> {
-    this.show().setStyle({
-      height: "",
-      overflow: "hidden",
-      marginTop: "",
-      marginBottom: "",
-      paddingTop: "",
-      paddingBottom: "",
-    });
-    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
-      getComputedStyle(this.native);
-    this.setStyle({
-      height: "0px",
-      marginTop: "0px",
-      marginBottom: "0px",
-      paddingTop: "0px",
-      paddingBottom: "0px",
-    });
-    await this.promiseAnimate({
-      height: [0, height],
-      marginTop: [0, marginTop],
-      marginBottom: [0, marginBottom],
-      paddingTop: [0, paddingTop],
-      paddingBottom: [0, paddingBottom],
-      duration,
-      onComplete: () => {
-        this.setStyle({
-          height: "",
-          overflow: "",
-          marginTop: "",
-          marginBottom: "",
-        });
-      },
-    });
-  }
-
-  /**
-   * Animate the element sliding up (collapsing height from full height to 0)
-   * @param duration The duration of the animation in milliseconds (default: 250ms)
-   */
-  async slideUp(
-    duration = 250,
-    options?: {
-      hide?: boolean;
-    },
-  ): Promise<void> {
-    this.show().setStyle({
-      overflow: "hidden",
-      height: "",
-      marginTop: "",
-      marginBottom: "",
-      paddingTop: "",
-      paddingBottom: "",
-    });
-    const { height, marginTop, marginBottom, paddingTop, paddingBottom } =
-      getComputedStyle(this.native);
-    await this.promiseAnimate({
-      height: [height, 0],
-      marginTop: [marginTop, 0],
-      marginBottom: [marginBottom, 0],
-      paddingTop: [paddingTop, 0],
-      paddingBottom: [paddingBottom, 0],
-      duration,
-      onComplete: () => {
-        if (options?.hide ?? true) {
-          this.hide().setStyle({
-            height: "",
-            overflow: "",
-            marginTop: "",
-            marginBottom: "",
-            paddingTop: "",
-            paddingBottom: "",
-          });
-        }
-      },
-    });
-  }
-
-  /**
    * Focus the element
    */
   focus(options?: FocusOptions): this {
     this.native.focus(options);
     return this;
-  }
-
-  /**
-   * Select the element's content (for input and textarea elements)
-   */
-  select(this: ElementWithUtils<ElementWithSelectableValue>): void {
-    if (this.hasSelectableValue()) {
-      this.native.select();
-    }
   }
 }
 
@@ -967,26 +571,6 @@ export class ElementsWithUtils<
   }
 
   /**
-   * Set the disabled attribute on all elements in the array
-   */
-  disable(): this {
-    for (const item of this) {
-      item.disable();
-    }
-    return this;
-  }
-
-  /**
-   * Remove the disabled attribute from all elements in the array
-   */
-  enable(): this {
-    for (const item of this) {
-      item.enable();
-    }
-    return this;
-  }
-
-  /**
    * Add the "hidden" class to all elements in the array
    */
   hide(): this {
@@ -1015,48 +599,6 @@ export class ElementsWithUtils<
       item.setStyle(object);
     }
     return this;
-  }
-
-  /**
-   * Set value of all input elements in the array
-   */
-  setValue(this: ElementsWithUtils<ElementWithValue>, value: string): this {
-    for (const item of this) {
-      item.setValue(value);
-    }
-    return this as unknown as this;
-  }
-
-  /**
-   * Query all elements in the array for a child element matching the selector
-   */
-  qs<U extends HTMLElement>(selector: string): ElementsWithUtils<U> {
-    const allElements: ElementWithUtils<U>[] = [];
-
-    for (const item of this) {
-      const found = item.native.querySelector<U>(selector);
-      if (found) allElements.push(new ElementWithUtils(found));
-    }
-
-    return new ElementsWithUtils<U>(...allElements);
-  }
-
-  /**
-   * Query all elements in the array for all child elements matching the selector
-   */
-  qsa<U extends HTMLElement = HTMLElement>(
-    selector: string,
-  ): ElementsWithUtils<U> {
-    const allElements: ElementWithUtils<U>[] = [];
-
-    for (const item of this) {
-      const elements = Array.from(item.native.querySelectorAll<U>(selector));
-      for (const el of elements) {
-        if (el !== null) allElements.push(new ElementWithUtils(el));
-      }
-    }
-
-    return new ElementsWithUtils<U>(...allElements);
   }
 
   /**
