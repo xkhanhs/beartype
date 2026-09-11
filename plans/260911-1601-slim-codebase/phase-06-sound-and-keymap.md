@@ -41,7 +41,7 @@ file `.wav` đã bị xoá lúc fork. Bàn phím ảo đã bị gỡ hẳn, ché
 - Config: `keymapMode` (`off` | `react`) thêm vào `USER_KEYS`, mặc định `off`.
 
 ## Phím gõ sai dưới chữ
-- `indicateTypos`: chỉ còn `off` | `below`, thêm vào `USER_KEYS`, **mặc định `below`**.
+- `indicateTypos`: chỉ còn `off` | `below`, thêm vào `USER_KEYS`, **mặc định `off`**.
   Code vẽ `.hints` trong `test-ui.ts` giữ lại ở phase 3 (bỏ nhánh `replace`/`both`).
 - Kiểm với tiếng Việt: beartype vẽ từ đang gõ bằng `beartype/word-html.ts`, không
   qua đường vẽ của upstream; phím sai phải hiện đúng dưới chữ đích, kể cả khi đang

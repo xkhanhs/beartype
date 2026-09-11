@@ -37,7 +37,7 @@ người dùng muốn giữ: âm thanh khi gõ và bàn phím ảo.
 | Âm thanh | **Giữ và đưa vào cài đặt**, bộ rút gọn: khoảng 6 tiếng gõ, tiếng báo gõ sai bật/tắt, âm lượng. |
 | Bàn phím ảo | **Thêm lại** keymap của upstream: chỉ QWERTY, phím sáng lên khi gõ (kiểu `react`), nằm dưới bài gõ, bật/tắt trong cài đặt. Chạy được cả tiếng Anh lẫn tiếng Việt vì nó chỉ nghe `keydown`. |
 | Nhỏ lẻ còn hiện | Giữ: pháo giấy khi phá kỷ lục, cảnh báo Caps Lock, cảnh báo mất focus. Ô xem trước chữ đang dựng dấu (`compositionDisplay: "below"`) chưa từng hiện vì beartype ghim `"replace"`: xoá, giữ cách vẽ chữ dựng dấu ngay trong từ. |
-| Phím gõ sai dưới chữ | **Thêm vào cài đặt, mặc định bật** (`indicateTypos: "below"` của upstream, như monkeytype.com). Chỉ giữ `off`/`below`. Làm ở phase 6. |
+| Phím gõ sai dưới chữ | **Thêm vào cài đặt, mặc định tắt** (người dùng đổi ý: bật khi cần) (`indicateTypos: "below"` của upstream, như monkeytype.com). Chỉ giữ `off`/`below`. Làm ở phase 6. |
 | Cấu trúc repo | **Dời hết lên gốc**: một package, không `packages/`, không turbo. Phải đổi output dir trên Cloudflare Pages đúng lúc merge (phase 5). |
 | Chặn phình | knip bản mới, chạy ở pre-push. Bỏ `.fallowrc.json`, eslint, prettier, madge. |
 | File test | Giữ test của code còn lại (chấm điểm, bỏ dấu, xác thực phím, config, sổ từ sai) làm lưới an toàn khi dọn lõi; test của code bị xoá thì xoá theo. |
