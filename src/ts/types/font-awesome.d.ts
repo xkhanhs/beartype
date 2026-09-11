@@ -46,7 +46,6 @@ export type FaSolidIcon =
   | "fa-mouse-pointer"
   | "fa-pause"
   | "fa-question"
-  | "fa-redo-alt"
   | "fa-search"
   | "fa-slash"
   | "fa-sync-alt"

@@ -2,6 +2,15 @@ import { defineConfig, UserWorkspaceConfig } from "vitest/config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { envConfig } from "./vite-plugins/env-config";
 import solidPlugin from "vite-plugin-solid";
+import { fileURLToPath } from "node:url";
+
+// vite-plugin-solid adds jest-dom's setup file by its bare name, and vitest
+// resolves that from the directory above the root. In a worktree nested in
+// the main checkout that is the checkout's copy, which vite will not serve.
+// A resolved path here stops the plugin from adding its own.
+const jestDom = fileURLToPath(
+  import.meta.resolve("@testing-library/jest-dom/vitest"),
+);
 
 const plugins = [
   languageHashes({ skip: true }),
@@ -26,6 +35,7 @@ export const projects: UserWorkspaceConfig[] = [
       environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
+        jestDom,
         "__tests__/__harness__/mock-dom.ts",
         "__tests__/__harness__/mock-env-config.ts",
         "__tests__/__harness__/mock-static.ts",
@@ -42,6 +52,7 @@ export const projects: UserWorkspaceConfig[] = [
       include: ["__tests__/**/*.jsdom-spec.ts"],
       environment: "jsdom",
       globalSetup: "__tests__/global-setup.ts",
+      setupFiles: [jestDom],
     },
     plugins,
   },
@@ -55,6 +66,7 @@ export const projects: UserWorkspaceConfig[] = [
       environment: "jsdom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
+        jestDom,
         "__tests__/__harness__/setup-jsx.ts",
         "__tests__/__harness__/mock-dom.ts",
       ],
