@@ -78,6 +78,9 @@ Test của beartype nằm ở `frontend/__tests__/beartype/`.
   `block` (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên
   chữ, trừ khi được đặt lại thành `inline-block`.
 - Thanh tuỳ chọn không bao giờ xuống dòng; màn hẹp thì nó cuộn ngang.
+- Không có thông báo nổi: danh sách thông báo không được gắn vào trang
+  (`components/layout/overlays/Overlays.tsx`). Cần báo gì cho người gõ thì
+  viết thẳng lên màn, như lý do không lưu ở màn kết quả.
 - Xoá code theo từng cụm, mỗi cụm một commit. Nếu cảm giác gõ lệch, `git bisect`
   sẽ chỉ ra cụm nào gây ra.
 - Conventional commits, không ghi tên AI.
