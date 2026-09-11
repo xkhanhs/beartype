@@ -1,0 +1,47 @@
+#caret {
+  height: 1.2em;
+  background: var(--caret-color);
+  animation: caretFlashSmooth 1s infinite;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.05s;
+  transform-origin: top left;
+}
+
+#caret {
+  &.debug {
+    outline: 1px solid white;
+    &.hidden {
+      opacity: 0.5 !important;
+      display: block !important;
+    }
+  }
+
+  &.off {
+    width: 0;
+  }
+
+  &.default {
+    width: 0.1em;
+  }
+
+  &.block {
+    width: 0.5em;
+    z-index: -1;
+    border-radius: 0.05em;
+  }
+
+  &.outline {
+    @extend #caret, .block;
+    animation-name: none;
+    background: transparent;
+    border: 0.05em solid var(--caret-color);
+    border-radius: 0.05em;
+    outline-style: none !important; // override tailwind class of the same name
+  }
+
+  &.underline {
+    height: 0.1em;
+    width: 0.5em;
+  }
+}

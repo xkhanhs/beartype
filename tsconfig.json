@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "strict": true,
+    "newLine": "lf",
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "allowUmdGlobalAccess": true,
+    "target": "ES6",
+    "noEmit": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "paths": {
+      "virtual:language-hashes": [
+        "./src/ts/types/virtual-language-hashes.d.ts"
+      ],
+      "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
+    }
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./scripts/**/*.ts",
+    "vite-plugins/**/*.ts",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "build", "setup-tests.ts", "./__tests__/**/*.*"]
+}

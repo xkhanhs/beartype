@@ -1,0 +1,151 @@
+import { ThemeName } from "../schemas/configs";
+import { z } from "zod";
+
+const hexColorSchema = z
+  .string()
+  .regex(
+    /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
+    "Invalid hex color",
+  );
+
+export const ThemeSchema = z.object({
+  hasCss: z.boolean().optional(),
+  bg: hexColorSchema,
+  main: hexColorSchema,
+  caret: hexColorSchema,
+  sub: hexColorSchema,
+  subAlt: hexColorSchema,
+  text: hexColorSchema,
+  error: hexColorSchema,
+  errorExtra: hexColorSchema,
+  colorfulError: hexColorSchema,
+  colorfulErrorExtra: hexColorSchema,
+});
+export type Theme = z.infer<typeof ThemeSchema>;
+export type ColorName = keyof Omit<Theme, "hasCss">;
+export const themes: Record<ThemeName, Theme> = {
+  // beartype: keybear's palettes (packages/keybr-themes/lib/themes in
+  // keybear), mapped onto upstream's ten colours: bg = primary, text =
+  // secondary, main and caret = accent, sub = mix(primary, secondary, 40),
+  // subAlt = darken(primary, 5), errorExtra = darken(error, 10) -- the same
+  // Less derivations keybear uses, computed to hex.
+  keybear_light: {
+    bg: "#f4f0f0",
+    caret: "#3d475c",
+    main: "#3d475c",
+    sub: "#7a7786",
+    subAlt: "#e9e1e1",
+    text: "#282640",
+    error: "#ff3333",
+    errorExtra: "#ff0000",
+    colorfulError: "#ff3333",
+    colorfulErrorExtra: "#ff0000",
+  },
+  keybear_dark: {
+    bg: "#2f2f36",
+    caret: "#7aa2f7",
+    main: "#7aa2f7",
+    sub: "#9b99a0",
+    subAlt: "#232328",
+    text: "#e3e0e6",
+    error: "#ff6b6b",
+    errorExtra: "#ff3838",
+    colorfulError: "#ff6b6b",
+    colorfulErrorExtra: "#ff3838",
+  },
+  keybear_princess: {
+    bg: "#ffe6f2",
+    caret: "#c02372",
+    main: "#c02372",
+    sub: "#9d7695",
+    subAlt: "#ffcce5",
+    text: "#5c2b57",
+    error: "#d94f3d",
+    errorExtra: "#be3725",
+    colorfulError: "#d94f3d",
+    colorfulErrorExtra: "#be3725",
+    hasCss: true,
+  },
+  keybear_ocean: {
+    bg: "#dcf1fb",
+    caret: "#09709e",
+    main: "#09709e",
+    sub: "#638396",
+    subAlt: "#c5e8f8",
+    text: "#123a52",
+    error: "#d94f3d",
+    errorExtra: "#be3725",
+    colorfulError: "#d94f3d",
+    colorfulErrorExtra: "#be3725",
+  },
+  keybear_forest: {
+    bg: "#e6f3e2",
+    caret: "#3d783a",
+    main: "#3d783a",
+    sub: "#6d8170",
+    subAlt: "#d6ecd0",
+    text: "#1d3524",
+    error: "#d9503f",
+    errorExtra: "#bf3726",
+    colorfulError: "#d9503f",
+    colorfulErrorExtra: "#bf3726",
+  },
+  keybear_racing: {
+    bg: "#2e3141",
+    caret: "#c93943",
+    main: "#c93943",
+    sub: "#a4a6b1",
+    subAlt: "#232632",
+    text: "#f3f4fb",
+    error: "#ff8085",
+    errorExtra: "#ff4d54",
+    colorfulError: "#ff8085",
+    colorfulErrorExtra: "#ff4d54",
+    hasCss: true,
+  },
+  keybear_dracula: {
+    bg: "#282a36",
+    caret: "#bd93f9",
+    main: "#bd93f9",
+    sub: "#a5a6a7",
+    subAlt: "#1d1f27",
+    text: "#f8f8f2",
+    error: "#ff5555",
+    errorExtra: "#ff2222",
+    colorfulError: "#ff5555",
+    colorfulErrorExtra: "#ff2222",
+  },
+  keybear_pixel: {
+    bg: "#2e353d",
+    caret: "#b85433",
+    main: "#b85433",
+    sub: "#a3a7a8",
+    subAlt: "#23282e",
+    text: "#f1f3ef",
+    error: "#ff8a86",
+    errorExtra: "#ff5953",
+    colorfulError: "#ff8a86",
+    colorfulErrorExtra: "#ff5953",
+    hasCss: true,
+  },
+  keybear_hero: {
+    bg: "#e2f8f4",
+    caret: "#047c69",
+    main: "#047c69",
+    sub: "#62878e",
+    subAlt: "#cdf3ec",
+    text: "#0d3b4a",
+    error: "#c33049",
+    errorExtra: "#9a263a",
+    colorfulError: "#c33049",
+    colorfulErrorExtra: "#9a263a",
+  },
+};
+
+export type ThemeWithName = Theme & { name: ThemeName };
+export const ThemesList: ThemeWithName[] = Object.keys(themes)
+  .sort()
+  .map((it) => ({
+    ...themes[it as ThemeName],
+    name: it as ThemeName,
+  }));

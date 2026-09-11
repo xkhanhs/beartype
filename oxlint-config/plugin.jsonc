@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "pedantic": "off",
+    "perf": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off",
+  },
+  "jsPlugins": ["./plugins/beartype-rules.js"],
+  "rules": {
+    "beartype-rules/no-testing-access": "error",
+    "beartype-rules/no-mixed-nullish-coalescing": "error",
+  },
+  "overrides": [
+    {
+      "files": ["__tests__/**/*.ts"],
+      "rules": {
+        "beartype-rules/no-testing-access": "off",
+      },
+    },
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "beartype-rules/no-non-reactive-access-in-components": "error",
+        "beartype-rules/prefer-arrow-in-component": "error",
+        "beartype-rules/one-component-per-file": "error",
+        "beartype-rules/component-pascal-case": "error",
+      },
+    },
+  ],
+}

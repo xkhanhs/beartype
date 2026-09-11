@@ -1,0 +1,54 @@
+import { type CommitCharacterType } from "./util";
+import { isWrongKey } from "../../beartype/scoring";
+import { isSpace } from "../../utils/strings";
+
+/**
+ * Check if the input data is correct
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
+ * @param options.targetWord - Target word
+ */
+export function isCharCorrect(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+}): boolean {
+  const { data, inputValue, targetWord } = options;
+
+  // beartype: a letter is wrong when it makes a new mistake in the word.
+  // Upstream compares the character at the same index, which calls `e` wrong
+  // where `ế` stands -- but an input method builds `ế` out of exactly that
+  // `e`, so it is unfinished, not wrong. Spaces keep upstream's rule, so a
+  // word cut short still shows up as an error.
+  if (!isSpace(data) && data !== "\n") {
+    const target = targetWord.replace(/[ \n]$/, "");
+    return !isWrongKey(target, inputValue, inputValue + data);
+  }
+
+  const targetChar = targetWord[inputValue.length];
+
+  if (targetChar === undefined) {
+    return false;
+  }
+
+  return data === targetChar;
+}
+
+/**
+ * Check if the input data should move to the next word
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.inputValue - Current input value
+ * @param options.targetWord - Target word
+ * @param options.commitCharacterType - Type of the commit character, false if not a commit character
+ * @returns Whether to move to the next word
+ */
+export function shouldGoToNextWord(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  commitCharacterType: CommitCharacterType | false;
+}): boolean {
+  return options.commitCharacterType !== false;
+}

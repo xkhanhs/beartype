@@ -1,0 +1,31 @@
+//media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
+@import "media-queries-orange";
+@import "media-queries-yellow";
+@import "media-queries-green";
+@import "media-queries-blue";
+@import "media-queries-purple";
+@import "media-queries-brown";
+@import "media-queries-gray";
+
+@media (prefers-reduced-motion) {
+  body:not(.ignore-reduced-motion)
+    *:not(
+      .fa-spin,
+      .animate-\[loader\],
+      .preloader,
+      .typed-effect-fade .word.typed
+    ) {
+    animation: none !important;
+    transition: none !important;
+
+    &::after,
+    &::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}

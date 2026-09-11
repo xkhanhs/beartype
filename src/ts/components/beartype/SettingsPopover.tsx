@@ -1,0 +1,117 @@
+import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
+
+import { FONT_SIZES, FONTS, SMOOTH_CARETS } from "../../beartype/config-lock";
+import { setConfig } from "../../config/setters";
+import { getConfig } from "../../config/store";
+import { getFocus } from "../../states/test";
+import { cn } from "../../utils/cn";
+import { Fa } from "../common/Fa";
+import { SettingsRow } from "./SettingsRow";
+
+/**
+ * The only settings left, behind the gear in the footer. Upstream's settings
+ * page had a hundred rows; this has the ones that shape how typing feels and
+ * that a person here actually changes: the caret and, as in keybear, the
+ * font of the words and their size. It is one of keybear's settings cards;
+ * the colours have their own pill beside it, as in keybear.
+ */
+
+const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
+  off: "tắt",
+  slow: "chậm",
+  medium: "vừa",
+  fast: "nhanh",
+};
+
+// the CSS family names; the config spells them with underscores, which
+// `applyFontFamily` turns back into spaces
+const FONT_LABELS: Record<(typeof FONTS)[number], string> = {
+  Roboto_Mono: "Roboto Mono",
+  IBM_Plex_Mono: "IBM Plex Mono",
+  Be_Vietnam_Pro: "Be Vietnam Pro",
+  Lexend: "Lexend",
+  Open_Sans: "Open Sans",
+  Quicksand: "Quicksand",
+};
+
+// as Chrome's zoom names them: a share of the usual size
+const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
+  1.6: "80%",
+  1.8: "90%",
+  2: "100%",
+  2.2: "110%",
+  2.5: "125%",
+  3: "150%",
+  3.5: "175%",
+  4: "200%",
+};
+
+export function SettingsPopover(): JSXElement {
+  const [open, setOpen] = createSignal(false);
+  const [root, setRoot] = createSignal<HTMLDivElement>();
+
+  const onPointerDown = (e: PointerEvent): void => {
+    if (!(root()?.contains(e.target as Node) ?? false)) setOpen(false);
+  };
+  const onKeyDown = (e: KeyboardEvent): void => {
+    if (e.key === "Escape") setOpen(false);
+  };
+  document.addEventListener("pointerdown", onPointerDown);
+  document.addEventListener("keydown", onKeyDown);
+  onCleanup(() => {
+    document.removeEventListener("pointerdown", onPointerDown);
+    document.removeEventListener("keydown", onKeyDown);
+  });
+
+  return (
+    <div
+      ref={setRoot}
+      data-ui-element="settings"
+      class={cn("relative transition-opacity", {
+        "pointer-events-none opacity-0": getFocus(),
+      })}
+    >
+      {/* the same pill as the colours beside it, as keybear pairs them */}
+      <button
+        type="button"
+        class="bt-footer-pill"
+        aria-expanded={open()}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(!open())}
+      >
+        <Fa icon="fa-cog" fixedWidth />
+        <span>cài đặt</span>
+      </button>
+      <Show when={open()}>
+        <div class="bt-settings-card" role="dialog" aria-label="cài đặt">
+          <div class="bt-settings-title">cài đặt</div>
+          <SettingsRow
+            label="con trỏ mượt"
+            hint="con trỏ trượt sang chữ kế tiếp thay vì nhảy"
+            options={SMOOTH_CARETS}
+            labels={SMOOTH_CARET_LABELS}
+            value={getConfig.smoothCaret}
+            onPick={(value) => setConfig("smoothCaret", value)}
+          />
+          <SettingsRow
+            label="phông chữ"
+            hint="chữ của bài gõ; mỗi tên viết bằng chính phông ấy"
+            options={FONTS}
+            labels={FONT_LABELS}
+            fontOf={(font) => `"${FONT_LABELS[font]}"`}
+            value={getConfig.fontFamily}
+            onPick={(value) => setConfig("fontFamily", value)}
+          />
+          <SettingsRow
+            label="cỡ chữ"
+            hint="cỡ chữ của bài gõ"
+            options={FONT_SIZES}
+            labels={FONT_SIZE_LABELS}
+            value={getConfig.fontSize}
+            onPick={(value) => setConfig("fontSize", value)}
+          />
+        </div>
+      </Show>
+    </div>
+  );
+}

@@ -1,0 +1,11 @@
+@use "sass:map";
+
+@each $font, $config in $fonts {
+  @font-face {
+    font-family: "#{$font}";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("/webfonts/#{map-get($config, 'src')}") format("woff2");
+  }
+}

@@ -1,0 +1,163 @@
+import * as ConfigSchemas from "../schemas/configs";
+
+export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
+  /**
+   * The config key that this metadata is for
+   */
+  key: K;
+
+  /**
+   * Optional display string for the config key, used in warning/error
+   * messages when a value is blocked or an override fails.
+   */
+  displayString?: string;
+  /**
+   * Should the config change trigger a resize event? handled in ui.ts:108
+   */
+  triggerResize?: true;
+
+  /**
+   * Optional function that checks if the config value is blocked from being set.
+   * Returns true if setting the config value should be blocked.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  isBlocked?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => boolean;
+  /**
+   * Optional function to override the value before setting it.
+   * Returns the modified value.
+   * @param options - The options object containing the value being set, the current value, and the current config.
+   * @returns The modified value to be set for the config key.
+   */
+  overrideValue?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentValue: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => ConfigSchemas.Config[K];
+  /**
+   * Optional function to override other config values before this one is set.
+   * Returns an object with the config keys and their new values.
+   * @param options - The options object containing the value being set and the current config.
+   */
+  overrideConfig?: (options: {
+    value: ConfigSchemas.Config[K];
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => Partial<ConfigSchemas.Config>;
+  /**
+   * Optional function that is called after the config value is set.
+   * It can be used to perform additional actions, like reloading the page.
+   * @param options - The options object containing the nosave flag and the current config.
+   */
+  afterSet?: (options: {
+    nosave: boolean;
+    currentConfig: Readonly<ConfigSchemas.Config>;
+  }) => void;
+};
+
+export type ConfigMetadataObject = {
+  [K in keyof ConfigSchemas.Config]: ConfigMetadata<K>;
+};
+
+export const configMetadata: ConfigMetadataObject = {
+  // test
+  words: {
+    key: "words",
+    displayString: "word count",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "words") {
+        return {
+          mode: "words",
+        };
+      }
+      return {};
+    },
+  },
+  time: {
+    key: "time",
+    displayString: "time",
+    overrideConfig: ({ currentConfig }) => {
+      if (currentConfig.mode !== "time") {
+        return {
+          mode: "time",
+        };
+      }
+      return {};
+    },
+  },
+  mode: {
+    key: "mode",
+  },
+  language: {
+    key: "language",
+    displayString: "language",
+  },
+  // behavior
+  resultSaving: {
+    key: "resultSaving",
+    displayString: "result saving",
+  },
+  // input
+  indicateTypos: {
+    key: "indicateTypos",
+    displayString: "indicate typos",
+  },
+  // sound
+  soundVolume: {
+    key: "soundVolume",
+    displayString: "sound volume",
+  },
+  playSoundOnClick: {
+    key: "playSoundOnClick",
+    displayString: "play sound on click",
+  },
+  playSoundOnError: {
+    key: "playSoundOnError",
+    displayString: "play sound on error",
+  },
+  // caret
+  smoothCaret: {
+    key: "smoothCaret",
+    displayString: "smooth caret",
+  },
+  // appearance
+  fontSize: {
+    key: "fontSize",
+    triggerResize: true,
+    displayString: "font size",
+  },
+  fontFamily: {
+    key: "fontFamily",
+    displayString: "font family",
+  },
+  keymapMode: {
+    key: "keymapMode",
+    displayString: "keymap mode",
+  },
+  // theme
+  autoSwitchTheme: {
+    key: "autoSwitchTheme",
+    displayString: "auto switch theme",
+  },
+  themeLight: {
+    key: "themeLight",
+    displayString: "theme light",
+  },
+  themeDark: {
+    key: "themeDark",
+    displayString: "theme dark",
+  },
+  theme: {
+    key: "theme",
+  },
+  // hide elements
+  showOutOfFocusWarning: {
+    key: "showOutOfFocusWarning",
+    displayString: "show out of focus warning",
+  },
+  capsLockWarning: {
+    key: "capsLockWarning",
+    displayString: "caps lock warning",
+  },
+};
