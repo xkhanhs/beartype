@@ -1,11 +1,8 @@
 import * as PageController from "./page-controller";
 import * as PageTransition from "../legacy-states/page-transition";
-import { isAuthAvailable } from "../firebase";
-import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
 import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
-import { authEvent } from "../events/auth";
 import {
   isTestRestarting,
   isResultCalculating,
@@ -40,119 +37,12 @@ type Route = {
   ) => Promise<void>;
 };
 
-const route404: Route = {
-  path: "404",
-  load: async (_params, options) => {
-    await PageController.change("404", options);
-  },
-};
-
-// NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
+// beartype has one page; every path lands on the test.
 const routes: Route[] = [
   {
     path: "/",
     load: async (_params, options) => {
       await PageController.change("test", options);
-    },
-  },
-  {
-    path: "/verify",
-    load: async (_params, options) => {
-      await PageController.change("test", options);
-    },
-  },
-  {
-    path: "/leaderboards",
-    load: async (_params, options) => {
-      await PageController.change("leaderboards", options);
-    },
-  },
-  {
-    path: "/about",
-    load: async (_params, options) => {
-      await PageController.change("about", options);
-    },
-  },
-  {
-    path: "/settings",
-    load: async (_params, options) => {
-      await PageController.change("settings", options);
-    },
-  },
-  {
-    path: "/login",
-    load: async (_params, options) => {
-      if (!isAuthAvailable()) {
-        await navigate("/", options);
-        return;
-      }
-      if (isAuthenticated()) {
-        await navigate("/account", options);
-        return;
-      }
-      await PageController.change("login", options);
-    },
-  },
-  {
-    path: "/account",
-    load: async (_params, options) => {
-      if (!isAuthAvailable()) {
-        await navigate("/", options);
-        return;
-      }
-      if (!isAuthenticated()) {
-        await navigate("/login", options);
-        return;
-      }
-      await PageController.change("account", options);
-    },
-  },
-  {
-    path: "/account-settings",
-    load: async (_params, options) => {
-      if (!isAuthAvailable()) {
-        await navigate("/", options);
-        return;
-      }
-      if (!isAuthenticated()) {
-        await navigate("/login", options);
-        return;
-      }
-      await PageController.change("accountSettings", options);
-    },
-  },
-  {
-    path: "/profile",
-    load: async (_params, options) => {
-      await PageController.change("profileSearch", options);
-    },
-  },
-  {
-    path: "/profile/:uidOrName",
-    load: async (params, options) => {
-      await PageController.change("profile", {
-        ...options,
-        force: true,
-        params: {
-          uidOrName: params["uidOrName"] as string,
-        },
-        data: options.data,
-      });
-    },
-  },
-  {
-    path: "/friends",
-    load: async (_params, options) => {
-      if (!isAuthAvailable()) {
-        await navigate("/", options);
-        return;
-      }
-      if (!isAuthenticated()) {
-        await navigate("/login", options);
-        return;
-      }
-
-      await PageController.change("friends", options);
     },
   },
 ];
@@ -217,12 +107,8 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (match === undefined) {
-    await route404.load(
-      {},
-      {
-        force: true,
-      },
-    );
+    history.replaceState(null, "", "/");
+    await PageController.change("test", { force: true });
     return;
   }
 
@@ -247,35 +133,13 @@ navigationEvent.subscribe(({ url, options }) => {
   void navigate(url, options);
 });
 
-authEvent.subscribe((event) => {
-  if (event.type === "authStateChanged") {
-    let keyframes = [
-      {
-        percentage: 90,
-        durationMs: 1000,
-        text: "Downloading user data...",
-      },
-    ];
-
-    //undefined means navigate to whatever the current window.location.pathname is
-    void navigate(undefined, {
-      force: true,
-      loadingOptions: {
-        loadingMode: () => {
-          if (event.data.isUserSignedIn) {
-            return "sync";
-          } else {
-            return "none";
-          }
-        },
-        loadingPromise: async () => {
-          await event.data.loadPromise;
-        },
-        style: "bar",
-        keyframes: keyframes,
-      },
-    }).finally(() => {
-      document.body.classList.remove("loading");
-    });
-  }
-});
+/**
+ * Routes the page the browser opened on. Upstream waited for Firebase to
+ * report the auth state before doing this; with no accounts there is nothing
+ * to wait for.
+ */
+export function start(): void {
+  void navigate(undefined, { force: true }).finally(() => {
+    document.body.classList.remove("loading");
+  });
+}

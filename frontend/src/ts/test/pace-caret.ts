@@ -1,7 +1,7 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import * as DB from "../db";
-import { getActiveTagsPB } from "../collections/tags";
+// beartype: results live in this browser, not in an account snapshot
+import * as DB from "../beartype/local-results";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
@@ -10,7 +10,7 @@ import { qsr } from "../utils/dom";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
-} from "../collections/results";
+} from "../beartype/local-results";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
@@ -81,15 +81,8 @@ export async function init(): Promise<void> {
         getActiveFunboxes(),
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
-    wpm = getActiveTagsPB(
-      Config.mode,
-      mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-    );
+    // beartype: no tags, so there is no tag pb to pace against
+    wpm = 0;
   } else if (Config.paceCaret === "average") {
     wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "daily") {

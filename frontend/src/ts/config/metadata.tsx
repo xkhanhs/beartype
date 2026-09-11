@@ -3,9 +3,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { JSXElement } from "solid-js";
 
-import * as CustomThemes from "../collections/custom-themes";
 import { getDefaultConfig } from "../constants/default-config";
-import { isAuthenticated } from "../states/core";
 import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
 import { isDevEnvironment } from "../utils/env";
@@ -734,10 +732,9 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
-        if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
-          showNoticeNotification(
-            `Pace caret "pb" and "tag pb" are unavailable without an account`,
-          );
+        // beartype: "pb" is read from this browser's results; tags are gone
+        if (value === "tagPb") {
+          showNoticeNotification(`Pace caret "tag pb" is unavailable`);
           return true;
         }
       }
@@ -1133,18 +1130,9 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (value === "custom") {
-        if (!isAuthenticated()) {
-          showNoticeNotification(
-            "Random theme 'custom' is unavailable without an account",
-          );
-          return true;
-        }
-        if (CustomThemes.__nonReactive.getCustomThemes().length === 0) {
-          showNoticeNotification(
-            "Random theme 'custom' requires at least one custom theme to be saved",
-          );
-          return true;
-        }
+        // beartype: saved custom themes lived in the account
+        showNoticeNotification("Random theme 'custom' is unavailable");
+        return true;
       }
       return false;
     },

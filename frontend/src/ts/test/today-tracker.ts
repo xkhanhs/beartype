@@ -1,4 +1,4 @@
-import { __nonReactive } from "../collections/results";
+import { getResults } from "../beartype/local-results";
 import * as DateTime from "../utils/date-and-time";
 
 let seconds = 0;
@@ -31,7 +31,7 @@ export function addAllFromToday(): void {
   const todayDateMS = todayDate.getTime();
 
   seconds = 0;
-  const results = __nonReactive.getResults();
+  const results = getResults();
 
   for (const result of results) {
     const resultDate = new Date(result.timestamp);

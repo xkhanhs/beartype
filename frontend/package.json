@@ -22,7 +22,6 @@
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
     "docker": "docker compose -f docker/compose.dev.yml up",
-    "storybook": "cd storybook && pnpm run storybook",
     "import-tree": "tsx ./scripts/import-tree.ts"
   },
   "dependencies": {

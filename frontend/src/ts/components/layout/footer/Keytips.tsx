@@ -2,7 +2,6 @@ import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getFocus } from "../../../states/test";
-import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { QuickRestartHotkey } from "../../hotkeys/QuickRestartHotkey";
 
 export function Keytips(): JSXElement {
@@ -17,11 +16,6 @@ export function Keytips(): JSXElement {
         <div class="flex items-center gap-2">
           <QuickRestartHotkey />
           <span>- restart test</span>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <CommandlineHotkey />
-          <span>- command line</span>
         </div>
       </div>
     </Show>

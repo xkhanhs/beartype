@@ -1,42 +1,12 @@
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import {
-  getActivePage,
-  setActivePage,
-  setSelectedProfileName,
-} from "../states/core";
+import { getActivePage, setActivePage } from "../states/core";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as PageTransition from "../legacy-states/page-transition";
-import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, {
-  PageName,
-  LoadingOptions,
-  PageProperties,
-  PageWithUrlParams,
-  UrlParamsSchema,
-  OptionsWithUrlParams,
-} from "../pages/page";
-import { onDOMReady, qsa, qsr } from "../utils/dom";
-import * as Skeleton from "../utils/skeleton";
-import {
-  LeaderboardUrlParamsSchema,
-  readLeaderboardGetParameters,
-} from "../states/leaderboard-selection";
-import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
-import { getSnapshot } from "../db";
-import * as TodayTracker from "../test/today-tracker";
-import { isResultsReady, waitForResultsReady } from "../collections/results";
-import {
-  invalidateConnections,
-  isConnectionsReady,
-  waitForConnectionsReady,
-} from "../collections/connections";
-import {
-  AccountSettingsUrlParamsSchema,
-  readAccountSettingsGetParameters,
-} from "../states/account-settings";
+import Page, { PageName, LoadingOptions } from "../pages/page";
+import { qsa } from "../utils/dom";
 
 type ChangeOptions = {
   force?: boolean;
@@ -48,111 +18,6 @@ type ChangeOptions = {
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
-  settings: solidPage("settings", {
-    beforeShow: async () => {
-      // clear any previous highlight
-      const prev = document.querySelector<HTMLElement>(
-        '[data-component="settingspage"] .settings-highlight',
-      );
-      if (prev !== null) {
-        prev.classList.remove("settings-highlight");
-      }
-
-      const highlight = new URLSearchParams(window.location.search).get(
-        "highlight",
-      );
-      if (highlight === null) return;
-
-      const element = document.querySelector<HTMLElement>(
-        `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
-      );
-      if (element === null) return;
-
-      setTimeout(() => {
-        element.scrollIntoView({ block: "center", behavior: "auto" });
-        element.classList.add("settings-highlight");
-      }, 250);
-    },
-  }),
-  about: solidPage("about"),
-  account: solidPage("account", {
-    loadingOptions: {
-      loadingMode: () => {
-        if (isResultsReady()) {
-          return "none";
-        } else {
-          return "sync";
-        }
-      },
-      loadingPromise: async () => {
-        if (getSnapshot() === null || getSnapshot() === undefined) {
-          throw new Error(
-            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
-          );
-        }
-        await waitForResultsReady();
-        TodayTracker.addAllFromToday();
-      },
-      style: "bar",
-      keyframes: [
-        {
-          percentage: 90,
-          durationMs: 2000,
-          text: "Downloading results...",
-        },
-      ],
-    },
-  }),
-  login: solidPage("login"),
-  profile: solidPage("profile", {
-    beforeShow: async (options) => {
-      setSelectedProfileName(options.params?.["uidOrName"]);
-    },
-  }),
-  profileSearch: solidPage("profileSearch"),
-  404: solidPage("404"),
-  friends: solidPage("friends", {
-    beforeShow: async () => {
-      await invalidateConnections();
-    },
-    loadingOptions: {
-      loadingMode: () => (isConnectionsReady() ? "none" : "sync"),
-      loadingPromise: async () => {
-        await Promise.all([
-          serverConfigurationPromise,
-          waitForConnectionsReady(),
-        ]);
-      },
-      style: "bar",
-      keyframes: [
-        { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
-        {
-          percentage: 50,
-          durationMs: 1500,
-          text: "Downloading friend requests...",
-        },
-      ],
-    },
-  }),
-  accountSettings: solidPage("accountSettings", {
-    urlParamsSchema: AccountSettingsUrlParamsSchema,
-    beforeShow: async (options) => {
-      readAccountSettingsGetParameters(options.urlParams);
-    },
-  }),
-  leaderboards: solidPage("leaderboards", {
-    urlParamsSchema: LeaderboardUrlParamsSchema,
-    loadingOptions: {
-      style: "spinner",
-      loadingMode: () => "sync",
-      loadingPromise: async () => {
-        await serverConfigurationPromise;
-      },
-    },
-    beforeShow: async (options) => {
-      readLeaderboardGetParameters(options.urlParams);
-    },
-  }),
 };
 
 function updateOpenGraphUrl(): void {
@@ -381,7 +246,6 @@ export async function change(
   //next page
   await nextPage?.beforeShow({
     params: options.params,
-    // @ts-expect-error for the future (i think)
     data: options.data,
   });
 
@@ -405,71 +269,5 @@ export async function change(
 
   //wrapup
   PageTransition.set(false);
-  void AdController.reinstate();
   return true;
-}
-
-function solidPage(
-  id: PageName,
-  props?: {
-    path?: string;
-    urlParamsSchema?: never;
-    loadingOptions?: LoadingOptions;
-    beforeShow?: PageProperties<undefined>["beforeShow"];
-    afterHide?: () => Promise<void>;
-  },
-): Page<undefined>;
-function solidPage<U extends UrlParamsSchema>(
-  id: PageName,
-  props: {
-    path?: string;
-    urlParamsSchema: U;
-    loadingOptions?: LoadingOptions;
-    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
-  },
-): PageWithUrlParams<undefined, U>;
-function solidPage<U extends UrlParamsSchema>(
-  id: PageName,
-  props?: {
-    path?: string;
-    urlParamsSchema?: U;
-    loadingOptions?: LoadingOptions;
-    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
-  },
-): Page<undefined> | PageWithUrlParams<undefined, U> {
-  const path = props?.path ?? `/${id}`;
-  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
-  onDOMReady(() => Skeleton.save(internalId));
-
-  const shared = {
-    id,
-    path,
-    element: qsr(`#${internalId}`),
-    loadingOptions: props?.loadingOptions,
-    afterHide: async () => {
-      Skeleton.remove(internalId);
-      await props?.afterHide?.();
-    },
-  };
-
-  if (props?.urlParamsSchema !== undefined) {
-    return new PageWithUrlParams({
-      ...shared,
-      urlParamsSchema: props.urlParamsSchema,
-      beforeShow: async (options) => {
-        Skeleton.append(internalId, "main");
-        await props.beforeShow?.(options);
-      },
-    });
-  }
-
-  return new Page({
-    ...shared,
-    beforeShow: async (options) => {
-      Skeleton.append(internalId, "main");
-      await props?.beforeShow?.(options);
-    },
-  });
 }

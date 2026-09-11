@@ -8,7 +8,6 @@
     "jsxImportSource": "solid-js",
     "types": ["node"]
   },
-  "files": ["vitest.d.ts"],
   "include": [
     "./__harness__/**/*.ts",
     "./**/*.spec.ts",
