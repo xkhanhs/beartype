@@ -24,9 +24,8 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
       </style>
       <g>
         <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
-        <path d="M9.09 14h5.12v31.3H9.09z"/>
-        <path fill-rule="evenodd" d="M13.4 34.7a11.5 11.5 0 1 0 23 0a11.5 11.5 0 1 0-23 0zM18.9 34.7a6 6 0 1 0 12 0a6 6 0 1 0-12 0z"/>
-        <path d="M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
+        <path fill-rule="evenodd" d="M8 15.5a3.5 3.5 0 0 1 7 0V24h9a12 12 0 0 1 0 24H8zM15 30.5v11h9a5.5 5.5 0 0 0 0-11z"/>
+        <path d="M42.5 19.5a3.25 3.25 0 0 1 6.5 0V24h6v6.5h-6V48h-6.5V30.5H38V24h4.5z"/>
       </g>
     </svg>
     `;
