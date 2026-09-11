@@ -51,8 +51,9 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   phím ảo), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
   luyện từ hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
 - Âm thanh: `src/ts/controllers/sound-controller.ts` và
-  `src/ts/constants/sounds.ts`, file ở `static/sounds/` (năm bộ của upstream
-  và `error1`, giữ tên thư mục của upstream). Mặc định tắt; chưa bật thì không
+  `src/ts/constants/sounds.ts`, file ở `static/sounds/`: tiếng phím và tiếng
+  báo sai của keybear (`keybear/`, gốc từ keybr, AGPL-3.0), năm bộ của upstream
+  và `error1` (giữ tên thư mục của upstream). Mặc định tắt; chưa bật thì không
   tải gì, bật thì chỉ tải howler và bộ đang chọn.
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong

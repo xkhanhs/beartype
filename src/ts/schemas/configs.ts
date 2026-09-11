@@ -23,10 +23,12 @@ export const IndicateTyposSchema = z.enum(["off", "below"]);
 export const KeymapModeSchema = z.enum(["off", "react"]);
 
 // upstream's ids, so the sound files keep their paths; see constants/sounds.ts
-export const PlaySoundOnErrorSchema = z.enum(["off", "1"]);
+export const PlaySoundOnErrorSchema = z.enum(["off", "keybear", "1"]);
+export type PlaySoundOnError = z.infer<typeof PlaySoundOnErrorSchema>;
 
 export const PlaySoundOnClickSchema = z.enum([
   "off",
+  "keybear",
   "1",
   "3",
   "4",
