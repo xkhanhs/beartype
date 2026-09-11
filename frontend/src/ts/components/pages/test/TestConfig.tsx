@@ -33,7 +33,7 @@ export function TestConfig(): JSXElement {
   return (
     <div
       class={cn(
-        "bt-options relative mx-auto mb-8 w-max max-w-full place-self-center",
+        "bt-options relative mx-auto mb-8 w-max max-w-[calc(100%-2rem)] place-self-center",
         "transition-opacity duration-125",
         // it stays on the result, which says what the test just taken was
         getFocus() ? "pointer-events-none opacity-0" : "",

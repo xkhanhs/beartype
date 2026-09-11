@@ -231,13 +231,20 @@ body,
 // shade below the page, keybear's border colour, inside a rim of its own.
 .bt-options {
   display: flex;
-  flex-wrap: wrap;
+  // one row always; a narrow screen scrolls it sideways instead
+  flex-wrap: nowrap;
   gap: 0.4rem;
   align-items: center;
-  justify-content: center;
+  // `safe`, so a strip wider than the screen scrolls from its first pill
+  justify-content: safe center;
   // the same on every side, so a filled pill at either end sits as far from
-  // the rim across as it does above and below
-  padding: 0.35rem;
+  // the rim across as it does above and below. In whole pixels, with the
+  // pill 28px tall, so no edge falls on half a pixel: the strip's round ends
+  // (radius 20px inside the rim) and the pill's (14px) share a centre, and
+  // the gap is 6px all the way round.
+  padding: 0.375rem;
+  overflow-x: auto;
+  scrollbar-width: none;
   border: 2px solid var(--kb-sunk-rim);
   border-radius: 99px;
   background-color: var(--kb-border);
@@ -251,12 +258,17 @@ body,
 }
 
 button.bt-options-pill {
-  padding: 0.3rem 0.8rem;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  block-size: 1.75rem;
+  padding: 0 0.8rem;
   border-radius: 99px;
   color: var(--kb-text-f1);
   background: transparent;
   font-size: 1rem;
   line-height: 1.2;
+  white-space: nowrap;
 
   &:hover {
     color: var(--text-color);
@@ -318,8 +330,13 @@ button.bt-options-pill {
   }
 
   // keybear's Material Design icons, drawn in the text colour
+  // inline, against Tailwind's `svg { display: block }`: on a touch screen
+  // upstream turns the restart button into a block, where a block icon
+  // stood over its label
   .bt-action-icon {
+    display: inline-block;
     flex: none;
+    vertical-align: -0.25em;
     inline-size: 1.2rem;
     block-size: 1.2rem;
     fill: currentColor;
