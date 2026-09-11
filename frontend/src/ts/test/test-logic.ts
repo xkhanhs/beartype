@@ -829,6 +829,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const mode2Number = parseInt(completedEvent.mode2);
 
+  // beartype: the result screen says what was wrong with a test, in
+  // Vietnamese, under the figures (`updateOther` in result.ts); upstream's
+  // English pop-up said it a second time. The checks below are upstream's,
+  // untouched -- only their pop-up is silenced, for this function alone.
+  const showNoticeNotification = (..._args: unknown[]): void => undefined;
+
   let tooShort = false;
   //fail checks
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
