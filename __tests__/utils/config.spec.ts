@@ -61,15 +61,6 @@ describe("config.ts", () => {
       it.for([
         { given: { smoothCaret: true }, expected: { smoothCaret: "medium" } },
         { given: { smoothCaret: false }, expected: { smoothCaret: "off" } },
-        {
-          given: { playSoundOnError: true },
-          expected: { playSoundOnError: "1" },
-        },
-        {
-          given: { playSoundOnError: false },
-          expected: { playSoundOnError: "off" },
-        },
-        { given: { soundVolume: "0.5" }, expected: { soundVolume: 0.5 } },
         { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
         {
           given: { indicateTypos: true },

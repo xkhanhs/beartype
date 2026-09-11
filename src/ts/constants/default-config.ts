@@ -14,9 +14,6 @@ const obj: Config = {
   indicateTypos: "off",
   keymapMode: "off",
   fontFamily: "Roboto_Mono",
-  playSoundOnError: "off",
-  playSoundOnClick: "off",
-  soundVolume: 0.5,
 };
 
 export function getDefaultConfig(): Config {

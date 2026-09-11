@@ -1,8 +1,6 @@
 import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
 import {
-  CLICK_SOUNDS,
-  ERROR_SOUNDS,
   FONT_SIZES,
   FONTS,
   KEYMAP_MODES,
@@ -11,20 +9,18 @@ import {
 } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { previewClick, previewError } from "../../controllers/sound-controller";
 import { getFocus } from "../../states/test";
 import { cn } from "../../utils/cn";
 import { Fa } from "../common/Fa";
 import { SettingsRow } from "./SettingsRow";
-import { SettingsSliderRow } from "./SettingsSliderRow";
 
 /**
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
  * that a person here actually changes: the caret, as in keybear the font of
- * the words and their size, the sounds of the keys and the keyboard under
- * the words. It is one of keybear's settings cards;
- * the colours have their own pill beside it, as in keybear.
+ * the words and their size, and the keyboard under the words. It is one of
+ * keybear's settings cards; the colours have their own pill beside it, as in
+ * keybear.
  */
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
@@ -55,24 +51,6 @@ const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
   3: "150%",
   3.5: "175%",
   4: "200%",
-};
-
-// upstream's names for its sets; a sound has no Vietnamese name to give it
-const CLICK_SOUND_LABELS: Record<(typeof CLICK_SOUNDS)[number], string> = {
-  off: "tắt",
-  keybear: "keybear",
-  1: "click",
-  3: "pop",
-  4: "nk creams",
-  5: "typewriter",
-  6: "osu",
-  8: "sine",
-};
-
-const ERROR_SOUND_LABELS: Record<(typeof ERROR_SOUNDS)[number], string> = {
-  off: "tắt",
-  keybear: "keybear",
-  1: "monkeytype",
 };
 
 const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
@@ -149,35 +127,6 @@ export function SettingsPopover(): JSXElement {
             labels={FONT_SIZE_LABELS}
             value={getConfig.fontSize}
             onPick={(value) => setConfig("fontSize", value)}
-          />
-          <SettingsRow
-            label="tiếng gõ"
-            hint="một tiếng mỗi phím; chọn là nghe thử"
-            options={CLICK_SOUNDS}
-            labels={CLICK_SOUND_LABELS}
-            value={getConfig.playSoundOnClick}
-            onPick={(value) => {
-              setConfig("playSoundOnClick", value);
-              void previewClick(value);
-            }}
-          />
-          <SettingsRow
-            label="tiếng báo gõ sai"
-            hint="phím gõ sai kêu một tiếng riêng"
-            options={ERROR_SOUNDS}
-            labels={ERROR_SOUND_LABELS}
-            value={getConfig.playSoundOnError}
-            onPick={(value) => {
-              setConfig("playSoundOnError", value);
-              if (value !== "off") void previewError(value);
-            }}
-          />
-          <SettingsSliderRow
-            label="âm lượng"
-            hint="của tiếng gõ và tiếng báo gõ sai"
-            value={getConfig.soundVolume}
-            onInput={(value) => setConfig("soundVolume", value)}
-            onChange={() => void previewClick(getConfig.playSoundOnClick)}
           />
           <SettingsRow
             label="hiện phím gõ sai"

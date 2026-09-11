@@ -35,9 +35,6 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
-      howler:
-        specifier: 2.2.3
-        version: 2.2.3
       tailwind-merge:
         specifier: 3.6.0
         version: 3.6.0
@@ -72,9 +69,6 @@ importers:
       '@types/canvas-confetti':
         specifier: 1.9.0
         version: 1.9.0
-      '@types/howler':
-        specifier: 2.2.7
-        version: 2.2.7
       '@types/node':
         specifier: 24.9.1
         version: 24.9.1
@@ -1440,9 +1434,6 @@ packages:
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
-  '@types/howler@2.2.7':
-    resolution: {integrity: sha512-PEZldwZqJJw1PWRTpupyC7ajVTZA8aHd8nB/Y0n6zRZi5u8ktYDntsHj13ltEiBRqWwF06pASxBEvCTxniG8eA==}
-
   '@types/html-minifier-terser@7.0.2':
     resolution: {integrity: sha512-mm2HqV22l8lFQh4r2oSsOEVea+m0qqxEmwpc9kC1p/XzmjLWrReR9D/GRs8Pex2NX/imyEH9c5IU/7tMBQCHOA==}
 
@@ -2215,9 +2206,6 @@ packages:
 
   hookified@2.1.1:
     resolution: {integrity: sha512-AHb76R16GB5EsPBE2J7Ko5kiEyXwviB9P5SMrAKcuAu4vJPZttViAbj9+tZeaQE5zjDme+1vcHP78Yj/WoAveA==}
-
-  howler@2.2.3:
-    resolution: {integrity: sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==}
 
   html-encoding-sniffer@6.0.0:
     resolution: {integrity: sha512-CV9TW3Y3f8/wT0BRFc1/KAVQ3TUHiXmaAb6VW9vtiMFf7SLoMd1PdAc4W3KFOFETBJUb90KatHqlsZMWV+R9Gg==}
@@ -4340,8 +4328,6 @@ snapshots:
 
   '@types/estree@1.0.9': {}
 
-  '@types/howler@2.2.7': {}
-
   '@types/html-minifier-terser@7.0.2': {}
 
   '@types/json-schema@7.0.15': {}
@@ -5130,8 +5116,6 @@ snapshots:
   hookified@1.15.1: {}
 
   hookified@2.1.1: {}
-
-  howler@2.2.3: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:

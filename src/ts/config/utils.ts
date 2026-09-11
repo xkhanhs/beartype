@@ -40,14 +40,6 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  if (typeof configObj.playSoundOnError === "boolean") {
-    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
-  }
-
-  if (typeof configObj.soundVolume === "string") {
-    configObj.soundVolume = parseFloat(configObj.soundVolume);
-  }
-
   if (typeof configObj.indicateTypos === "boolean") {
     configObj.indicateTypos = configObj.indicateTypos ? "below" : "off";
   }

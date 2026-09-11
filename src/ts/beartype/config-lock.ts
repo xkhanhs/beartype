@@ -2,8 +2,6 @@ import {
   type Config,
   IndicateTyposSchema,
   KeymapModeSchema,
-  PlaySoundOnClickSchema,
-  PlaySoundOnErrorSchema,
 } from "../schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { typedKeys } from "../utils/objects";
@@ -33,8 +31,6 @@ export const FONTS = [
  * choice still stands.
  */
 export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
-export const CLICK_SOUNDS = PlaySoundOnClickSchema.options;
-export const ERROR_SOUNDS = PlaySoundOnErrorSchema.options;
 export const KEYMAP_MODES = KeymapModeSchema.options;
 export const TYPO_INDICATORS = IndicateTyposSchema.options;
 export const THEMES = [
@@ -59,14 +55,9 @@ function allowed(key: keyof Config, value: unknown): boolean {
     fontFamily: FONTS,
     fontSize: FONT_SIZES,
     theme: THEMES,
-    playSoundOnClick: CLICK_SOUNDS,
-    playSoundOnError: ERROR_SOUNDS,
     keymapMode: KEYMAP_MODES,
     indicateTypos: TYPO_INDICATORS,
   };
-  if (key === "soundVolume") {
-    return typeof value === "number" && value >= 0 && value <= 1;
-  }
   const list = lists[key];
   return list === undefined || list.includes(value);
 }

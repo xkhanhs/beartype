@@ -34,6 +34,10 @@ const PRODUCTION_CONFIG = {
   themeDark: "keybear_dark",
   showOutOfFocusWarning: true,
   capsLockWarning: true,
+  // the sounds, since taken out
+  playSoundOnClick: "keybear",
+  playSoundOnError: "1",
+  soundVolume: 0.8,
   mode: "words",
   time: 60,
   words: 25,
@@ -67,6 +71,9 @@ describe("a production localStorage config", () => {
       "themeDark",
       "showOutOfFocusWarning",
       "capsLockWarning",
+      "playSoundOnClick",
+      "playSoundOnError",
+      "soundVolume",
     ]) {
       expect(stored).not.toHaveProperty(upstreamOnlyKey);
     }

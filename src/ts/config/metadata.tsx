@@ -98,19 +98,6 @@ export const configMetadata: ConfigMetadataObject = {
     key: "indicateTypos",
     displayString: "indicate typos",
   },
-  // sound
-  soundVolume: {
-    key: "soundVolume",
-    displayString: "sound volume",
-  },
-  playSoundOnClick: {
-    key: "playSoundOnClick",
-    displayString: "play sound on click",
-  },
-  playSoundOnError: {
-    key: "playSoundOnError",
-    displayString: "play sound on error",
-  },
   // caret
   smoothCaret: {
     key: "smoothCaret",

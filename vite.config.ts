@@ -146,11 +146,6 @@ function getBuildOptions({
               test: /src\/ts\/utils\//,
             },
             {
-              // loaded by sound-controller only once a sound is switched on
-              name: "vendor-howler",
-              test: /node_modules\/howler\//,
-            },
-            {
               name: "vendor",
               test: /node_modules\//,
             },
