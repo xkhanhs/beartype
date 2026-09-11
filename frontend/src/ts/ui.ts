@@ -24,7 +24,7 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "Vazirharf", "monospace"`,
+    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "monospace"`,
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -58,7 +58,6 @@ export async function applyFontFamily(): Promise<void> {
       ? `"${replaceUnderscoresWithSpaces(preferredFont)}"`
       : undefined,
     '"Roboto Mono"',
-    '"Vazirharf"',
     "monospace",
   ].filter((it) => it !== undefined);
 

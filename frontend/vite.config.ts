@@ -12,7 +12,6 @@ import childProcess from "child_process";
 import autoprefixer from "autoprefixer";
 import { Fonts } from "./src/ts/constants/fonts";
 import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
-import { fontPreview } from "./vite-plugins/font-preview";
 import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
@@ -31,10 +30,8 @@ function getFontsConfig(): string {
     .sort()
     .map((name: string) => {
       const config = Fonts[name as KnownFontName];
-      if (config.systemFont === true) return "";
       return `"${name.replaceAll("_", " ")}": (
         "src": "${config.fileName}",
-        "weight": ${config.weight ?? 400},
         ),`;
     })
     .join("\n")}\n`;
@@ -114,7 +111,6 @@ function getPlugins({
   ];
 
   const prodPlugins: PluginOption[] = [
-    fontPreview(),
     fontawesomeSubset(),
     versionFile({ clientVersion }),
     ViteMinifyPlugin(),
@@ -224,8 +220,7 @@ function getCssOptions({
 
             const bypassFonts = isDevelopment
               ? `
-                $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
-                $previewFontsPath:"webfonts";`
+                $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`
               : "";
             const fonts = `
               ${bypassFonts}
