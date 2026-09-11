@@ -9,28 +9,14 @@ import {
 import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
-import { Fonts } from "./src/ts/constants/fonts";
 import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { envConfig } from "./vite-plugins/env-config";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
-import { KnownFontName } from "./src/ts/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
-
-function getFontsConfig(): string {
-  return `\n${Object.keys(Fonts)
-    .sort()
-    .map((name: string) => {
-      const config = Fonts[name as KnownFontName];
-      return `"${name.replaceAll("_", " ")}": (
-        "src": "${config.fileName}",
-        ),`;
-    })
-    .join("\n")}\n`;
-}
 
 function pad(
   numbers: number[],
@@ -171,14 +157,10 @@ function getCssOptions({
               ? `
                 $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`
               : "";
-            const fonts = `
-              ${bypassFonts}
-              $fonts: (${getFontsConfig()});
-              `;
             return `
               //inject variables into sass context
-              ${fonts}
-            
+              ${bypassFonts}
+
               ${source}`;
           } else {
             return source;

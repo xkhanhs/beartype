@@ -74,6 +74,7 @@ describe("a production localStorage config", () => {
       "playSoundOnClick",
       "playSoundOnError",
       "soundVolume",
+      "fontFamily",
     ]) {
       expect(stored).not.toHaveProperty(upstreamOnlyKey);
     }
@@ -89,7 +90,6 @@ describe("a production localStorage config", () => {
     expect(locked.words).toBe(25);
     expect(locked.language).toBe("english");
     expect(locked.theme).toBe("keybear_ocean");
-    expect(locked.fontFamily).toBe("Be_Vietnam_Pro");
     expect(locked.fontSize).toBe(2.5);
     expect(locked.smoothCaret).toBe("fast");
   });

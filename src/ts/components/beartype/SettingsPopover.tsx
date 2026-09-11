@@ -2,7 +2,6 @@ import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
 import {
   FONT_SIZES,
-  FONTS,
   KEYMAP_MODES,
   SMOOTH_CARETS,
   TYPO_INDICATORS,
@@ -17,10 +16,9 @@ import { SettingsRow } from "./SettingsRow";
 /**
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
- * that a person here actually changes: the caret, as in keybear the font of
- * the words and their size, and the keyboard under the words. It is one of
- * keybear's settings cards; the colours have their own pill beside it, as in
- * keybear.
+ * that a person here actually changes: the caret, the size of the words, the
+ * typos under them and the keyboard below. It is one of keybear's settings
+ * cards; the colours have their own pill beside it, as in keybear.
  */
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
@@ -28,17 +26,6 @@ const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
   slow: "chậm",
   medium: "vừa",
   fast: "nhanh",
-};
-
-// the CSS family names; the config spells them with underscores, which
-// `applyFontFamily` turns back into spaces
-const FONT_LABELS: Record<(typeof FONTS)[number], string> = {
-  Roboto_Mono: "Roboto Mono",
-  IBM_Plex_Mono: "IBM Plex Mono",
-  Be_Vietnam_Pro: "Be Vietnam Pro",
-  Lexend: "Lexend",
-  Open_Sans: "Open Sans",
-  Quicksand: "Quicksand",
 };
 
 // as Chrome's zoom names them: a share of the usual size
@@ -110,15 +97,6 @@ export function SettingsPopover(): JSXElement {
             labels={SMOOTH_CARET_LABELS}
             value={getConfig.smoothCaret}
             onPick={(value) => setConfig("smoothCaret", value)}
-          />
-          <SettingsRow
-            label="phông chữ"
-            hint="chữ của bài gõ; mỗi tên viết bằng chính phông ấy"
-            options={FONTS}
-            labels={FONT_LABELS}
-            fontOf={(font) => `"${FONT_LABELS[font]}"`}
-            value={getConfig.fontFamily}
-            onPick={(value) => setConfig("fontFamily", value)}
           />
           <SettingsRow
             label="cỡ chữ"

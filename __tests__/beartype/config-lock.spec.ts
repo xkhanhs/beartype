@@ -4,11 +4,10 @@ import { lockConfig } from "../../src/ts/beartype/config-lock";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
 describe("lockConfig", () => {
-  it("starts in Vietnamese with the slow caret and Roboto Mono", () => {
+  it("starts in Vietnamese with the slow caret", () => {
     const config = lockConfig(undefined);
     expect(config.language).toBe("vietnamese");
     expect(config.smoothCaret).toBe("slow");
-    expect(config.fontFamily).toBe("Roboto_Mono");
   });
 
   it("keeps what the user chose", () => {
@@ -18,14 +17,12 @@ describe("lockConfig", () => {
       words: 25,
       language: "english",
       smoothCaret: "fast",
-      fontFamily: "Be_Vietnam_Pro",
       fontSize: 2.5,
     });
     expect(config.mode).toBe("words");
     expect(config.words).toBe(25);
     expect(config.language).toBe("english");
     expect(config.smoothCaret).toBe("fast");
-    expect(config.fontFamily).toBe("Be_Vietnam_Pro");
     expect(config.fontSize).toBe(2.5);
   });
 
@@ -45,14 +42,12 @@ describe("lockConfig", () => {
       words: 500,
       // an upstream language that no longer exists
       language: "spanish" as Config["language"],
-      fontFamily: "Comic_Sans_MS",
       fontSize: 7,
     });
     expect(config.mode).toBe("time");
     expect(config.time).toBe(30);
     expect(config.words).toBe(50);
     expect(config.language).toBe("vietnamese");
-    expect(config.fontFamily).toBe("Roboto_Mono");
     expect(config.fontSize).toBe(2);
   });
 });

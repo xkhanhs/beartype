@@ -945,12 +945,12 @@ document.addEventListener("visibilitychange", () => {
 });
 
 configEvent.subscribe(({ key }) => {
-  if (["fontSize", "fontFamily"].includes(key ?? "")) {
+  if (key === "fontSize") {
     void updateHintsPositionDebounced();
   }
-  if (["indicateTypos", "fontSize", "fontFamily"].includes(key)) {
-    if (key !== "fontFamily") updateWordWrapperClasses();
-    if (["fontFamily", "fontSize"].includes(key)) {
+  if (key === "indicateTypos" || key === "fontSize") {
+    updateWordWrapperClasses();
+    if (key === "fontSize") {
       Joining.update(key, wordsEl);
     }
   }

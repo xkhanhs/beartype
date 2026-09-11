@@ -13,7 +13,6 @@ const obj: Config = {
   fontSize: 2,
   indicateTypos: "off",
   keymapMode: "off",
-  fontFamily: "Roboto_Mono",
 };
 
 export function getDefaultConfig(): Config {

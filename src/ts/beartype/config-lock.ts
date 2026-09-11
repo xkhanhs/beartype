@@ -13,19 +13,6 @@ export const LANGUAGES = ["vietnamese", "english"] as const;
 export const MODES = ["time", "words"] as const;
 export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 /**
- * keybear's typing fonts, in the order its picker shows them. Each ships the
- * vietnamese subset (see `beartype.scss`); without it every accented letter
- * falls back to a system font.
- */
-export const FONTS = [
-  "Roboto_Mono",
-  "IBM_Plex_Mono",
-  "Be_Vietnam_Pro",
-  "Lexend",
-  "Open_Sans",
-  "Quicksand",
-] as const;
-/**
  * Chrome's zoom steps from 80% to 200%, in rem around upstream's 2rem. The
  * four sizes offered before (80, 100, 125, 150%) are among them, so a stored
  * choice still stands.
@@ -52,7 +39,6 @@ function allowed(key: keyof Config, value: unknown): boolean {
     words: WORD_COUNTS,
     language: LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
-    fontFamily: FONTS,
     fontSize: FONT_SIZES,
     theme: THEMES,
     keymapMode: KEYMAP_MODES,

@@ -88,12 +88,12 @@ $vietnamese-range:
   U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 // stylelint-enable scss/operator-no-unspaced
 
-@mixin subset-face($family, $file, $weight, $range) {
+@mixin subset-face($family, $file, $weight, $range, $display: swap) {
   @font-face {
     font-family: $family;
     font-weight: $weight;
     font-style: normal;
-    font-display: swap;
+    font-display: $display;
     src: url("/fonts-ui/#{$file}") format("woff2");
     unicode-range: $range;
   }
@@ -115,37 +115,41 @@ $vietnamese-range:
   $vietnamese-range
 );
 
-// keybear's typing fonts (`FONTS` in `beartype/config-lock.ts`). Roboto Mono
-// and IBM Plex Mono are upstream's own, which get only the vietnamese subset
-// here, for the letters their files lack; the others are new.
+// The typing fonts, one per language (`applyTypingFont` in ui.ts): Roboto Mono
+// for English, Be Vietnam Pro for Vietnamese. They block rather than swap:
+// the caret and the line breaks are measured in the words' font, so a late
+// swap would leave them in the wrong place. Both are preloaded in head.html.
+
+// Roboto Mono's latin file is upstream's; the vietnamese subset comes after
+// it, so it is the one asked for the letters that file lacks.
+@font-face {
+  font-family: "Roboto Mono";
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  src: url("/webfonts/RobotoMono-Regular.woff2") format("woff2");
+}
 @include subset-face(
   "Roboto Mono",
   "roboto-mono-400.vietnamese.woff2",
   400,
-  $vietnamese-range
+  $vietnamese-range,
+  block
 );
 @include subset-face(
-  "IBM Plex Mono",
-  "ibm-plex-mono-400.vietnamese.woff2",
+  "Be Vietnam Pro",
+  "be-vietnam-pro-400.latin.woff2",
   400,
-  $vietnamese-range
+  $latin-range,
+  block
 );
-@each $family,
-  $file
-    in (
-      "Be Vietnam Pro": "be-vietnam-pro-400",
-      "Lexend": "lexend-400",
-      "Open Sans": "open-sans-400"
-    )
-{
-  @include subset-face($family, "#{$file}.latin.woff2", 400, $latin-range);
-  @include subset-face(
-    $family,
-    "#{$file}.vietnamese.woff2",
-    400,
-    $vietnamese-range
-  );
-}
+@include subset-face(
+  "Be Vietnam Pro",
+  "be-vietnam-pro-400.vietnamese.woff2",
+  400,
+  $vietnamese-range,
+  block
+);
 
 body,
 [aria-label][data-balloon-pos]::after {
@@ -196,7 +200,7 @@ body,
   right: calc(50% - 5px - 0.9rem);
 }
 
-// The words keep --font, the one a person picks in the settings.
+// The words keep --font, the typing font of the test's language.
 #wordsWrapper {
   font-family: var(--font);
 }

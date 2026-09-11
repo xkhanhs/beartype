@@ -109,10 +109,6 @@ export const configMetadata: ConfigMetadataObject = {
     triggerResize: true,
     displayString: "font size",
   },
-  fontFamily: {
-    key: "fontFamily",
-    displayString: "font family",
-  },
   keymapMode: {
     key: "keymapMode",
     displayString: "keymap mode",

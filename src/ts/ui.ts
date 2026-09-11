@@ -8,25 +8,16 @@ import { isDevEnvironment } from "./utils/env";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import { convertRemToPixels } from "./utils/numbers";
-import { getLanguage } from "./utils/json-data";
-import { replaceUnderscoresWithSpaces } from "./utils/strings";
 import { getResultVisible } from "./states/test";
 
-async function applyFontFamily(): Promise<void> {
-  const font = replaceUnderscoresWithSpaces(Config.fontFamily);
-
-  const preferredFont = (await getLanguage(Config.language))?.preferredFont;
-
-  const fonts = [
-    `"${font}"`,
-    preferredFont !== undefined
-      ? `"${replaceUnderscoresWithSpaces(preferredFont)}"`
-      : undefined,
-    '"Roboto Mono"',
-    "monospace",
-  ].filter((it) => it !== undefined);
-
-  document.documentElement.style.setProperty("--font", fonts.join(","));
+// One typing font per language, each falling back to a system font of the
+// same kind; see the @font-face rules in beartype.scss.
+function applyTypingFont(): void {
+  const font =
+    Config.language === "vietnamese"
+      ? '"Be Vietnam Pro", system-ui, sans-serif'
+      : '"Roboto Mono", ui-monospace, monospace';
+  document.documentElement.style.setProperty("--font", font);
 }
 
 if (isDevEnvironment()) {
@@ -64,8 +55,6 @@ createEffect(() => {
   });
 });
 
-configEvent.subscribe(async ({ key }) => {
-  if (key === "fontFamily" || key === "language") {
-    await applyFontFamily();
-  }
+configEvent.subscribe(({ key }) => {
+  if (key === "language") applyTypingFont();
 });

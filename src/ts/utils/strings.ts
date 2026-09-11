@@ -198,7 +198,7 @@ export function isSpace(char: string): boolean {
   return SPACE_CODE_POINTS.has(codePoint);
 }
 
-export function replaceUnderscoresWithSpaces(text: string): string {
+function replaceUnderscoresWithSpaces(text: string): string {
   return text.replace(/_/g, " ");
 }
 

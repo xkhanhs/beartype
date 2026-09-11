@@ -2,7 +2,6 @@ import { z, ZodSchema } from "zod";
 import * as Shared from "./shared";
 import * as Themes from "./themes";
 import { LanguageSchema } from "./languages";
-import { FontNameSchema } from "./fonts";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 
@@ -35,7 +34,6 @@ export const ConfigSchema = z
 
     // appearance
     fontSize: FontSizeSchema,
-    fontFamily: FontNameSchema,
     keymapMode: KeymapModeSchema,
 
     // theme
