@@ -193,9 +193,6 @@ export type Ads = z.infer<typeof AdsSchema>;
 export const MinimumAccuracySchema = z.enum(["off", "custom"]);
 export type MinimumAccuracy = z.infer<typeof MinimumAccuracySchema>;
 
-export const OppositeShiftModeSchema = z.enum(["off", "on", "keymap"]);
-export type OppositeShiftMode = z.infer<typeof OppositeShiftModeSchema>;
-
 export const CustomBackgroundSizeSchema = z.enum(["cover", "contain", "max"]);
 export type CustomBackgroundSize = z.infer<typeof CustomBackgroundSizeSchema>;
 
@@ -269,9 +266,6 @@ export const KeymapLayoutSchema = z
   .or(Layouts.LayoutNameSchema);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
-export const LayoutSchema = z.literal("default").or(Layouts.LayoutNameSchema);
-export type Layout = z.infer<typeof LayoutSchema>;
-
 export const FontSizeSchema = z.number().positive();
 export type FontSize = z.infer<typeof FontSizeSchema>;
 
@@ -321,7 +315,6 @@ export const ConfigSchema = z
     // input
     freedomMode: z.boolean(),
     strictSpace: z.boolean(),
-    oppositeShiftMode: OppositeShiftModeSchema,
     stopOnError: StopOnErrorSchema,
     deleteOnError: DeleteOnErrorSchema,
     confidenceMode: ConfidenceModeSchema,
@@ -329,7 +322,6 @@ export const ConfigSchema = z
     indicateTypos: IndicateTyposSchema,
     compositionDisplay: CompositionDisplaySchema,
     hideExtraLetters: z.boolean(),
-    layout: LayoutSchema,
     codeUnindentOnBackspace: z.boolean(),
 
     // sound

@@ -348,15 +348,6 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",
   },
-  oppositeShiftMode: {
-    key: "oppositeShiftMode",
-    fa: { icon: "fa-exchange-alt" },
-    displayString: "opposite shift mode",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "keymap layout" setting.',
-  },
   stopOnError: {
     key: "stopOnError",
     fa: { icon: "fa-hand-paper" },
@@ -447,15 +438,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Hides extra letters. This will completely avoid words jumping lines (due to changing width), but might feel a bit confusing when you press a key and nothing happens.",
-  },
-  layout: {
-    key: "layout",
-    fa: { icon: "fa-keyboard" },
-    displayString: "layout",
-    changeRequiresRestart: true,
-    group: "input",
-    description:
-      "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
   },
   codeUnindentOnBackspace: {
     key: "codeUnindentOnBackspace",

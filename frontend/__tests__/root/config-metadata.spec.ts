@@ -36,7 +36,6 @@ describe("ConfigMeta", () => {
         "minBurstCustomSpeed",
         "strictSpace",
         "stopOnError",
-        "layout",
         "codeUnindentOnBackspace",
       ].sort(),
     );

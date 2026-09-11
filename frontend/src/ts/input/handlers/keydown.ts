@@ -1,22 +1,11 @@
 import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
-import { getCharFromEvent } from "../../test/layout-emulator";
 import { emulateInsertText } from "./insert-text";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../../states/notifications";
-import * as KeyConverter from "../../utils/key-converter";
-import * as ShiftTracker from "../../test/shift-tracker";
+import { showNoticeNotification } from "../../states/notifications";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
-import {
-  getLastBailoutAttempt,
-  setCorrectShiftUsed,
-  setLastBailoutAttempt,
-} from "../state";
-import { Keycode } from "../../constants/keys";
-import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
+import { getLastBailoutAttempt, setLastBailoutAttempt } from "../state";
+import { setBailedOut, wordsHaveTab } from "../../states/test";
 
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
@@ -65,31 +54,6 @@ export async function handleEnter(
   }
 }
 
-export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
-  if (
-    Config.oppositeShiftMode === "keymap" &&
-    Config.keymapLayout !== "overrideSync"
-  ) {
-    let keymapLayout = await __nonReactive
-      .getKeymapLayout()
-      .catch(() => undefined);
-    if (keymapLayout === undefined) {
-      showErrorNotification("Failed to load keymap layout");
-
-      return;
-    }
-
-    const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
-    setCorrectShiftUsed(
-      keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode),
-    );
-  } else {
-    setCorrectShiftUsed(
-      ShiftTracker.isUsingOppositeShift(event.code as Keycode),
-    );
-  }
-}
-
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
   if (event.repeat) {
     // just ignore all repeats
@@ -115,19 +79,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   ) {
     event.preventDefault();
     return;
-  }
-
-  if (Config.oppositeShiftMode !== "off") {
-    await handleOppositeShift(event);
-  }
-
-  if (Config.layout !== "default") {
-    const emulatedChar = await getCharFromEvent(event);
-    if (emulatedChar !== null) {
-      await emulateInsertText({ data: emulatedChar, now });
-      event.preventDefault();
-      return;
-    }
   }
 
   if (event.key === "Tab") {

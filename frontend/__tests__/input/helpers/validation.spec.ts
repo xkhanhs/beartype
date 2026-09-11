@@ -38,19 +38,6 @@ describe("isCharCorrect", () => {
     replaceConfig({});
   });
 
-  describe("Shift Key", () => {
-    it("returns false if correct shift was not used", () => {
-      expect(
-        isCharCorrect({
-          data: "A",
-          inputValue: "test",
-          targetWord: "testA",
-          correctShiftUsed: false,
-        }),
-      ).toBe(false);
-    });
-  });
-
   describe("Space Handling", () => {
     it.each([
       ["returns false in the middle of a word", " ", "wor", "word", false],
@@ -68,7 +55,6 @@ describe("isCharCorrect", () => {
           data: char,
           inputValue: input,
           targetWord: word,
-          correctShiftUsed: true,
         }),
       ).toBe(expected);
     });
@@ -108,7 +94,6 @@ describe("isCharCorrect", () => {
           data: char,
           inputValue: input,
           targetWord: word,
-          correctShiftUsed: true,
         }),
       ).toBe(expected);
     });
@@ -127,7 +112,6 @@ describe("isCharCorrect", () => {
             data: char,
             inputValue: input,
             targetWord: word,
-            correctShiftUsed: true,
           }),
         ).toBe(expected);
       },

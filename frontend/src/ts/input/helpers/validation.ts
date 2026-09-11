@@ -9,17 +9,13 @@ import { isSpace } from "../../utils/strings";
  * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
- * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
 export function isCharCorrect(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-  correctShiftUsed: boolean | null; //null means disabled
 }): boolean {
-  const { data, inputValue, targetWord, correctShiftUsed } = options;
-
-  if (correctShiftUsed === false) return false;
+  const { data, inputValue, targetWord } = options;
 
   // beartype: a letter is wrong when it makes a new mistake in the word.
   // Upstream compares the character at the same index, which calls `e` wrong

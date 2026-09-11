@@ -29,7 +29,6 @@ vi.mock("../../../src/ts/input/input-element", () => ({
 
 const mockState = vi.hoisted(() => ({
   activeWordIndex: 0,
-  correctShiftUsed: true as boolean,
   // words that have scrolled off the screen and been removed from the dom
   wordsScrolledOff: new Set<number>(),
 }));
@@ -81,10 +80,6 @@ vi.mock("../../../src/ts/states/test", () => ({
 }));
 
 vi.mock("../../../src/ts/input/state", () => ({
-  isCorrectShiftUsed: () => mockState.correctShiftUsed,
-  getIncorrectShiftsInARow: () => 0,
-  incrementIncorrectShiftsInARow: () => undefined,
-  resetIncorrectShiftsInARow: () => undefined,
   isAwaitingNextWord: () => false,
 }));
 
@@ -210,7 +205,6 @@ describe("onInsertText - delete on error", () => {
     resetTestEvents();
     TestWords.reset();
     mockState.activeWordIndex = 0;
-    mockState.correctShiftUsed = true;
     mockState.wordsScrolledOff.clear();
     setInput("");
     replaceConfig({
@@ -220,7 +214,6 @@ describe("onInsertText - delete on error", () => {
       stopOnError: "off",
       difficulty: "normal",
       strictSpace: false,
-      oppositeShiftMode: "off",
       keymapMode: "off",
       blindMode: false,
     });
@@ -392,21 +385,6 @@ describe("onInsertText - delete on error", () => {
 
       expect(deletesForWord(0)).toEqual([]);
       expect(getInput()).toBe("x");
-    });
-
-    it("stays quiet when opposite shift already took the char back", async () => {
-      replaceConfig({
-        deleteOnError: "letter",
-        stopOnError: "off",
-        oppositeShiftMode: "on",
-      });
-      mockState.correctShiftUsed = false;
-      pushWords("hello", "world");
-      await type("h");
-
-      // the char was removed by the shift check, so there is nothing to delete
-      expect(deletesForWord(0)).toEqual([]);
-      expect(getInput()).toBe("");
     });
   });
 

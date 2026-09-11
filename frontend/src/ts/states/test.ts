@@ -9,7 +9,6 @@ import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { getLayout } from "../utils/json-data";
-import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage } from "./core";
@@ -128,7 +127,9 @@ export const getKeymapLayout = createMemo<{
   isMirrored: boolean;
 }>(() => {
   const isOverride = getConfig.keymapLayout === "overrideSync";
-  const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
+  // beartype: this used to sync to the input layout emulator's own setting,
+  // which was always "default" -- the emulator is gone now, so is that key.
+  const raw = isOverride ? "default" : getConfig.keymapLayout;
 
   const layout = raw === "default" ? "qwerty" : raw;
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
@@ -164,35 +165,10 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-const getInputLayout = createMemo<{
-  layout: string;
-  isMirrored: boolean;
-}>(() => {
-  return {
-    layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
-    isMirrored: false,
-  };
-});
-
-const [inputLayoutObject, inputLayoutPromise] = useResourceWithPromise(
-  getInputLayout,
-  async (layout) => {
-    const result = await getLayout(layout.layout);
-    if (layout.isMirrored) {
-      return mirrorLayoutKeys(result);
-    }
-    return result;
-  },
-);
-
 const [keymapLayoutObject, keymapLayoutPromise] = useResourceWithPromise(
   getKeymapLayout,
   async (layout) => {
-    const result = await getLayout(layout.layout);
-    if (layout.isMirrored) {
-      return mirrorLayoutKeys(result);
-    }
-    return result;
+    return await getLayout(layout.layout);
   },
 );
 export { keymapLayoutObject };
@@ -206,14 +182,6 @@ export const __nonReactive = {
     const result = keymapLayoutObject();
     if (result === undefined) {
       throw new Error("Failed to load keymap layout");
-    }
-    return result;
-  },
-  getInputLayout: async (): Promise<LayoutObject> => {
-    await inputLayoutPromise.promise;
-    const result = inputLayoutObject();
-    if (result === undefined) {
-      throw new Error("Failed to load input layout");
     }
     return result;
   },

@@ -16,13 +16,6 @@ import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as CompositionState from "../../legacy-states/composition";
-import {
-  isCorrectShiftUsed,
-  getIncorrectShiftsInARow,
-  incrementIncorrectShiftsInARow,
-  resetIncorrectShiftsInARow,
-} from "../state";
-import { showNoticeNotification } from "../../states/notifications";
 import { goToNextWord, goToPreviousWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
@@ -212,8 +205,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const wordIndex = getActiveWordIndex();
-  const correctShiftUsed =
-    Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
   const commitCharacterType = getCommitCharacterType({
     data,
     inputValue: testInput,
@@ -225,7 +216,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     data,
     inputValue: testInput,
     targetWord: currentWord,
-    correctShiftUsed,
   });
 
   // handing cases where last char needs to be removed
@@ -240,21 +230,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     removeLastChar = true;
   }
 
-  if (correctShiftUsed === false) {
-    removeLastChar = true;
-    visualInputOverride = undefined;
-    incrementIncorrectShiftsInARow();
-    if (getIncorrectShiftsInARow() >= 5) {
-      showNoticeNotification("Opposite shift mode is on.", {
-        important: true,
-        customTitle: "Reminder",
-      });
-    }
-  } else {
-    resetIncorrectShiftsInARow();
-  }
-
-  // derived after removeLastChar: stop-on-error and opposite shift mode can block navigation
+  // derived after removeLastChar: stop-on-error can block navigation
   const goingToNextWord =
     !removeLastChar &&
     shouldGoToNextWord({

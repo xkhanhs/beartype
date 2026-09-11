@@ -1,32 +1,6 @@
-let correctShiftUsed = true;
-let incorrectShiftsInARow = 0;
 let awaitingNextWord = false;
 let lastBailoutAttempt = -1;
 let lastInsertCompositionTextData = "";
-
-export function isCorrectShiftUsed(): boolean {
-  return correctShiftUsed;
-}
-
-export function setCorrectShiftUsed(value: boolean): void {
-  correctShiftUsed = value;
-}
-
-export function getIncorrectShiftsInARow(): number {
-  return incorrectShiftsInARow;
-}
-
-export function setIncorrectShiftsInARow(value: number): void {
-  incorrectShiftsInARow = value;
-}
-
-export function incrementIncorrectShiftsInARow(): void {
-  incorrectShiftsInARow++;
-}
-
-export function resetIncorrectShiftsInARow(): void {
-  incorrectShiftsInARow = 0;
-}
 
 export function isAwaitingNextWord(): boolean {
   return awaitingNextWord;
