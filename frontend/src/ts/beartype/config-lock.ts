@@ -74,10 +74,11 @@ export const FONTS = [
   "Quicksand",
 ] as const;
 /**
- * keybear's four text sizes, 80% to 150% (`page-practice/lib/display/zoom.ts`),
- * in rem around upstream's 2rem.
+ * Chrome's zoom steps from 80% to 200%, in rem around upstream's 2rem. The
+ * four sizes offered before (80, 100, 125, 150%) are among them, so a stored
+ * choice still stands.
  */
-export const FONT_SIZES = [1.6, 2, 2.5, 3] as const;
+export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
 export const THEMES = [
   "keybear_light",
   "keybear_dark",

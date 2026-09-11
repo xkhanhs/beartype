@@ -31,6 +31,14 @@ describe("lockConfig", () => {
     expect(config.fontSize).toBe(2.5);
   });
 
+  it("takes the text size in Chrome's zoom steps", () => {
+    const at = (fontSize: number): number =>
+      lockConfig({ ...getBeartypeDefaults(), fontSize }).fontSize;
+    expect(at(2.2)).toBe(2.2); // 110%
+    expect(at(4)).toBe(4); // 200%
+    expect(at(2.4)).toBe(2); // 120% is not a step
+  });
+
   it("pins every setting the user cannot reach", () => {
     const config = lockConfig({
       ...getDefaultConfig(),

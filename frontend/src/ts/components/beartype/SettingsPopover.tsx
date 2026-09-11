@@ -34,12 +34,16 @@ const FONT_LABELS: Record<(typeof FONTS)[number], string> = {
   Quicksand: "Quicksand",
 };
 
-// as keybear names them: a share of the usual size
+// as Chrome's zoom names them: a share of the usual size
 const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
   1.6: "80%",
+  1.8: "90%",
   2: "100%",
+  2.2: "110%",
   2.5: "125%",
   3: "150%",
+  3.5: "175%",
+  4: "200%",
 };
 
 export function SettingsPopover(): JSXElement {

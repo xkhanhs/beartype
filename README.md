@@ -12,7 +12,8 @@ không quote, không funbox. Chỉ còn một màn:
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, rồi mức tốt
   nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
 - **Giao diện của keybear**: chín bảng màu (rê chuột để xem thử), sáu phông chữ
-  bài gõ đủ dấu tiếng Việt, bốn cỡ chữ, và con trỏ mượt tuỳ chỉnh được.
+  bài gõ đủ dấu tiếng Việt, cỡ chữ theo các mức phóng của Chrome (80% tới
+  200%), và con trỏ mượt tuỳ chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
 
