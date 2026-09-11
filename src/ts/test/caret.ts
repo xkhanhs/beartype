@@ -54,7 +54,7 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-export const caret = new Caret(qsr("#caret"), "default");
+export const caret = new Caret(qsr("#caret"));
 
 configEvent.subscribe(({ key }) => {
   if (key === "smoothCaret") {

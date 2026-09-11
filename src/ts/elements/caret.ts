@@ -1,6 +1,4 @@
-import { CaretStyle } from "../schemas/configs";
 import { Config } from "../config/store";
-import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
@@ -12,36 +10,18 @@ const wordsCache = qsr("#words");
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
-  private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
   private isMainCaret: boolean = false;
 
   private posAnimation: JSAnimation | null = null;
   private marginTopAnimation: JSAnimation | null = null;
 
-  constructor(element: ElementWithUtils, style: CaretStyle) {
+  constructor(element: ElementWithUtils) {
     this.id = element.native.id;
     this.element = element;
-    this.setStyle(style);
     if (this.id === "caret") {
       this.isMainCaret = true;
     }
-  }
-
-  public setStyle(style: CaretStyle): void {
-    this.style = style;
-    this.resetWidth();
-    this.element.removeClass([
-      "off",
-      "default",
-      "underline",
-      "outline",
-      "block",
-      "carrot",
-      "banana",
-      "monkey",
-    ]);
-    this.element.addClass(style);
   }
 
   public show(): void {
@@ -61,10 +41,6 @@ export class Caret {
     return this.element.getOffsetWidth();
   }
 
-  public resetWidth(): void {
-    this.element.setStyle({ width: "" });
-  }
-
   public getHeight(): number {
     if (!this.isHidden()) {
       return this.element.getOffsetHeight();
@@ -77,24 +53,12 @@ export class Caret {
     return height;
   }
 
-  public isFullWidth(): boolean {
-    return ["block", "outline", "underline"].includes(this.style);
-  }
-
-  public setPosition(options: {
-    left: number;
-    top: number;
-    width?: number;
-  }): void {
+  public setPosition(options: { left: number; top: number }): void {
     this.posAnimation?.cancel();
-    let newStyle: Record<string, string> = {
+    this.element.setStyle({
       left: `${options.left}px`,
       top: `${options.top}px`,
-    };
-    if (options.width !== undefined) {
-      newStyle = { ...newStyle, width: `${options.width}px` };
-    }
-    this.element.setStyle(newStyle);
+    });
   }
 
   public startBlinking(): void {
@@ -171,7 +135,6 @@ export class Caret {
     top: number;
     duration?: number;
     easing?: EasingParam;
-    width?: number;
   }): void {
     const smoothCaretSpeed =
       Config.smoothCaret === "off"
@@ -186,17 +149,9 @@ export class Caret {
 
     const finalDuration = options.duration ?? smoothCaretSpeed;
 
-    const animation: Record<string, number> = {
+    this.posAnimation = this.element.animate({
       left: options.left,
       top: options.top,
-    };
-
-    if (options.width !== undefined) {
-      animation["width"] = options.width;
-    }
-
-    this.posAnimation = this.element.animate({
-      ...animation,
       duration: finalDuration,
       ease: options.easing ?? "inOut(1.25)",
     });
@@ -213,7 +168,6 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
       const word = wordsCache.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
@@ -240,7 +194,7 @@ export class Caret {
 
       if (word === null) return;
 
-      const { left, top, width } = this.getTargetPositionAndWidth({
+      const { left, top } = this.getTargetPosition({
         word,
         letterIndex: options.letterIndex,
         wordText,
@@ -281,7 +235,6 @@ export class Caret {
       const animateOrPositionOptions = {
         left: left - currentMarginLeft,
         top: top - currentMarginTop,
-        ...(this.isFullWidth() && { width }),
         ...(options.animate && options.animationOptions),
       };
 
@@ -293,31 +246,27 @@ export class Caret {
     });
   }
 
-  private getTargetPositionAndWidth(options: {
+  private getTargetPosition(options: {
     word: ElementWithUtils;
     letterIndex: number;
     wordText: string;
     side: "beforeLetter" | "afterLetter";
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
-  }): { left: number; top: number; width: number } {
+  }): { left: number; top: number } {
     const letters = options.word?.qsa("letter");
 
     if (letters.length === 0) {
-      throw new Error(
-        "Caret getTargetPositionAndWidth: no letters found in word",
-      );
+      throw new Error("Caret getTargetPosition: no letters found in word");
     }
 
     let letter = letters[options.letterIndex] ?? letters[letters.length - 1];
 
     if (!letter) {
       throw new Error(
-        `Caret getTargetPositionAndWidth: letter not found for index ${options.letterIndex}`,
+        `Caret getTargetPosition: letter not found for index ${options.letterIndex}`,
       );
     }
-
-    this.element.removeClass("debug");
 
     // in zen or custom mode we need to check per-letter
     const checkRtlByLetter = Config.mode === "custom";
@@ -341,12 +290,6 @@ export class Caret {
       }
     }
 
-    const spaceWidth = getTotalInlineMargin(options.word.native);
-    let width = spaceWidth;
-    if (this.isFullWidth() && options.side === "beforeLetter") {
-      width = letter.getOffsetWidth();
-    }
-
     let left = 0;
     let top = 0;
 
@@ -355,15 +298,9 @@ export class Caret {
       if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        if (this.isFullWidth()) {
-          afterLetterCorrection += spaceWidth * -1;
-        } else {
-          afterLetterCorrection += letter.getOffsetWidth() * -1;
-        }
+        afterLetterCorrection += letter.getOffsetWidth() * -1;
       }
-      if (!this.isFullWidth()) {
-        left += letter.getOffsetWidth();
-      }
+      left += letter.getOffsetWidth();
       left += letter.getOffsetLeft();
       left += options.word.getOffsetLeft();
       left += afterLetterCorrection;
@@ -381,23 +318,10 @@ export class Caret {
     top += letter.getOffsetTop();
     top += options.word.getOffsetTop();
 
-    if (this.style === "underline") {
-      // if style is underline, add the height of the letter to the top
-      top += letter.getOffsetHeight();
-    } else {
-      // else center vertically in the letter
-      top += (letter.getOffsetHeight() - this.getHeight()) / 2;
-    }
+    // center vertically in the letter, and horizontally on its edge
+    top += (letter.getOffsetHeight() - this.getHeight()) / 2;
+    left += (this.getWidth() / 2) * -1;
 
-    // also center horizontally
-    if (!this.isFullWidth()) {
-      left += (this.getWidth() / 2) * -1;
-    }
-
-    return {
-      left,
-      top,
-      width,
-    };
+    return { left, top };
   }
 }

@@ -6,18 +6,6 @@ import { FontNameSchema } from "./fonts";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 
-const CaretStyleSchema = z.enum([
-  "off",
-  "default",
-  "block",
-  "outline",
-  "underline",
-  "carrot",
-  "banana",
-  "monkey",
-]);
-export type CaretStyle = z.infer<typeof CaretStyleSchema>;
-
 export const IndicateTyposSchema = z.enum(["off", "below"]);
 
 export const KeymapModeSchema = z.enum(["off", "react"]);
