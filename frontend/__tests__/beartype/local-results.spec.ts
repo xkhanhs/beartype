@@ -79,10 +79,10 @@ describe("local results", () => {
     expect(recentSummary(filter, null)).toBeNull();
   });
 
-  it("keeps only the last twenty", () => {
+  it("counts every test but draws only the last twenty", () => {
     for (let wpm = 1; wpm <= 25; wpm++) save(wpm);
     const summary = recentSummary(filter, null);
-    expect(summary?.count).toBe(20);
+    expect(summary).toMatchObject({ count: 25, best: 25, usual: 13 });
     expect(summary?.recent.map((t) => t.wpm)).toEqual(
       Array.from({ length: 20 }, (_, i) => i + 6),
     );

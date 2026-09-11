@@ -654,24 +654,39 @@ button.bt-settings-choice {
 // the two figures that matter big and in the accent, the label under each.
 // `.pageTest` matches upstream's media queries, which re-grid these rows on
 // narrower screens.
+//
+// The four figures read as one block, the buttons as the next: each part sets
+// its own space above, tight inside the block and wide before the buttons. A
+// single gap for all of them left the rows as far from each other as from the
+// buttons, and nothing grouped.
 .pageTest #result .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0;
   align-items: center;
 
   .stats {
     display: flex;
-    gap: 4rem;
+    gap: 1.5rem;
     align-items: baseline;
     justify-content: center;
 
     // upstream lays this row out as a grid, at this same specificity
     &.morestats {
       display: flex;
-      gap: 2.5rem;
+      gap: 1.5rem;
       align-items: baseline;
       justify-content: center;
+      margin-block-start: 1rem;
+    }
+
+    // Two columns of one width, so "số từ" stands under "wpm" and "thời gian"
+    // under "chính xác". Each row sized to its own figures put the small ones
+    // off the big ones' centres, and the block read as two staggered rows.
+    // A minimum, so a figure wider than its column pushes it out rather than
+    // spilling off one side.
+    &:not(.notes) .group {
+      min-inline-size: 9rem;
     }
 
     .group {
@@ -719,8 +734,14 @@ button.bt-settings-choice {
       font-weight: normal;
     }
 
+    // "không hợp lệ" belongs to the figures, just under them; with nothing to
+    // say the row goes, so it adds no space of its own
     &.notes {
-      margin-block-start: -1rem;
+      margin-block-start: 0.75rem;
+
+      &:not(:has(.group:not(.hidden))) {
+        display: none;
+      }
 
       // "không hợp lệ" and an info icon; the reasons are in its balloon
       .group .bottom {
@@ -740,6 +761,7 @@ button.bt-settings-choice {
     gap: 0.6rem;
     align-items: stretch;
     justify-content: center;
+    margin-block-start: 3rem;
 
     // upstream pads every button here `1em 2em` from an id selector
     button.bt-action {
@@ -766,6 +788,8 @@ button.bt-settings-choice {
   gap: 0.8rem;
   align-items: center;
   inline-size: min(32rem, 90vw);
+  // the result's column sets no gap; this is the space under the buttons
+  margin-block-start: 2rem;
   padding-block-start: 1.4rem;
   border-block-start: 1px solid var(--kb-sunk-rim);
 }
