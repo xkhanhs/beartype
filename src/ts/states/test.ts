@@ -17,7 +17,7 @@ export const [getResultVisible, setResultVisible] = createSignal(false);
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 // #words is still vanilla so it's blurred imperatively (see test/test-ui);
-// the Solid-owned composition display + OutOfFocusWarning read this signal.
+// OutOfFocusWarning reads this signal.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
@@ -45,8 +45,6 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [
   getIncompleteTests,
