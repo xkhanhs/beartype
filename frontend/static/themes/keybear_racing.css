@@ -2,4 +2,7 @@
    sits too close to red here to tell a letter being built from a wrong one */
 :root {
   --partial-letter-color: #e3c53f;
+  /* keybear writes white on this accent: the dark background reads too dim
+     on it */
+  --kb-on-accent: #ffffff;
 }

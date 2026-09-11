@@ -6,11 +6,12 @@ import {
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
 describe("lockConfig", () => {
-  it("starts in Vietnamese with the slow caret and the average pace caret", () => {
+  it("starts in Vietnamese with the slow caret, Roboto Mono and no pace caret", () => {
     const config = lockConfig(undefined);
     expect(config.language).toBe("vietnamese");
     expect(config.smoothCaret).toBe("slow");
-    expect(config.paceCaret).toBe("average");
+    expect(config.fontFamily).toBe("Roboto_Mono");
+    expect(config.paceCaret).toBe("off");
   });
 
   it("keeps what the user chose", () => {
@@ -20,24 +21,26 @@ describe("lockConfig", () => {
       words: 25,
       language: "english",
       smoothCaret: "fast",
-      paceCaret: "off",
+      fontFamily: "Be_Vietnam_Pro",
     });
     expect(config.mode).toBe("words");
     expect(config.words).toBe(25);
     expect(config.language).toBe("english");
     expect(config.smoothCaret).toBe("fast");
-    expect(config.paceCaret).toBe("off");
+    expect(config.fontFamily).toBe("Be_Vietnam_Pro");
   });
 
   it("pins every setting the user cannot reach", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
       stopOnError: "letter",
+      paceCaret: "average",
       funbox: ["nospace"],
       punctuation: true,
       keymapMode: "react",
     });
     expect(config.stopOnError).toBe("off");
+    expect(config.paceCaret).toBe("off");
     expect(config.funbox).toEqual([]);
     expect(config.punctuation).toBe(false);
     expect(config.keymapMode).toBe("off");
@@ -50,13 +53,13 @@ describe("lockConfig", () => {
       time: 45,
       words: 500,
       language: "spanish",
-      paceCaret: "tagPb",
+      fontFamily: "Comic_Sans_MS",
     });
     expect(config.mode).toBe("time");
     expect(config.time).toBe(30);
     expect(config.words).toBe(50);
     expect(config.language).toBe("vietnamese");
-    expect(config.paceCaret).toBe("average");
+    expect(config.fontFamily).toBe("Roboto_Mono");
   });
 });
 

@@ -4,31 +4,39 @@ import { getIsScreenshotting } from "../../../states/core";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { SettingsPopover } from "../../beartype/SettingsPopover";
+import { ThemeMenu } from "../../beartype/ThemeMenu";
+import { Fa } from "../../common/Fa";
 import { Keytips } from "./Keytips";
 
 export function Footer(): JSXElement {
   return (
     <footer
-      class={cn("relative text-xs text-sub", {
+      class={cn("relative text-sm text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
     >
       <Keytips />
       <div
         class={cn(
-          "flex flex-wrap items-center justify-center gap-x-4 gap-y-1 transition-opacity",
+          "flex flex-wrap items-center justify-center gap-x-3 gap-y-1 transition-opacity",
           { "opacity-0": getFocus() },
         )}
       >
+        <ThemeMenu />
         <SettingsPopover />
-        {/* GPL-3.0: the source travels with every copy of this page */}
+        {/* GPL-3.0: the source travels with every copy of this page. The
+            repository says the rest -- a fork of monkeytype, its licence --
+            so the footer keeps only a way there, as a round icon beside the
+            two pills. */}
         <a
-          class="text-sub hover:text-text hover:underline"
+          class="bt-footer-pill bt-footer-icon"
           href="https://github.com/xkhanhs/beartype"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="mã nguồn · fork của monkeytype · GPL-3.0"
+          data-balloon-pos="up"
         >
-          mã nguồn · fork của monkeytype · GPL-3.0
+          <Fa icon="fa-github" variant="brand" />
         </a>
       </div>
     </footer>

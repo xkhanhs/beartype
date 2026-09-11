@@ -149,6 +149,12 @@ export async function clearPreview(applyTheme = true): Promise<void> {
         await apply(randomTheme);
       } else if (Config.customTheme) {
         await apply("custom");
+      } else if (Config.autoSwitchTheme) {
+        // beartype: under "follow the computer" the theme on screen is
+        // themeLight or themeDark, not Config.theme
+        await apply(
+          prefersColorSchemeDark() ? Config.themeDark : Config.themeLight,
+        );
       } else {
         await apply(Config.theme);
       }

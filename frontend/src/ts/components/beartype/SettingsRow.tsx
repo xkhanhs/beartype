@@ -1,27 +1,35 @@
 import { For, JSXElement } from "solid-js";
 
-import { Button } from "../common/Button";
-
+/** One row of keybear's settings card: name and hint, then the choices. */
 export function SettingsRow<T extends string>(props: {
   label: string;
+  hint: string;
   options: readonly T[];
   labels: Record<T, string>;
+  /** Draws each choice in its own font, for a row that picks one. */
+  fontOf?: (option: T) => string;
   /** The current setting, which may hold values this row does not offer. */
   value: string;
   onPick: (value: T) => void;
 }): JSXElement {
   return (
-    <div class="grid gap-1">
-      <div class="text-sub">{props.label}</div>
-      <div class="flex flex-wrap gap-1">
+    <div class="bt-settings-row">
+      <div class="bt-settings-row-text">
+        <div class="bt-settings-row-name">{props.label}</div>
+        <div class="bt-settings-row-hint">{props.hint}</div>
+      </div>
+      <div class="bt-settings-choices" role="group" aria-label={props.label}>
         <For each={props.options}>
           {(option) => (
-            <Button
-              class="px-3 py-1"
-              text={props.labels[option]}
-              active={props.value === option}
+            <button
+              type="button"
+              class="bt-settings-choice"
+              aria-pressed={props.value === option}
+              style={{ "font-family": props.fontOf?.(option) }}
               onClick={() => props.onPick(option)}
-            />
+            >
+              {props.labels[option]}
+            </button>
           )}
         </For>
       </div>
