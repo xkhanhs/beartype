@@ -24,7 +24,6 @@
     "format-fix": "oxfmt .",
     "lint-styles": "stylelint \"**/*.{scss,css}\"",
     "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
-    "check-assets": "turbo check-assets --filter @monkeytype/frontend",
     "knip": "knip"
   },
   "devDependencies": {

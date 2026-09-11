@@ -30,9 +30,6 @@
     "start": {
       "dependsOn": ["build"]
     },
-    "@monkeytype/frontend#check-assets": {
-      "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
-    },
     "//#lint-styles": {
       "dependsOn": ["^parallel"]
     },

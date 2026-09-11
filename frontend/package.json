@@ -9,7 +9,6 @@
     "lint-styles": "stylelint \"**/*.{scss,css}\"",
     "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
     "lint-json": "eslint static/**/*.json",
-    "check-assets": "tsx ./scripts/check-assets.ts",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "ts-check": "tsc --noEmit",
     "build": "npm run madge && vite build",
@@ -19,8 +18,7 @@
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "tsc": "tsc",
-    "docker": "docker compose -f docker/compose.dev.yml up",
-    "import-tree": "tsx ./scripts/import-tree.ts"
+    "docker": "docker compose -f docker/compose.dev.yml up"
   },
   "dependencies": {
     "@leonabcd123/modern-caps-lock": "3.1.3",
