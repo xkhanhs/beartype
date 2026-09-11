@@ -99,23 +99,6 @@
   grid-column: full-width-padding;
 }
 
-#ad-vertical-left-wrapper,
-#ad-vertical-right-wrapper {
-  grid-row: content;
-  margin-right: 2rem;
-  position: fixed;
-}
-
-#ad-vertical-left-wrapper {
-  grid-column: full-width-start/content-start;
-  left: 0;
-}
-
-#ad-vertical-right-wrapper {
-  grid-column: content-end/full-width-end;
-  right: -2rem;
-}
-
 main {
   display: grid; //stupid fix for stupid safari
 }
