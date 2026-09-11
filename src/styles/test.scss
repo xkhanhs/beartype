@@ -78,10 +78,6 @@
     justify-content: flex-end;
     gap: 0 1em;
     flex-wrap: wrap;
-
-    .fas {
-      margin-left: 0.33em;
-    }
   }
 }
 
@@ -136,7 +132,7 @@
       &.nlChar {
         // margin: 0 0.25rem;
         opacity: 0.2;
-        i {
+        svg {
           line-height: 0;
         }
       }
@@ -284,7 +280,7 @@
 
 .pageTest > .loading {
   text-align: center;
-  & > i {
+  & > svg {
     font-size: 2rem;
     color: var(--main-color);
   }
@@ -464,7 +460,7 @@
           .crown {
             margin-left: 0.5rem;
             margin-top: -0.2rem;
-            font-size: 0.7rem;
+            font-size: 1rem;
             background: var(--main-color);
             color: var(--bg-color);
             width: 1.7rem;
@@ -488,9 +484,6 @@
         .bottom {
           font-size: 1rem;
           line-height: 1.25;
-          .lbChange .fas {
-            margin-right: 0.15rem;
-          }
         }
       }
 

@@ -10,7 +10,7 @@ import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { getFocus } from "../../states/test";
 import { cn } from "../../utils/cn";
-import { Fa } from "../common/Fa";
+import { Icon } from "./Icon";
 import { SettingsRow } from "./SettingsRow";
 
 /**
@@ -84,7 +84,7 @@ export function SettingsPopover(): JSXElement {
         aria-haspopup="dialog"
         onClick={() => setOpen(!open())}
       >
-        <Fa icon="fa-cog" fixedWidth />
+        <Icon name="settings" />
         <span>cài đặt</span>
       </button>
       <Show when={open()}>

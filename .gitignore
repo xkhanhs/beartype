@@ -31,8 +31,5 @@ dist/
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 
-# ignore generated fonts
-src/webfonts-generated
-
 .claude/worktrees
 1024MiB

@@ -4,12 +4,10 @@ import {
   UserConfig,
   BuildEnvironmentOptions,
   PluginOption,
-  CSSOptions,
 } from "vite";
 import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
-import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { envConfig } from "./vite-plugins/env-config";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
@@ -78,7 +76,6 @@ function getPlugins({
   ];
 
   const prodPlugins: PluginOption[] = [
-    fontawesomeSubset(),
     ViteMinifyPlugin(),
     injectPreload(),
     minifyJson(),
@@ -116,11 +113,6 @@ function getBuildOptions({
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = "images";
           }
-          if (
-            /\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.names[0] as string)
-          ) {
-            return `webfonts/[name]-[hash].${extType}`;
-          }
           return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
@@ -142,35 +134,6 @@ function getBuildOptions({
   };
 }
 
-function getCssOptions({
-  isDevelopment,
-}: {
-  isDevelopment: boolean;
-}): CSSOptions {
-  return {
-    devSourcemap: true,
-    preprocessorOptions: {
-      scss: {
-        additionalData(source: string, fp: string) {
-          if (isDevelopment || fp.endsWith("index.scss")) {
-            const bypassFonts = isDevelopment
-              ? `
-                $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`
-              : "";
-            return `
-              //inject variables into sass context
-              ${bypassFonts}
-
-              ${source}`;
-          } else {
-            return source;
-          }
-        },
-      },
-    },
-  };
-}
-
 export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd(), "");
   const isDevelopment = mode !== "production";
@@ -178,7 +141,7 @@ export default defineConfig(({ mode }): UserConfig => {
   return {
     plugins: getPlugins({ isDevelopment }),
     build: getBuildOptions({ enableSourceMaps: false }),
-    css: getCssOptions({ isDevelopment }),
+    css: { devSourcemap: true },
     server: {
       open: env["SERVER_OPEN"] === "true",
       // 3000 on this machine still has a service worker from another app
@@ -189,8 +152,5 @@ export default defineConfig(({ mode }): UserConfig => {
     clearScreen: false,
     root: "src",
     publicDir: "../static",
-    optimizeDeps: {
-      exclude: ["@fortawesome/fontawesome-free"],
-    },
   };
 });

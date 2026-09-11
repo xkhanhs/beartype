@@ -1,9 +1,7 @@
 import type { KnipConfig } from "knip";
 
-// The packages a stylesheet loads: `normalize.css`, `balloon-css`,
-// `tailwindcss`, fontawesome.
-const STYLE_PACKAGES =
-  /^(@[\w-]+\/[\w.-]+|normalize\.css|balloon-css|tailwindcss)/;
+// The packages a stylesheet loads.
+const STYLE_PACKAGES = /^(normalize\.css|balloon-css|tailwindcss)/;
 
 // Sass and CSS reach those packages through `@import`, which knip does not
 // read; hand it the package names. Partials (`"buttons"`, `"./media.scss"`)

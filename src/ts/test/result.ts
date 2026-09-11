@@ -294,7 +294,9 @@ function updateOther(
   }
   info?.show();
   qs("#result .stats .info .bottom")
-    ?.setHtml(`không hợp lệ <i class="fas fa-info-circle"></i>`)
+    ?.setHtml(
+      `không hợp lệ <svg class="bt-icon" aria-hidden="true"><use href="#i-info"></use></svg>`,
+    )
     ?.setAttribute(
       "aria-label",
       `không lưu vào sổ vì:\n${reasons.map((r) => `· ${r}`).join("\n")}`,

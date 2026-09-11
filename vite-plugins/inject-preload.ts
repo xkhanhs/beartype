@@ -14,15 +14,6 @@ export function injectPreload(): Plugin {
           crossorigin: true,
         },
       },
-      {
-        outputMatch: /.*\.woff2$/,
-        attributes: {
-          as: "font",
-          type: "font/woff2",
-          rel: "preload",
-          crossorigin: true,
-        },
-      },
     ],
     injectTo: "head-prepend",
   }) as {

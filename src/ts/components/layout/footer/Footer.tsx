@@ -2,9 +2,9 @@ import { JSXElement } from "solid-js";
 
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
+import { Icon } from "../../beartype/Icon";
 import { SettingsPopover } from "../../beartype/SettingsPopover";
 import { ThemeMenu } from "../../beartype/ThemeMenu";
-import { Fa } from "../../common/Fa";
 
 export function Footer(): JSXElement {
   return (
@@ -29,7 +29,7 @@ export function Footer(): JSXElement {
           aria-label="mã nguồn · fork của monkeytype · GPL-3.0"
           data-balloon-pos="up"
         >
-          <Fa icon="fa-github" variant="brand" />
+          <Icon name="github" />
         </a>
       </div>
     </footer>

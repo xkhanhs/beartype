@@ -205,6 +205,35 @@ body,
   font-family: var(--font);
 }
 
+// ----- icons -----
+
+// The sprite in src/html/icons.html: one em tall, on the text's baseline, in
+// its colour. inline-block undoes Tailwind's preflight, which makes every svg
+// a block. The filled icons (GitHub, pause) fill their own paths.
+.bt-icon {
+  display: inline-block;
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.bt-spin {
+  animation: bt-spin 2s linear infinite;
+}
+
+@keyframes bt-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 // ----- the page column -----
 
 // beartype: keybear's `Screen` -- one column 70rem wide in the middle of the
@@ -485,8 +514,7 @@ a.bt-footer-pill {
   white-space: nowrap;
 }
 
-.bt-footer-pill .fas,
-.bt-footer-pill .fab {
+.bt-footer-pill .bt-icon {
   color: var(--kb-text-f1);
 }
 

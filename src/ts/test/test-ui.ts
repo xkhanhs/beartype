@@ -329,10 +329,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (char === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
+      retval += `<letter class='tabChar'><svg class="bt-icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg></letter>`;
     } else if (char === "\n") {
       newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
+      retval += `<letter class='nlChar'><svg class="bt-icon" aria-hidden="true"><use href="#i-corner-down-left"></use></svg></letter>`;
     } else {
       retval += `<letter>${char}</letter>`;
     }
