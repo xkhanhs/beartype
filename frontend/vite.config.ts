@@ -345,8 +345,11 @@ export default defineConfig(({ mode }): UserConfig => {
     build: getBuildOptions({ enableSourceMaps: useSentry }),
     css: getCssOptions({ isDevelopment }),
     server: {
-      open: env["SERVER_OPEN"] !== "false",
-      port: 3000,
+      open: env["SERVER_OPEN"] === "true",
+      // 3000 on this machine still has a service worker from another app
+      // answering out of its cache; a port that never moves is the fix.
+      port: 3200,
+      strictPort: true,
       host: env["BACKEND_URL"] !== undefined,
       watch: {
         //we rebuild the whole contracts package when a file changes
