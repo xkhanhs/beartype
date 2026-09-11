@@ -50,9 +50,9 @@ export function MissDrillButton(): JSXElement {
         disabled={!active() && !ready()}
         {...buildBalloonHtmlProperties({ text: hint(), position: "down" })}
         onClick={() => {
-          // a plain restart puts the settings from before the drill back
+          // the way out: back to the settings from before the drill
           if (active()) {
-            restartTestEvent.dispatch();
+            restartTestEvent.dispatch({ leaveDrill: true });
             return;
           }
           if (!ready()) return;
