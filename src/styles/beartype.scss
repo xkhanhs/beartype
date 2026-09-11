@@ -670,6 +670,24 @@ button.bt-settings-choice {
   }
 }
 
+// the volume: a slider as wide as a row of choices, its share beside it
+.bt-settings-slider {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  font-weight: bold;
+
+  input {
+    inline-size: 12rem;
+    accent-color: var(--main-color);
+  }
+
+  span {
+    min-inline-size: 3ch;
+    text-align: end;
+  }
+}
+
 // ----- the result screen -----
 
 // beartype: keybear's `TypeTestResult`: a column in the middle of the page,

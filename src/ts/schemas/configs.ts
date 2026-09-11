@@ -25,37 +25,18 @@ export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 export const KeymapModeSchema = z.enum(["off", "static", "react", "next"]);
 export type KeymapMode = z.infer<typeof KeymapModeSchema>;
 
-export const PlaySoundOnErrorSchema = z.enum(["off", "1", "2", "3", "4"]);
+// upstream's ids, so the sound files keep their paths; see constants/sounds.ts
+export const PlaySoundOnErrorSchema = z.enum(["off", "1"]);
 export type PlaySoundOnError = z.infer<typeof PlaySoundOnErrorSchema>;
 
 export const PlaySoundOnClickSchema = z.enum([
   "off",
   "1",
-  "2",
   "3",
   "4",
   "5",
   "6",
-  "7",
   "8",
-  "9",
-  "10",
-  "11",
-  "12",
-  "13",
-  "14",
-  "15",
-  "16",
-  "17",
-  "18",
-  "19",
-  "20",
-  "21",
-  "22",
-  "23",
-  "24",
-  "25",
-  "26",
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 

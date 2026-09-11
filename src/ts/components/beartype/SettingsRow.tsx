@@ -1,5 +1,7 @@
 import { For, JSXElement } from "solid-js";
 
+import { SettingsRowText as RowText } from "./SettingsRowText";
+
 /** One row of keybear's settings card: name and hint, then the choices. */
 export function SettingsRow<T extends string | number>(props: {
   label: string;
@@ -14,10 +16,7 @@ export function SettingsRow<T extends string | number>(props: {
 }): JSXElement {
   return (
     <div class="bt-settings-row">
-      <div class="bt-settings-row-text">
-        <div class="bt-settings-row-name">{props.label}</div>
-        <div class="bt-settings-row-hint">{props.hint}</div>
-      </div>
+      <RowText label={props.label} hint={props.hint} />
       <div class="bt-settings-choices" role="group" aria-label={props.label}>
         <For each={props.options}>
           {(option) => (

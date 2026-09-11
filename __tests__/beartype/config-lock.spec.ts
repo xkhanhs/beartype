@@ -70,6 +70,39 @@ describe("lockConfig", () => {
   });
 });
 
+describe("sounds", () => {
+  it("are off until switched on", () => {
+    const config = lockConfig(undefined);
+    expect(config.playSoundOnClick).toBe("off");
+    expect(config.playSoundOnError).toBe("off");
+  });
+
+  it("keeps a set on offer, the error sound and the volume", () => {
+    const config = lockConfig({
+      ...getBeartypeDefaults(),
+      playSoundOnClick: "4",
+      playSoundOnError: "1",
+      soundVolume: 0.8,
+    });
+    expect(config.playSoundOnClick).toBe("4");
+    expect(config.playSoundOnError).toBe("1");
+    expect(config.soundVolume).toBe(0.8);
+  });
+
+  it("drops a set no longer shipped and a volume out of range", () => {
+    const config = lockConfig({
+      ...getBeartypeDefaults(),
+      // upstream's fart sound, whose file beartype does not ship
+      playSoundOnClick: "16" as Config["playSoundOnClick"],
+      playSoundOnError: "3" as Config["playSoundOnError"],
+      soundVolume: 4,
+    });
+    expect(config.playSoundOnClick).toBe("off");
+    expect(config.playSoundOnError).toBe("off");
+    expect(config.soundVolume).toBe(0.5);
+  });
+});
+
 describe("themes", () => {
   it("follows the computer's light or dark setting by default", () => {
     const config = lockConfig(undefined);

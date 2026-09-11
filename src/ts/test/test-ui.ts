@@ -949,9 +949,6 @@ export function onTestRestart(_source: "testPage" | "resultPage"): void {
 export function onTestFinish(): void {
   Caret.hide();
   setTestFocusState("focused");
-  if (Config.playSoundOnClick === "16") {
-    void SoundController.playFartReverb();
-  }
 }
 
 qs("#wordsInput")?.on("focus", (e) => {

@@ -2,28 +2,28 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
-import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick, PlaySoundOnError } from "../schemas/configs";
+import { PlaySoundOnClick } from "../schemas/configs";
 import {
-  clickSoundConfig,
-  ScaleSoundConfig,
-  SoundConfigType,
+  clickSoundFiles,
+  errorSoundFile,
   soundsConfig,
   SupportedOscillatorTypes,
-  ValidNotes,
 } from "../constants/sounds";
 import { getModifierState } from "../states/modifiers";
 
+// Nothing here loads until a sound is switched on: howler itself, then only
+// the files of the set that was picked.
 let howlerModulePromise: Promise<typeof import("howler")> | null = null;
 async function getHowlerModule(): Promise<typeof import("howler")> {
-  howlerModulePromise ??= import("howler");
+  howlerModulePromise ??= (async () => {
+    const howler = await import("howler");
+    howler.Howler.volume(Config.soundVolume);
+    return howler;
+  })();
   return howlerModulePromise;
 }
-
-let initPromise: Promise<void> | null = null;
-const loadedBundles: Set<PlaySoundOnClick> = new Set();
 
 const howlers: Record<string, Promise<Howl>> = {};
 
@@ -36,95 +36,32 @@ async function getHowl(src: string): Promise<Howl> {
   return howlers[src];
 }
 
-type ErrorSounds = Record<Exclude<PlaySoundOnError, "off">, Howl[]>;
-
-let errorSounds: ErrorSounds | null = null;
-
-let fartReverb: Howl | null = null;
-
-async function initFartReverb(): Promise<void> {
-  if (fartReverb !== null) return;
-  fartReverb = await getHowl("../sounds/fart-reverb.wav");
+async function loadClickSounds(clickId: PlaySoundOnClick): Promise<Howl[]> {
+  if (clickId === "off") return [];
+  return Promise.all(clickSoundFiles(clickId).map(getHowl));
 }
 
-async function initErrorSound(): Promise<void> {
-  if (errorSounds !== null) return;
-  errorSounds = {
-    1: [await getHowl("../sounds/error1/1.wav")],
-    2: [await getHowl("../sounds/error2/1.wav")],
-    3: [await getHowl("../sounds/error3/1.wav")],
-    4: [
-      await getHowl("../sounds/error4/1.wav"),
-      await getHowl("../sounds/error4/2.wav"),
-    ],
-  };
-  (await getHowlerModule()).Howler.volume(Config.soundVolume);
-}
-
-async function init(): Promise<void> {
-  initPromise ??= (async () => {
-    const { Howler } = await getHowlerModule();
-    Howler.volume(Config.soundVolume);
-  })();
-
-  await initPromise;
-
-  //preload error sounds
-  await initErrorSound();
-
-  //preload sounds
-  const clickId = Config.playSoundOnClick;
-  if (clickId === "off") return;
-
-  if (!loadedBundles.has(clickId)) {
-    loadedBundles.add(clickId);
-
-    const config = clickSoundConfig[clickId];
-
-    if (config === undefined) return;
-
-    await Promise.all(config.flatMap(getHowl));
-  }
+function playHowl(howl: Howl | undefined): void {
+  if (howl === undefined) return;
+  howl.seek(0);
+  howl.play();
 }
 
 export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   if (clickId === "off") return;
 
   const config = soundsConfig[clickId];
-
   if ("oscillatorType" in config) {
     playNote({ codeOverride: "KeyQ", oscillatorType: config.oscillatorType });
     return;
   }
 
-  if ("validNotes" in config) {
-    scaleConfigurations[clickId]?.preview();
-    return;
-  }
-
-  await init();
-
-  const safeClickSounds = clickSoundConfig[clickId];
-  if (safeClickSounds?.[0] === undefined) {
-    return;
-  }
-
-  const howl = await getHowl(safeClickSounds[0]);
-  howl.seek(0);
-  howl.play();
+  const [first] = await loadClickSounds(clickId);
+  playHowl(first);
 }
 
-export async function previewError(val: PlaySoundOnError): Promise<void> {
-  if (val === "off") return;
-  if (errorSounds === null) await initErrorSound();
-
-  const safeErrorSounds = errorSounds as ErrorSounds;
-
-  const errorSoundIds = Object.keys(safeErrorSounds);
-  if (!errorSoundIds.includes(val)) return;
-
-  errorSounds?.[val]?.[0]?.seek(0);
-  errorSounds?.[val]?.[0]?.play();
+export async function previewError(): Promise<void> {
+  playHowl(await getHowl(errorSoundFile));
 }
 
 let currentCode = "KeyA";
@@ -132,6 +69,20 @@ let currentCode = "KeyA";
 document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
+
+type ValidNotes =
+  | "C"
+  | "Db"
+  | "D"
+  | "Eb"
+  | "E"
+  | "F"
+  | "Gb"
+  | "G"
+  | "Ab"
+  | "A"
+  | "Bb"
+  | "B";
 
 const notes: Record<ValidNotes, ValidFrequencies> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
@@ -209,96 +160,14 @@ function initAudioContext(): void {
     audioCtx = new AudioContext();
   } catch (e) {
     audioCtx = null;
-    console.error(e);
-    showErrorNotification(
-      "Error initializing audio context. Notes will not play.",
-      {
-        error: e,
-      },
-    );
+    console.error("Error initializing audio context. Notes will not play.", e);
   }
-}
-
-type ScaleData = {
-  octave: number; // current octave of scale
-  direction: number; // whether scale is ascending or descending
-  position: number; // current position in scale
-};
-
-function createPreviewScale(validNotes: ValidNotes[]): () => void {
-  // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
-  const scale: ScaleData = {
-    position: 0,
-    octave: 4,
-    direction: 1,
-  };
-
-  return async () => {
-    await init();
-    playScale(validNotes, scale);
-  };
-}
-
-type ScaleMeta = {
-  preview: ReturnType<typeof createPreviewScale>;
-  meta: ScaleData;
-};
-
-const defaultScaleData: ScaleData = {
-  position: 0,
-  octave: 4,
-  direction: 1,
-};
-
-type ScaleConfigurationType = Partial<Record<PlaySoundOnClick, ScaleMeta>>;
-
-export const scaleConfigurations: ScaleConfigurationType =
-  extractScaleSounds(soundsConfig);
-
-function playScale(validNotes: ValidNotes[], scaleMeta: ScaleData): void {
-  if (audioCtx === undefined) {
-    initAudioContext();
-  }
-  if (!audioCtx) return;
-
-  if (Math.random() < 0.5) {
-    scaleMeta.octave += scaleMeta.direction;
-  }
-
-  if (scaleMeta.octave >= 6) {
-    scaleMeta.direction = -1;
-  }
-  if (scaleMeta.octave <= 4) {
-    scaleMeta.direction = 1;
-  }
-
-  const note = randomElementFromArray(validNotes);
-
-  const currentFrequency = notes[note][scaleMeta.octave] as number;
-
-  const oscillatorNode = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-
-  oscillatorNode.type = "sine";
-  gainNode.gain.value = Config.soundVolume / 10;
-  oscillatorNode.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  oscillatorNode.frequency.value = currentFrequency;
-  oscillatorNode.start(audioCtx.currentTime);
-  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
-  oscillatorNode.stop(audioCtx.currentTime + 2);
-}
-
-export async function playFartReverb(): Promise<void> {
-  if (fartReverb === null) await initFartReverb();
-  const soundToPlay = fartReverb as Howl;
-  soundToPlay.stop();
-  soundToPlay.seek(0);
-  soundToPlay.play();
 }
 
 export async function clearAllSounds(): Promise<void> {
-  const { Howler } = await getHowlerModule();
+  // with no sound ever switched on, howler was never loaded: nothing to stop
+  if (howlerModulePromise === null) return;
+  const { Howler } = await howlerModulePromise;
   Howler.stop();
 }
 
@@ -341,74 +210,33 @@ export async function playClick(codeOverride?: string): Promise<void> {
   if (val === "off") return;
 
   const config = soundsConfig[val];
-
   if ("oscillatorType" in config) {
     playNote({ codeOverride, oscillatorType: config.oscillatorType });
     return;
   }
 
-  if ("validNotes" in config) {
-    const scaleConfig = scaleConfigurations[val];
-    if (scaleConfig === undefined) {
-      throw new Error("missing scale config");
-    }
-    playScale(config.validNotes, scaleConfig.meta);
-    return;
-  }
-
-  await init();
-
-  const sounds = clickSoundConfig[val];
-  if (sounds === undefined) throw new Error("Invalid click sound ID");
-  const randomSound = randomElementFromArray(sounds);
-  const soundToPlay = await getHowl(randomSound);
-  soundToPlay.seek(0);
-  soundToPlay.play();
+  const sounds = await loadClickSounds(val);
+  playHowl(randomElementFromArray(sounds));
 }
 
 export async function playError(): Promise<void> {
   if (Config.playSoundOnError === "off") return;
-  if (errorSounds === null) await initErrorSound();
-
-  const sounds = (errorSounds as ErrorSounds)[Config.playSoundOnError];
-  if (sounds === undefined) throw new Error("Invalid error sound ID");
-
-  const randomSound = randomElementFromArray(sounds);
-  randomSound.seek(0);
-  randomSound.play();
+  playHowl(await getHowl(errorSoundFile));
 }
 
 async function setVolume(val: number): Promise<void> {
-  try {
-    const { Howler } = await getHowlerModule();
-    Howler.volume(val);
-  } catch (e) {
-    //
-  }
+  if (howlerModulePromise === null) return;
+  const { Howler } = await howlerModulePromise;
+  Howler.volume(val);
 }
 
-function extractScaleSounds(
-  shortConfig: SoundConfigType,
-): ScaleConfigurationType {
-  return Object.fromEntries(
-    Object.entries(shortConfig)
-      .filter(([_, cfg]) => "validNotes" in cfg)
-      .map(([key, cfg]) => {
-        const config = cfg as ScaleSoundConfig;
-
-        return [
-          key,
-          {
-            preview: createPreviewScale(config.validNotes),
-            meta: { ...defaultScaleData },
-          },
-        ];
-      }),
-  );
-}
-
+// Load a set when it is picked (or when the stored config switches it on), so
+// the first key of a test does not wait on the network.
 configEvent.subscribe(({ key, newValue }) => {
-  if (key === "playSoundOnClick" && newValue !== "off") void init();
+  if (key === "playSoundOnClick") void loadClickSounds(newValue);
+  if (key === "playSoundOnError" && newValue !== "off") {
+    void getHowl(errorSoundFile);
+  }
   if (key === "soundVolume") {
     void setVolume(newValue);
   }
