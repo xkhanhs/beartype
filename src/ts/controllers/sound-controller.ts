@@ -4,10 +4,10 @@ import { randomElementFromArray } from "../utils/arrays";
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick } from "../schemas/configs";
+import { PlaySoundOnClick, PlaySoundOnError } from "../schemas/configs";
 import {
   clickSoundFiles,
-  errorSoundFile,
+  errorSoundFiles,
   soundsConfig,
   SupportedOscillatorTypes,
 } from "../constants/sounds";
@@ -95,8 +95,10 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   if (first !== undefined) playHowl(await getHowl(first));
 }
 
-export async function previewError(): Promise<void> {
-  playHowl(await getHowl(errorSoundFile));
+export async function previewError(
+  val: Exclude<PlaySoundOnError, "off">,
+): Promise<void> {
+  playHowl(await getHowl(errorSoundFiles[val]));
 }
 
 let currentCode = "KeyA";
@@ -263,7 +265,7 @@ export async function playClick(codeOverride?: string): Promise<void> {
 
 export async function playError(): Promise<void> {
   if (Config.playSoundOnError === "off") return;
-  playLoaded(errorSoundFile);
+  playLoaded(errorSoundFiles[Config.playSoundOnError]);
 }
 
 async function setVolume(val: number): Promise<void> {
@@ -277,7 +279,7 @@ async function setVolume(val: number): Promise<void> {
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "playSoundOnClick") loadClickSounds(newValue);
   if (key === "playSoundOnError" && newValue !== "off") {
-    getHowl(errorSoundFile).catch(console.error);
+    getHowl(errorSoundFiles[newValue]).catch(console.error);
   }
   if (key === "soundVolume") {
     void setVolume(newValue);

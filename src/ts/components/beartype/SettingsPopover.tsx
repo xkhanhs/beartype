@@ -57,9 +57,10 @@ const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
   4: "200%",
 };
 
-// upstream's names for the sets; a sound has no Vietnamese name to give it
+// upstream's names for its sets; a sound has no Vietnamese name to give it
 const CLICK_SOUND_LABELS: Record<(typeof CLICK_SOUNDS)[number], string> = {
   off: "tắt",
+  keybear: "keybear",
   1: "click",
   3: "pop",
   4: "nk creams",
@@ -70,7 +71,8 @@ const CLICK_SOUND_LABELS: Record<(typeof CLICK_SOUNDS)[number], string> = {
 
 const ERROR_SOUND_LABELS: Record<(typeof ERROR_SOUNDS)[number], string> = {
   off: "tắt",
-  1: "bật",
+  keybear: "keybear",
+  1: "monkeytype",
 };
 
 const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
@@ -167,7 +169,7 @@ export function SettingsPopover(): JSXElement {
             value={getConfig.playSoundOnError}
             onPick={(value) => {
               setConfig("playSoundOnError", value);
-              if (value !== "off") void previewError();
+              if (value !== "off") void previewError(value);
             }}
           />
           <SettingsSliderRow

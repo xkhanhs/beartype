@@ -87,6 +87,16 @@ describe("sounds", () => {
     expect(config.soundVolume).toBe(0.8);
   });
 
+  it("keeps keybear's click and blip", () => {
+    const config = lockConfig({
+      ...getBeartypeDefaults(),
+      playSoundOnClick: "keybear",
+      playSoundOnError: "keybear",
+    });
+    expect(config.playSoundOnClick).toBe("keybear");
+    expect(config.playSoundOnError).toBe("keybear");
+  });
+
   it("drops a set no longer shipped and a volume out of range", () => {
     const config = lockConfig({
       ...getBeartypeDefaults(),
