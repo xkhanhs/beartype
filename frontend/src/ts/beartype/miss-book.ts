@@ -81,12 +81,19 @@ function evict(page: MissPage): MissPage {
  * owing and typed right owes one less, and paid off it leaves. `typed[i]` is
  * what was committed for `words[i]`; only committed words are passed in, since
  * the word the clock cut short says nothing about the hands.
+ *
+ * `stumbled[i]` says a wrong key went into `words[i]` on the way, even if it
+ * was rubbed out before the space. keybear's test has no backspace, so there
+ * a stumble always shows in what is committed; here the typist fixes it and
+ * commits the word right, and a book that only read the committed word stayed
+ * empty for anyone who corrects as they go.
  */
 export function applyMisses(
   page: MissPage,
   words: readonly string[],
   typed: readonly string[],
   now: number,
+  stumbled: readonly boolean[] = [],
 ): MissPage {
   const next: MissPage = { ...page };
   for (let index = 0; index < typed.length; index++) {
@@ -94,7 +101,7 @@ export function applyMisses(
     const value = typed[index];
     if (target === undefined || value === undefined) continue;
     const owing = next[target];
-    if (missed(target, value)) {
+    if (stumbled[index] === true || missed(target, value)) {
       next[target] = { n: Math.min((owing?.n ?? 0) + 1, MAX_DEBT), at: now };
     } else if (owing !== undefined) {
       if (owing.n > 1) {
@@ -113,26 +120,35 @@ export function recordMisses(
   language: string,
   words: readonly string[],
   typed: readonly string[],
+  stumbled: readonly boolean[],
 ): void {
   const current = book();
-  const page = applyMisses(current[language] ?? {}, words, typed, Date.now());
+  const page = applyMisses(
+    current[language] ?? {},
+    words,
+    typed,
+    Date.now(),
+    stumbled,
+  );
   const next = { ...current, [language]: page };
   storage.set(next);
   setBook(next);
 }
 
 /**
- * The words a round actually committed, as `[targets, typed]` pairs ready for
- * `recordMisses`. A word is committed by its trailing space -- or, for the
- * last word of a words test, by being typed in full, since that test ends
- * without one.
+ * The words a round actually committed, ready for `recordMisses`. A word is
+ * committed by its trailing space -- or, for the last word of a words test,
+ * by being typed in full, since that test ends without one. `stumbledAt`
+ * holds the indices of the words a wrong key went into.
  */
 export function committedWords(
   targets: readonly string[],
   history: readonly string[],
-): { words: string[]; typed: string[] } {
+  stumbledAt: ReadonlySet<number> = new Set(),
+): { words: string[]; typed: string[]; stumbled: boolean[] } {
   const words: string[] = [];
   const typed: string[] = [];
+  const stumbled: boolean[] = [];
   history.forEach((input, index) => {
     const target = targets[index];
     if (target === undefined) return;
@@ -142,7 +158,8 @@ export function committedWords(
     if (bare !== input || (isLast && complete)) {
       words.push(target);
       typed.push(bare);
+      stumbled.push(stumbledAt.has(index));
     }
   });
-  return { words, typed };
+  return { words, typed, stumbled };
 }

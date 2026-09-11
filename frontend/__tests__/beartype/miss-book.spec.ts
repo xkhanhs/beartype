@@ -34,12 +34,26 @@ describe("applyMisses", () => {
   it("does not hold the other tone style against a word", () => {
     expect(applyMisses({}, ["hòa"], ["hoà"], 1)).toEqual({});
   });
+
+  it("adds a word whose wrong key was rubbed out before the space", () => {
+    const page = applyMisses({}, ["tiếng", "hoa"], ["tiếng", "hoa"], 1, [
+      true,
+      false,
+    ]);
+    expect(page).toEqual({ tiếng: { n: 1, at: 1 } });
+  });
+
+  it("does not pay a word back when it was stumbled on and fixed", () => {
+    let page = applyMisses({}, ["tiếng"], ["tieng"], 1);
+    page = applyMisses(page, ["tiếng"], ["tiếng"], 2, [true]);
+    expect(page["tiếng"]).toEqual({ n: 2, at: 2 });
+  });
 });
 
 describe("committedWords", () => {
   it("keeps words ended by a space and drops the one the clock cut", () => {
     expect(committedWords(["tôi", "đi", "học"], ["tôi ", "di ", "họ"])).toEqual(
-      { words: ["tôi", "đi"], typed: ["tôi", "di"] },
+      { words: ["tôi", "đi"], typed: ["tôi", "di"], stumbled: [false, false] },
     );
   });
 
@@ -47,6 +61,21 @@ describe("committedWords", () => {
     expect(committedWords(["tôi", "đi"], ["tôi ", "đi"])).toEqual({
       words: ["tôi", "đi"],
       typed: ["tôi", "đi"],
+      stumbled: [false, false],
+    });
+  });
+
+  it("carries a stumble on a committed word, not on the one the clock cut", () => {
+    expect(
+      committedWords(
+        ["tôi", "đi", "học"],
+        ["tôi ", "đi ", "hc"],
+        new Set([1, 2]),
+      ),
+    ).toEqual({
+      words: ["tôi", "đi"],
+      typed: ["tôi", "đi"],
+      stumbled: [false, true],
     });
   });
 });

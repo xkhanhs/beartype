@@ -45,6 +45,7 @@ git -C ../monkeytype show 91bd24bb:frontend/src/ts/test/test-ui.ts | diff - fron
 | `test/pace-caret.ts` | `stepSeconds`: mỗi chữ mất `spc × số phím` | con trỏ nhịp đi đúng tốc độ tính theo phím |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
+| `test/test-logic.ts` | cuối `finish`: ghi các từ đã chốt vào sổ từ hay sai (`beartype/miss-book.ts`), kể cả từ có phím sai đã xoá trước dấu cách (đọc `correct` của sự kiện `insertText`) | nút luyện từ hay sai; beartype có phím xoá nên chỉ đọc từ đã chốt thì sổ trống với người sửa lỗi ngay khi gõ |
 | `test/test-timer.ts` | hai thông báo khi đồng hồ chạy chậm, dịch sang tiếng Việt | chỉ đổi chữ; điều kiện dừng bài giữ nguyên |
 | `test/test-logic.ts` | `finish`: một `showNoticeNotification` rỗng che hàm cùng tên, ngay trước các phép kiểm tra bài hợp lệ | màn kết quả đã ghi lý do bằng tiếng Việt; các phép kiểm tra (quá ngắn, ngừng gõ, độ chính xác dưới 75%...) giữ nguyên |
 
