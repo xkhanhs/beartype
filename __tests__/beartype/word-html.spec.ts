@@ -112,8 +112,7 @@ describe("typoHints", () => {
     }
   });
 
-  it("leaves extra letters alone and escapes what it hangs", () => {
+  it("leaves extra letters alone", () => {
     expect(typoHints("sẵn", "sẵnx")).toEqual([]);
-    expect(typoHints("a", "<")).toEqual([{ index: 0, typed: "&lt;" }]);
   });
 });

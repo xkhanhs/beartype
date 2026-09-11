@@ -183,7 +183,7 @@ function createHintsHtml(
 
       hintsHtml += `<hint data-chars-index=${blockIndices} style="left:${
         letter.getOffsetLeft() + letter.getOffsetWidth() / 2
-      }px;">${blockChars}</hint>`;
+      }px;">${Misc.escapeHTML(blockChars)}</hint>`;
     }
   }
   if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
@@ -314,7 +314,7 @@ async function updateHintsPosition(): Promise<void> {
       }
     }
 
-    hintText.push(...Strings.splitIntoCharacters(hintEl.innerHTML));
+    hintText.push(...Strings.splitIntoCharacters(hintEl.textContent));
   }
   await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
 
