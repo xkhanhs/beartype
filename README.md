@@ -9,8 +9,10 @@ không quote, không funbox. Chỉ còn một màn:
 
 - **Bài đo** theo thời gian (15/30/60/120 giây) hoặc theo số từ (10/25/50/100),
   bằng tiếng Việt hoặc tiếng Anh.
-- **Phân tích cuối bài**: WPM, độ chính xác, biểu đồ theo từng giây, lịch sử từ,
-  replay, cùng mức tốt nhất và mức thường của 20 bài gần nhất.
+- **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, rồi mức tốt
+  nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
+- **Giao diện của keybear**: chín bảng màu (rê chuột để xem thử), sáu phông chữ
+  bài gõ đủ dấu tiếng Việt, và con trỏ mượt tuỳ chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
 

@@ -40,7 +40,11 @@ test và build rồi mới cho push; đừng lách bằng `--no-verify`.
   keybear), kiểu bỏ dấu (`vietnamese.ts`, `tone-style.ts`), vẽ từ đang gõ
   (`word-html.ts`), khoá cấu hình (`config-lock.ts`), kết quả lưu trên máy
   (`local-results.ts`), sổ từ hay sai (`miss-book.ts`).
-- `frontend/src/ts/components/beartype/`: ô cài đặt và nút luyện từ hay sai.
+- `frontend/src/ts/components/beartype/`: thẻ cài đặt (con trỏ mượt, phông
+  chữ), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
+  luyện từ hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
+- `frontend/static/fonts-ui/`: Quicksand của giao diện và các phông bài gõ
+  của keybear, mỗi phông có bộ `vietnamese` riêng.
 - `frontend/src/styles/beartype.scss`: mọi style riêng của beartype.
 - `frontend/scripts/build-vietnamese.ts`: dựng `static/languages/vietnamese.json`
   từ danh sách từ của keybear.
@@ -60,7 +64,13 @@ Test của beartype nằm ở `frontend/__tests__/beartype/`.
 
 - Code beartype tự viết nằm trong `frontend/src/ts/beartype/` và
   `components/beartype/`.
+- Style đè lên upstream trong `beartype.scss`: file này nạp sau cùng nhưng
+  cùng layer, nên chỉ thắng khi selector cao bằng hoặc hơn. Upstream viết
+  `button:hover`, `button.text` (cần `button.bt-…`) và media query
+  `.pageTest #result .wrapper …` (cần tiền tố `.pageTest`). Nhớ thử ở khung
+  hẹp, vì media query chỉ lộ ra ở đó.
 - Xoá code theo từng cụm, mỗi cụm một commit. Nếu cảm giác gõ lệch, `git bisect`
   sẽ chỉ ra cụm nào gây ra.
 - Conventional commits, không ghi tên AI.
-- GPL-3.0: giữ `LICENSE`, repo public, chân trang ghi "fork của monkeytype".
+- GPL-3.0: giữ `LICENSE`, repo public, chân trang có nút GitHub trỏ về mã
+  nguồn (bong bóng của nó ghi "fork của monkeytype · GPL-3.0").

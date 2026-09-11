@@ -10,8 +10,8 @@ import { Fa } from "../../common/Fa";
 export function OutOfFocusWarning() {
   const message = () =>
     testFocusState() === "unfocusedWindow"
-      ? "Click anywhere to focus the window"
-      : "Click here or press any key to focus";
+      ? "bấm vào đâu đó để quay lại cửa sổ"
+      : "bấm vào đây hoặc gõ một phím để tiếp tục";
 
   return (
     <Show when={showOutOfFocusWarning()}>

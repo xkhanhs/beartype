@@ -18,7 +18,7 @@ export const USER_KEYS = [
   "theme",
   "autoSwitchTheme",
   "smoothCaret",
-  "paceCaret",
+  "fontFamily",
 ] as const satisfies readonly (keyof Config)[];
 
 type UserKey = (typeof USER_KEYS)[number];
@@ -26,9 +26,10 @@ type UserKey = (typeof USER_KEYS)[number];
 /**
  * Where beartype departs from upstream's defaults.
  *
- * The caret and pace caret are the settings this app was measured against on
- * monkeytype.com; the rest turn off features that no longer exist here, so
- * that nothing waits on them.
+ * The caret is the setting this app was measured against on monkeytype.com;
+ * the rest turn off features that no longer exist here, so that nothing waits
+ * on them. The pace caret is one of those: a second caret racing ahead pulls
+ * the eye off the words, and keybear's test has none.
  */
 const BEARTYPE_DEFAULTS: Partial<Config> = {
   language: "vietnamese",
@@ -38,7 +39,10 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   themeLight: "keybear_light",
   themeDark: "keybear_dark",
   smoothCaret: "slow",
-  paceCaret: "average",
+  fontFamily: "Roboto_Mono",
+  paceCaret: "off",
+  // upstream races a repeated test against its first run with the same caret
+  repeatedPace: false,
   ads: "off",
   punctuation: false,
   numbers: false,
@@ -60,7 +64,19 @@ export const WORD_COUNTS = [10, 25, 50, 100] as const;
 export const LANGUAGES = ["vietnamese", "english"] as const;
 export const MODES = ["time", "words"] as const;
 export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
-export const PACE_CARETS = ["off", "average", "pb", "last"] as const;
+/**
+ * keybear's typing fonts, in the order its picker shows them. Each ships the
+ * vietnamese subset (see `beartype.scss`); without it every accented letter
+ * falls back to a system font.
+ */
+export const FONTS = [
+  "Roboto_Mono",
+  "IBM_Plex_Mono",
+  "Be_Vietnam_Pro",
+  "Lexend",
+  "Open_Sans",
+  "Quicksand",
+] as const;
 export const THEMES = [
   "keybear_light",
   "keybear_dark",
@@ -84,7 +100,7 @@ function allowed(key: UserKey, value: unknown): boolean {
     words: WORD_COUNTS,
     language: LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
-    paceCaret: PACE_CARETS,
+    fontFamily: FONTS,
     theme: THEMES,
   };
   const list = lists[key];

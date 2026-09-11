@@ -334,13 +334,14 @@ function checkIfTimerIsSlow(drift: number): void {
     if (drift > 500 || slowTimerCount > 5) {
       //slow timer
 
+      // beartype: the two messages in Vietnamese, like the rest of the page
       showNoticeNotification(
-        'This could be caused by "efficiency mode" on Microsoft Edge.',
+        'Có thể do "chế độ tiết kiệm" (efficiency mode) của Microsoft Edge.',
       );
 
       slowTimerNotifIds.push(
         showErrorNotification(
-          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+          "Bài bị dừng vì máy đang chạy chậm: đồng hồ trễ thì tốc độ và độ chính xác sẽ tính sai. Nếu hay gặp, hãy báo lỗi trên GitHub.",
         ),
       );
 

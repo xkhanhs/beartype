@@ -87,9 +87,8 @@ if (isDevEnvironment()) {
   qs("head title")?.setText(
     `${qs("head title")?.native.textContent ?? ""} (localhost)`,
   );
-  qs("body")?.appendHtml(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
-  );
+  // beartype: no "local" watermarks in the corners -- they sat on the logo
+  // and the footer; the tab title says it is localhost
 }
 
 window.addEventListener("beforeunload", (event) => {

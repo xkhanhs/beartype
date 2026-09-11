@@ -1,35 +1,20 @@
 import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
-import { PACE_CARETS, SMOOTH_CARETS, THEMES } from "../../beartype/config-lock";
+import { FONTS, SMOOTH_CARETS } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import { getFocus } from "../../states/test";
 import { cn } from "../../utils/cn";
-import { Button } from "../common/Button";
+import { Fa } from "../common/Fa";
 import { SettingsRow } from "./SettingsRow";
 
 /**
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
- * that a person here actually changes.
+ * that a person here actually changes: the caret and, as in keybear, the
+ * font of the words. It is one of keybear's settings cards; the colours have
+ * their own pill beside it, as in keybear.
  */
-
-const THEME_OPTIONS = ["system", ...THEMES] as const;
-
-// keybear's names for its palettes, so the two apps call them the same
-const THEME_LABELS: Record<(typeof THEME_OPTIONS)[number], string> = {
-  system: "tự động",
-  keybear_light: "ban ngày",
-  keybear_dark: "ban đêm",
-  keybear_princess: "hồng phấn",
-  keybear_ocean: "biển xanh",
-  keybear_forest: "rừng cây",
-  keybear_racing: "đua xe",
-  keybear_dracula: "ma cà rồng",
-  keybear_pixel: "pixel",
-  keybear_hero: "siêu nhân",
-};
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
   off: "tắt",
@@ -38,14 +23,18 @@ const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
   fast: "nhanh",
 };
 
-const PACE_CARET_LABELS: Record<(typeof PACE_CARETS)[number], string> = {
-  off: "tắt",
-  average: "trung bình",
-  pb: "tốt nhất",
-  last: "bài trước",
+// the CSS family names; the config spells them with underscores, which
+// `applyFontFamily` turns back into spaces
+const FONT_LABELS: Record<(typeof FONTS)[number], string> = {
+  Roboto_Mono: "Roboto Mono",
+  IBM_Plex_Mono: "IBM Plex Mono",
+  Be_Vietnam_Pro: "Be Vietnam Pro",
+  Lexend: "Lexend",
+  Open_Sans: "Open Sans",
+  Quicksand: "Quicksand",
 };
 
-export function SettingsPopover(props: { rows?: JSXElement }): JSXElement {
+export function SettingsPopover(): JSXElement {
   const [open, setOpen] = createSignal(false);
   const [root, setRoot] = createSignal<HTMLDivElement>();
 
@@ -70,51 +59,36 @@ export function SettingsPopover(props: { rows?: JSXElement }): JSXElement {
         "pointer-events-none opacity-0": getFocus(),
       })}
     >
-      <Button
-        variant="text"
-        fa={{ icon: "fa-cog", fixedWidth: true }}
-        text="cài đặt"
-        active={open()}
+      {/* the same pill as the colours beside it, as keybear pairs them */}
+      <button
+        type="button"
+        class="bt-footer-pill"
+        aria-expanded={open()}
+        aria-haspopup="dialog"
         onClick={() => setOpen(!open())}
-      />
+      >
+        <Fa icon="fa-cog" fixedWidth />
+        <span>cài đặt</span>
+      </button>
       <Show when={open()}>
-        <div
-          class="fixed bottom-16 left-1/2 z-50 grid w-max max-w-[92vw] -translate-x-1/2 gap-4 rounded-(--roundness) bg-sub-alt p-4 text-sm text-text shadow-lg"
-          role="dialog"
-          aria-label="cài đặt"
-        >
-          {props.rows}
-          <SettingsRow
-            label="màu"
-            options={THEME_OPTIONS}
-            labels={THEME_LABELS}
-            value={getConfig.autoSwitchTheme ? "system" : getConfig.theme}
-            onPick={(value) => {
-              if (value === "system") {
-                setConfig("autoSwitchTheme", true);
-              } else {
-                setConfig("autoSwitchTheme", false);
-                setConfig("theme", value);
-              }
-            }}
-          />
+        <div class="bt-settings-card" role="dialog" aria-label="cài đặt">
+          <div class="bt-settings-title">cài đặt</div>
           <SettingsRow
             label="con trỏ mượt"
+            hint="con trỏ trượt sang chữ kế tiếp thay vì nhảy"
             options={SMOOTH_CARETS}
             labels={SMOOTH_CARET_LABELS}
             value={getConfig.smoothCaret}
             onPick={(value) => setConfig("smoothCaret", value)}
           />
           <SettingsRow
-            label="con trỏ nhịp"
-            options={PACE_CARETS}
-            labels={PACE_CARET_LABELS}
-            value={getConfig.paceCaret}
-            onPick={(value) => {
-              setConfig("paceCaret", value);
-              // the pace caret is set up when a test starts
-              restartTestEvent.dispatch();
-            }}
+            label="phông chữ"
+            hint="chữ của bài gõ; mỗi tên viết bằng chính phông ấy"
+            options={FONTS}
+            labels={FONT_LABELS}
+            fontOf={(font) => `"${FONT_LABELS[font]}"`}
+            value={getConfig.fontFamily}
+            onPick={(value) => setConfig("fontFamily", value)}
           />
         </div>
       </Show>

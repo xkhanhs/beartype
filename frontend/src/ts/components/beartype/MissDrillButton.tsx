@@ -6,38 +6,41 @@ import { restartTestEvent } from "../../events/test";
 import { getFocus } from "../../states/test";
 import { initFromWords } from "../../test/practise-words";
 import { cn } from "../../utils/cn";
-import { Button } from "../common/Button";
+import { buildBalloonHtmlProperties } from "../common/Balloon";
+import { Fa } from "../common/Fa";
 
 /**
  * Starts a round of nothing but the words this pair of hands keeps missing,
  * in the language on screen. It stands beside the restart button from the
  * moment the page opens, not only after a test: the book outlives the tab.
+ * On the result screen it stands beside "next" and "again", as in keybear.
  */
 export function MissDrillButton(): JSXElement {
   const words = createMemo(() => missWords(getConfig.language));
   const ready = (): boolean => words().length >= MIN_DRILL_WORDS;
 
   return (
-    <Button
-      variant="text"
-      class={cn("px-4 py-2 text-base transition-opacity", {
+    <button
+      type="button"
+      class={cn("bt-action transition-opacity", {
         "pointer-events-none opacity-0": getFocus(),
       })}
-      fa={{ icon: "fa-exclamation-triangle", fixedWidth: true }}
-      text={`luyện từ hay sai · ${words().length}`}
       disabled={!ready()}
-      balloon={{
+      {...buildBalloonHtmlProperties({
         text: ready()
           ? "gõ lại những từ hay gõ sai"
           : `cần ít nhất ${MIN_DRILL_WORDS} từ trong sổ`,
         position: "down",
-      }}
+      })}
       onClick={() => {
         if (!ready()) return;
         if (initFromWords(words())) {
           restartTestEvent.dispatch({ practiseMissed: true });
         }
       }}
-    />
+    >
+      <Fa icon="fa-exclamation-triangle" fixedWidth />
+      {`luyện từ hay sai · ${words().length}`}
+    </button>
   );
 }

@@ -48,9 +48,11 @@ import {
 } from "../states/test";
 import {
   getAccuracy,
+  getInputHistory,
   getRawHistory,
   getTimerBoundaryLabels,
 } from "./events/stats";
+import { setResultHistory } from "../components/beartype/ResultHistory";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -316,13 +318,17 @@ function updateWpmAndAcc(): void {
   qs("#result .stats .wpm .top .text")?.setText(Config.typingSpeedUnit);
 
   if (inf) {
-    qs("#result .stats .wpm .bottom")?.setText("Infinite");
+    qs("#result .stats .wpm .bottom")?.setText("∞");
   } else {
     qs("#result .stats .wpm .bottom")?.setText(Format.typingSpeed(result.wpm));
   }
   qs("#result .stats .raw .bottom")?.setText(Format.typingSpeed(result.rawWpm));
+  // beartype: one decimal, as in keybear -- a ten-word test has a key or two
+  // under sixty, so one missed key moves the figure by well over a point and
+  // two different tests would round to the same whole number. Rounded down,
+  // as upstream does, so a test with a miss never reads 100.
   qs("#result .stats .acc .bottom")?.setText(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc),
+    result.acc === 100 ? "100%" : `${oneDecimal(result.acc, Math.floor)}%`,
   );
 
   const accEventLog = getLastEventLog();
@@ -352,7 +358,7 @@ function updateWpmAndAcc(): void {
 
       qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        `${acc.correct} correct\n${acc.incorrect} incorrect`,
+        `${acc.correct} đúng\n${acc.incorrect} sai`,
       );
     } else {
       //not showing decimal places
@@ -381,7 +387,7 @@ function updateWpmAndAcc(): void {
             result.acc === 100
               ? "100%"
               : Format.percentage(result.acc, { showDecimalPlaces: true })
-          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+          }\n${acc.correct} đúng\n${acc.incorrect} sai`,
         )
         ?.setAttribute("data-balloon-break", "");
     }
@@ -415,12 +421,12 @@ function updateTime(): void {
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
     qs("#result .stats .time .bottom .afk")?.setText(
-      `${afkSecondsPercent}% afk`,
+      `${afkSecondsPercent}% ngừng gõ`,
     );
   }
   qs("#result .stats .time .bottom")?.setAttribute(
     "aria-label",
-    `${result.afkDuration}s afk ${afkSecondsPercent}%`,
+    `ngừng gõ ${result.afkDuration}s (${afkSecondsPercent}%)`,
   );
 
   if (Config.alwaysShowDecimalPlaces) {
@@ -430,7 +436,9 @@ function updateTime(): void {
     }
     qs("#result .stats .time .bottom .text")?.setText(time);
   } else {
-    let time = `${Math.round(result.testDuration)}s`;
+    // beartype: up to one decimal, as in keybear: half a second is a real
+    // difference between two runs of the same words
+    let time = `${oneDecimal(result.testDuration, Math.round)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Math.round(result.testDuration));
     }
@@ -439,7 +447,7 @@ function updateTime(): void {
       "aria-label",
       `${Numbers.roundTo2(result.testDuration)}s (${
         result.afkDuration
-      }s afk ${afkSecondsPercent}%)`,
+      }s ngừng gõ, ${afkSecondsPercent}%)`,
     );
   }
 }
@@ -450,38 +458,48 @@ export function updateTodayTracker(): void {
   );
 }
 
+// beartype: at most one decimal, written the Vietnamese way (96,5)
+function oneDecimal(value: number, round: (n: number) => number): string {
+  return (round(value * 10) / 10).toLocaleString("vi-VN", {
+    maximumFractionDigits: 1,
+  });
+}
+
+// beartype: the words typed, the second of keybear's two small figures
+function updateWords(): void {
+  const eventLog = getLastEventLog();
+  const words =
+    eventLog === null
+      ? undefined
+      : getInputHistory(eventLog).filter((word) => word !== "").length;
+  qs("#result .stats .words .bottom")?.setText(
+    words === undefined ? "-" : `${words}`,
+  );
+}
+
 // beartype: best and usual speed over the last tests on this browser, so the
 // number just typed has something to be read against
 function updateRecent(dontSave: boolean): void {
-  const group = qs("#result .stats .history");
   if (Config.mode === "custom" || Config.mode === "zen") {
-    group?.hide();
+    setResultHistory(null);
     return;
   }
-  const summary = DB.recentSummary(
-    {
-      mode: result.mode,
-      mode2: result.mode2,
-      punctuation: result.punctuation ?? false,
-      numbers: result.numbers ?? false,
-      language: result.language,
-      difficulty: result.difficulty,
-      lazyMode: result.lazyMode ?? false,
-    },
-    // an invalid test is not kept, so it does not count here either
-    dontSave ? { wpm: Number.NaN } : { wpm: result.wpm },
-  );
-  const speeds = [summary.best, summary.usual];
-  if (!speeds.every(Number.isFinite)) {
-    group?.hide();
-    return;
-  }
-  group?.show();
-  qs("#result .stats .history .top")?.setText(
-    `tốt nhất · thường (${summary.count} bài)`,
-  );
-  qs("#result .stats .history .bottom")?.setText(
-    speeds.map((wpm) => Format.typingSpeed(wpm)).join(" · "),
+  setResultHistory(
+    DB.recentSummary(
+      {
+        mode: result.mode,
+        mode2: result.mode2,
+        punctuation: result.punctuation ?? false,
+        numbers: result.numbers ?? false,
+        language: result.language,
+        difficulty: result.difficulty,
+        lazyMode: result.lazyMode ?? false,
+      },
+      // an invalid test is not kept, so it does not count here either
+      dontSave
+        ? null
+        : { wpm: result.wpm, acc: result.acc, timestamp: result.timestamp },
+    ),
   );
 }
 
@@ -541,7 +559,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       console.debug("Showing new pb crown");
       showCrown("normal");
       updateCrownText(
-        `+${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
+        `kỷ lục mới +${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
       );
       if (localPb !== undefined) showConfetti();
     }
@@ -563,17 +581,14 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       // hideCrown();
       console.debug("Showing warning crown");
       showCrown("warning");
-      updateCrownText(
-        `This result is not eligible for a new PB (${canGetPb.reason})`,
-        true,
-      );
+      updateCrownText(`bài này không tính kỷ lục (${canGetPb.reason})`, true);
     } else {
       console.debug("Showing ineligible crown");
       showCrown("ineligible");
       updateCrownText(
-        `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
+        `nhanh hơn kỷ lục +${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
-        })}), but your config does not allow it (${canGetPb.reason})`,
+        })}, nhưng cài đặt này không tính kỷ lục (${canGetPb.reason})`,
         true,
       );
     }
@@ -728,15 +743,17 @@ function updateOther(
   isRepeated: boolean,
   tooShort: boolean,
 ): void {
-  let otherText = "";
+  // beartype: what was odd about this test, in a quiet line under the figures
+  const notes: string[] = [];
   if (difficultyFailed) {
-    otherText += `<br>failed (${failReason})`;
+    notes.push(
+      `không đạt (${failReason === "slow timer" ? "máy chạy chậm" : failReason})`,
+    );
   }
   if (afkDetected) {
-    otherText += "<br>afk detected";
+    notes.push("có lúc ngừng gõ");
   }
   if (isTestInvalid()) {
-    otherText += "<br>invalid";
     const extra: string[] = [];
     if (
       result.wpm < 0 ||
@@ -752,31 +769,30 @@ function updateOther(
         result.mode2 !== "10") ||
       (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
-      extra.push("raw");
+      extra.push("tốc độ thô");
     }
     if (result.acc < 75 || result.acc > 100) {
-      extra.push("accuracy");
+      extra.push("độ chính xác");
     }
-    if (extra.length > 0) {
-      otherText += ` (${extra.join(",")})`;
-    }
+    notes.push(
+      extra.length > 0 ? `không hợp lệ (${extra.join(", ")})` : "không hợp lệ",
+    );
   }
   if (isRepeated) {
-    otherText += "<br>repeated";
+    notes.push("bài gõ lại");
   }
   if (result.bailedOut) {
-    otherText += "<br>bailed out";
+    notes.push("bỏ dở");
   }
   if (tooShort) {
-    otherText += "<br>too short";
+    notes.push("bài quá ngắn");
   }
 
-  if (otherText === "") {
+  if (notes.length === 0) {
     qs("#result .stats .info")?.hide();
   } else {
     qs("#result .stats .info")?.show();
-    otherText = otherText.substring(4);
-    qs("#result .stats .info .bottom")?.setHtml(otherText);
+    qs("#result .stats .info .bottom")?.setText(notes.join(" · "));
   }
 }
 
@@ -824,6 +840,7 @@ export async function update(
   updateConsistency();
   updateTime();
   updateRecent(dontSave);
+  updateWords();
   updateKey();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);

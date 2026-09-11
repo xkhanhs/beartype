@@ -163,32 +163,52 @@ export async function getUserDailyBestOnce(
 /** How many recent tests the result screen compares against. */
 export const RECENT = 20;
 
+/** How many of those the result screen draws as bars, oldest on the left. */
+export const CHART_TESTS = 10;
+
+export type RecentTest = { wpm: number; acc: number; timestamp: number };
+
+export type RecentSummary = {
+  best: number;
+  usual: number;
+  usualAcc: number;
+  count: number;
+  /** The last `CHART_TESTS`, oldest first, the one just typed last. */
+  recent: RecentTest[];
+};
+
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? (sorted[middle] as number)
+    : ((sorted[middle - 1] as number) + (sorted[middle] as number)) / 2;
+}
+
 /**
  * The best and the usual speed over the last `RECENT` tests with the same
  * settings, `current` included -- it is not saved until the result screen
- * has been drawn. "Usual" is the median: one interrupted test should not
- * drag it down the way it drags a mean.
+ * has been drawn; `null` when it will not be saved at all. "Usual" is the
+ * median: one interrupted test should not drag it down the way it drags a
+ * mean.
  */
 export function recentSummary(
   filter: SettingsFilter,
-  current: { wpm: number },
-): { best: number; usual: number; count: number } {
-  const speeds = [
-    ...matching(filter)
-      .slice(-(RECENT - 1))
-      .map((r) => r.wpm),
-    current.wpm,
-  ].filter(Number.isFinite);
-  if (speeds.length === 0) {
-    return { best: Number.NaN, usual: Number.NaN, count: 0 };
-  }
-  const sorted = [...speeds].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-  const usual =
-    sorted.length % 2 === 1
-      ? (sorted[middle] as number)
-      : ((sorted[middle - 1] as number) + (sorted[middle] as number)) / 2;
-  return { best: Math.max(...speeds), usual, count: speeds.length };
+  current: RecentTest | null,
+): RecentSummary | null {
+  const tests: RecentTest[] = matching(filter)
+    .slice(-(RECENT - (current === null ? 0 : 1)))
+    .map(({ wpm, acc, timestamp }) => ({ wpm, acc, timestamp }));
+  if (current !== null) tests.push(current);
+  if (tests.length === 0) return null;
+  const speeds = tests.map((t) => t.wpm);
+  return {
+    best: Math.max(...speeds),
+    usual: median(speeds),
+    usualAcc: median(tests.map((t) => t.acc)),
+    count: tests.length,
+    recent: tests.slice(-CHART_TESTS),
+  };
 }
 
 export const __testing = {
