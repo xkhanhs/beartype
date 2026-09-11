@@ -34,4 +34,9 @@ git -C ../monkeytype show 91bd24bb:frontend/src/ts/test/test-ui.ts | diff - fron
 
 | File | Khối | Vì sao |
 |------|------|--------|
-| _(chưa có)_ | | |
+| `test/test-logic.ts` | bỏ `saveResult`, nhánh tài khoản trong `finish`, analytics, Sentry, tag | không còn tài khoản; kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với PB cũ |
+| `test/pace-caret.ts` | import `DB` và `getUserAverage10Once`… trỏ sang `beartype/local-results`; nhánh `tagPb` trả 0 | "average"/"pb" đọc kết quả trên máy; không còn tag |
+| `test/test-ui.ts` | gỡ 2 lời gọi `AdController` và import của nó | không còn quảng cáo |
+| `input/hotkeys/index.ts` | gỡ import `commandline` và `konami` | không còn commandline |
+
+Phần gõ (`input/handlers`, `input/listeners`, `input/helpers`, `test-ui.ts` phần vẽ chữ, `caret.ts`, `test-timer.ts`, `words-generator.ts`, `test/events/`) chưa bị sửa dòng nào.
