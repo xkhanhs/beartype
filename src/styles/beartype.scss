@@ -606,25 +606,13 @@ button.bt-theme-item {
 
 // ----- the footer's small print -----
 
-// beartype: keybear sets nothing smaller than 14px; upstream's footer and its
-// key badge were 12px monospace.
+// beartype: keybear sets nothing smaller than 14px; upstream's footer was
+// 12px monospace.
 footer {
   color: var(--kb-text-f1);
 
   a {
     color: var(--kb-text-f1);
-  }
-
-  kbd {
-    padding: 0.15rem 0.6rem;
-    border: 2px solid var(--kb-border);
-    border-radius: 99px;
-    color: var(--text-color);
-    background-color: var(--kb-card);
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: bold;
-    line-height: 1.3;
   }
 }
 

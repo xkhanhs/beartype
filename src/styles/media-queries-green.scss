@@ -11,24 +11,4 @@
       grid-template-rows: 1fr 1fr;
     }
   }
-
-  .testActivity {
-    --gap-size: 0.1em;
-    --font-size: 0.8em;
-    .wrapper {
-      grid-template-areas:
-        "top top"
-        "chart chart"
-        "month month";
-    }
-    .days {
-      display: none;
-    }
-    // .activity div,
-    // .legend div {
-    //   width: 0.9em;
-    //   height: 0.9em;
-    //   border-radius: 0.2em;
-    // }
-  }
 }

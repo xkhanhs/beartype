@@ -5,7 +5,6 @@ import * as DB from "../beartype/local-results";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
 import * as Numbers from "../utils/numbers";
 import * as PbCrown from "./pb-crown";
 import * as Focus from "./focus";
@@ -37,7 +36,6 @@ function updateWpmAndAcc(): void {
   } else {
     qs("#result .stats .wpm .bottom")?.setText(Format.typingSpeed(result.wpm));
   }
-  qs("#result .stats .raw .bottom")?.setText(Format.typingSpeed(result.rawWpm));
   // beartype: one decimal, as in keybear -- a ten-word test has a key or two
   // under sixty, so one missed key moves the figure by well over a point and
   // two different tests would round to the same whole number. Rounded down,
@@ -54,10 +52,8 @@ function updateWpmAndAcc(): void {
       suffix: " wpm",
     };
     const wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-    const rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
     qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
 
     // beartype: one line, the parts split by a middle dot
     qs("#result .stats .acc .bottom")?.setAttribute(
@@ -69,16 +65,6 @@ function updateWpmAndAcc(): void {
       } · ${acc.correct} đúng · ${acc.incorrect} sai`,
     );
   }
-}
-
-function updateConsistency(): void {
-  qs("#result .stats .consistency .bottom")?.setText(
-    Format.percentage(result.consistency),
-  );
-  qs("#result .stats .consistency .bottom")?.setAttribute(
-    "aria-label",
-    `${result.consistency}% (${result.keyConsistency}% key)`,
-  );
 }
 
 function updateTime(): void {
@@ -149,14 +135,6 @@ function updateRecent(dontSave: boolean): void {
   );
 }
 
-function updateKey(): void {
-  qs("#result .stats .key .bottom")?.setText(
-    `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
-      result.charStats[3]
-    }`,
-  );
-}
-
 function updateCrownText(text: string): void {
   qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
 }
@@ -220,23 +198,6 @@ function showConfetti(): void {
       requestAnimationFrame(f);
     }
   })();
-}
-
-function updateTestType(): void {
-  let testType = "";
-
-  testType += Config.mode;
-
-  if (Config.mode === "time") {
-    testType += ` ${Config.time}`;
-  } else if (Config.mode === "words") {
-    testType += ` ${Config.words}`;
-  }
-  if (Config.mode !== "custom") {
-    testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
-  }
-
-  qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
 
 function updateOther(
@@ -317,19 +278,14 @@ export async function update(
 ): Promise<void> {
   result = structuredClone(res);
   hideCrown();
-  qs("#retrySavingResultButton")?.hide();
   qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
-  qs("#result .loginTip")?.hide();
 
   updateWpmAndAcc();
-  updateConsistency();
   updateTime();
   updateRecent(dontSave);
   updateWords();
-  updateKey();
-  updateTestType();
   updateCrown(dontSave);
   updateOther(
     difficultyFailed,
@@ -340,18 +296,7 @@ export async function update(
     idle,
   );
 
-  if (
-    qs("#result .stats .tags")?.hasClass("hidden") &&
-    qs("#result .stats .info")?.hasClass("hidden")
-  ) {
-    qs("#result .stats .infoAndTags")?.hide();
-  } else {
-    qs("#result .stats .infoAndTags")?.show();
-  }
-
   qsa("main #result .stats")?.show();
-  qs("main #result .stats .dailyLeaderboard")?.hide();
-  qs("main #result #saveScreenshotButton")?.show();
 
   Focus.set(false);
 

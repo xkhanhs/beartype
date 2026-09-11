@@ -1,29 +1,10 @@
-a.button,
-a.textButton {
-  text-decoration: none;
+button .bt-icon {
+  line-height: 1.25;
+  pointer-events: none;
+  justify-self: center;
 }
 
-button,
-.button,
-.textButton {
-  .bt-icon {
-    line-height: 1.25;
-    pointer-events: none;
-    justify-self: center;
-  }
-  &.fullWidth {
-    width: 100%;
-  }
-  &.circle {
-    border-radius: 100%;
-  }
-}
-
-button,
-.button,
-input[type="button"],
-input[type="reset"],
-input[type="submit"] {
+button {
   color: var(--text-color);
   cursor: pointer;
   transition:
@@ -48,11 +29,7 @@ input[type="submit"] {
   justify-content: center;
   justify-items: center;
 
-  &.danger {
-    background: var(--error-color);
-    color: var(--bg-color);
-  }
-
+  // the restart button when a test cannot start (test.html)
   &.active {
     background: var(--main-color);
     color: var(--bg-color);
@@ -65,8 +42,7 @@ input[type="submit"] {
     }
   }
 
-  &[disabled],
-  &.disabled {
+  &[disabled] {
     opacity: 0.33;
     pointer-events: none;
     &:hover {
@@ -96,9 +72,8 @@ input[type="submit"] {
   }
 }
 
-button.text,
-.button.text,
-.textButton {
+// the text buttons under the words and on the result (`bt-action`)
+button.text {
   color: var(--sub-color);
   cursor: pointer;
   transition:
@@ -122,26 +97,7 @@ button.text,
   align-items: baseline;
   justify-content: center;
 
-  &.danger {
-    color: var(--error-color);
-    background: none;
-  }
-
-  &.active {
-    color: var(--main-color);
-    background: none;
-    &:hover {
-      color: var(--text-color);
-      background: none;
-    }
-    &:active {
-      color: var(--sub-color);
-      background: none;
-    }
-  }
-
-  &[disabled],
-  &.disabled {
+  &[disabled] {
     &:hover {
       color: var(--text-color);
       outline: none;
@@ -164,13 +120,5 @@ button.text,
   &:active {
     color: var(--sub-color);
     background: none;
-  }
-}
-
-a.textButton,
-a.text,
-a.button {
-  &:focus-visible {
-    border-radius: var(--roundness);
   }
 }
