@@ -1,6 +1,6 @@
 ---
 title: "beartype — fork monkeytype, giữ lõi gõ, bỏ phần còn lại"
-status: pending
+status: in-progress
 created: 2026-09-11
 upstream: monkeytypegame/monkeytype (ghim SHA ở phase 1)
 ---

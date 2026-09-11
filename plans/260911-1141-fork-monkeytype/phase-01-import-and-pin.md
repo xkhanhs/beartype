@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Nhập code và ghim upstream"
-status: pending
+status: completed
 priority: P1
 effort: "2h"
 dependencies: []
