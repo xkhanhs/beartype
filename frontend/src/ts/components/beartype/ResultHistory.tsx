@@ -69,28 +69,26 @@ function Figure(props: { value: string; label: string }): JSXElement {
 /**
  * The last few tests, oldest on the left.
  *
- * The axis does not start at zero. One pair of hands types inside a narrow
- * band -- 52 to 63 is a real week of progress -- and an axis from zero
- * squeezes that band into the top few pixels, so every bar looks the same.
- * The floor is the slowest test drawn and the ceiling the fastest, so what
- * shows is the difference, the one thing here worth seeing. Such an axis
- * cannot be read as a scale, so every bar carries its number in a balloon,
- * the last prints it, and a dashed line marks the usual speed.
+ * The axis starts at zero, so a bar's height is its speed. keybear floors it
+ * at the slowest test drawn to show small differences, but then 46 stood as
+ * a stub beside a tall 49: a bar's length is read as its value, whatever the
+ * axis says. Every bar still carries its number in a balloon, the last prints
+ * it, and a dashed line marks the usual speed.
+ *
+ * The balloon hangs off the bar's whole column, not the bar, as keybear's
+ * `Tooltip` wraps the column: every balloon opens at the same height, over
+ * the top of the chart, and the column answers to the pointer anywhere in it.
  */
 function SpeedChart(props: {
   recent: RecentTest[];
   usual: number;
 }): JSXElement {
-  const bounds = (): [number, number] => {
-    const speeds = props.recent.map((t) => t.wpm);
-    // the usual line stays inside the band, or it would stick to an edge
-    return [Math.min(...speeds, props.usual), Math.max(...speeds, props.usual)];
-  };
-  // the lowest bar keeps a stub, to be seen and to be pointed at
-  const height = (value: number): number => {
-    const [floor, ceil] = bounds();
-    return ceil > floor ? 14 + (86 * (value - floor)) / (ceil - floor) : 60;
-  };
+  // the usual line stays inside the chart, even over every bar drawn
+  const ceil = (): number =>
+    Math.max(...props.recent.map((t) => t.wpm), props.usual);
+  // the slowest bar keeps a stub, to be seen and to be pointed at
+  const height = (value: number): number =>
+    ceil() > 0 ? Math.max(4, (100 * value) / ceil()) : 4;
 
   return (
     <div class="bt-chart">
@@ -102,24 +100,26 @@ function SpeedChart(props: {
         ></span>
         <For each={props.recent}>
           {(test, index) => (
-            <div class="bt-chart-slot">
+            <div
+              class="bt-chart-slot"
+              classList={{
+                "bt-chart-slot-last": index() === props.recent.length - 1,
+              }}
+              tabIndex={0}
+              aria-label={`${wpm(test.wpm)} wpm · ${Math.round(test.acc)}% chính xác\n${new Date(
+                test.timestamp,
+              ).toLocaleString("vi-VN", {
+                day: "numeric",
+                month: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`}
+              data-balloon-pos={balloonPos(index(), props.recent.length)}
+              data-balloon-break=""
+            >
               <span
                 class="bt-chart-bar"
-                classList={{
-                  "bt-chart-bar-last": index() === props.recent.length - 1,
-                }}
                 style={{ height: `${height(test.wpm)}%` }}
-                tabIndex={0}
-                aria-label={`${wpm(test.wpm)} wpm · ${Math.round(test.acc)}% chính xác\n${new Date(
-                  test.timestamp,
-                ).toLocaleString("vi-VN", {
-                  day: "numeric",
-                  month: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}`}
-                data-balloon-pos={balloonPos(index(), props.recent.length)}
-                data-balloon-break=""
               >
                 <Show when={index() === props.recent.length - 1}>
                   <span class="bt-chart-value">{wpm(test.wpm)}</span>
