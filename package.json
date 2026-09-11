@@ -11,7 +11,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "build-fe": "pnpm build",
-    "preview": "vite preview --port 3000",
+    "preview": "vite preview",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "ts-check": "tsc --noEmit",

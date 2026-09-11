@@ -42,7 +42,7 @@ sai. Không có gì được gửi đi. Xoá dữ liệu trang web là mất h�
 ## Phát triển
 
 Xem [CLAUDE.md](CLAUDE.md) để biết cách chạy, và [docs/upstream.md](docs/upstream.md)
-để biết bản monkeytype đã ghim cùng những chỗ đã sửa trong lõi.
+để biết bản monkeytype gốc cùng những chỗ lõi gõ của beartype cố ý làm khác.
 
 ## Giấy phép
 
