@@ -9,7 +9,6 @@ import {
 import path from "node:path";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
-import autoprefixer from "autoprefixer";
 import { Fonts } from "./src/ts/constants/fonts";
 import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { envConfig } from "./vite-plugins/env-config";
@@ -169,9 +168,6 @@ function getCssOptions({
 }): CSSOptions {
   return {
     devSourcemap: true,
-    postcss: {
-      plugins: [autoprefixer({})],
-    },
     preprocessorOptions: {
       scss: {
         additionalData(source: string, fp: string) {
