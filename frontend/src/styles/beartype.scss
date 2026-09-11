@@ -139,9 +139,7 @@ body,
 }
 
 // The words keep --font, the one a person picks in the settings.
-#wordsWrapper,
-#resultWordsHistory .words,
-#resultReplay #replayWords {
+#wordsWrapper {
   font-family: var(--font);
 }
 
@@ -626,11 +624,6 @@ button.bt-settings-choice {
       padding: 0.55rem 1.3rem;
     }
   }
-}
-
-// the chart, input history and replay upstream's code still looks up
-.bt-unused {
-  display: none !important;
 }
 
 // ----- the book of recent tests under the result -----

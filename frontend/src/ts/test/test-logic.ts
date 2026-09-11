@@ -16,7 +16,6 @@ import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
-import * as Replay from "./replay-ui";
 import * as TodayTracker from "./today-tracker";
 import * as Result from "./result";
 import {
@@ -277,7 +276,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   setIsTestInvalid(false);
   resetModifierState();
   setTestActive(false);
-  Replay.pauseReplay();
   setBailedOut(false);
   PaceCaret.reset();
   setKoreanStatus(false);

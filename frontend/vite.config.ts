@@ -169,10 +169,6 @@ function getBuildOptions({
               test: /monkeytype\/packages\//,
             },
             {
-              name: "vendor-chart",
-              test: /node_modules\/chart/,
-            },
-            {
               name: "monkeytype-utils",
               test: /src\/ts\/utils\//,
             },

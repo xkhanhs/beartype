@@ -1,10 +1,6 @@
 <!--
-  beartype: keybear's result screen -- two big figures, two small ones, the
-  buttons, then the book of recent tests. Upstream's chart over time, raw
-  speed, character counts, consistency, input history and replay are gone.
-  The last three of those stay in the page, hidden for good at the bottom:
-  test-ui.ts, replay-ui.ts and chart-controller.ts look them up once, when
-  they load, and stop the app if they are missing.
+  keybear's result screen: two big figures, two small ones, the buttons,
+  then the book of recent tests.
 -->
 <div id="result" class="content-grid full-width hidden" tabindex="-1">
   <div class="wrapper">
@@ -60,20 +56,5 @@
       <mount data-component="missdrill" class="contents"></mount>
     </div>
     <mount data-component="resulthistory"></mount>
-
-    <div class="bt-unused" hidden aria-hidden="true">
-      <div class="chart">
-        <canvas id="wpmChart"></canvas>
-      </div>
-      <div id="resultWordsHistory" class="hidden">
-        <div class="words"></div>
-      </div>
-      <div id="resultReplay" class="hidden">
-        <p id="replayStats">0s</p>
-        <div id="replayWordsWrapper">
-          <div id="replayWords" class="words"></div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

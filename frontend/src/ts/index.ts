@@ -5,7 +5,6 @@ import * as Logger from "./utils/logger";
 import "./ui";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
-import * as Result from "./test/result";
 import { enable } from "./legacy-states/glarses-mode";
 import "./input/listeners";
 import { start as startRouter } from "./controllers/route-controller";
@@ -50,7 +49,6 @@ addToGlobal({
   glarsesMode: enable,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleSmoothedBurst: Result.toggleSmoothedBurst,
   toggleDebugLogs: Logger.toggleDebugLogs,
   qs: qs,
   qsa: qsa,
