@@ -9,7 +9,7 @@ import {
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
-import { getResultVisible, getFocus } from "../../../states/test";
+import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 
 // beartype: upstream's bar also carried punctuation, numbers, quote, zen,
@@ -35,7 +35,8 @@ export function TestConfig(): JSXElement {
       class={cn(
         "bt-options relative mx-auto mb-8 w-max max-w-full place-self-center",
         "transition-opacity duration-125",
-        getFocus() || getResultVisible() ? "pointer-events-none opacity-0" : "",
+        // it stays on the result, which says what the test just taken was
+        getFocus() ? "pointer-events-none opacity-0" : "",
       )}
       data-ui-element="testConfig"
     >
@@ -110,7 +111,7 @@ function Pill(props: {
       class="bt-options-pill"
       aria-pressed={props.active}
       onClick={() => props.onClick()}
-      disabled={getFocus() || getResultVisible()}
+      disabled={getFocus()}
     >
       {props.text}
     </button>

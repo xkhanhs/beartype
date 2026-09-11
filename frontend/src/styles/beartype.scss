@@ -1,3 +1,33 @@
+// beartype: keybear's letter colours (`TypeTestScreen.module.less`). Upstream
+// sets these on `#words` too, and this file loads later, so they win.
+// - pending: keybear's `text-color-f2` (60% text) at 0.8 opacity, which on
+//   the page is 48% text; mixed rather than faded so a composing letter drawn
+//   over it is not faded as well
+// - wrong and extra: keybear's reds for letters standing straight on the
+//   page, not the theme's own: a red picked for a boxed letter reads almost
+//   as the plain text colour here
+#words {
+  --correct-letter-color: var(--text-color);
+  --untyped-letter-color: color-mix(
+    in srgb,
+    var(--text-color) 48%,
+    var(--bg-color)
+  );
+  --incorrect-letter-color: #d0212f;
+  --extra-letter-color: #c2666e;
+}
+
+body.darkMode #words {
+  --incorrect-letter-color: #ff6b78;
+}
+
+// A word typed wrong is told by its red letters alone, not by a line under
+// the whole word as well.
+#words .word.error {
+  border-bottom-color: transparent;
+  text-shadow: none;
+}
+
 // beartype: a letter the input method is still building -- `e` typed toward
 // `ế`. The target letter is what shows, fully marked, so without a sign of
 // its own an unfinished `ế` looks exactly like a finished one; keybear learnt
@@ -33,6 +63,10 @@
   --kb-shadow: color-mix(in srgb, var(--text-color) 22%, transparent);
   --kb-popup-shadow: 0 0.5rem 3rem var(--kb-shadow);
   --kb-focus: 3px solid var(--main-color);
+  // the rim of a strip sunk below the page: 12% of the text in the page colour,
+  // so it reads darker than the page on a light palette and lighter
+  // on a dark one, as keybear's card rim does
+  --kb-sunk-rim: color-mix(in srgb, var(--text-color) 12%, var(--bg-color));
 }
 
 body.darkMode {
@@ -145,10 +179,56 @@ body,
   font-family: var(--font);
 }
 
+// ----- the page column -----
+
+// beartype: keybear's `Screen` -- one column 70rem wide in the middle of the
+// page, not upstream's 1536px. The header, the words and the footer all sit
+// in it, so the lines of words stop where the column does.
+#app {
+  max-inline-size: 70rem;
+  margin-inline: auto;
+}
+
+// ----- the hint over the words when they lose the focus -----
+
+// beartype: keybear's `PauseNotice` -- a pill in the options strip's colours,
+// the accent filling a round pause sign at its start. The sign sits as far
+// from the rim on its left as above and below it.
+.bt-pause-notice {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  max-inline-size: 100%;
+  padding: 0.6rem 1.4rem 0.6rem 0.6rem;
+  border: 2px solid var(--kb-sunk-rim);
+  border-radius: 99px;
+  color: var(--text-color);
+  background-color: var(--kb-border);
+  box-shadow: 0 0 1rem var(--kb-shadow);
+  // it sits in the words' box, which carries the typing font
+  font-family: Quicksand, sans-serif;
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.bt-pause-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: 50%;
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+  font-size: 0.85rem;
+}
+
 // ----- the options bar above the words -----
 
 // beartype: keybear's `.options` -- one rounded strip, the groups split by a
-// thin rule, the choice in use filled with the accent.
+// thin rule, the choice in use filled with the accent. The strip is sunk a
+// shade below the page, keybear's border colour, inside a rim of its own.
 .bt-options {
   display: flex;
   flex-wrap: wrap;
@@ -158,16 +238,16 @@ body,
   // the same on every side, so a filled pill at either end sits as far from
   // the rim across as it does above and below
   padding: 0.35rem;
-  border: 2px solid var(--kb-border);
+  border: 2px solid var(--kb-sunk-rim);
   border-radius: 99px;
-  background-color: var(--kb-card);
+  background-color: var(--kb-border);
 }
 
 .bt-options-divider {
   inline-size: 1px;
   block-size: 1.4rem;
   margin-inline: 0.4rem;
-  background-color: var(--kb-border);
+  background-color: color-mix(in srgb, var(--kb-text-f1) 25%, var(--kb-border));
 }
 
 button.bt-options-pill {
@@ -203,11 +283,11 @@ button.bt-options-pill {
 
 // ----- buttons under the words and on the result -----
 
-// beartype: keybear's `.action`: a pill with a thin rim, the text faint
-// until pointed at. Every one in a row has the same rim, padding and type, so
-// they stand the same height; "next" only fills its own with the accent.
-// Selectors carry the element and the page so they outrank upstream's
-// `button.text` and `#result .wrapper button`.
+// beartype: keybear's `.action`: a flat pill, no rim, the text faint until
+// pointed at, when a shade darker than the page shows behind it. Every one in a row has the
+// same padding and type, so they stand the same height; "next" on the result
+// fills its own with the accent. Selectors carry the element and the page so
+// they outrank upstream's `button.text` and `#result .wrapper button`.
 .pageTest button.bt-action {
   display: inline-flex;
   gap: 0.45rem;
@@ -215,7 +295,7 @@ button.bt-options-pill {
   justify-content: center;
   padding: 0.55rem 1.3rem;
   margin: 0;
-  border: 2px solid var(--kb-border);
+  border: 2px solid transparent;
   border-radius: 99px;
   color: var(--kb-text-f1);
   background: transparent;
@@ -225,9 +305,10 @@ button.bt-options-pill {
   // the label would otherwise break under its icon
   white-space: nowrap;
 
+  // sunk below the page, as keybear's card is on its dark palettes
   &:hover {
     color: var(--text-color);
-    background-color: var(--kb-card);
+    background-color: var(--kb-border);
   }
 
   &:focus-visible {
@@ -236,17 +317,18 @@ button.bt-options-pill {
     box-shadow: none;
   }
 
-  // an icon box as tall as the text and centred on it, whatever the glyph
-  .fas {
-    display: inline-grid;
-    place-items: center;
-    block-size: 1.2em;
-    font-size: 0.95em;
-    line-height: 1;
+  // keybear's Material Design icons, drawn in the text colour
+  .bt-action-icon {
+    flex: none;
+    inline-size: 1.2rem;
+    block-size: 1.2rem;
+    fill: currentColor;
   }
 
-  // "next" is what comes after almost every test, and Enter presses it
+  // "next" is what comes after almost every test, and Enter presses it:
+  // keybear makes it the bigger pill in the row, the text the same size
   &.bt-action-primary {
+    padding: 0.6rem 1.6rem;
     border-color: var(--main-color);
     color: var(--kb-on-accent);
     background-color: var(--main-color);
@@ -255,6 +337,11 @@ button.bt-options-pill {
       color: var(--kb-on-accent);
       background-color: var(--main-color);
       filter: brightness(1.08);
+    }
+
+    .bt-action-icon {
+      inline-size: 1.4rem;
+      block-size: 1.4rem;
     }
   }
 }
@@ -281,7 +368,9 @@ button.bt-options-pill {
 // ----- the pills in the footer -----
 
 // beartype: keybear's `ThemeMenu` pill, which the gear and the link to the
-// source beside it share, so the three stand the same height.
+// source beside it share, so the three stand the same height. Flat like the
+// buttons under the words: no rim, no fill, no shadow until pointed at or
+// open.
 footer .bt-footer-pill {
   font-size: 0.95rem;
 }
@@ -293,16 +382,16 @@ a.bt-footer-pill {
   align-items: center;
   block-size: 2.5rem;
   padding: 0 0.8rem;
-  border: 2px solid var(--kb-border);
+  border: none;
   border-radius: 99px;
-  color: var(--text-color);
-  background-color: var(--kb-card);
-  box-shadow: 0 12px 28px -14px var(--kb-shadow);
+  color: var(--kb-text-f1);
+  background-color: transparent;
   font-weight: bold;
 
-  &:hover {
+  &:hover,
+  &[aria-expanded="true"] {
     color: var(--text-color);
-    background-color: var(--kb-accent-xlt);
+    background-color: var(--kb-card);
   }
 
   &:focus-visible {
@@ -624,6 +713,10 @@ button.bt-settings-choice {
     // upstream pads every button here `1em 2em` from an id selector
     button.bt-action {
       padding: 0.55rem 1.3rem;
+    }
+
+    button.bt-action-primary {
+      padding: 0.6rem 1.6rem;
     }
   }
 }

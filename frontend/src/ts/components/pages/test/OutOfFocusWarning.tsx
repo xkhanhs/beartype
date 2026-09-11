@@ -24,10 +24,14 @@ export function OutOfFocusWarning() {
               : undefined,
         }}
       >
-        <div>
-          <Fa icon="fa-mouse-pointer" fixedWidth />
+        {/* beartype: keybear's `PauseNotice` pill. The click still falls
+            through to the words under it, which is what takes the focus. */}
+        <div class="bt-pause-notice">
+          <span class="bt-pause-icon">
+            <Fa icon="fa-pause" />
+          </span>
+          <span>{message()}</span>
         </div>
-        <div>{message()}</div>
       </div>
     </Show>
   );
