@@ -22,7 +22,7 @@ type Option = (typeof OPTIONS)[number];
 
 // keybear's names for its palettes, so the two apps call them the same
 const LABELS: Record<Option, string> = {
-  system: "theo máy",
+  system: "tự động",
   keybear_light: "ban ngày",
   keybear_dark: "ban đêm",
   keybear_princess: "hồng phấn",

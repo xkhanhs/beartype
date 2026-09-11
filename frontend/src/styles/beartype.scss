@@ -115,6 +115,29 @@ body,
   font-family: Quicksand, sans-serif;
 }
 
+// beartype: keybear's bubble (`page-practice/lib/home/Tooltip.module.less`) --
+// the text colour as the ground, small bold letters, one line wide. Upstream's
+// balloon took the line height from its font size, so two lines touched.
+[aria-label][data-balloon-pos] {
+  --balloon-color: var(--text-color);
+  --balloon-text-color: var(--kb-card);
+}
+
+// As wide as the words, not as the element: the crown is two rem across, and
+// a bubble held to that stood one word to a line. A long reason still wraps.
+[aria-label][data-balloon-pos]::after {
+  width: max-content;
+  max-width: min(22rem, 90vw);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.6rem;
+  box-shadow: var(--kb-popup-shadow);
+  font-size: 0.8rem;
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: center;
+  white-space: pre-line;
+}
+
 // The words keep --font, the one a person picks in the settings.
 #wordsWrapper,
 #resultWordsHistory .words,
@@ -641,8 +664,7 @@ button.bt-settings-choice {
   font-variant-numeric: tabular-nums;
 }
 
-.bt-history-label,
-.bt-chart-foot {
+.bt-history-label {
   color: var(--kb-text-f1);
   font-size: 0.875rem;
 }
@@ -664,8 +686,10 @@ button.bt-settings-choice {
   block-size: 5rem;
 }
 
+// Over the bars, as it was when they were see-through.
 .bt-chart-usual {
   position: absolute;
+  z-index: 1;
   inset-inline: 0;
   block-size: 0;
   border-block-start: 2px dashed var(--kb-border);
@@ -685,12 +709,17 @@ button.bt-settings-choice {
   justify-content: center;
   inline-size: 100%;
   border-radius: 3px 3px 0 0;
-  background-color: var(--main-color);
-  opacity: 0.4;
+  // A mix, not opacity: the balloon is the bar's own ::after, and an opacity
+  // on the bar faded it with the bar.
+  background-color: color-mix(in srgb, var(--main-color) 40%, var(--bg-color));
 
   &:hover,
   &:focus-visible {
-    opacity: 0.75;
+    background-color: color-mix(
+      in srgb,
+      var(--main-color) 75%,
+      var(--bg-color)
+    );
   }
 
   &:focus-visible {
@@ -699,8 +728,10 @@ button.bt-settings-choice {
   }
 }
 
-.bt-chart-bar-last {
-  opacity: 1;
+.bt-chart-bar-last,
+.bt-chart-bar-last:hover,
+.bt-chart-bar-last:focus-visible {
+  background-color: var(--main-color);
 }
 
 .bt-chart-value {
@@ -710,24 +741,6 @@ button.bt-settings-choice {
   font-size: 0.8rem;
   font-weight: bold;
   font-variant-numeric: tabular-nums;
-}
-
-.bt-chart-foot {
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-}
-
-.bt-chart-key {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.bt-chart-key-line {
-  inline-size: 1.4rem;
-  block-size: 0;
-  border-block-start: 2px dashed var(--kb-border);
 }
 
 @media (prefers-reduced-motion: reduce) {

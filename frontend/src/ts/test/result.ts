@@ -516,12 +516,8 @@ export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export function updateCrownText(text: string, wide = false): void {
+export function updateCrownText(text: string): void {
   qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
-  qs("#result .stats .wpm .crown")?.setAttribute(
-    "data-balloon-length",
-    wide ? "medium" : "",
-  );
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
@@ -581,7 +577,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       // hideCrown();
       console.debug("Showing warning crown");
       showCrown("warning");
-      updateCrownText(`bài này không tính kỷ lục (${canGetPb.reason})`, true);
+      updateCrownText(`bài này không tính kỷ lục (${canGetPb.reason})`);
     } else {
       console.debug("Showing ineligible crown");
       showCrown("ineligible");
@@ -589,7 +585,6 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
         `nhanh hơn kỷ lục +${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
         })}, nhưng cài đặt này không tính kỷ lục (${canGetPb.reason})`,
-        true,
       );
     }
   }
@@ -606,7 +601,6 @@ export function showErrorCrownIfNeeded(): void {
   PbCrown.update("error");
   updateCrownText(
     `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
-    true,
   );
 }
 

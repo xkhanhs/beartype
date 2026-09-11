@@ -1,6 +1,6 @@
 import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
-import { FONTS, SMOOTH_CARETS } from "../../beartype/config-lock";
+import { FONT_SIZES, FONTS, SMOOTH_CARETS } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { getFocus } from "../../states/test";
@@ -12,8 +12,8 @@ import { SettingsRow } from "./SettingsRow";
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
  * that a person here actually changes: the caret and, as in keybear, the
- * font of the words. It is one of keybear's settings cards; the colours have
- * their own pill beside it, as in keybear.
+ * font of the words and their size. It is one of keybear's settings cards;
+ * the colours have their own pill beside it, as in keybear.
  */
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
@@ -32,6 +32,14 @@ const FONT_LABELS: Record<(typeof FONTS)[number], string> = {
   Lexend: "Lexend",
   Open_Sans: "Open Sans",
   Quicksand: "Quicksand",
+};
+
+// as keybear names them: a share of the usual size
+const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
+  1.6: "80%",
+  2: "100%",
+  2.5: "125%",
+  3: "150%",
 };
 
 export function SettingsPopover(): JSXElement {
@@ -89,6 +97,14 @@ export function SettingsPopover(): JSXElement {
             fontOf={(font) => `"${FONT_LABELS[font]}"`}
             value={getConfig.fontFamily}
             onPick={(value) => setConfig("fontFamily", value)}
+          />
+          <SettingsRow
+            label="cỡ chữ"
+            hint="cỡ chữ của bài gõ"
+            options={FONT_SIZES}
+            labels={FONT_SIZE_LABELS}
+            value={getConfig.fontSize}
+            onPick={(value) => setConfig("fontSize", value)}
           />
         </div>
       </Show>
