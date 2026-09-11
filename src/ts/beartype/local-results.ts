@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { ModeSchema } from "../schemas/shared";
 import type { CompletedEvent } from "../schemas/results";
-import type { Mode, Mode2 } from "../schemas/shared";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { statsLanguage } from "./stats-language";
 
 /**
  * The result history, kept in this browser and nowhere else.
@@ -63,35 +63,21 @@ export function saveResult(event: CompletedEvent): void {
   storage.set(results.slice(-MAX_RESULTS));
 }
 
-export type SettingsFilter = {
-  mode: Mode;
-  mode2: Mode2<Mode>;
-  language: string;
-};
-
-function matching(filter: SettingsFilter): LocalResult[] {
-  return storage
-    .get()
-    .filter(
-      (r) =>
-        r.mode === filter.mode &&
-        r.mode2 === filter.mode2 &&
-        r.language === filter.language,
-    );
+/** Every test in `language`'s pool, whatever its mode and length. */
+function matching(language: string): LocalResult[] {
+  const pool = statsLanguage(language);
+  return storage.get().filter((r) => statsLanguage(r.language) === pool);
 }
 
-/** Same contract as upstream's `DB.getLocalPB`. */
-export function getLocalPB<M extends Mode>(
-  mode: M,
-  mode2: Mode2<M>,
+/**
+ * Upstream's `DB.getLocalPB`, but one best per language: the crown agrees
+ * with the best figure the result screen prints under it.
+ */
+export function getLocalPB(
   language: string,
 ): { wpm: number; acc: number } | undefined {
   let best: LocalResult | undefined;
-  for (const r of matching({
-    mode,
-    mode2,
-    language,
-  })) {
+  for (const r of matching(language)) {
     if (best === undefined || r.wpm > best.wpm) {
       best = r;
     }
@@ -108,7 +94,7 @@ export type RecentSummary = {
   best: number;
   usual: number;
   usualAcc: number;
-  /** Every test with these settings, not only the ones drawn. */
+  /** Every test in this language, not only the ones drawn. */
   count: number;
   /** The last `RECENT` tests, oldest first, the one just typed last. */
   recent: RecentTest[];
@@ -123,18 +109,19 @@ function median(values: number[]): number {
 }
 
 /**
- * The count, the best and the usual speed over every test with the same
- * settings, and the last `RECENT` of them for the chart, as keybear's
- * `testStats` does. `current` is included -- it is not saved until the
- * result screen has been drawn; `null` when it will not be saved at all.
+ * The count, the best and the usual speed over every test in the same
+ * language, whatever its mode and length (see `statsLanguage`), and the last
+ * `RECENT` of them for the chart, as keybear's `testStats` does. `current` is
+ * included -- it is not saved until the result screen has been drawn; `null`
+ * when it will not be saved at all.
  * "Usual" is the median: one interrupted test should not drag it down the way
  * it drags a mean.
  */
 export function recentSummary(
-  filter: SettingsFilter,
+  language: string,
   current: RecentTest | null,
 ): RecentSummary | null {
-  const tests: RecentTest[] = matching(filter).map(
+  const tests: RecentTest[] = matching(language).map(
     ({ wpm, acc, timestamp }) => ({ wpm, acc, timestamp }),
   );
   if (current !== null) tests.push(current);

@@ -130,8 +130,9 @@ function updateWords(): void {
   );
 }
 
-// beartype: best and usual speed over the tests on this browser, so the
-// number just typed has something to be read against
+// beartype: best and usual speed over the tests on this browser in the same
+// language, whatever the mode, so the number just typed has something to be
+// read against
 function updateRecent(dontSave: boolean): void {
   if (Config.mode === "custom") {
     setResultHistory(null);
@@ -139,11 +140,7 @@ function updateRecent(dontSave: boolean): void {
   }
   setResultHistory(
     DB.recentSummary(
-      {
-        mode: result.mode,
-        mode2: result.mode2,
-        language: result.language,
-      },
+      result.language,
       // an invalid test is not kept, so it does not count here either
       dontSave
         ? null
@@ -182,7 +179,7 @@ async function updateCrown(dontSave: boolean): Promise<void> {
   console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
 
   if (canGetPb.value) {
-    const localPb = DB.getLocalPB(Config.mode, result.mode2, Config.language);
+    const localPb = DB.getLocalPB(Config.language);
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
     console.debug("Local PB", localPb, "diff", pbDiff);
@@ -200,7 +197,7 @@ async function updateCrown(dontSave: boolean): Promise<void> {
       if (localPb !== undefined) showConfetti();
     }
   } else {
-    const localPb = DB.getLocalPB(Config.mode, result.mode2, Config.language);
+    const localPb = DB.getLocalPB(Config.language);
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
     console.debug("Local PB", localPb, "diff", pbDiff);
