@@ -1004,13 +1004,26 @@ export async function finish(difficultyFailed = false): Promise<void> {
     LocalResults.saveResult(completedEvent);
   }
   // beartype: the words this round missed go into the book behind the drill
-  // button; see beartype/miss-book.ts
+  // button; see beartype/miss-book.ts. A wrong key counts even when it was
+  // rubbed out before the space; `correct` is judged by keybear's key rule,
+  // so a mark still on its way is not one.
   const history = getInputHistory(eventLog);
+  const stumbledAt = new Set<number>();
+  for (const event of eventLog.events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      stumbledAt.add(event.data.wordIndex);
+    }
+  }
   const round = committedWords(
     TestWords.words.get().map((word) => word.text),
     history,
+    stumbledAt,
   );
-  recordMisses(Config.language, round.words, round.typed);
+  recordMisses(Config.language, round.words, round.typed, round.stumbled);
   learnToneStyle(history);
 }
 
