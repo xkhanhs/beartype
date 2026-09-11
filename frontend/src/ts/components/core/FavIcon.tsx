@@ -4,6 +4,7 @@ import { createMemo, JSXElement } from "solid-js";
 import { Theme } from "../../constants/themes";
 import { isDevEnvironment } from "../../utils/env";
 
+// beartype: "bt" in place of upstream's "mt", as in the header's logo
 export function FavIcon(props: { theme: Theme }): JSXElement {
   const icon = createMemo<string>(() => {
     let { main, bg } = props.theme;
@@ -23,7 +24,9 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
       </style>
       <g>
         <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
-        <path d="M9.09 24.1v21.2h5.12V33.1q.256-4.61 4.48-4.61 3.46.384 3.46 3.84v12.9h5.12v-11.5q-.128-5.25 4.48-5.25 3.46.384 3.46 3.84v12.9h5.12v-12.2q0-9.47-7.04-9.47-4.22 0-7.04 3.46-2.18-3.46-6.02-3.46-3.46 0-6.02 2.43v-2.05M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
+        <path d="M9.09 14h5.12v31.3H9.09z"/>
+        <path fill-rule="evenodd" d="M13.4 34.7a11.5 11.5 0 1 0 23 0a11.5 11.5 0 1 0-23 0zM18.9 34.7a6 6 0 1 0 12 0a6 6 0 1 0-12 0z"/>
+        <path d="M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
       </g>
     </svg>
     `;
