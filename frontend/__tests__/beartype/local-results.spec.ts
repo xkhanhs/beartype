@@ -58,10 +58,33 @@ describe("local results", () => {
   it("sums up the recent tests with the one just typed", () => {
     save(40);
     save(60);
-    expect(recentSummary(filter, { wpm: 80 })).toEqual({
+    const current = { wpm: 80, acc: 96, timestamp: 3 };
+    const summary = recentSummary(filter, current);
+    expect(summary).toMatchObject({
       best: 80,
       usual: 60,
+      usualAcc: 98,
       count: 3,
     });
+    expect(summary?.recent.map((t) => t.wpm)).toEqual([40, 60, 80]);
+    expect(summary?.recent.at(-1)).toEqual(current);
+  });
+
+  it("leaves out a test that will not be kept", () => {
+    save(40);
+    expect(recentSummary(filter, null)).toMatchObject({ best: 40, count: 1 });
+  });
+
+  it("has nothing to say before the first test", () => {
+    expect(recentSummary(filter, null)).toBeNull();
+  });
+
+  it("draws only the last few", () => {
+    for (let wpm = 1; wpm <= 25; wpm++) save(wpm);
+    const summary = recentSummary(filter, null);
+    expect(summary?.count).toBe(20);
+    expect(summary?.recent.map((t) => t.wpm)).toEqual([
+      16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    ]);
   });
 });
