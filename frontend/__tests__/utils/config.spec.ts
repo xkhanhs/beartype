@@ -28,16 +28,16 @@ describe("config.ts", () => {
     it("should correctly merge properties of various types", () => {
       const partialConfig = {
         mode: "time",
-        flipTestColors: true,
+        theme: "8008",
         time: 120,
-        accountChart: ["off", "off", "off", "off"],
+        capsLockWarning: false,
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
       expect(result.mode).toEqual("time");
-      expect(result.flipTestColors).toEqual(true);
+      expect(result.theme).toEqual("8008");
       expect(result.time).toEqual(120);
-      expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
+      expect(result.capsLockWarning).toEqual(false);
     });
     describe("should replace value with default config if invalid", () => {
       it.for([
@@ -54,10 +54,6 @@ describe("config.ts", () => {
           expected: { customThemeColors: defaultConfig.customThemeColors },
         },
         {
-          given: { accountChart: [true, false, false, true] },
-          expected: { accountChart: defaultConfig.accountChart },
-        },
-        {
           given: {
             favThemes: ["nord", "invalid", "serika_dark", "invalid2", "8008"],
           },
@@ -71,48 +67,10 @@ describe("config.ts", () => {
         expect(result, description).toEqual(expect.objectContaining(expected));
       });
     });
-    describe("should not convert legacy values if current values are already present", () => {
-      it.for([
-        {
-          given: { showLiveAcc: true, timerStyle: "mini", liveAccStyle: "off" },
-          expected: { liveAccStyle: "off" },
-        },
-        {
-          given: {
-            showLiveBurst: true,
-            timerStyle: "mini",
-            liveBurstStyle: "off",
-          },
-          expected: { liveBurstStyle: "off" },
-        },
-        {
-          given: { alwaysShowCPM: true, typingSpeedUnit: "wpm" },
-          expected: { typingSpeedUnit: "wpm" },
-        },
-        {
-          given: { showTimerProgress: true, timerStyle: "mini" },
-          expected: { timerStyle: "mini" },
-        },
-      ])(`$given`, ({ given, expected }) => {
-        //WHEN
-
-        const description = `given: ${JSON.stringify(
-          given,
-        )}, expected: ${JSON.stringify(expected)} `;
-
-        const result = migrateConfig(given);
-        expect(result, description).toEqual(expect.objectContaining(expected));
-      });
-    });
     describe("should convert legacy values", () => {
       it.for([
         { given: { smoothCaret: true }, expected: { smoothCaret: "medium" } },
         { given: { smoothCaret: false }, expected: { smoothCaret: "off" } },
-        {
-          given: { alwaysShowCPM: true },
-          expected: { typingSpeedUnit: "cpm" },
-        },
-        { given: { showAverage: "wpm" }, expected: { showAverage: "speed" } },
         {
           given: { playSoundOnError: true },
           expected: { playSoundOnError: "1" },
@@ -120,46 +78,6 @@ describe("config.ts", () => {
         {
           given: { playSoundOnError: false },
           expected: { playSoundOnError: "off" },
-        },
-        {
-          given: { showTimerProgress: false },
-          expected: { timerStyle: "off" },
-        },
-        {
-          given: { showLiveWpm: true, timerStyle: "text" },
-          expected: { liveSpeedStyle: "text" },
-        },
-        {
-          given: { showLiveWpm: true, timerStyle: "bar" },
-          expected: { liveSpeedStyle: "mini" },
-        },
-        {
-          given: { showLiveWpm: true, timerStyle: "off" },
-          expected: { liveSpeedStyle: "mini" },
-        },
-        {
-          given: { showLiveBurst: true, timerStyle: "text" },
-          expected: { liveBurstStyle: "text" },
-        },
-        {
-          given: { showLiveBurst: true, timerStyle: "bar" },
-          expected: { liveBurstStyle: "mini" },
-        },
-        {
-          given: { showLiveBurst: true, timerStyle: "off" },
-          expected: { liveBurstStyle: "mini" },
-        },
-        {
-          given: { showLiveAcc: true, timerStyle: "text" },
-          expected: { liveAccStyle: "text" },
-        },
-        {
-          given: { showLiveAcc: true, timerStyle: "bar" },
-          expected: { liveAccStyle: "mini" },
-        },
-        {
-          given: { showLiveAcc: true, timerStyle: "off" },
-          expected: { liveAccStyle: "mini" },
         },
         { given: { soundVolume: "0.5" }, expected: { soundVolume: 0.5 } },
         { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
@@ -194,31 +112,6 @@ describe("config.ts", () => {
         {
           given: { fontSize: -0.5 },
           expected: { fontSize: 1 },
-        },
-        {
-          given: { tapeMargin: 9.5 },
-          expected: { tapeMargin: 10 },
-        },
-        {
-          given: { tapeMargin: 25 },
-          expected: { tapeMargin: 25 },
-        },
-        {
-          given: { tapeMargin: 90.5 },
-          expected: { tapeMargin: 90 },
-        },
-        {
-          given: { maxLineWidth: 0 },
-          expected: { maxLineWidth: 0 },
-        },
-
-        {
-          given: { maxLineWidth: 19 },
-          expected: { maxLineWidth: 20 },
-        },
-        {
-          given: { maxLineWidth: 1001 },
-          expected: { maxLineWidth: 1000 },
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(

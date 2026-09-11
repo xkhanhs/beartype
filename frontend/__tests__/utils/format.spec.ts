@@ -1,42 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { getDefaultConfig } from "../../src/ts/constants/default-config";
 import { Formatting } from "../../src/ts/utils/format";
-import { Config } from "@monkeytype/schemas/configs";
 
 describe("format.ts", () => {
   describe("typingsSpeed", () => {
-    it("should format with typing speed and decimalPlaces from configuration", () => {
-      //wpm, no decimals
-      const wpmNoDecimals = getInstance({
-        typingSpeedUnit: "wpm",
-        alwaysShowDecimalPlaces: false,
-      });
-      expect(wpmNoDecimals.typingSpeed(12.5)).toEqual("13");
-      expect(wpmNoDecimals.typingSpeed(0)).toEqual("0");
-
-      //cpm, no decimals
-      const cpmNoDecimals = getInstance({
-        typingSpeedUnit: "cpm",
-        alwaysShowDecimalPlaces: false,
-      });
-      expect(cpmNoDecimals.typingSpeed(12.5)).toEqual("63");
-      expect(cpmNoDecimals.typingSpeed(0)).toEqual("0");
-
-      //wpm, with decimals
-      const wpmWithDecimals = getInstance({
-        typingSpeedUnit: "wpm",
-        alwaysShowDecimalPlaces: true,
-      });
-      expect(wpmWithDecimals.typingSpeed(12.5)).toEqual("12.50");
-      expect(wpmWithDecimals.typingSpeed(0)).toEqual("0.00");
-
-      //cpm, with decimals
-      const cpmWithDecimals = getInstance({
-        typingSpeedUnit: "cpm",
-        alwaysShowDecimalPlaces: true,
-      });
-      expect(cpmWithDecimals.typingSpeed(12.5)).toEqual("62.50");
-      expect(cpmWithDecimals.typingSpeed(0)).toEqual("0.00");
+    it("should format wpm with no decimals by default", () => {
+      const format = getInstance();
+      expect(format.typingSpeed(12.5)).toEqual("13");
+      expect(format.typingSpeed(0)).toEqual("0");
     });
 
     it("should format with fallback", () => {
@@ -59,29 +29,19 @@ describe("format.ts", () => {
     });
 
     it("should format with decimals", () => {
+      const format = getInstance();
       //force with decimals
-      const wpmNoDecimals = getInstance({
-        typingSpeedUnit: "wpm",
-        alwaysShowDecimalPlaces: false,
-      });
-      expect(
-        wpmNoDecimals.typingSpeed(100, { showDecimalPlaces: true }),
-      ).toEqual("100.00");
-      //force without decimals
-      const wpmWithDecimals = getInstance({
-        typingSpeedUnit: "wpm",
-        alwaysShowDecimalPlaces: true,
-      });
-      expect(
-        wpmWithDecimals.typingSpeed(100, { showDecimalPlaces: false }),
-      ).toEqual("100");
+      expect(format.typingSpeed(100, { showDecimalPlaces: true })).toEqual(
+        "100.00",
+      );
+      //stays without decimals unless asked
+      expect(format.typingSpeed(100, { showDecimalPlaces: false })).toEqual(
+        "100",
+      );
     });
 
     it("should format with suffix", () => {
-      const format = getInstance({
-        typingSpeedUnit: "wpm",
-        alwaysShowDecimalPlaces: false,
-      });
+      const format = getInstance();
       expect(format.typingSpeed(100, { suffix: " raw" })).toEqual("100 raw");
       expect(format.typingSpeed(100, { suffix: undefined })).toEqual("100");
       expect(format.typingSpeed(0, { suffix: " raw" })).toEqual("0 raw");
@@ -90,7 +50,7 @@ describe("format.ts", () => {
     });
 
     it("should format with rounding", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.typingSpeed(80.25)).toEqual("80");
       expect(format.typingSpeed(80.25, { rounding: Math.ceil })).toEqual("81");
       expect(format.typingSpeed(80.75, { rounding: Math.floor })).toEqual("80");
@@ -98,16 +58,10 @@ describe("format.ts", () => {
   });
 
   describe("percentage", () => {
-    it("should format with decimalPlaces from configuration", () => {
-      //no decimals
-      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
-      expect(noDecimals.percentage(12.5)).toEqual("13%");
-      expect(noDecimals.percentage(0)).toEqual("0%");
-
-      //with decimals
-      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
-      expect(withDecimals.percentage(12.5)).toEqual("12.50%");
-      expect(withDecimals.percentage(0)).toEqual("0.00%");
+    it("should format with no decimals by default", () => {
+      const format = getInstance();
+      expect(format.percentage(12.5)).toEqual("13%");
+      expect(format.percentage(0)).toEqual("0%");
     });
 
     it("should format with fallback", () => {
@@ -128,20 +82,19 @@ describe("format.ts", () => {
     });
 
     it("should format with decimals", () => {
+      const format = getInstance();
       //force with decimals
-      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
-      expect(noDecimals.percentage(100, { showDecimalPlaces: true })).toEqual(
+      expect(format.percentage(100, { showDecimalPlaces: true })).toEqual(
         "100.00%",
       );
-      //force without decimals
-      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
-      expect(
-        withDecimals.percentage(100, { showDecimalPlaces: false }),
-      ).toEqual("100%");
+      //stays without decimals unless asked
+      expect(format.percentage(100, { showDecimalPlaces: false })).toEqual(
+        "100%",
+      );
     });
 
     it("should format with suffix", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.percentage(100, { suffix: " raw" })).toEqual("100% raw");
       expect(format.percentage(100, { suffix: undefined })).toEqual("100%");
       expect(format.percentage(0, { suffix: " raw" })).toEqual("0% raw");
@@ -150,7 +103,7 @@ describe("format.ts", () => {
     });
 
     it("should format with rounding", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.percentage(80.25)).toEqual("80%");
       expect(format.percentage(80.25, { rounding: Math.ceil })).toEqual("81%");
       expect(format.percentage(80.75, { rounding: Math.floor })).toEqual("80%");
@@ -159,16 +112,15 @@ describe("format.ts", () => {
 
   describe("accuracy", () => {
     it("should floor decimals by default", () => {
-      //no decimals
-      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
-      expect(noDecimals.accuracy(12.75)).toEqual("12%");
-      //with decimals
-      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
-      expect(withDecimals.accuracy(12.75)).toEqual("12.75%");
+      const format = getInstance();
+      expect(format.accuracy(12.75)).toEqual("12%");
+      expect(format.accuracy(12.75, { showDecimalPlaces: true })).toEqual(
+        "12.75%",
+      );
     });
 
     it("should format with rounding", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.accuracy(80.5)).toEqual("80%");
       expect(format.accuracy(80.25, { rounding: Math.ceil })).toEqual("81%");
       expect(format.accuracy(80.75, { rounding: Math.floor })).toEqual("80%");
@@ -176,16 +128,10 @@ describe("format.ts", () => {
   });
 
   describe("decimals", () => {
-    it("should format with decimalPlaces from configuration", () => {
-      //no decimals
-      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
-      expect(noDecimals.decimals(12.5)).toEqual("13");
-      expect(noDecimals.decimals(0)).toEqual("0");
-
-      //with decimals
-      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
-      expect(withDecimals.decimals(12.5)).toEqual("12.50");
-      expect(withDecimals.decimals(0)).toEqual("0.00");
+    it("should format with no decimals by default", () => {
+      const format = getInstance();
+      expect(format.decimals(12.5)).toEqual("13");
+      expect(format.decimals(0)).toEqual("0");
     });
 
     it("should format with fallback", () => {
@@ -204,20 +150,17 @@ describe("format.ts", () => {
     });
 
     it("should format with decimals", () => {
+      const format = getInstance();
       //force with decimals
-      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
-      expect(noDecimals.decimals(100, { showDecimalPlaces: true })).toEqual(
+      expect(format.decimals(100, { showDecimalPlaces: true })).toEqual(
         "100.00",
       );
-      //force without decimals
-      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
-      expect(withDecimals.decimals(100, { showDecimalPlaces: false })).toEqual(
-        "100",
-      );
+      //stays without decimals unless asked
+      expect(format.decimals(100, { showDecimalPlaces: false })).toEqual("100");
     });
 
     it("should format with suffix", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.decimals(100, { suffix: " raw" })).toEqual("100 raw");
       expect(format.decimals(100, { suffix: undefined })).toEqual("100");
       expect(format.decimals(0, { suffix: " raw" })).toEqual("0 raw");
@@ -226,7 +169,7 @@ describe("format.ts", () => {
     });
 
     it("should format with rounding", () => {
-      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      const format = getInstance();
       expect(format.decimals(80.25)).toEqual("80");
       expect(format.decimals(80.25, { rounding: Math.ceil })).toEqual("81");
       expect(format.decimals(80.75, { rounding: Math.floor })).toEqual("80");
@@ -274,7 +217,6 @@ describe("format.ts", () => {
   });
 });
 
-function getInstance(config?: Partial<Config>): Formatting {
-  const target: Config = { ...getDefaultConfig(), ...config };
-  return new Formatting(target);
+function getInstance(): Formatting {
+  return new Formatting();
 }

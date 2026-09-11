@@ -8,7 +8,7 @@ import * as Env from "../../src/ts/utils/env";
 import {
   ConfigKey,
   Config as ConfigType,
-  CaretStyleSchema,
+  SmoothCaretSchema,
 } from "@monkeytype/schemas/configs";
 import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
@@ -77,54 +77,10 @@ describe("Config", () => {
     //TODO isBlocked
     it("should fail if config is blocked", () => {
       //GIVEN
-      replaceConfig({ tapeMode: "letter" });
+      replaceConfig({});
 
       //WHEN / THEN
-      expect(Config.setConfig("showAllLines", true)).toBe(false);
-    });
-
-    it("disables live text stats when enabling monkey", () => {
-      //GIVEN
-      replaceConfig({
-        liveSpeedStyle: "text",
-        liveAccStyle: "text",
-        monkey: false,
-      });
-
-      //WHEN / THEN
-      expect(Config.setConfig("monkey", true)).toBe(true);
-      expect(getConfig()).toMatchObject({
-        monkey: true,
-        liveSpeedStyle: "mini",
-        liveAccStyle: "mini",
-      });
-      expect(notificationAddMock).not.toHaveBeenCalled();
-    });
-
-    it("disables monkey when enabling live speed text", () => {
-      //GIVEN
-      replaceConfig({ monkey: true, liveSpeedStyle: "off" });
-
-      //WHEN / THEN
-      expect(Config.setConfig("liveSpeedStyle", "text")).toBe(true);
-      expect(getConfig()).toMatchObject({
-        monkey: false,
-        liveSpeedStyle: "text",
-      });
-      expect(notificationAddMock).not.toHaveBeenCalled();
-    });
-
-    it("disables monkey when enabling live accuracy text", () => {
-      //GIVEN
-      replaceConfig({ monkey: true, liveAccStyle: "off" });
-
-      //WHEN / THEN
-      expect(Config.setConfig("liveAccStyle", "text")).toBe(true);
-      expect(getConfig()).toMatchObject({
-        monkey: false,
-        liveAccStyle: "text",
-      });
-      expect(notificationAddMock).not.toHaveBeenCalled();
+      expect(Config.setConfig("randomTheme", "custom")).toBe(false);
     });
 
     it("fails if config is invalid", () => {
@@ -132,53 +88,43 @@ describe("Config", () => {
       isConfigValueValidMock.mockReturnValue(false);
 
       //WHEN / THEN
-      expect(Config.setConfig("caretStyle", "banana" as any)).toBe(false);
+      expect(Config.setConfig("smoothCaret", "banana" as any)).toBe(false);
       expect(isConfigValueValidMock).toHaveBeenCalledWith(
-        "caret style",
+        "smooth caret",
         "banana",
-        CaretStyleSchema,
+        SmoothCaretSchema,
       );
     });
 
     it("sets overrideConfigs", () => {
       //GIVEN
-      replaceConfig({
-        liveSpeedStyle: "mini", //already set correctly
-        liveAccStyle: "text", //should get updated
-      });
+      replaceConfig({ customTheme: true });
 
       //WHEN
-      Config.setConfig("monkey", true);
+      Config.setConfig("theme", "8008");
 
       //THEN
-      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith({
-        key: "liveSpeedStyle",
-        newValue: "mini",
-        nosave: true,
-        previousValue: "mini",
+      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
+        key: "customTheme",
+        newValue: false,
+        nosave: false,
+        previousValue: true,
       });
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "liveAccStyle",
-        newValue: "mini",
+        key: "theme",
+        newValue: "8008",
         nosave: false,
-        previousValue: "text",
-      });
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "monkey",
-        newValue: true,
-        nosave: false,
-        previousValue: false,
+        previousValue: "serika_dark",
       });
     });
 
     it("saves to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ burstHeatmap: false });
+      replaceConfig({ resultSaving: false });
 
       //WHEN
-      Config.setConfig("burstHeatmap", true);
+      Config.setConfig("resultSaving", true);
 
       //THEN
       //wait for debounce
@@ -186,16 +132,16 @@ describe("Config", () => {
 
       //save
       expect(saveConfigMock).toHaveBeenCalledWith(
-        expect.objectContaining({ burstHeatmap: true }),
+        expect.objectContaining({ resultSaving: true }),
       );
     });
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ keymapMode: "off" });
+      replaceConfig({ customTheme: true });
 
       //WHEN
-      Config.setConfig("keymapSize", 2);
+      Config.setConfig("theme", "8008");
 
       //THEN
       //wait for debounce
@@ -204,8 +150,8 @@ describe("Config", () => {
       //save
       expect(saveConfigMock).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          keymapSize: 2,
-          keymapMode: "static",
+          theme: "8008",
+          customTheme: false,
         }),
       );
     });
@@ -213,10 +159,10 @@ describe("Config", () => {
     it("does not save to localstorage if nosave=true", async () => {
       //GIVEN
 
-      replaceConfig({ burstHeatmap: false });
+      replaceConfig({ resultSaving: false });
 
       //WHEN
-      Config.setConfig("burstHeatmap", true, {
+      Config.setConfig("resultSaving", true, {
         nosave: true,
       });
 
@@ -229,17 +175,17 @@ describe("Config", () => {
 
     it("dispatches event on set", () => {
       //GIVEN
-      replaceConfig({ burstHeatmap: false });
+      replaceConfig({ resultSaving: false });
 
       //WHEN
-      Config.setConfig("burstHeatmap", true, {
+      Config.setConfig("resultSaving", true, {
         nosave: true,
       });
 
       //THEN
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "burstHeatmap",
+        key: "resultSaving",
         newValue: true,
         nosave: true,
         previousValue: false,
@@ -248,21 +194,21 @@ describe("Config", () => {
 
     it("triggers resize if property is set", () => {
       ///WHEN
-      Config.setConfig("maxLineWidth", 50);
+      Config.setConfig("fontSize", 2.5);
 
       expect(miscTriggerResizeMock).toHaveBeenCalled();
     });
 
     it("does not triggers resize if property is not set", () => {
       ///WHEN
-      Config.setConfig("startGraphsAtZero", true);
+      Config.setConfig("resultSaving", true);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
 
     it("does not triggers resize if property on nosave", () => {
       ///WHEN
-      Config.setConfig("maxLineWidth", 50, { nosave: true });
+      Config.setConfig("fontSize", 2.5, { nosave: true });
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
@@ -290,13 +236,13 @@ describe("Config", () => {
         mode: "words",
       });
       await Lifecycle.applyConfig({
-        burstHeatmap: true,
-        alwaysShowWordsHistory: true,
+        resultSaving: false,
+        capsLockWarning: false,
       });
       const config = getConfig();
       expect(config.mode).toBe("time");
-      expect(config.burstHeatmap).toBe(true);
-      expect(config.alwaysShowWordsHistory).toBe(true);
+      expect(config.resultSaving).toBe(false);
+      expect(config.capsLockWarning).toBe(false);
     });
 
     describe("should reset to default if setting failed", () => {
@@ -336,24 +282,14 @@ describe("Config", () => {
 
     it("should apply a partial config but keep the rest unchanged", async () => {
       replaceConfig({
-        burstHeatmap: true,
+        resultSaving: false,
       });
       await Lifecycle.applyConfig({
         ...ConfigUtils.getConfigChanges(),
-        alwaysShowWordsHistory: true,
+        capsLockWarning: false,
       });
       const config = getConfig();
-      expect(config.burstHeatmap).toBe(true);
-    });
-
-    it("should keep the keymap off when applying keymapLayout", async () => {
-      replaceConfig({});
-      await Lifecycle.applyConfig({
-        keymapLayout: "qwerty",
-      });
-      const config = getConfig();
-      expect(config.keymapLayout).toEqual("qwerty");
-      expect(config.keymapMode).toEqual("off");
+      expect(config.resultSaving).toBe(false);
     });
   });
 });

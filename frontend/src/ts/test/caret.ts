@@ -54,13 +54,9 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-export const caret = new Caret(qsr("#caret"), Config.caretStyle);
+export const caret = new Caret(qsr("#caret"), "default");
 
 configEvent.subscribe(({ key }) => {
-  if (key === "caretStyle") {
-    caret.setStyle(Config.caretStyle);
-    updatePosition(true);
-  }
   if (key === "smoothCaret") {
     caret.updateBlinkingAnimation();
   }

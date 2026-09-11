@@ -14,15 +14,6 @@ import { getToneStyle } from "../beartype/tone-style";
 export function getLimit(): number {
   let limit = 100;
 
-  if (Config.showAllLines) {
-    if (Config.mode === "custom") {
-      limit = CustomText.getLimitValue();
-    }
-    if (Config.mode === "words") {
-      limit = Config.words;
-    }
-  }
-
   //infinite words
   if (Config.mode === "words" && Config.words === 0) {
     limit = 100;

@@ -1,7 +1,5 @@
-import { createMemo, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { PageName } from "../pages/page";
-import { Formatting } from "../utils/format";
-import { getConfig } from "../config/store";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
@@ -30,10 +28,3 @@ export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [isUserVerified, setUserVerified] = createSignal(false);
-
-export const getFormatting = createMemo(() => {
-  return new Formatting({
-    alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-    typingSpeedUnit: getConfig.typingSpeedUnit,
-  });
-});

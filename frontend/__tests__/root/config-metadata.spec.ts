@@ -32,47 +32,17 @@ describe("ConfigMeta", () => {
       .map(([key]) => key)
       .sort();
 
-    expect(configsWithTriggeResize).toEqual(
-      [
-        "fontSize",
-        "keymapSize",
-        "maxLineWidth",
-        "tapeMode",
-        "tapeMargin",
-      ].sort(),
-    );
+    expect(configsWithTriggeResize).toEqual(["fontSize"].sort());
   });
   describe("overrideValue", () => {
     const testCases: TestsByConfig<{
       given?: Partial<ConfigType>;
       expected: Partial<ConfigType>;
     }> = {
-      keymapSize: [
-        { value: 1, expected: { keymapSize: 1 } },
-        { value: 1.234, expected: { keymapSize: 1.2 } },
-        { value: 0.4, expected: { keymapSize: 0.5 } },
-        { value: 3.6, expected: { keymapSize: 3.5 } },
-      ],
       customBackground: [
         {
           value: " https://example.com/test.jpg ",
           expected: { customBackground: "https://example.com/test.jpg" },
-        },
-      ],
-      accountChart: [
-        {
-          value: ["on", "off", "off", "off"],
-          expected: { accountChart: ["on", "off", "off", "off"] },
-        },
-        {
-          value: ["off", "off", "off", "off"],
-          given: { accountChart: ["on", "off", "off", "off"] },
-          expected: { accountChart: ["off", "on", "off", "off"] },
-        },
-        {
-          value: ["off", "off", "on", "on"],
-          given: { accountChart: ["off", "on", "off", "off"] },
-          expected: { accountChart: ["on", "off", "on", "on"] },
         },
       ],
     };
@@ -100,20 +70,7 @@ describe("ConfigMeta", () => {
       given?: Partial<ConfigType>;
       fail?: true;
     }> = {
-      showAllLines: [
-        { value: true, given: { tapeMode: "off" } },
-        { value: false, given: { tapeMode: "word" } },
-        { value: true, given: { tapeMode: "word" }, fail: true },
-      ],
-      monkey: [{ value: false, given: { liveSpeedStyle: "text" } }],
-      liveSpeedStyle: [
-        { value: "mini", given: { monkey: true } },
-        { value: "text", given: { monkey: true } },
-      ],
-      liveAccStyle: [
-        { value: "mini", given: { monkey: true } },
-        { value: "text", given: { monkey: true } },
-      ],
+      randomTheme: [{ value: "off" }, { value: "custom", fail: true }],
     };
 
     it.for(
@@ -140,122 +97,11 @@ describe("ConfigMeta", () => {
       given: Partial<ConfigType>;
       expected?: Partial<ConfigType>;
     }> = {
-      monkey: [
-        {
-          value: false,
-          given: { liveSpeedStyle: "text", liveAccStyle: "text" },
-          expected: {
-            liveSpeedStyle: "text",
-            liveAccStyle: "text",
-          },
-        },
-        {
-          value: true,
-          given: { liveSpeedStyle: "text", liveAccStyle: "text" },
-          expected: { liveSpeedStyle: "mini", liveAccStyle: "mini" },
-        },
-      ],
-      liveSpeedStyle: [
-        {
-          value: "mini",
-          given: { monkey: true },
-          expected: { monkey: true },
-        },
-        {
-          value: "text",
-          given: { monkey: true },
-          expected: { monkey: false },
-        },
-      ],
-      liveAccStyle: [
-        {
-          value: "mini",
-          given: { monkey: true },
-          expected: { monkey: true },
-        },
-        {
-          value: "text",
-          given: { monkey: true },
-          expected: { monkey: false },
-        },
-      ],
-      tapeMode: [
-        {
-          value: "off",
-          given: { showAllLines: true },
-          expected: { showAllLines: true },
-        },
-        {
-          value: "letter",
-          given: { showAllLines: true },
-          expected: { showAllLines: false },
-        },
-      ],
       theme: [
         {
           value: "8008",
           given: { customTheme: true },
           expected: { customTheme: false },
-        },
-      ],
-      keymapLayout: [
-        {
-          value: "qwerty",
-          given: { keymapMode: "react" },
-          expected: { keymapMode: "react" },
-        },
-        {
-          value: "qwerty",
-          given: { keymapMode: "off" },
-          expected: { keymapMode: "static" },
-        },
-      ],
-      keymapStyle: [
-        {
-          value: "alice",
-          given: { keymapMode: "react" },
-          expected: { keymapMode: "react" },
-        },
-        {
-          value: "alice",
-          given: { keymapMode: "off" },
-          expected: { keymapMode: "static" },
-        },
-      ],
-      keymapLegendStyle: [
-        {
-          value: "dynamic",
-          given: { keymapMode: "react" },
-          expected: { keymapMode: "react" },
-        },
-        {
-          value: "dynamic",
-          given: { keymapMode: "off" },
-          expected: { keymapMode: "static" },
-        },
-      ],
-      keymapKeys: [
-        {
-          value: "minimal_numrow",
-          given: { keymapMode: "react" },
-          expected: { keymapMode: "react" },
-        },
-        {
-          value: "minimal_numrow",
-          given: { keymapMode: "off" },
-          expected: { keymapMode: "static" },
-        },
-      ],
-      keymapSize: [
-        {
-          value: 2,
-          given: { keymapMode: "react" },
-          expected: { keymapMode: "react" },
-        },
-        {
-          value: 2,
-          given: { keymapMode: "off" },
-          expected: { keymapMode: "static" },
         },
       ],
     };

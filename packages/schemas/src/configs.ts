@@ -1,7 +1,6 @@
 import { z, ZodSchema } from "zod";
 import * as Shared from "./shared";
 import * as Themes from "./themes";
-import * as Layouts from "./layouts";
 import { LanguageSchema } from "./languages";
 import { FontNameSchema } from "./fonts";
 
@@ -23,24 +22,6 @@ export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
-export const CompositionDisplaySchema = z.enum(["off", "below", "replace"]);
-export type CompositionDisplay = z.infer<typeof CompositionDisplaySchema>;
-
-export const TimerStyleSchema = z.enum([
-  "off",
-  "bar",
-  "text",
-  "mini",
-  "flash_text",
-  "flash_mini",
-]);
-export type TimerStyle = z.infer<typeof TimerStyleSchema>;
-
-export const LiveSpeedAccBurstStyleSchema = z.enum(["off", "text", "mini"]);
-export type LiveSpeedAccBurstStyle = z.infer<
-  typeof LiveSpeedAccBurstStyleSchema
->;
-
 export const RandomThemeSchema = z.enum([
   "off",
   "on",
@@ -52,46 +33,8 @@ export const RandomThemeSchema = z.enum([
 ]);
 export type RandomTheme = z.infer<typeof RandomThemeSchema>;
 
-export const TimerColorSchema = z.enum(["black", "sub", "text", "main"]);
-export type TimerColor = z.infer<typeof TimerColorSchema>;
-
-export const TimerOpacitySchema = z.enum(["0.25", "0.5", "0.75", "1"]);
-export type TimerOpacity = z.infer<typeof TimerOpacitySchema>;
-
 export const KeymapModeSchema = z.enum(["off", "static", "react", "next"]);
 export type KeymapMode = z.infer<typeof KeymapModeSchema>;
-
-export const KeymapStyleSchema = z.enum([
-  "staggered",
-  "alice",
-  "matrix",
-  "split",
-  "split_matrix",
-  "steno",
-  "steno_matrix",
-]);
-export type KeymapStyle = z.infer<typeof KeymapStyleSchema>;
-
-export const KeymapLegendStyleSchema = z.enum([
-  "lowercase",
-  "uppercase",
-  "blank",
-  "dynamic",
-]);
-export type KeymapLegendStyle = z.infer<typeof KeymapLegendStyleSchema>;
-
-export const KeymapKeysSchema = z.enum([
-  "minimal", //showTopRow=layout or showTopRow=never
-  "minimal_numrow", //showTopRow=always
-  "full", //include extra keys
-]);
-export type KeymapKeys = z.infer<typeof KeymapKeysSchema>;
-
-export const KeymapSizeSchema = z.number().min(0.5).max(3.5).step(0.1);
-export type KeymapSize = z.infer<typeof KeymapSizeSchema>;
-
-export const SingleListCommandLineSchema = z.enum(["manual", "on"]);
-export type SingleListCommandLine = z.infer<typeof SingleListCommandLineSchema>;
 
 export const PlaySoundOnErrorSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type PlaySoundOnError = z.infer<typeof PlaySoundOnErrorSchema>;
@@ -130,42 +73,6 @@ export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 export const SoundVolumeSchema = z.number().min(0).max(1);
 export type SoundVolume = z.infer<typeof SoundVolumeSchema>;
 
-export const AccountChartSchema = z.tuple([
-  z.enum(["on", "off"]),
-  z.enum(["on", "off"]),
-  z.enum(["on", "off"]),
-  z.enum(["on", "off"]),
-]);
-export type AccountChart = z.infer<typeof AccountChartSchema>;
-
-export const HighlightModeSchema = z.enum([
-  "off",
-  "letter",
-  "word",
-  "next_word",
-  "next_two_words",
-  "next_three_words",
-]);
-export type HighlightMode = z.infer<typeof HighlightModeSchema>;
-
-export const TypedEffectSchema = z.enum(["keep", "hide", "fade", "dots"]);
-export type TypedEffect = z.infer<typeof TypedEffectSchema>;
-
-export const TapeModeSchema = z.enum(["off", "letter", "word"]);
-export type TapeMode = z.infer<typeof TapeModeSchema>;
-
-export const TapeMarginSchema = z.number().min(10).max(90);
-export type TapeMargin = z.infer<typeof TapeMarginSchema>;
-
-export const TypingSpeedUnitSchema = z.enum([
-  "wpm",
-  "cpm",
-  "wps",
-  "cps",
-  "wph",
-]);
-export type TypingSpeedUnit = z.infer<typeof TypingSpeedUnitSchema>;
-
 export const AdsSchema = z.enum(["off", "result", "on", "sellout"]);
 export type Ads = z.infer<typeof AdsSchema>;
 
@@ -184,12 +91,6 @@ export type CustomBackgroundFilter = z.infer<
 
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type MonkeyPowerLevel = z.infer<typeof MonkeyPowerLevelSchema>;
-
-export const ShowAverageSchema = z.enum(["off", "speed", "acc", "both"]);
-export type ShowAverage = z.infer<typeof ShowAverageSchema>;
-
-export const ShowPbSchema = z.boolean();
-export type ShowPb = z.infer<typeof ShowPbSchema>;
 
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
@@ -223,16 +124,8 @@ export type TimeConfig = z.infer<typeof TimeConfigSchema>;
 export const WordCountSchema = z.number().int().nonnegative();
 export type WordCount = z.infer<typeof WordCountSchema>;
 
-export const KeymapLayoutSchema = z
-  .literal("overrideSync")
-  .or(Layouts.LayoutNameSchema);
-export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
-
 export const FontSizeSchema = z.number().positive();
 export type FontSize = z.infer<typeof FontSizeSchema>;
-
-export const MaxLineWidthSchema = z.number().min(20).max(1000).or(z.literal(0));
-export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
@@ -258,16 +151,12 @@ export const ConfigSchema = z
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
     language: LanguageSchema,
-    burstHeatmap: z.boolean(),
 
     // behavior
     resultSaving: z.boolean(),
-    alwaysShowWordsHistory: z.boolean(),
-    singleListCommandLine: SingleListCommandLineSchema,
 
     // input
     indicateTypos: IndicateTyposSchema,
-    compositionDisplay: CompositionDisplaySchema,
 
     // sound
     soundVolume: SoundVolumeSchema,
@@ -277,37 +166,13 @@ export const ConfigSchema = z
 
     // caret
     smoothCaret: SmoothCaretSchema,
-    caretStyle: CaretStyleSchema,
 
     // appearance
-    timerStyle: TimerStyleSchema,
-    liveSpeedStyle: LiveSpeedAccBurstStyleSchema,
-    liveAccStyle: LiveSpeedAccBurstStyleSchema,
-    liveBurstStyle: LiveSpeedAccBurstStyleSchema,
-    timerColor: TimerColorSchema,
-    timerOpacity: TimerOpacitySchema,
-    highlightMode: HighlightModeSchema,
-    typedEffect: TypedEffectSchema,
-    tapeMode: TapeModeSchema,
-    tapeMargin: TapeMarginSchema,
-    smoothLineScroll: z.boolean(),
-    showAllLines: z.boolean(),
-    alwaysShowDecimalPlaces: z.boolean(),
-    typingSpeedUnit: TypingSpeedUnitSchema,
-    startGraphsAtZero: z.boolean(),
-    maxLineWidth: MaxLineWidthSchema,
     fontSize: FontSizeSchema,
     fontFamily: FontNameSchema,
     keymapMode: KeymapModeSchema,
-    keymapLayout: KeymapLayoutSchema,
-    keymapStyle: KeymapStyleSchema,
-    keymapLegendStyle: KeymapLegendStyleSchema,
-    keymapKeys: KeymapKeysSchema,
-    keymapSize: KeymapSizeSchema,
 
     // theme
-    flipTestColors: z.boolean(),
-    colorfulMode: z.boolean(),
     customBackground: CustomBackgroundSchema,
     customBackgroundSize: CustomBackgroundSizeSchema,
     customBackgroundFilter: CustomBackgroundFilterSchema,
@@ -321,14 +186,10 @@ export const ConfigSchema = z
     customThemeColors: CustomThemeColorsSchema,
 
     // hide elements
-    showKeyTips: z.boolean(),
     showOutOfFocusWarning: z.boolean(),
     capsLockWarning: z.boolean(),
-    showAverage: ShowAverageSchema,
-    showPb: ShowPbSchema,
 
     // other (hidden)
-    accountChart: AccountChartSchema,
     monkey: z.boolean(),
     monkeyPowerLevel: MonkeyPowerLevelSchema,
 

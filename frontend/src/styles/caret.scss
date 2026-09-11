@@ -25,33 +25,6 @@
     width: 0.1em;
   }
 
-  &.carrot {
-    background-color: transparent;
-    background-image: url("/images/caret/carrot.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 0.25em;
-  }
-
-  &.banana {
-    background-color: transparent;
-    background-image: url("/images/caret/banana.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 1em;
-  }
-
-  &.monkey {
-    background-color: transparent;
-    background-image: url("/images/caret/monkey.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 1em;
-  }
-
   &.block {
     width: 0.5em;
     z-index: -1;

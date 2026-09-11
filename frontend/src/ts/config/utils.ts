@@ -44,65 +44,8 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  if (
-    //@ts-expect-error legacy configs
-    configObj.alwaysShowCPM === true &&
-    configObj.typingSpeedUnit === undefined
-  ) {
-    configObj.typingSpeedUnit = "cpm";
-  }
-
-  //@ts-expect-error legacy configs
-  if (configObj.showAverage === "wpm") {
-    configObj.showAverage = "speed";
-  }
-
   if (typeof configObj.playSoundOnError === "boolean") {
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
-  }
-
-  if (
-    //@ts-expect-error legacy configs
-    configObj.showTimerProgress === false &&
-    configObj.timerStyle === undefined
-  ) {
-    configObj.timerStyle = "off";
-  }
-
-  if (
-    //@ts-expect-error legacy configs
-    configObj.showLiveWpm === true &&
-    configObj.liveSpeedStyle === undefined
-  ) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveSpeedStyle = val;
-  }
-
-  if (
-    //@ts-expect-error legacy configs
-    configObj.showLiveBurst === true &&
-    configObj.liveBurstStyle === undefined
-  ) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveBurstStyle = val;
-  }
-
-  if (
-    //@ts-expect-error legacy configs
-    configObj.showLiveAcc === true &&
-    configObj.liveAccStyle === undefined
-  ) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveAccStyle = val;
   }
 
   if (typeof configObj.soundVolume === "string") {
@@ -131,13 +74,6 @@ function replaceLegacyValues(
   }
 
   if (
-    Array.isArray(configObj.accountChart) &&
-    configObj.accountChart.length !== 4
-  ) {
-    configObj.accountChart = ["on", "on", "on", "on"];
-  }
-
-  if (
     Array.isArray(configObj.customThemeColors) &&
     //@ts-expect-error legacy configs
     configObj.customThemeColors.length === 9
@@ -155,37 +91,6 @@ function replaceLegacyValues(
   ) {
     const arr = configObj.customBackgroundFilter;
     configObj.customBackgroundFilter = [arr[0], arr[1], arr[2], arr[3]];
-  }
-
-  if (configObj.tapeMargin !== undefined) {
-    if (configObj.tapeMargin < 10) {
-      configObj.tapeMargin = 10;
-    } else if (configObj.tapeMargin > 90) {
-      configObj.tapeMargin = 90;
-    }
-  }
-
-  if (configObj.maxLineWidth !== undefined) {
-    if (configObj.maxLineWidth < 20 && configObj.maxLineWidth !== 0) {
-      configObj.maxLineWidth = 20;
-    } else if (configObj.maxLineWidth > 1000) {
-      configObj.maxLineWidth = 1000;
-    }
-  }
-
-  if ("keymapShowTopRow" in configObj && configObj.keymapKeys === undefined) {
-    switch (configObj.keymapShowTopRow) {
-      case "never":
-        configObj.keymapKeys = "minimal";
-        break;
-      case "always":
-        configObj.keymapKeys = "minimal_numrow";
-        break;
-      case "layout":
-        configObj.keymapKeys = "minimal";
-        break;
-    }
-    delete configObj.keymapShowTopRow;
   }
 
   return configObj;

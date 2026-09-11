@@ -8,9 +8,7 @@ import { ElementWithUtils, qsr } from "../utils/dom";
 import * as TestWords from "../test/test-words";
 
 const wordsCache = qsr("#words");
-const wordsWrapperCache = qsr("#wordsWrapper");
 
-let lockedMainCaretInTape = true;
 let caretDebug = false;
 
 export function toggleCaretDebug(): void {
@@ -33,13 +31,10 @@ export class Caret {
   private element: ElementWithUtils;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
-  private readyToResetMarginLeft: boolean = false;
   private isMainCaret: boolean = false;
-  private cumulativeTapeMarginCorrection: number = 0;
 
   private posAnimation: JSAnimation | null = null;
   private marginTopAnimation: JSAnimation | null = null;
-  private marginLeftAnimation: JSAnimation | null = null;
 
   constructor(element: ElementWithUtils, style: CaretStyle) {
     this.id = element.native.id;
@@ -142,58 +137,11 @@ export class Caret {
   public stopAllAnimations(): void {
     this.posAnimation?.cancel();
     this.marginTopAnimation?.cancel();
-    this.marginLeftAnimation?.cancel();
   }
 
   public clearMargins(): void {
     this.element.setStyle({ marginTop: "", marginLeft: "" });
     this.readyToResetMarginTop = false;
-    this.readyToResetMarginLeft = false;
-    this.cumulativeTapeMarginCorrection = 0;
-  }
-
-  public handleTapeWordsRemoved(widthRemoved: number): void {
-    // Removing tape words reduces the absolute value of options.newValue passed to handleTapeScroll().
-    // To keep the target marginLeft accurate, we reduce the absolute value of cumulative correction by the same amount.
-    this.cumulativeTapeMarginCorrection += widthRemoved;
-  }
-
-  public handleTapeScroll(options: {
-    newValue: number;
-    duration: number;
-    ease: EasingParam;
-  }): void {
-    if (this.isMainCaret && lockedMainCaretInTape) return;
-    this.readyToResetMarginLeft = false;
-
-    /**
-     * options.newValue is the total width of all previously typed characters, and assuming we didn't
-     * reset marginLeft or remove any tape words, then it would be the correct marginLeft to go to.
-     *
-     * Each time marginLeft is reset, the distance between options.newValue and the current
-     * marginLeft-after-reset increases, making the caret shift too much left (in LTR).
-     *
-     * To correct this, we decrease the new target marginLeft by how much we've
-     * reset the margin so far (cumulativeTapeMarginCorrection).
-     */
-    const newMarginLeft =
-      options.newValue - this.cumulativeTapeMarginCorrection;
-
-    if (options.duration === 0) {
-      this.marginLeftAnimation?.cancel();
-      this.element.setStyle({ marginLeft: `${newMarginLeft}px` });
-      this.readyToResetMarginLeft = true;
-      return;
-    }
-
-    this.marginLeftAnimation = this.element.animate({
-      marginLeft: newMarginLeft,
-      duration: options.duration,
-      ease: options.ease,
-      onComplete: () => {
-        this.readyToResetMarginLeft = true;
-      },
-    });
   }
 
   public handleLineJump(options: {
@@ -337,21 +285,8 @@ export class Caret {
         currentMarginTop = 0;
       }
 
-      // same for marginLeft
-      let currentMarginLeft = parseFloat(
-        this.element.getStyle().marginLeft || "0",
-      );
-      if (this.readyToResetMarginLeft) {
-        this.readyToResetMarginLeft = false;
-        const currentLeft = parseFloat(this.element.getStyle().left || "0");
-
-        this.element.setStyle({
-          marginLeft: "0px",
-          left: `${currentLeft + currentMarginLeft}px`,
-        });
-        this.cumulativeTapeMarginCorrection += currentMarginLeft;
-        currentMarginLeft = 0;
-      }
+      // marginLeft is never set now that tape mode is gone, so it is always 0
+      const currentMarginLeft = 0;
 
       /**
        * we subtract the margin from the target position in order to arrive at the intended location
@@ -437,9 +372,6 @@ export class Caret {
     let left = 0;
     let top = 0;
 
-    const tapeOffset =
-      wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
-
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
       if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
@@ -451,65 +383,20 @@ export class Caret {
           afterLetterCorrection += letter.getOffsetWidth() * -1;
         }
       }
-      if (Config.tapeMode === "off") {
-        if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
-        }
-        left += letter.getOffsetLeft();
-        left += options.word.getOffsetLeft();
-        left += afterLetterCorrection;
-      } else if (Config.tapeMode === "word") {
-        if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
-        }
-        left += options.word.getOffsetWidth() * -1;
-        left += letter.getOffsetLeft();
-        left += afterLetterCorrection;
-        if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
-        } else {
-          left += options.word.getOffsetLeft();
-          left += options.word.getOffsetWidth();
-        }
-      } else if (Config.tapeMode === "letter") {
-        if (this.isFullWidth()) {
-          left += width * -1;
-        }
-        if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
-        } else {
-          left += letter.getOffsetLeft();
-          left += options.word.getOffsetLeft();
-          left += afterLetterCorrection;
-          left += width;
-        }
+      if (!this.isFullWidth()) {
+        left += letter.getOffsetWidth();
       }
+      left += letter.getOffsetLeft();
+      left += options.word.getOffsetLeft();
+      left += afterLetterCorrection;
     } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         afterLetterCorrection += letter.getOffsetWidth();
       }
-      if (Config.tapeMode === "off") {
-        left += letter.getOffsetLeft();
-        left += options.word.getOffsetLeft();
-        left += afterLetterCorrection;
-      } else if (Config.tapeMode === "word") {
-        left += letter.getOffsetLeft();
-        left += afterLetterCorrection;
-        if (this.isMainCaret && lockedMainCaretInTape) {
-          left += tapeOffset;
-        } else {
-          left += options.word.getOffsetLeft();
-        }
-      } else if (Config.tapeMode === "letter") {
-        if (this.isMainCaret && lockedMainCaretInTape) {
-          left += tapeOffset;
-        } else {
-          left += letter.getOffsetLeft();
-          left += options.word.getOffsetLeft();
-          left += afterLetterCorrection;
-        }
-      }
+      left += letter.getOffsetLeft();
+      left += options.word.getOffsetLeft();
+      left += afterLetterCorrection;
     }
 
     //top position

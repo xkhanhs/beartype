@@ -34,7 +34,7 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  qs("#result .stats .wpm .top .text")?.setText(Config.typingSpeedUnit);
+  qs("#result .stats .wpm .top .text")?.setText("wpm");
 
   if (inf) {
     qs("#result .stats .wpm .bottom")?.setText("∞");
@@ -53,63 +53,26 @@ function updateWpmAndAcc(): void {
   const accEventLog = getLastEventLog();
   if (accEventLog !== null) {
     const acc = getAccuracy(accEventLog);
-    if (Config.alwaysShowDecimalPlaces) {
-      if (Config.typingSpeedUnit !== "wpm") {
-        qs("#result .stats .wpm .bottom")?.setAttribute(
-          "aria-label",
-          `${result.wpm.toFixed(2)} wpm`,
-        );
-        qs("#result .stats .raw .bottom")?.setAttribute(
-          "aria-label",
-          `${result.rawWpm.toFixed(2)} wpm`,
-        );
-      } else {
-        qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
-        qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
-      }
+    const decimalsAndSuffix = {
+      showDecimalPlaces: true,
+      suffix: " wpm",
+    };
+    const wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+    const rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-      let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
-      if (result.testDuration > 61) {
-        time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
-      }
-      qs("#result .stats .time .bottom .text")?.setText(time);
-      // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+    qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
+    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
 
-      qs("#result .stats .acc .bottom")?.setAttribute(
+    qs("#result .stats .acc .bottom")
+      ?.setAttribute(
         "aria-label",
-        `${acc.correct} đúng\n${acc.incorrect} sai`,
-      );
-    } else {
-      //not showing decimal places
-      const decimalsAndSuffix = {
-        showDecimalPlaces: true,
-        suffix: ` ${Config.typingSpeedUnit}`,
-      };
-      let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-      let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
-
-      if (Config.typingSpeedUnit !== "wpm") {
-        wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
-        rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
-      }
-
-      qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-      qs("#result .stats .raw .bottom")?.setAttribute(
-        "aria-label",
-        rawWpmHover,
-      );
-
-      qs("#result .stats .acc .bottom")
-        ?.setAttribute(
-          "aria-label",
-          `${
-            result.acc === 100
-              ? "100%"
-              : Format.percentage(result.acc, { showDecimalPlaces: true })
-          }\n${acc.correct} đúng\n${acc.incorrect} sai`,
-        )
-        ?.setAttribute("data-balloon-break", "");
-    }
+        `${
+          result.acc === 100
+            ? "100%"
+            : Format.percentage(result.acc, { showDecimalPlaces: true })
+        }\n${acc.correct} đúng\n${acc.incorrect} sai`,
+      )
+      ?.setAttribute("data-balloon-break", "");
   }
 }
 
@@ -117,20 +80,10 @@ function updateConsistency(): void {
   qs("#result .stats .consistency .bottom")?.setText(
     Format.percentage(result.consistency),
   );
-  if (Config.alwaysShowDecimalPlaces) {
-    qs("#result .stats .consistency .bottom")?.setAttribute(
-      "aria-label",
-      Format.percentage(result.keyConsistency, {
-        showDecimalPlaces: true,
-        suffix: " key",
-      }),
-    );
-  } else {
-    qs("#result .stats .consistency .bottom")?.setAttribute(
-      "aria-label",
-      `${result.consistency}% (${result.keyConsistency}% key)`,
-    );
-  }
+  qs("#result .stats .consistency .bottom")?.setAttribute(
+    "aria-label",
+    `${result.consistency}% (${result.keyConsistency}% key)`,
+  );
 }
 
 function updateTime(): void {
@@ -148,27 +101,19 @@ function updateTime(): void {
     `ngừng gõ ${result.afkDuration}s (${afkSecondsPercent}%)`,
   );
 
-  if (Config.alwaysShowDecimalPlaces) {
-    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-  } else {
-    // beartype: up to one decimal, as in keybear: half a second is a real
-    // difference between two runs of the same words
-    let time = `${oneDecimal(result.testDuration, Math.round)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Math.round(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-    qs("#result .stats .time .bottom")?.setAttribute(
-      "aria-label",
-      `${Numbers.roundTo2(result.testDuration)}s (${
-        result.afkDuration
-      }s ngừng gõ, ${afkSecondsPercent}%)`,
-    );
+  // beartype: up to one decimal, as in keybear: half a second is a real
+  // difference between two runs of the same words
+  let time = `${oneDecimal(result.testDuration, Math.round)}s`;
+  if (result.testDuration > 61) {
+    time = DateTime.secondsToString(Math.round(result.testDuration));
   }
+  qs("#result .stats .time .bottom .text")?.setText(time);
+  qs("#result .stats .time .bottom")?.setAttribute(
+    "aria-label",
+    `${Numbers.roundTo2(result.testDuration)}s (${
+      result.afkDuration
+    }s ngừng gõ, ${afkSecondsPercent}%)`,
+  );
 }
 
 export function updateTodayTracker(): void {

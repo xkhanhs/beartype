@@ -1,5 +1,4 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { roundTo1 } from "@monkeytype/util/numbers";
 import { JSXElement } from "solid-js";
 
 import { getDefaultConfig } from "../constants/default-config";
@@ -115,22 +114,6 @@ export type ConfigMetadataObject = {
 //todo:
 // maybe have generic set somehow handle test restarting
 
-const caretOptionsMetadata = {
-  banana: {
-    visible: false,
-  },
-  carrot: {
-    visible: false,
-  },
-  monkey: {
-    visible: false,
-  },
-  block: {},
-  off: {},
-  default: {},
-  outline: {},
-  underline: {},
-};
 export const configMetadata: ConfigMetadataObject = {
   // test
   words: {
@@ -188,14 +171,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "test",
     description: "Change in which language you want to type.",
   },
-  burstHeatmap: {
-    key: "burstHeatmap",
-    fa: { icon: "fa-fire" },
-    displayString: "word burst heatmap",
-    changeRequiresRestart: false,
-    group: "test",
-  },
-
   // behavior
   resultSaving: {
     key: "resultSaving",
@@ -206,24 +181,6 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       'Set this setting to "off" in case you want to practice without saving new results to your account and affecting your statistics.',
   },
-  alwaysShowWordsHistory: {
-    key: "alwaysShowWordsHistory",
-    fa: { icon: "fa-align-left" },
-    displayString: "always show words history",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description:
-      "This option will automatically show the words history at the end of the test. Can cause slight lag with a lot of words.",
-  },
-  singleListCommandLine: {
-    key: "singleListCommandLine",
-    fa: { icon: "fa-list" },
-    displayString: "single list command line",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description:
-      "When enabled, it will show the command line with all commands in a single list instead of submenu arrangements. Selecting 'manual' will expose all commands only after typing >.",
-  },
   // input
   indicateTypos: {
     key: "indicateTypos",
@@ -233,15 +190,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       'Shows typos that you\'ve made. "Below" shows what you typed below the letters, "replace" will replace the letters with the ones you typed and "both" will do the same as replace and below, but it will show the correct letters below your mistakes.',
-  },
-  compositionDisplay: {
-    key: "compositionDisplay",
-    fa: { icon: "fa-language" },
-    displayString: "composition display",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      'Change how composition is displayed. "off" will just underline the letter if composition is active. "below" will show the composed character below the test. "replace" will replace the letter in the test with the composed character.',
   },
   // sound
   soundVolume: {
@@ -331,192 +279,7 @@ export const configMetadata: ConfigMetadataObject = {
     group: "caret",
     description: "The caret will move smoothly between letters and words.",
   },
-  caretStyle: {
-    key: "caretStyle",
-    fa: { icon: "fa-i-cursor" },
-    displayString: "caret style",
-    changeRequiresRestart: false,
-    group: "caret",
-    description: "Change the style of the caret during the test.",
-    optionsMetadata: caretOptionsMetadata,
-  },
   // appearance
-  timerStyle: {
-    key: "timerStyle",
-    fa: { icon: "fa-chart-pie" },
-    displayString: "live progress style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      'Change the style of the timer/word count during a test. "Flash" styles will briefly show the timer in timed modes every 15 seconds.',
-  },
-  liveSpeedStyle: {
-    key: "liveSpeedStyle",
-    fa: { icon: "fa-tachometer-alt" },
-    displayString: "live speed style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Change the style of the live speed displayed during the test.",
-    overrideConfig: ({ value }) => {
-      if (value === "text") {
-        return {
-          monkey: false,
-        };
-      }
-      return {};
-    },
-  },
-  liveAccStyle: {
-    key: "liveAccStyle",
-    fa: { icon: "fa-tachometer-alt" },
-    displayString: "live accuracy style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Change the style of the live accuracy displayed during the test.",
-    overrideConfig: ({ value }) => {
-      if (value === "text") {
-        return {
-          monkey: false,
-        };
-      }
-      return {};
-    },
-  },
-  liveBurstStyle: {
-    key: "liveBurstStyle",
-    fa: { icon: "fa-tachometer-alt" },
-    displayString: "live word burst style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Change the style of the live burst speed displayed during the test.",
-  },
-  timerColor: {
-    key: "timerColor",
-    fa: { icon: "fa-chart-pie" },
-    displayString: "timer color",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Change the color of the progress, live speed, accuracy and burst text.",
-  },
-  timerOpacity: {
-    key: "timerOpacity",
-    fa: { icon: "fa-chart-pie" },
-    displayString: "timer opacity",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Change the opacity of the progress, live speed, burst and accuracy text.",
-  },
-  highlightMode: {
-    key: "highlightMode",
-    fa: { icon: "fa-highlighter" },
-    displayString: "highlight mode",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description: "Change what is highlighted during the test.",
-  },
-  typedEffect: {
-    key: "typedEffect",
-    fa: { icon: "fa-eye" },
-    displayString: "typed effect",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description: "Change how typed words are shown.",
-  },
-  tapeMode: {
-    key: "tapeMode",
-    fa: { icon: "fa-tape" },
-    triggerResize: true,
-    changeRequiresRestart: false,
-    displayString: "tape mode",
-    group: "appearance",
-    description:
-      "Only shows one line which scrolls horizontally. Setting this to 'word' will make it scroll after every word and 'letter' will scroll after every keypress. Works best with smooth line scroll enabled and a monospace font.",
-    overrideConfig: ({ value }) => {
-      if (value !== "off") {
-        return {
-          showAllLines: false,
-        };
-      }
-      return {};
-    },
-  },
-  tapeMargin: {
-    key: "tapeMargin",
-    fa: { icon: "fa-tape" },
-    displayString: "tape margin",
-    triggerResize: true,
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "When in tape mode, set the carets position from the left edge of the typing test as a percentage (for example, 50% centers it).",
-  },
-  smoothLineScroll: {
-    key: "smoothLineScroll",
-    fa: { icon: "fa-align-left" },
-    displayString: "smooth line scroll",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description: "When enabled, the line transition will be animated.",
-  },
-  showAllLines: {
-    key: "showAllLines",
-    fa: { icon: "fa-align-left" },
-    changeRequiresRestart: false,
-    displayString: "show all lines",
-    group: "appearance",
-    description:
-      "When enabled, the website will show all lines for word, custom and quote mode tests - otherwise the lines will be limited to 3, and will automatically scroll. Using this could cause the timer text and live speed to not be visible.",
-    isBlocked: ({ value, currentConfig }) => {
-      if (value && currentConfig.tapeMode !== "off") {
-        showNoticeNotification("Show all lines doesn't support tape mode.");
-        return true;
-      }
-      return false;
-    },
-  },
-  alwaysShowDecimalPlaces: {
-    key: "alwaysShowDecimalPlaces",
-    fa: {
-      icon: "fa-ellipsis-h",
-    },
-    displayString: "always show decimal places",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Always shows decimal places for values on the result page, without the need to hover over the stats.",
-  },
-  typingSpeedUnit: {
-    key: "typingSpeedUnit",
-    fa: { icon: "fa-tachometer-alt" },
-    displayString: "typing speed unit",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description: "Display typing speed in the specified unit.",
-  },
-  startGraphsAtZero: {
-    key: "startGraphsAtZero",
-    fa: { icon: "fa-chart-line" },
-    displayString: "start graphs at zero",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description:
-      "Force graph axis to always start at zero, no matter what the data is. Turning this off may exaggerate the value changes.",
-  },
-  maxLineWidth: {
-    key: "maxLineWidth",
-    fa: { icon: "fa-text-width" },
-    changeRequiresRestart: false,
-    triggerResize: true,
-    displayString: "max line width",
-    group: "appearance",
-    description:
-      "Change the maximum width of the typing test, measured in characters. Setting this to 0 will align the words to the edges of the content area.",
-  },
   fontSize: {
     key: "fontSize",
     fa: { icon: "fa-font" },
@@ -549,79 +312,7 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "Displays your current layout while taking a test. React shows what you pressed and Next shows what you need to press next.",
   },
-  keymapLayout: {
-    key: "keymapLayout",
-    fa: { icon: "fa-keyboard" },
-    displayString: "keymap layout",
-    changeRequiresRestart: false,
-    group: "appearance",
-    description: "Controls which layout is displayed on the keymap.",
-    overrideConfig: ({ currentConfig }) =>
-      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
-  },
-  keymapStyle: {
-    key: "keymapStyle",
-    fa: { icon: "fa-keyboard" },
-    displayString: "keymap style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    overrideConfig: ({ currentConfig }) =>
-      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
-  },
-  keymapLegendStyle: {
-    key: "keymapLegendStyle",
-    fa: { icon: "fa-keyboard" },
-    displayString: "keymap legend style",
-    changeRequiresRestart: false,
-    group: "appearance",
-    overrideConfig: ({ currentConfig }) =>
-      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
-  },
-  keymapKeys: {
-    key: "keymapKeys",
-    fa: { icon: "fa-keyboard" },
-    displayString: "keymap keys",
-    changeRequiresRestart: false,
-    group: "appearance",
-    overrideConfig: ({ currentConfig }) =>
-      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
-  },
-  keymapSize: {
-    key: "keymapSize",
-    fa: { icon: "fa-keyboard" },
-    triggerResize: true,
-    changeRequiresRestart: false,
-    displayString: "keymap size",
-    group: "appearance",
-    description: "Change the size of the keymap.",
-    overrideValue: ({ value }) => {
-      if (value < 0.5) value = 0.5;
-      if (value > 3.5) value = 3.5;
-      return roundTo1(value);
-    },
-    overrideConfig: ({ currentConfig }) =>
-      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
-  },
-
   // theme
-  flipTestColors: {
-    key: "flipTestColors",
-    fa: { icon: "fa-adjust" },
-    displayString: "flip test colors",
-    changeRequiresRestart: false,
-    group: "theme",
-    description:
-      "By default, typed text is brighter than the future text. When enabled, the colors will be flipped and the future text will be brighter than the already typed text.",
-  },
-  colorfulMode: {
-    key: "colorfulMode",
-    fa: { icon: "fa-fill-drip" },
-    displayString: "colorful mode",
-    changeRequiresRestart: false,
-    group: "theme",
-    description:
-      "When enabled, the test words will use the main color, instead of the text color, making the website more colorful.",
-  },
   customBackground: {
     key: "customBackground",
     fa: { icon: "fa-link" },
@@ -746,18 +437,6 @@ export const configMetadata: ConfigMetadataObject = {
   },
 
   // hide elements
-  showKeyTips: {
-    key: "showKeyTips",
-    fa: { icon: "fa-question" },
-    displayString: "show key tips",
-    changeRequiresRestart: false,
-    group: "hideElements",
-    description: "Shows the keybind tips at the bottom of the page.",
-    optionsMetadata: {
-      true: { displayString: "show" },
-      false: { displayString: "hide" },
-    },
-  },
   showOutOfFocusWarning: {
     key: "showOutOfFocusWarning",
     fa: { icon: "fa-exclamation" },
@@ -783,61 +462,13 @@ export const configMetadata: ConfigMetadataObject = {
       false: { displayString: "hide" },
     },
   },
-  showAverage: {
-    key: "showAverage",
-    fa: { icon: "fa-chart-bar" },
-    displayString: "show average",
-    changeRequiresRestart: false,
-    group: "hideElements",
-    description:
-      "Displays your average speed and/or accuracy over the last 10 tests.",
-  },
-  showPb: {
-    key: "showPb",
-    fa: { icon: "fa-crown" },
-    displayString: "show personal best",
-    changeRequiresRestart: false,
-    group: "hideElements",
-  },
-
   // other (hidden)
-  accountChart: {
-    key: "accountChart",
-    fa: { icon: "fa-chart-line" },
-    displayString: "account chart",
-    changeRequiresRestart: false,
-    group: "hidden",
-    overrideValue: ({ value, currentValue }) => {
-      // if both speed and accuracy are off, set opposite to on
-      // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
-      if (value[0] === "off" && value[1] === "off") {
-        const changedIndex = value[0] === currentValue[0] ? 0 : 1;
-        value[changedIndex] = "on";
-      }
-      return value;
-    },
-  },
   monkey: {
     key: "monkey",
     fa: { icon: "fa-egg" },
     displayString: "monkey",
     changeRequiresRestart: false,
     group: "hidden",
-    overrideConfig: ({ value, currentConfig }) => {
-      if (value) {
-        return {
-          liveSpeedStyle:
-            currentConfig.liveSpeedStyle === "text"
-              ? "mini"
-              : currentConfig.liveSpeedStyle,
-          liveAccStyle:
-            currentConfig.liveAccStyle === "text"
-              ? "mini"
-              : currentConfig.liveAccStyle,
-        };
-      }
-      return {};
-    },
   },
   monkeyPowerLevel: {
     key: "monkeyPowerLevel",

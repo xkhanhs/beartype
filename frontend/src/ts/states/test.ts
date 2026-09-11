@@ -126,16 +126,14 @@ export const getKeymapLayout = createMemo<{
   layoutNameDisplayString: string;
   isMirrored: boolean;
 }>(() => {
-  const isOverride = getConfig.keymapLayout === "overrideSync";
   // beartype: this used to sync to the input layout emulator's own setting,
-  // which was always "default" -- the emulator is gone now, so is that key.
-  const raw = isOverride ? "default" : getConfig.keymapLayout;
-
-  const layout = raw === "default" ? "qwerty" : raw;
-  const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
-  const isMirrored = false;
-
-  return { layout: layout, layoutNameDisplayString, isMirrored };
+  // and to the keymapLayout config -- both are gone now, so this is always
+  // qwerty.
+  return {
+    layout: "qwerty",
+    layoutNameDisplayString: replaceUnderscoresWithSpaces("default"),
+    isMirrored: false,
+  };
 });
 
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<

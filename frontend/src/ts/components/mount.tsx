@@ -10,11 +10,7 @@ import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { CapsWarning } from "./pages/test/CapsWarning";
-import { CompositionDisplay } from "./pages/test/CompositionDisplay";
-import { BarTimerProgress } from "./pages/test/live-stats/BarTimerProgress";
 import { LiveStatsMini } from "./pages/test/live-stats/LiveStatsMini";
-import { LiveStatsTextBottom } from "./pages/test/live-stats/LiveStatsTextBottom";
-import { LiveStatsTextTop } from "./pages/test/live-stats/LiveStatsTextTop";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { OutOfFocusWarning } from "./pages/test/OutOfFocusWarning";
 import { TestConfig } from "./pages/test/TestConfig";
@@ -28,12 +24,8 @@ const components: Record<string, () => JSXElement> = {
   testconfig: () => <TestConfig />,
   testmodesnotice: () => <TestModesNotice />,
   capswarning: () => <CapsWarning />,
-  compositiondisplay: () => <CompositionDisplay />,
   outoffocuswarning: () => <OutOfFocusWarning />,
   livestatsmini: () => <LiveStatsMini />,
-  livestatstexttop: () => <LiveStatsTextTop />,
-  livestatstextbottom: () => <LiveStatsTextBottom />,
-  bartimerprogress: () => <BarTimerProgress />,
   missdrill: () => <MissDrillButton />,
   resulthistory: () => <ResultHistory />,
 };

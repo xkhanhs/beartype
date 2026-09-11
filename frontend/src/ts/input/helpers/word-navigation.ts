@@ -1,4 +1,3 @@
-import { Config } from "../../config/store";
 import * as TestUI from "../../test/test-ui";
 import {
   decreaseActiveWordIndex,
@@ -11,8 +10,7 @@ import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
-import { getWordBurst } from "../../test/events/stats";
-import { buildEventLog, getInputForWord } from "../../test/events/data";
+import { getInputForWord } from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -26,7 +24,6 @@ type GoToNextWordReturn = {
 
 export async function goToNextWord({
   correctInsert,
-  now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret: GoToNextWordReturn = {
     increasedWordIndex: false,
@@ -34,11 +31,6 @@ export async function goToNextWord({
   };
 
   TestUI.beforeTestWordChange("forward", correctInsert);
-
-  if (Config.liveBurstStyle !== "off") {
-    const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
-    ret.lastBurst = burst;
-  }
 
   const lastWord = getActiveWordIndex() >= TestWords.words.length - 1;
   if (lastWord) {

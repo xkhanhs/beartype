@@ -97,12 +97,8 @@ window.addEventListener("beforeunload", (event) => {
 
 const debouncedEvent = debounce(250, () => {
   if (getActivePage() === "test" && !getResultVisible()) {
-    if (Config.tapeMode !== "off") {
-      void TestUI.scrollTape();
-    } else {
-      void TestUI.centerActiveLine();
-      void TestUI.updateHintsPositionDebounced();
-    }
+    void TestUI.centerActiveLine();
+    void TestUI.updateHintsPositionDebounced();
     setTimeout(() => {
       TestUI.updateWordsInputPosition();
       TestUI.focusWords();
