@@ -150,6 +150,8 @@ type RestartOptions = {
   nosave?: boolean;
   event?: KeyboardEvent;
   practiseMissed?: boolean;
+  // beartype: the drill button turning a drill off
+  leaveDrill?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
 };
@@ -244,12 +246,16 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     options.withSameWordset = true;
   }
 
+  // beartype: a new test during a drill is the drill's next round, built
+  // again from the book (`continueDrill`); only the drill button's
+  // `leaveDrill`, or a book too thin to drill, goes back to the settings
+  // from before
   if (
     PractiseWords.before.mode !== null &&
     !options.withSameWordset &&
-    !options.practiseMissed
+    !options.practiseMissed &&
+    (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
-    // beartype: only the words change
     showNoticeNotification("Thôi luyện từ hay sai, quay về bài thường.");
     if (PractiseWords.before.punctuation !== null) {
       setConfig("punctuation", PractiseWords.before.punctuation);
@@ -1101,6 +1107,8 @@ window.addEventListener("focus", () => {
   ) {
     void restart({
       noAnim: true,
+      // beartype: a repeat keeps its words; they are known already
+      withSameWordset: isRepeated(),
     });
   }
 });
@@ -1115,6 +1123,8 @@ document.addEventListener("visibilitychange", () => {
   ) {
     void restart({
       noAnim: true,
+      // beartype: a repeat keeps its words; they are known already
+      withSameWordset: isRepeated(),
     });
   }
 });

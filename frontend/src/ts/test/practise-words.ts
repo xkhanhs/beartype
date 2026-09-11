@@ -14,6 +14,7 @@ import {
 } from "./events/stats";
 import { setCustomTextIndicator } from "../states/core";
 import { getLastEventLog } from "../states/test";
+import { MIN_DRILL_WORDS, missWords } from "../beartype/miss-book";
 
 type Before = {
   mode: Mode | null;
@@ -216,6 +217,19 @@ export function initFromWords(words: readonly string[]): boolean {
   before.customText = null;
 
   return true;
+}
+
+/**
+ * beartype: the next round of a drill that is on -- "next", tab + enter, the
+ * logo -- built again from the book, which the round just finished has
+ * changed. A drill stays on until the typist turns it off or picks another
+ * mode; it ends by itself only when the book (for the language on screen)
+ * no longer holds enough words, and then `false` sends `restart` back to the
+ * settings from before.
+ */
+export function continueDrill(): boolean {
+  const words = missWords(Config.language);
+  return words.length >= MIN_DRILL_WORDS && initFromWords(words);
 }
 
 export function resetBefore(): void {
