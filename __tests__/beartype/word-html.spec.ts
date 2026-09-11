@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { wordHtml } from "../../src/ts/beartype/word-html";
+import { typoHints, wordHtml } from "../../src/ts/beartype/word-html";
 
 /** `letter:class` for each cell, the way the test screen would show it. */
 function cells(target: string, input: string, composing = ""): string[] {
@@ -80,5 +80,40 @@ describe("wordHtml", () => {
       "ò:correct",
       "a:correct",
     ]);
+  });
+});
+
+describe("typoHints", () => {
+  it("hangs nothing under a letter still being built", () => {
+    // Telex on its way to `tiếng`, `cuộc` and `sẵn`
+    expect(typoHints("tiếng", "tie")).toEqual([]);
+    expect(typoHints("tiếng", "tiee")).toEqual([]);
+    expect(typoHints("tiếng", "tiêngs")).toEqual([]);
+    expect(typoHints("cuộc", "cuooc")).toEqual([]);
+    expect(typoHints("sẵn", "să")).toEqual([]);
+  });
+
+  it("hangs the character typed under each wrong letter", () => {
+    expect(typoHints("sẵn", "sb")).toEqual([{ index: 1, typed: "b" }]);
+    expect(typoHints("hello", "hxllo")).toEqual([{ index: 1, typed: "x" }]);
+    // each of the three keys of `ố` knocks out a letter, as keybear draws it
+    expect(typoHints("tiếng", "tiống")).toEqual([
+      { index: 2, typed: "ố" },
+      { index: 3, typed: "ố" },
+      { index: 4, typed: "ố" },
+    ]);
+  });
+
+  it("indexes the letters wordHtml draws", () => {
+    const hints = typoHints("hello", "hxlyo");
+    expect(hints.map((h) => h.index)).toEqual([1, 3]);
+    for (const { index } of hints) {
+      expect(cells("hello", "hxlyo")[index]).toMatch(/:incorrect$/);
+    }
+  });
+
+  it("leaves extra letters alone and escapes what it hangs", () => {
+    expect(typoHints("sẵn", "sẵnx")).toEqual([]);
+    expect(typoHints("a", "<")).toEqual([{ index: 0, typed: "&lt;" }]);
   });
 });

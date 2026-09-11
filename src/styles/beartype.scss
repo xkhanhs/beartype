@@ -612,6 +612,11 @@ footer {
   gap: 0.4rem;
   inline-size: max-content;
   max-inline-size: min(40rem, 94vw);
+  // on a short screen the rows scroll inside the card, which opens upward
+  // from the footer and would otherwise run off the top
+  max-block-size: calc(100dvh - 6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.3rem;
   border: 2px solid var(--kb-border);
   border-radius: 1.1rem;

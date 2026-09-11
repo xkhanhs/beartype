@@ -64,3 +64,25 @@ export function wordHtml(
 
   return html;
 }
+
+/**
+ * What to hang under the word when `indicateTypos` is `below`: each letter
+ * typed wrong, by its index among the letters `wordHtml` draws, with the
+ * character typed there, escaped for HTML.
+ *
+ * Only a `wrong` letter gets one. A letter still on its way to its mark
+ * (`partial`, the `e` of `ế`) is not a typo, and an extra letter already
+ * shows what was typed.
+ */
+export function typoHints(
+  target: string,
+  input: string,
+): { index: number; typed: string }[] {
+  const hints: { index: number; typed: string }[] = [];
+  compareWord(target, inTargetStyle(target, input)).forEach((cell, index) => {
+    if (cell.state === "wrong" && cell.typed !== undefined) {
+      hints.push({ index, typed: escape(cell.typed) });
+    }
+  });
+  return hints;
+}

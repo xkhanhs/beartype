@@ -2,7 +2,7 @@ import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import { wordHtml } from "../beartype/word-html";
+import { typoHints, wordHtml } from "../beartype/word-html";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -278,7 +278,7 @@ async function updateHintsPosition(): Promise<void> {
   if (
     getActivePage() !== "test" ||
     getResultVisible() ||
-    (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
+    Config.indicateTypos !== "below"
   ) {
     return;
   }
@@ -374,7 +374,7 @@ function updateWordWrapperClasses(): void {
   wordsEl.removeClass("blind");
   wordsWrapperEl.removeClass("blind");
 
-  if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
+  if (Config.indicateTypos === "below") {
     wordsEl.addClass("indicateTyposBelow");
     wordsWrapperEl.addClass("indicateTyposBelow");
   } else {
@@ -607,25 +607,35 @@ export async function updateWordLetters({
       const wordAtIndex = getWordElement(wordIndex);
       if (!wordAtIndex) return;
       const hintIndices: number[][] = [];
+      const hintChars: string[] = [];
 
       // beartype: lay the word out by keys, not by character index -- see
-      // beartype/word-html.ts.
+      // beartype/word-html.ts. The typos hung under it come from the same
+      // layout, so a letter still being built never gets one.
       ret = wordHtml(currentWord ?? "", input, compositionData);
 
       wordAtIndex.setHtml(ret);
 
-      if (hintIndices?.length) {
-        const wordAtIndexLetters = wordAtIndex.qsa("letter");
-        let hintsHtml;
-        if (Config.indicateTypos === "both") {
-          hintsHtml = createHintsHtml(
-            hintIndices,
-            wordAtIndexLetters,
-            currentWord ?? "",
-          );
-        } else {
-          hintsHtml = createHintsHtml(hintIndices, wordAtIndexLetters, input);
+      if (Config.indicateTypos === "below") {
+        for (const { index, typed } of typoHints(currentWord, input)) {
+          // upstream's blocks: runs of adjacent wrong letters
+          const lastBlock = hintIndices[hintIndices.length - 1];
+          if (lastBlock?.[lastBlock.length - 1] === index - 1) {
+            lastBlock.push(index);
+          } else {
+            hintIndices.push([index]);
+          }
+          hintChars.push(typed);
         }
+      }
+
+      if (hintIndices.length) {
+        const wordAtIndexLetters = wordAtIndex.qsa("letter");
+        const hintsHtml = createHintsHtml(
+          hintIndices,
+          wordAtIndexLetters,
+          hintChars,
+        );
         wordAtIndex.appendHtml(hintsHtml);
         const hintElements = wordAtIndex.native.getElementsByTagName("hint");
         await joinOverlappingHints(

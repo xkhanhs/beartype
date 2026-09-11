@@ -19,7 +19,7 @@ export const CaretStyleSchema = z.enum([
 ]);
 export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 
-export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
+export const IndicateTyposSchema = z.enum(["off", "below"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
 export const KeymapModeSchema = z.enum(["off", "react"]);

@@ -7,6 +7,7 @@ import {
   FONTS,
   KEYMAP_MODES,
   SMOOTH_CARETS,
+  TYPO_INDICATORS,
 } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
@@ -76,6 +77,12 @@ const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
   off: "tắt",
   react: "bật",
 };
+
+const TYPO_INDICATOR_LABELS: Record<(typeof TYPO_INDICATORS)[number], string> =
+  {
+    off: "tắt",
+    below: "bật",
+  };
 
 export function SettingsPopover(): JSXElement {
   const [open, setOpen] = createSignal(false);
@@ -169,6 +176,14 @@ export function SettingsPopover(): JSXElement {
             value={getConfig.soundVolume}
             onInput={(value) => setConfig("soundVolume", value)}
             onChange={() => void previewClick(getConfig.playSoundOnClick)}
+          />
+          <SettingsRow
+            label="hiện phím gõ sai"
+            hint="chữ đã gõ nhầm hiện nhỏ dưới chữ đích"
+            options={TYPO_INDICATORS}
+            labels={TYPO_INDICATOR_LABELS}
+            value={getConfig.indicateTypos}
+            onPick={(value) => setConfig("indicateTypos", value)}
           />
           <SettingsRow
             label="bàn phím ảo"

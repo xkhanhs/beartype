@@ -119,6 +119,25 @@ describe("keymap", () => {
   });
 });
 
+describe("typos under the words", () => {
+  it("are hidden until switched on, and stay on once they are", () => {
+    expect(lockConfig(undefined).indicateTypos).toBe("off");
+    expect(
+      lockConfig({ ...getBeartypeDefaults(), indicateTypos: "below" })
+        .indicateTypos,
+    ).toBe("below");
+  });
+
+  it("drops upstream's other ways of showing them", () => {
+    expect(
+      lockConfig({
+        ...getBeartypeDefaults(),
+        indicateTypos: "replace" as Config["indicateTypos"],
+      }).indicateTypos,
+    ).toBe("off");
+  });
+});
+
 describe("themes", () => {
   it("follows the computer's light or dark setting by default", () => {
     const config = lockConfig(undefined);
