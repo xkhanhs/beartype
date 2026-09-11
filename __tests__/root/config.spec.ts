@@ -12,7 +12,6 @@ import {
 import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import { configLS } from "../../src/ts/config/persistence";
-import * as Notifications from "../../src/ts/states/notifications";
 import * as TestState from "../../src/ts/states/test";
 
 const { replaceConfig, getConfig } = __testing;
@@ -31,10 +30,6 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(configEvent, "dispatch");
     const saveConfigMock = vi.spyOn(configLS, "set");
-    const notificationAddMock = vi.spyOn(
-      Notifications,
-      "showNoticeNotification",
-    );
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
     const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
 
@@ -42,7 +37,6 @@ describe("Config", () => {
       isConfigValueValidMock,
       dispatchConfigEventMock,
       saveConfigMock,
-      notificationAddMock,
       miscTriggerResizeMock,
       stateIsTestActiveMock,
     ];

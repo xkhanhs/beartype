@@ -3,10 +3,6 @@ import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as TestTimer from "./test-timer";
@@ -165,7 +161,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     !options.practiseMissed &&
     (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
-    showNoticeNotification("Thôi luyện từ hay sai, quay về bài thường.");
     setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -242,8 +237,7 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    // beartype: only the words change
-    showErrorNotification("Không tải được bộ từ", { error });
+    console.error("Không tải được bộ từ", error);
   }
 
   if (!language || language.name !== Config.language) {
@@ -286,19 +280,6 @@ async function init(): Promise<boolean> {
       lastInitError = e;
     }
     console.error(e);
-    if (e instanceof WordGenError) {
-      if (e.message.length > 0) {
-        showNoticeNotification(e.message, {
-          important: true,
-        });
-      }
-    } else {
-      // beartype: only the words change
-      showErrorNotification("Không tạo được bài gõ", {
-        error: e,
-        important: true,
-      });
-    }
 
     return await init();
   }
@@ -379,13 +360,7 @@ export async function addWord(): Promise<void> {
     TestUI.addWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
-    showErrorNotification(
-      "Error while getting next word. Please try again later",
-      {
-        error: e,
-        important: true,
-      },
-    );
+    console.error(e);
   }
 
   // strip the trailing commit separator once the final word has been generated
@@ -547,9 +522,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let dontSave = false;
 
   if (countUndefined(ce) > 0) {
-    console.log(ce);
-    showErrorNotification(
+    console.error(
       "Failed to build result object: One of the fields is undefined or NaN",
+      ce,
     );
     dontSave = true;
   }
@@ -575,12 +550,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const mode2Number = parseInt(completedEvent.mode2);
 
-  // beartype: the result screen says what was wrong with a test, in
-  // Vietnamese, under the figures (`updateOther` in result.ts); upstream's
-  // English pop-up said it a second time. The checks below are upstream's,
-  // untouched -- only their pop-up is silenced, for this function alone.
-  const showNoticeNotification = (..._args: unknown[]): void => undefined;
-
+  // the result screen says what was wrong with a test, under the figures
+  // (`updateOther` in result.ts)
   let tooShort = false;
   //fail checks
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
@@ -590,14 +561,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
-    showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     setIsTestInvalid(true);
     dontSave = true;
   } else if (difficultyFailed) {
-    showNoticeNotification(`Test failed - ${failReason}`, {
-      durationMs: 1000,
-    });
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
@@ -617,19 +584,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitMode() === "time" &&
       CustomText.getLimitValue() < 15)
   ) {
-    showNoticeNotification("Test invalid - too short");
     setIsTestInvalid(true);
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
-    showNoticeNotification("Test invalid - AFK detected");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (idle !== null) {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (isRepeated()) {
-    showNoticeNotification("Test invalid - repeated");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -641,7 +605,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - wpm");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -653,11 +616,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - raw");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
-    showNoticeNotification("Test invalid - accuracy");
     setIsTestInvalid(true);
     dontSave = true;
   }

@@ -3,7 +3,6 @@ import { isColorDark } from "../utils/colors";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import { configEvent } from "../events/config";
-import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { themes } from "../constants/themes";
 import { qs } from "../utils/dom";
@@ -50,7 +49,6 @@ async function set(
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setConfig("autoSwitchTheme", false);
-    showNoticeNotification("Auto switch theme disabled");
   }
 }
 

@@ -1,4 +1,3 @@
-import { showErrorNotification } from "../states/notifications";
 import { ZodSchema } from "zod";
 
 export function invalid(
@@ -12,7 +11,6 @@ export function invalid(
     message = `Invalid value for ${key} (${val}). ${customMessage}`;
   }
 
-  showErrorNotification(message);
   console.error(message);
 }
 

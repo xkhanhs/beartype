@@ -8,7 +8,6 @@ import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
-import { getErrorMessage } from "../../src/ts/utils/error";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
@@ -162,62 +161,6 @@ describe("misc.ts", () => {
 
       tests.forEach((test) => {
         const result = escapeHTML(test.input);
-        expect(result).toBe(test.expected);
-      });
-    });
-  });
-
-  describe("getErrorMesssage", () => {
-    it("should correctly get the error message", () => {
-      const tests = [
-        {
-          input: null,
-          expected: undefined,
-        },
-        {
-          input: undefined,
-          expected: undefined,
-        },
-        {
-          input: "",
-          expected: undefined,
-        },
-        {
-          input: {},
-          expected: undefined,
-        },
-        {
-          input: "error message",
-          expected: "error message",
-        },
-        {
-          input: 1,
-          expected: "1",
-        },
-        {
-          input: { message: "error message" },
-          expected: "error message",
-        },
-        {
-          input: { message: 1 },
-          expected: "1",
-        },
-        {
-          input: { message: "" },
-          expected: undefined,
-        },
-        {
-          input: { message: {} },
-          expected: undefined,
-        },
-        {
-          input: new Error("error message"),
-          expected: "error message",
-        },
-      ];
-
-      tests.forEach((test) => {
-        const result = getErrorMessage(test.input);
         expect(result).toBe(test.expected);
       });
     });

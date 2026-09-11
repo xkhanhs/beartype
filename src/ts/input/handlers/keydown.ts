@@ -1,7 +1,6 @@
 import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
 import { emulateInsertText } from "./insert-text";
-import { showNoticeNotification } from "../../states/notifications";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
 import { getLastBailoutAttempt, setLastBailoutAttempt } from "../state";
@@ -31,15 +30,6 @@ async function handleEnter(e: KeyboardEvent, _now: number): Promise<void> {
       const delay = Date.now() - getLastBailoutAttempt();
       if (getLastBailoutAttempt() === -1 || delay > 200) {
         setLastBailoutAttempt(Date.now());
-        if (delay >= 5000) {
-          showNoticeNotification(
-            "Please double tap shift+enter to confirm bail out",
-            {
-              important: true,
-              durationMs: 5000,
-            },
-          );
-        }
         e.preventDefault();
         return;
       } else {

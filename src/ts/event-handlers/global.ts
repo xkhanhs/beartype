@@ -1,7 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../legacy-states/page-transition";
 import { Config } from "../config/store";
-import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
@@ -52,27 +51,3 @@ window.addEventListener("keydown", function (e) {
     e.preventDefault();
   }
 });
-
-window.onerror = function (message, url, line, column, error): void {
-  if (isDevEnvironment()) {
-    showErrorNotification(error?.message ?? "Undefined message", {
-      customTitle: "DEV: Unhandled error",
-      durationMs: 5000,
-      important: true,
-    });
-    console.error({ message, url, line, column, error });
-  }
-};
-
-window.onunhandledrejection = function (e): void {
-  if (isDevEnvironment()) {
-    showErrorNotification(
-      (e.reason as Error).message ?? e.reason ?? "Undefined message",
-      {
-        customTitle: "DEV: Unhandled rejection",
-        durationMs: 5000,
-        important: true,
-      },
-    );
-  }
-};

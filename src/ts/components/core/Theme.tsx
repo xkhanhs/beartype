@@ -5,7 +5,6 @@ import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
-import { showNoticeNotification } from "../../states/notifications";
 import { getTheme } from "../../states/theme";
 import { FavIcon } from "./FavIcon";
 
@@ -33,7 +32,6 @@ export function Theme(): JSXElement {
     const name = target.dataset["name"];
     console.debug("Theme component failed to load style", name, e);
     console.error(`Failed to load theme ${name}`, e);
-    showNoticeNotification("Không tải được bộ màu");
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {

@@ -3,11 +3,6 @@
 
 import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-  removeNotification,
-} from "../states/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import { timerEvent } from "../events/timer";
@@ -103,7 +98,6 @@ type TimerStats = {
 };
 
 let slowTimerCount = 0;
-let slowTimerNotifIds: number[] = [];
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
@@ -220,19 +214,7 @@ function checkIfTimerIsSlow(drift: number): void {
     }
 
     if (drift > 500 || slowTimerCount > 5) {
-      //slow timer
-
-      // beartype: the two messages in Vietnamese, like the rest of the page
-      showNoticeNotification(
-        'Có thể do "chế độ tiết kiệm" (efficiency mode) của Microsoft Edge.',
-      );
-
-      slowTimerNotifIds.push(
-        showErrorNotification(
-          "Bài bị dừng vì máy đang chạy chậm: đồng hồ trễ thì tốc độ và độ chính xác sẽ tính sai. Nếu hay gặp, hãy báo lỗi trên GitHub.",
-        ),
-      );
-
+      //slow timer; the result screen says why the test stopped
       timerEvent.dispatch({ key: "fail", value: "slow timer" });
     }
   }
@@ -242,10 +224,6 @@ export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
   emittedTicks = 0;
-  for (const id of slowTimerNotifIds) {
-    removeNotification(id, "clear");
-  }
-  slowTimerNotifIds = [];
   void _startNew(now);
   // void _startOld(now);
 }
