@@ -300,11 +300,7 @@ export class Caret {
       if (options.letterIndex >= wordLength) {
         side = "afterLetter";
 
-        if (Config.blindMode || Config.hideExtraLetters) {
-          options.letterIndex = wordLength - 1;
-        } else {
-          options.letterIndex -= 1;
-        }
+        options.letterIndex -= 1;
       }
 
       if (options.letterIndex < 0) {

@@ -86,14 +86,10 @@ export function getBarTarget(): {
 
 export const showLiveStats = createMemo(() => isTestActive() && getFocus());
 export const getLiveSpeedText = createMemo(() =>
-  Format.typingSpeed(
-    (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0,
-    { showDecimalPlaces: false },
-  ),
+  Format.typingSpeed(currentLiveStats.wpm ?? 0, { showDecimalPlaces: false }),
 );
 export const getLiveAccText = createMemo(
-  () =>
-    `${getConfig.blindMode ? 100 : Math.floor(currentLiveStats.acc ?? 100)}%`,
+  () => `${Math.floor(currentLiveStats.acc ?? 100)}%`,
 );
 export const getLiveBurstText = createMemo(() =>
   Format.typingSpeed(currentLiveStats.burst ?? 0, { showDecimalPlaces: false }),

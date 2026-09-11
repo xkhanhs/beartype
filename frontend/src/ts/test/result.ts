@@ -209,7 +209,6 @@ function updateRecent(dontSave: boolean): void {
         mode: result.mode,
         mode2: result.mode2,
         language: result.language,
-        difficulty: result.difficulty,
       },
       // an invalid test is not kept, so it does not count here either
       dontSave
@@ -249,12 +248,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
 
   if (canGetPb.value) {
-    const localPb = DB.getLocalPB(
-      Config.mode,
-      result.mode2,
-      Config.language,
-      Config.difficulty,
-    );
+    const localPb = DB.getLocalPB(Config.mode, result.mode2, Config.language);
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
     console.debug("Local PB", localPb, "diff", pbDiff);
@@ -272,12 +266,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       if (localPb !== undefined) showConfetti();
     }
   } else {
-    const localPb = DB.getLocalPB(
-      Config.mode,
-      result.mode2,
-      Config.language,
-      Config.difficulty,
-    );
+    const localPb = DB.getLocalPB(Config.mode, result.mode2, Config.language);
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
     console.debug("Local PB", localPb, "diff", pbDiff);
@@ -318,33 +307,15 @@ type CanGetPbObject = {
 };
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
-  // allow stopOnError:letter to be PB only if 100% accuracy, since it doesn't affect gameplay
-  const stopOnLetterTriggered =
-    Config.stopOnError === "letter" && result.acc < 100;
-  const notBailedOut = !result.bailedOut;
-
-  if (!stopOnLetterTriggered && notBailedOut) {
+  if (!result.bailedOut) {
     return {
       value: true,
     };
-  } else {
-    if (stopOnLetterTriggered) {
-      return {
-        value: false,
-        reason: "stop on letter",
-      };
-    }
-    if (!notBailedOut) {
-      return {
-        value: false,
-        reason: "bailed out",
-      };
-    }
-    return {
-      value: false,
-      reason: "unknown",
-    };
   }
+  return {
+    value: false,
+    reason: "bailed out",
+  };
 }
 
 export function showConfetti(): void {
@@ -391,20 +362,6 @@ function updateTestType(): void {
   }
   if (Config.mode !== "custom") {
     testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
-  }
-  if (Config.blindMode) {
-    testType += "<br>blind";
-  }
-  if (Config.difficulty === "expert") {
-    testType += "<br>expert";
-  } else if (Config.difficulty === "master") {
-    testType += "<br>master";
-  }
-  if (Config.stopOnError !== "off") {
-    testType += `<br>stop on ${Config.stopOnError}`;
-  }
-  if (Config.deleteOnError !== "off") {
-    testType += `<br>delete on ${Config.deleteOnError.replace(/_/g, " ")}`;
   }
 
   qsa("#result .stats .testType .bottom")?.setHtml(testType);

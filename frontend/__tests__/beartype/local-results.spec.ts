@@ -11,7 +11,6 @@ const filter = {
   mode: "time",
   mode2: "30",
   language: "vietnamese",
-  difficulty: "normal",
 } as const;
 
 function save(wpm: number, language = "vietnamese"): void {
@@ -38,13 +37,13 @@ describe("local results", () => {
     save(50);
     save(62);
     save(90, "english");
-    expect(getLocalPB("time", "30", "vietnamese", "normal")).toEqual({
+    expect(getLocalPB("time", "30", "vietnamese")).toEqual({
       wpm: 62,
       acc: 98,
     });
   });
 
-  it("still loads and matches an old entry stored with punctuation, numbers and lazyMode", async () => {
+  it("still loads and matches an old entry stored with punctuation, numbers, lazyMode and difficulty", async () => {
     // beartype used to store these fields on every result; a browser that
     // saved a test before they were dropped still has this in localStorage.
     // zod objects are not `.strict()`, so the extra fields are just ignored.
@@ -74,7 +73,7 @@ describe("local results", () => {
     const fresh = await import("../../src/ts/beartype/local-results");
 
     expect(fresh.getResults()).toMatchObject([{ wpm: 70 }]);
-    expect(fresh.getLocalPB("time", "30", "vietnamese", "normal")).toEqual({
+    expect(fresh.getLocalPB("time", "30", "vietnamese")).toEqual({
       wpm: 70,
       acc: 98,
     });

@@ -143,34 +143,33 @@ describe("Config", () => {
     it("sets overrideConfigs", () => {
       //GIVEN
       replaceConfig({
-        confidenceMode: "off",
-        freedomMode: false, //already set correctly
-        stopOnError: "letter", //should get updated
+        liveSpeedStyle: "mini", //already set correctly
+        liveAccStyle: "text", //should get updated
       });
 
       //WHEN
-      Config.setConfig("confidenceMode", "max");
+      Config.setConfig("monkey", true);
 
       //THEN
       expect(dispatchConfigEventMock).not.toHaveBeenCalledWith({
-        key: "freedomMode",
-        newValue: false,
+        key: "liveSpeedStyle",
+        newValue: "mini",
         nosave: true,
-        previousValue: true,
+        previousValue: "mini",
       });
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "stopOnError",
-        newValue: "off",
+        key: "liveAccStyle",
+        newValue: "mini",
         nosave: false,
-        previousValue: "letter",
+        previousValue: "text",
       });
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "confidenceMode",
-        newValue: "max",
+        key: "monkey",
+        newValue: true,
         nosave: false,
-        previousValue: "off",
+        previousValue: false,
       });
     });
 
@@ -193,10 +192,10 @@ describe("Config", () => {
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({});
+      replaceConfig({ keymapMode: "off" });
 
       //WHEN
-      Config.setConfig("minWpmCustomSpeed", 120);
+      Config.setConfig("keymapSize", 2);
 
       //THEN
       //wait for debounce
@@ -205,8 +204,8 @@ describe("Config", () => {
       //save
       expect(saveConfigMock).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          minWpmCustomSpeed: 120,
-          minWpm: "custom",
+          keymapSize: 2,
+          keymapMode: "static",
         }),
       );
     });
@@ -292,12 +291,12 @@ describe("Config", () => {
       });
       await Lifecycle.applyConfig({
         burstHeatmap: true,
-        quickEnd: true,
+        alwaysShowWordsHistory: true,
       });
       const config = getConfig();
       expect(config.mode).toBe("time");
       expect(config.burstHeatmap).toBe(true);
-      expect(config.quickEnd).toBe(true);
+      expect(config.alwaysShowWordsHistory).toBe(true);
     });
 
     describe("should reset to default if setting failed", () => {
@@ -317,8 +316,8 @@ describe("Config", () => {
         },
         {
           display: "applies config migration",
-          value: { mode: "time", swapEscAndTab: true } as any,
-          expected: { mode: "time", quickRestart: "esc" },
+          value: { mode: "time", smoothCaret: true } as any,
+          expected: { mode: "time", smoothCaret: "medium" },
         },
       ];
 
@@ -341,35 +340,10 @@ describe("Config", () => {
       });
       await Lifecycle.applyConfig({
         ...ConfigUtils.getConfigChanges(),
-        quickEnd: true,
+        alwaysShowWordsHistory: true,
       });
       const config = getConfig();
       expect(config.burstHeatmap).toBe(true);
-    });
-
-    it("should not enable minWpm if not provided", async () => {
-      replaceConfig({
-        minWpm: "off",
-      });
-      await Lifecycle.applyConfig({
-        minWpmCustomSpeed: 100,
-      });
-      const config = getConfig();
-      expect(config.minWpm).toBe("off");
-      expect(config.minWpmCustomSpeed).toEqual(100);
-    });
-
-    it("should apply minWpm if part of the full config", async () => {
-      replaceConfig({
-        minWpm: "off",
-      });
-      await Lifecycle.applyConfig({
-        minWpm: "custom",
-        minWpmCustomSpeed: 100,
-      });
-      const config = getConfig();
-      expect(config.minWpm).toBe("custom");
-      expect(config.minWpmCustomSpeed).toEqual(100);
     });
 
     it("should keep the keymap off when applying keymapLayout", async () => {

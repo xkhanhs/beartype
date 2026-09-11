@@ -6,24 +6,19 @@ import {
   setInputElementValue,
   appendToInputElementValue,
 } from "../input-element";
-import {
-  checkIfFailedDueToDifficulty,
-  checkIfFailedDueToMinBurst,
-  checkIfFinished,
-} from "../helpers/fail-or-finish";
+import { checkIfFinished } from "../helpers/fail-or-finish";
 import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as CompositionState from "../../legacy-states/composition";
-import { goToNextWord, goToPreviousWord } from "../helpers/word-navigation";
+import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
 import { getActiveWordIndex, isTestActive } from "../../states/test";
-import { DeleteInputType } from "../helpers/input-type";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -51,76 +46,6 @@ type OnInsertTextParams = {
   // true if monkeytype is inserting this itself, not the user
   automatic?: true;
 };
-
-function logDeleteOnErrorEvent(
-  inputType: DeleteInputType,
-  now: number,
-  charIndex: number,
-): void {
-  logTestEvent("input", now, {
-    inputType,
-    wordIndex: getActiveWordIndex(),
-    charIndex,
-    inputValue: getInputElementValue().inputValue,
-    automatic: true,
-  });
-}
-
-/**
- * Deletes input after an incorrect keypress, based on the deleteOnError config.
- * Every deletion is logged as a delete event, because the UI, live stats and
- * replay all derive the current input from the event log - editing the input
- * element without logging would desync them.
- * @param now - Timestamp of the input event that triggered the deletion
- */
-function handleDeleteOnError(now: number): void {
-  const deleteWholeWord =
-    Config.deleteOnError === "word" || Config.deleteOnError === "word_hard";
-  const goBackAWord =
-    Config.deleteOnError === "letter_hard" ||
-    Config.deleteOnError === "word_hard";
-
-  //the incorrect character has already been inserted and logged at this point
-  const inputLength = getCurrentInput().length;
-
-  if (inputLength > 0) {
-    if (deleteWholeWord) {
-      setInputElementValue("");
-      logDeleteOnErrorEvent("deleteWordBackward", now, inputLength);
-    } else {
-      //delete the incorrect character
-      replaceInputElementLastValueChar("");
-      logDeleteOnErrorEvent("deleteContentBackward", now, inputLength);
-
-      //and the one before it, so that a mistake actually costs progress
-      if (inputLength > 1) {
-        replaceInputElementLastValueChar("");
-        logDeleteOnErrorEvent("deleteContentBackward", now, inputLength - 1);
-      }
-    }
-  }
-
-  //mistake on the first character of the word - the hard modes send you back
-  //but only if the previous word is still in the dom (it might have scrolled
-  //off), same check as the one a normal backspace does in onBeforeDelete
-  if (
-    goBackAWord &&
-    inputLength <= 1 &&
-    getActiveWordIndex() > 0 &&
-    TestUI.getWordElement(getActiveWordIndex() - 1) !== null
-  ) {
-    //pretend its a normal backspace, not insertText
-    const inputType: DeleteInputType = deleteWholeWord
-      ? "deleteWordBackward"
-      : "deleteContentBackward";
-    goToPreviousWord(inputType);
-    logDeleteOnErrorEvent(
-      inputType,
-      now,
-      getInputElementValue().inputValue.length,
-    );
-  }
-}
 
 export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const { now, lastInMultiIndex, isCompositionEnding, automatic } = options;
@@ -218,34 +143,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     targetWord: currentWord,
   });
 
-  // handing cases where last char needs to be removed
-  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
-  // like accuracy, keypress errors, and missed words
-  let removeLastChar = false;
-  let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
-    if (!Config.blindMode) {
-      visualInputOverride = testInput + data;
-    }
-    removeLastChar = true;
-  }
-
-  // derived after removeLastChar: stop-on-error can block navigation
-  const goingToNextWord =
-    !removeLastChar &&
-    shouldGoToNextWord({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-      commitCharacterType,
-    });
+  const goingToNextWord = shouldGoToNextWord({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+    commitCharacterType,
+  });
 
   if (Config.keymapMode === "react") {
     flash(data, correct);
-  }
-
-  if (removeLastChar) {
-    replaceInputElementLastValueChar("");
   }
 
   // capture DOM before goToNextWord clears it for the new word
@@ -262,7 +168,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     wordIndex,
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding ? true : undefined,
-    inputStopped: removeLastChar ? true : undefined,
     automatic: automatic ? true : undefined,
     // inputValue is captured from the input element after this event (before goToNextWord clears it).
     inputValue: inputValueAfterEvent,
@@ -270,27 +175,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
 
-  // delete on error
-  // skipped when the input was stopped - nothing was inserted to delete
-  // before the UI update so it renders the input after the deletion, in one go
-  if (Config.deleteOnError !== "off" && !correct && !removeLastChar) {
-    handleDeleteOnError(now);
-  }
-
   if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
+    TestUI.afterTestTextInput(correct, undefined, goingToNextWord);
   }
 
   // going to next word
-  let increasedWordIndex: null | boolean = null;
-  let lastBurst: null | number = null;
   if (goingToNextWord) {
-    const result = await goToNextWord({
+    await goToNextWord({
       correctInsert: testInput + data === currentWord,
       now,
     });
-    lastBurst = result.lastBurst;
-    increasedWordIndex = result.increasedWordIndex;
   }
 
   //this COULD be the next word because we are awaiting goToNextWord
@@ -312,24 +206,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
-      checkIfFailedDueToDifficulty({
-        data,
-        testInput: testInput,
-        targetWord: currentWord,
-        correct,
-        commitCharacterType,
-      })
-    ) {
-      TestLogic.fail("difficulty");
-    } else if (
-      increasedWordIndex &&
-      checkIfFailedDueToMinBurst({
-        currentWord,
-        lastBurst,
-      })
-    ) {
-      TestLogic.fail("min burst");
-    } else if (
       checkIfFinished({
         goingToNextWord,
         testInputWithData: testInput + data,

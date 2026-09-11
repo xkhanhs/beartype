@@ -62,7 +62,6 @@ import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
-import { canQuickRestart } from "../utils/quick-restart";
 import { setInputElementValue } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
@@ -121,7 +120,6 @@ type RestartOptions = {
   event?: KeyboardEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
-  isQuickRestart?: boolean;
 };
 
 export async function restart(options = {} as RestartOptions): Promise<void> {
@@ -130,7 +128,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     practiseMissed: false,
     noAnim: false,
     nosave: false,
-    isQuickRestart: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -142,35 +139,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     return;
   }
   if (isTestActive()) {
-    if (options.isQuickRestart) {
-      options.event?.preventDefault();
-      if (
-        !canQuickRestart(
-          Config.mode,
-          Config.words,
-          Config.time,
-          CustomText.getData(),
-        )
-      ) {
-        let message = "Use your mouse to confirm.";
-        if (Config.quickRestart === "tab") {
-          message = "Press shift + tab or use your mouse to confirm.";
-        } else if (Config.quickRestart === "esc") {
-          message = "Press shift + escape or use your mouse to confirm.";
-        } else if (Config.quickRestart === "enter") {
-          message = "Press shift + enter or use your mouse to confirm.";
-        }
-        showNoticeNotification(
-          `Quick restart disabled in long tests. ${message}`,
-          {
-            durationMs: 4000,
-            important: true,
-          },
-        );
-        return;
-      }
-    }
-
     // close out the abandoned test
 
     if (isRepeated()) {
@@ -513,9 +481,6 @@ function buildCompletedEvent(
     mode: Config.mode,
     mode2: Misc.getMode2(Config),
     bailedOut: getBailedOut(),
-    difficulty: Config.difficulty,
-    blindMode: Config.blindMode,
-    stopOnLetter: Config.stopOnError === "letter",
     restartCount: getRestartCount(),
     incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
@@ -799,12 +764,11 @@ restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
-configEvent.subscribe(({ key, newValue, nosave }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (getActivePage() === "test") {
     if (key === "language") {
       void restart();
     }
-    if (key === "difficulty" && !nosave) void restart();
 
     if (key === "keymapMode" && newValue === "next") {
       setTimeout(() => {

@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { DifficultySchema, ModeSchema } from "@monkeytype/schemas/shared";
+import { ModeSchema } from "@monkeytype/schemas/shared";
 import type { CompletedEvent } from "@monkeytype/schemas/results";
-import type { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
+import type { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 /**
@@ -21,7 +21,6 @@ const LocalResultSchema = z.object({
   mode: ModeSchema,
   mode2: z.string(),
   language: z.string(),
-  difficulty: DifficultySchema,
   wpm: z.number(),
   acc: z.number(),
   rawWpm: z.number(),
@@ -53,7 +52,6 @@ export function saveResult(event: CompletedEvent): void {
     mode: event.mode,
     mode2: event.mode2,
     language: event.language,
-    difficulty: event.difficulty,
     wpm: event.wpm,
     acc: event.acc,
     rawWpm: event.rawWpm,
@@ -69,7 +67,6 @@ export type SettingsFilter = {
   mode: Mode;
   mode2: Mode2<Mode>;
   language: string;
-  difficulty: Difficulty;
 };
 
 function matching(filter: SettingsFilter): LocalResult[] {
@@ -79,8 +76,7 @@ function matching(filter: SettingsFilter): LocalResult[] {
       (r) =>
         r.mode === filter.mode &&
         r.mode2 === filter.mode2 &&
-        r.language === filter.language &&
-        r.difficulty === filter.difficulty,
+        r.language === filter.language,
     );
 }
 
@@ -89,14 +85,12 @@ export function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   language: string,
-  difficulty: Difficulty,
 ): { wpm: number; acc: number } | undefined {
   let best: LocalResult | undefined;
   for (const r of matching({
     mode,
     mode2,
     language,
-    difficulty,
   })) {
     if (best === undefined || r.wpm > best.wpm) {
       best = r;

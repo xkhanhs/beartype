@@ -1,4 +1,3 @@
-import { Config } from "../../config/store";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
@@ -47,25 +46,9 @@ export function onBeforeDelete(event: InputEvent): void {
     }
   }
 
-  if (Config.freedomMode) {
-    //allow anything in freedom mode
-    return;
-  }
-
-  const confidence = Config.confidenceMode;
   const previousWord = TestWords.words.get(getActiveWordIndex() - 1);
   const previousWordCorrect =
     getInputForWord(getActiveWordIndex() - 1) === previousWord?.textWithCommit;
-
-  if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
-    event.preventDefault();
-    return;
-  }
-
-  if (confidence === "max") {
-    event.preventDefault();
-    return;
-  }
 
   if (inputIsEmpty && previousWordCorrect) {
     event.preventDefault();

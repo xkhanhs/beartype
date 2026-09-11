@@ -397,13 +397,8 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.removeClass("tape");
   }
 
-  if (Config.blindMode) {
-    wordsEl.addClass("blind");
-    wordsWrapperEl.addClass("blind");
-  } else {
-    wordsEl.removeClass("blind");
-    wordsWrapperEl.removeClass("blind");
-  }
+  wordsEl.removeClass("blind");
+  wordsWrapperEl.removeClass("blind");
 
   if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
     wordsEl.addClass("indicateTyposBelow");
@@ -413,13 +408,8 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.removeClass("indicateTyposBelow");
   }
 
-  if (Config.hideExtraLetters) {
-    wordsEl.addClass("hideExtraLetters");
-    wordsWrapperEl.addClass("hideExtraLetters");
-  } else {
-    wordsEl.removeClass("hideExtraLetters");
-    wordsWrapperEl.removeClass("hideExtraLetters");
-  }
+  wordsEl.removeClass("hideExtraLetters");
+  wordsWrapperEl.removeClass("hideExtraLetters");
 
   if (Config.flipTestColors) {
     wordsEl.addClass("flipped");
@@ -924,12 +914,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     let lastPositiveLetterWidth = 0;
     for (let i = 0; i < inputLength; i++) {
       const letter = letters[i];
-      if (
-        (Config.blindMode || Config.hideExtraLetters) &&
-        letter?.hasClass("extra")
-      ) {
-        continue;
-      }
       const letterOuterWidth = letter?.getOffsetWidth() ?? 0;
       currentWordWidth += letterOuterWidth;
       if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
@@ -1082,18 +1066,6 @@ export function highlightBadWord(index: number): void {
   });
 }
 
-export function highlightAllLettersAsCorrect(wordIndex: number): void {
-  requestDebouncedAnimationFrame(
-    `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
-    () => {
-      const letters = getWordElement(wordIndex)?.getChildren();
-      for (const letter of letters ?? []) {
-        letter.addClass("correct");
-      }
-    },
-  );
-}
-
 function updateWordsWidth(): void {
   let css: Record<string, string> = {};
   if (Config.tapeMode === "off") {
@@ -1123,14 +1095,6 @@ function updateWordsWidth(): void {
     el?.removeClass("full-width-padding").addClass("content");
   } else {
     el?.removeClass("content").addClass("full-width-padding");
-  }
-}
-
-function showHideTestRestartButton(showHide: boolean): void {
-  if (showHide) {
-    qs(".pageTest #restartTestButton")?.show();
-  } else {
-    qs(".pageTest #restartTestButton")?.hide();
   }
 }
 
@@ -1169,11 +1133,7 @@ function afterAnyTestInput(
   correctInput: boolean | null,
 ): void {
   if (type === "textInput" || type === "compositionUpdate") {
-    if (
-      correctInput === true ||
-      Config.playSoundOnError === "off" ||
-      Config.blindMode
-    ) {
+    if (correctInput === true || Config.playSoundOnError === "off") {
       void SoundController.playClick();
     } else {
       void SoundController.playError();
@@ -1258,9 +1218,7 @@ export function beforeTestWordChange(
   }
 
   if (direction === "forward") {
-    if (Config.blindMode) {
-      highlightAllLettersAsCorrect(getActiveWordIndex());
-    } else if (correct === false) {
+    if (correct === false) {
       highlightBadWord(getActiveWordIndex());
     }
   }
@@ -1400,20 +1358,13 @@ document.addEventListener("visibilitychange", () => {
 });
 
 configEvent.subscribe(({ key, newValue }) => {
-  if (key === "quickRestart") {
-    showHideTestRestartButton(newValue === "off");
-  }
   if (key === "showOutOfFocusWarning" && !newValue) {
     setTestFocusState("focused");
   }
   if (key === "compositionDisplay" && newValue === "below") {
     setCompositionText(" ");
   }
-  if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      key ?? "",
-    )
-  ) {
+  if (["fontSize", "fontFamily"].includes(key ?? "")) {
     void updateHintsPositionDebounced();
   }
   if (key === "highlightMode") {
@@ -1429,10 +1380,8 @@ configEvent.subscribe(({ key, newValue }) => {
     [
       "highlightMode",
       "typedEffect",
-      "blindMode",
       "indicateTypos",
       "tapeMode",
-      "hideExtraLetters",
       "flipTestColors",
       "colorfulMode",
       "showAllLines",

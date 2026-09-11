@@ -28,14 +28,14 @@ describe("config.ts", () => {
     it("should correctly merge properties of various types", () => {
       const partialConfig = {
         mode: "time",
-        hideExtraLetters: true,
+        flipTestColors: true,
         time: 120,
         accountChart: ["off", "off", "off", "off"],
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
       expect(result.mode).toEqual("time");
-      expect(result.hideExtraLetters).toEqual(true);
+      expect(result.flipTestColors).toEqual(true);
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
     });
@@ -46,8 +46,8 @@ describe("config.ts", () => {
           expected: { theme: defaultConfig.theme },
         },
         {
-          given: { minWpm: "invalid" },
-          expected: { minWpm: defaultConfig.minWpm },
+          given: { ads: "invalid" },
+          expected: { ads: defaultConfig.ads },
         },
         {
           given: { customThemeColors: ["#ffffff"] },
@@ -86,14 +86,6 @@ describe("config.ts", () => {
           expected: { liveBurstStyle: "off" },
         },
         {
-          given: { quickTab: true, quickRestart: "enter" },
-          expected: { quickRestart: "enter" },
-        },
-        {
-          given: { swapEscAndTab: true, quickRestart: "enter" },
-          expected: { quickRestart: "enter" },
-        },
-        {
           given: { alwaysShowCPM: true, typingSpeedUnit: "wpm" },
           expected: { typingSpeedUnit: "wpm" },
         },
@@ -114,10 +106,8 @@ describe("config.ts", () => {
     });
     describe("should convert legacy values", () => {
       it.for([
-        { given: { quickTab: true }, expected: { quickRestart: "tab" } },
         { given: { smoothCaret: true }, expected: { smoothCaret: "medium" } },
         { given: { smoothCaret: false }, expected: { smoothCaret: "off" } },
-        { given: { swapEscAndTab: true }, expected: { quickRestart: "esc" } },
         {
           given: { alwaysShowCPM: true },
           expected: { typingSpeedUnit: "cpm" },

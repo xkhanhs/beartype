@@ -22,22 +22,7 @@ describe("ConfigMeta", () => {
       .sort();
 
     expect(configsRequiringRestarts).toEqual(
-      [
-        "words",
-        "time",
-        "mode",
-        "language",
-        "difficulty",
-        "minWpmCustomSpeed",
-        "minWpm",
-        "minAcc",
-        "minAccCustom",
-        "minBurst",
-        "minBurstCustomSpeed",
-        "strictSpace",
-        "stopOnError",
-        "codeUnindentOnBackspace",
-      ].sort(),
+      ["words", "time", "mode", "language"].sort(),
     );
   });
 
@@ -62,8 +47,6 @@ describe("ConfigMeta", () => {
       given?: Partial<ConfigType>;
       expected: Partial<ConfigType>;
     }> = {
-      blindMode: [{ value: true, expected: { blindMode: true } }],
-      quickEnd: [{ value: true, expected: { quickEnd: true } }],
       keymapSize: [
         { value: 1, expected: { keymapSize: 1 } },
         { value: 1.234, expected: { keymapSize: 1.2 } },
@@ -157,42 +140,6 @@ describe("ConfigMeta", () => {
       given: Partial<ConfigType>;
       expected?: Partial<ConfigType>;
     }> = {
-      freedomMode: [
-        {
-          value: false,
-          given: { confidenceMode: "on" },
-          expected: { confidenceMode: "on" },
-        },
-        {
-          value: true,
-          given: { confidenceMode: "on" },
-          expected: { confidenceMode: "off" },
-        },
-      ],
-      stopOnError: [
-        {
-          value: "off",
-          given: { confidenceMode: "on" },
-          expected: { confidenceMode: "on" },
-        },
-        {
-          value: "word",
-          given: { confidenceMode: "on" },
-          expected: { confidenceMode: "off" },
-        },
-      ],
-      confidenceMode: [
-        {
-          value: "off",
-          given: { freedomMode: true, stopOnError: "word" },
-          expected: { freedomMode: true, stopOnError: "word" },
-        },
-        {
-          value: "on",
-          given: { freedomMode: true, stopOnError: "word" },
-          expected: { freedomMode: false, stopOnError: "off" },
-        },
-      ],
       monkey: [
         {
           value: false,

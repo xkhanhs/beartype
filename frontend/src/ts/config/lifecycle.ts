@@ -54,9 +54,6 @@ export async function loadFromLocalStorage(): Promise<void> {
 
 const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "keymapMode",
-  "minWpm",
-  "minAcc",
-  "minBurst",
   "words",
   "time",
   "mode",

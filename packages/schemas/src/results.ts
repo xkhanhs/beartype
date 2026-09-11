@@ -9,7 +9,6 @@ import {
 } from "./util";
 import { LanguageSchema } from "./languages";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
-import { DifficultySchema } from "./configs";
 import { ChallengeNameSchema } from "./challenges";
 
 export const IncompleteTestSchema = z.object({
@@ -87,9 +86,7 @@ const ResultBaseSchema = z.object({
   afkDuration: z.number().nonnegative().optional(),
   tags: z.array(IdSchema).optional(),
   bailedOut: z.boolean().optional(),
-  blindMode: z.boolean().optional(),
   language: LanguageSchema.optional(),
-  difficulty: DifficultySchema.optional(),
 });
 
 export const ResultSchema = ResultBaseSchema.extend({
@@ -122,9 +119,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
   afkDuration: true,
   tags: true,
   bailedOut: true,
-  blindMode: true,
   language: true,
-  difficulty: true,
 })
   .extend({
     charTotal: z.number().int().nonnegative(),
@@ -137,7 +132,6 @@ export const CompletedEventSchema = ResultBaseSchema.required({
     lastKeyToEnd: z.number().nonnegative(),
     startToFirstKey: z.number().nonnegative(),
     wpmConsistency: PercentageSchema,
-    stopOnLetter: z.boolean(),
     incompleteTests: z.array(IncompleteTestSchema),
   })
   .strict();

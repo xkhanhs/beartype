@@ -1,4 +1,3 @@
-import { Config } from "../../config/store";
 import { type CommitCharacterType } from "./util";
 import { isWrongKey } from "../../beartype/scoring";
 import { isSpace } from "../../utils/strings";
@@ -51,40 +50,5 @@ export function shouldGoToNextWord(options: {
   targetWord: string;
   commitCharacterType: CommitCharacterType | false;
 }): boolean {
-  const {
-    inputValue,
-    targetWord,
-    data,
-    commitCharacterType: commitType,
-  } = options;
-
-  if (commitType === false) return false;
-
-  //strict space: a leading separator on empty input must not skip the word.
-  //nospace commits (final letter of a 1-letter word) are legitimate here.
-  if (
-    inputValue.length === 0 &&
-    commitType === "separator" &&
-    (Config.strictSpace || Config.difficulty !== "normal")
-  ) {
-    return false;
-  }
-
-  const correct = inputValue + data === targetWord;
-
-  //stop on error
-  if (Config.stopOnError === "word" && !correct) {
-    return false;
-  }
-
-  if (Config.stopOnError === "letter" && !correct) {
-    return false;
-  }
-
-  //delete on error
-  if (Config.deleteOnError !== "off" && !correct) {
-    return false;
-  }
-
-  return true;
+  return options.commitCharacterType !== false;
 }

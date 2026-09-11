@@ -26,9 +26,6 @@ describe("isCharCorrect", () => {
     replaceConfig({
       mode: "words",
       language: "english",
-      stopOnError: "off",
-      difficulty: "normal",
-      strictSpace: false,
     });
     // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
@@ -120,21 +117,6 @@ describe("isCharCorrect", () => {
 });
 
 describe("shouldGoToNextWord", () => {
-  // target words store their separator as a trailing space
-  beforeEach(() => {
-    replaceConfig({
-      mode: "time",
-      stopOnError: "off",
-      deleteOnError: "off",
-      strictSpace: false,
-      difficulty: "normal",
-    });
-  });
-
-  afterAll(() => {
-    replaceConfig({});
-  });
-
   it("returns false when the input is not a commit character", () => {
     expect(
       shouldGoToNextWord({
@@ -157,166 +139,25 @@ describe("shouldGoToNextWord", () => {
     ).toBe(true);
   });
 
-  // the empty-input guard must not block a nospace commit on a 1-letter word,
-  // otherwise such words can never be advanced
-  it.each([
-    { desc: "strictSpace on", strictSpace: true, difficulty: "normal" },
-    { desc: "difficulty expert", strictSpace: false, difficulty: "expert" },
-  ])(
-    "commits a nospace 1-letter word on empty input ($desc)",
-    ({ strictSpace, difficulty }) => {
-      replaceConfig({ strictSpace, difficulty } as any);
-      expect(
-        shouldGoToNextWord({
-          data: "a",
-          inputValue: "",
-          targetWord: "a",
-          commitCharacterType: "nospace",
-        }),
-      ).toBe(true);
-    },
-  );
+  it("commits a nospace 1-letter word on empty input", () => {
+    expect(
+      shouldGoToNextWord({
+        data: "a",
+        inputValue: "",
+        targetWord: "a",
+        commitCharacterType: "nospace",
+      }),
+    ).toBe(true);
+  });
 
-  describe("Logic Checks", () => {
-    it.each([
-      // Standard behavior (submit word)
-      {
-        desc: "go to next word on correct word",
-        inputValue: "hello",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: true,
-      },
-      {
-        desc: "go to next word on incorrect word (stopOnError off)",
+  it("commits a word on a separator regardless of correctness", () => {
+    expect(
+      shouldGoToNextWord({
+        data: " ",
         inputValue: "hel",
         targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: true,
-      },
-      // Stop on error
-      {
-        desc: "stay on incorrect word (stopOnError letter)",
-        inputValue: "hel",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "letter",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "stay on incorrect word (stopOnError word)",
-        inputValue: "hel",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "word",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "go to next word on correct word (stopOnError letter)",
-        inputValue: "hello",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "letter",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: true,
-      },
-      // Strict space / Difficulty
-      {
-        desc: "stay on empty input (strictSpace on)",
-        inputValue: "",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          strictSpace: true,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "stay on empty input (difficulty not normal - expert or master)",
-        inputValue: "",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          strictSpace: false,
-          difficulty: "expert",
-        },
-        expected: false,
-      },
-      {
-        desc: "go to next word on non-empty input (strictSpace on)",
-        inputValue: "h",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          strictSpace: true,
-          difficulty: "normal",
-        },
-        expected: true,
-      },
-      // Delete on error
-      {
-        desc: "stay on incorrect word (deleteOnError letter)",
-        inputValue: "hel",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          deleteOnError: "letter",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "stay on incorrect word (deleteOnError word)",
-        inputValue: "hel",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          deleteOnError: "word",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "go to next word on correct word (deleteOnError letter)",
-        inputValue: "hello",
-        targetWord: "hello ",
-        config: {
-          stopOnError: "off",
-          deleteOnError: "letter",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: true,
-      },
-    ])("$desc", ({ inputValue, targetWord, config, expected }) => {
-      replaceConfig(config as any);
-      expect(
-        shouldGoToNextWord({
-          data: " ",
-          inputValue,
-          targetWord,
-          commitCharacterType: "separator",
-        }),
-      ).toBe(expected);
-    });
+        commitCharacterType: "separator",
+      }),
+    ).toBe(true);
   });
 });

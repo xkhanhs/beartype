@@ -42,12 +42,10 @@ describe("lockConfig", () => {
   it("pins every setting the user cannot reach", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
-      stopOnError: "letter",
-      blindMode: true,
+      resultSaving: false,
       keymapMode: "react",
     });
-    expect(config.stopOnError).toBe("off");
-    expect(config.blindMode).toBe(false);
+    expect(config.resultSaving).toBe(true);
     expect(config.keymapMode).toBe("off");
   });
 

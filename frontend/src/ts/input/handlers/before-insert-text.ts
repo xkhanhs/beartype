@@ -1,4 +1,3 @@
-import { Config } from "../../config/store";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
@@ -54,15 +53,7 @@ export function onBeforeInsertText(data: string): boolean {
   });
 
   //prevent separator from being inserted if input is empty
-  //some conditions may override this
-  //the hard delete on error variants need the separator to reach onInsertText
-  //so it can be counted as a mistake and send the user back a word
-  const deleteOnErrorIsHard =
-    Config.deleteOnError === "letter_hard" ||
-    Config.deleteOnError === "word_hard";
-  const allowFirstSeparator =
-    Config.strictSpace || Config.difficulty !== "normal" || deleteOnErrorIsHard;
-  if (isSpace(data) && inputValue === "" && !allowFirstSeparator) {
+  if (isSpace(data) && inputValue === "") {
     return true;
   }
 
@@ -90,9 +81,6 @@ export function onBeforeInsertText(data: string): boolean {
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
-    !Config.blindMode &&
-    !Config.hideExtraLetters &&
-    !Config.deleteOnError.includes("hard") &&
     inputIsLongerThanOrEqualToWord &&
     !goingToNextWord
   ) {

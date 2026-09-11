@@ -8,9 +8,6 @@ import { FontNameSchema } from "./fonts";
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
 
-export const QuickRestartSchema = z.enum(["off", "esc", "tab", "enter"]);
-export type QuickRestart = z.infer<typeof QuickRestartSchema>;
-
 export const CaretStyleSchema = z.enum([
   "off",
   "default",
@@ -22,9 +19,6 @@ export const CaretStyleSchema = z.enum([
   "monkey",
 ]);
 export type CaretStyle = z.infer<typeof CaretStyleSchema>;
-
-export const ConfidenceModeSchema = z.enum(["off", "on", "max"]);
-export type ConfidenceMode = z.infer<typeof ConfidenceModeSchema>;
 
 export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
@@ -63,18 +57,6 @@ export type TimerColor = z.infer<typeof TimerColorSchema>;
 
 export const TimerOpacitySchema = z.enum(["0.25", "0.5", "0.75", "1"]);
 export type TimerOpacity = z.infer<typeof TimerOpacitySchema>;
-
-export const StopOnErrorSchema = z.enum(["off", "word", "letter"]);
-export type StopOnError = z.infer<typeof StopOnErrorSchema>;
-
-export const DeleteOnErrorSchema = z.enum([
-  "off",
-  "letter",
-  "letter_hard",
-  "word",
-  "word_hard",
-]);
-export type DeleteOnError = z.infer<typeof DeleteOnErrorSchema>;
 
 export const KeymapModeSchema = z.enum(["off", "static", "react", "next"]);
 export type KeymapMode = z.infer<typeof KeymapModeSchema>;
@@ -156,9 +138,6 @@ export const AccountChartSchema = z.tuple([
 ]);
 export type AccountChart = z.infer<typeof AccountChartSchema>;
 
-export const MinimumWordsPerMinuteSchema = z.enum(["off", "custom"]);
-export type MinimumWordsPerMinute = z.infer<typeof MinimumWordsPerMinuteSchema>;
-
 export const HighlightModeSchema = z.enum([
   "off",
   "letter",
@@ -190,9 +169,6 @@ export type TypingSpeedUnit = z.infer<typeof TypingSpeedUnitSchema>;
 export const AdsSchema = z.enum(["off", "result", "on", "sellout"]);
 export type Ads = z.infer<typeof AdsSchema>;
 
-export const MinimumAccuracySchema = z.enum(["off", "custom"]);
-export type MinimumAccuracy = z.infer<typeof MinimumAccuracySchema>;
-
 export const CustomBackgroundSizeSchema = z.enum(["cover", "contain", "max"]);
 export type CustomBackgroundSize = z.infer<typeof CustomBackgroundSizeSchema>;
 
@@ -208,9 +184,6 @@ export type CustomBackgroundFilter = z.infer<
 
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type MonkeyPowerLevel = z.infer<typeof MonkeyPowerLevelSchema>;
-
-export const MinimumBurstSchema = z.enum(["off", "fixed", "flex"]);
-export type MinimumBurst = z.infer<typeof MinimumBurstSchema>;
 
 export const ShowAverageSchema = z.enum(["off", "speed", "acc", "both"]);
 export type ShowAverage = z.infer<typeof ShowAverageSchema>;
@@ -243,17 +216,6 @@ export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const FavThemesSchema = z.array(ThemeNameSchema);
 export type FavThemes = z.infer<typeof FavThemesSchema>;
-
-export const MinWpmCustomSpeedSchema = z.number().nonnegative();
-export type MinWpmCustomSpeed = z.infer<typeof MinWpmCustomSpeedSchema>;
-
-export const MinimumAccuracyCustomSchema = z.number().nonnegative().max(100);
-export type MinimumAccuracyCustom = z.infer<typeof MinimumAccuracyCustomSchema>;
-
-export const MinimumBurstCustomSpeedSchema = z.number().nonnegative();
-export type MinimumBurstCustomSpeed = z.infer<
-  typeof MinimumBurstCustomSpeedSchema
->;
 
 export const TimeConfigSchema = z.number().int().nonnegative();
 export type TimeConfig = z.infer<typeof TimeConfigSchema>;
@@ -299,30 +261,13 @@ export const ConfigSchema = z
     burstHeatmap: z.boolean(),
 
     // behavior
-    difficulty: DifficultySchema,
-    quickRestart: QuickRestartSchema,
     resultSaving: z.boolean(),
-    blindMode: z.boolean(),
     alwaysShowWordsHistory: z.boolean(),
     singleListCommandLine: SingleListCommandLineSchema,
-    minWpm: MinimumWordsPerMinuteSchema,
-    minWpmCustomSpeed: MinWpmCustomSpeedSchema,
-    minAcc: MinimumAccuracySchema,
-    minAccCustom: MinimumAccuracyCustomSchema,
-    minBurst: MinimumBurstSchema,
-    minBurstCustomSpeed: MinimumBurstCustomSpeedSchema,
 
     // input
-    freedomMode: z.boolean(),
-    strictSpace: z.boolean(),
-    stopOnError: StopOnErrorSchema,
-    deleteOnError: DeleteOnErrorSchema,
-    confidenceMode: ConfidenceModeSchema,
-    quickEnd: z.boolean(),
     indicateTypos: IndicateTyposSchema,
     compositionDisplay: CompositionDisplaySchema,
-    hideExtraLetters: z.boolean(),
-    codeUnindentOnBackspace: z.boolean(),
 
     // sound
     soundVolume: SoundVolumeSchema,

@@ -16,7 +16,6 @@ import { mountComponents } from "./components/mount";
 import "./ready";
 import { configLoadPromise, loadFromLocalStorage } from "./config/lifecycle";
 
-import "./input/hotkeys";
 import { getLastEventLog } from "./states/test";
 import { buildEventLog } from "./test/events/data";
 

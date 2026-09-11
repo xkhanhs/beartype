@@ -197,23 +197,6 @@ export const configMetadata: ConfigMetadataObject = {
   },
 
   // behavior
-  difficulty: {
-    key: "difficulty",
-    fa: { icon: "fa-star" },
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "Normal is the classic typing test experience. Expert fails the test if you submit (press space) an incorrect word. Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).",
-  },
-  quickRestart: {
-    key: "quickRestart",
-    fa: { icon: "fa-redo-alt" },
-    displayString: "quick restart",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description:
-      'Press tab, esc or enter to quickly restart the test, or to quickly jump to the test page. These options disable tab navigation on most parts of the website. Using the "esc" option will move opening the commandline to the tab key.',
-  },
   resultSaving: {
     key: "resultSaving",
     fa: { icon: "fa-save" },
@@ -222,22 +205,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       'Set this setting to "off" in case you want to practice without saving new results to your account and affecting your statistics.',
-  },
-  blindMode: {
-    key: "blindMode",
-    fa: { icon: "fa-eye-slash" },
-    optionsMetadata: {
-      true: {
-        // Use an `&ensp;` here so that the `on` button for blind mode will
-        // have the same height on both Chromium and Firefox.
-        displayString: " ",
-      },
-    },
-    displayString: "blind mode",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description:
-      "No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.",
   },
   alwaysShowWordsHistory: {
     key: "alwaysShowWordsHistory",
@@ -257,161 +224,7 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "When enabled, it will show the command line with all commands in a single list instead of submenu arrangements. Selecting 'manual' will expose all commands only after typing >.",
   },
-  minWpm: {
-    key: "minWpm",
-    fa: { icon: "fa-bomb" },
-    displayString: "min speed",
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "Automatically fails a test if your speed falls below a threshold.",
-  },
-  minWpmCustomSpeed: {
-    key: "minWpmCustomSpeed",
-    fa: { icon: "fa-bomb" },
-    displayString: "min speed custom",
-    changeRequiresRestart: true,
-    group: "behavior",
-    overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.minWpm !== "custom") {
-        return {
-          minWpm: "custom",
-        };
-      }
-      return {};
-    },
-  },
-  minAcc: {
-    key: "minAcc",
-    fa: { icon: "fa-bomb" },
-    displayString: "min accuracy",
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "Automatically fails a test if your accuracy falls below a threshold.",
-  },
-  minAccCustom: {
-    key: "minAccCustom",
-    fa: { icon: "fa-bomb" },
-    displayString: "min accuracy custom",
-    changeRequiresRestart: true,
-    group: "behavior",
-    overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.minAcc !== "custom") {
-        return {
-          minAcc: "custom",
-        };
-      }
-      return {};
-    },
-  },
-  minBurst: {
-    key: "minBurst",
-    fa: { icon: "fa-bomb" },
-    displayString: "min word burst",
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "Automatically fails a test if your raw for a single word falls below this threshold. Selecting 'flex' allows for this threshold to automatically decrease for longer words.",
-  },
-  minBurstCustomSpeed: {
-    key: "minBurstCustomSpeed",
-    fa: { icon: "fa-bomb" },
-    displayString: "min word burst custom speed",
-    changeRequiresRestart: true,
-    group: "behavior",
-  },
   // input
-  freedomMode: {
-    key: "freedomMode",
-    fa: { icon: "fa-feather-alt" },
-    changeRequiresRestart: false,
-    displayString: "freedom mode",
-    group: "input",
-    description:
-      "Allows you to delete any word, even if it was typed correctly.",
-    overrideConfig: ({ value }) => {
-      if (value) {
-        return {
-          confidenceMode: "off",
-        };
-      }
-      return {};
-    },
-  },
-  strictSpace: {
-    key: "strictSpace",
-    fa: { icon: "fa-minus" },
-    displayString: "strict space",
-    changeRequiresRestart: true,
-    group: "input",
-    description:
-      "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",
-  },
-  stopOnError: {
-    key: "stopOnError",
-    fa: { icon: "fa-hand-paper" },
-    displayString: "stop on error",
-    changeRequiresRestart: true,
-    group: "input",
-    description:
-      "Letter mode will stop input when pressing any incorrect letters. Word mode will not allow you to continue to the next word until you correct all mistakes.",
-    overrideConfig: ({ value }) => {
-      if (value !== "off") {
-        return {
-          confidenceMode: "off",
-          deleteOnError: "off",
-        };
-      }
-      return {};
-    },
-  },
-  deleteOnError: {
-    key: "deleteOnError",
-    fa: { icon: "fa-eraser" },
-    displayString: "delete on error",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      "Letter mode will automatically delete the incorrect character and the one before it. Word mode will delete the entire current word. The hard variants will additionally jump back to the previous word if you make a mistake on the first character.",
-    overrideConfig: ({ value }) => {
-      if (value !== "off") {
-        return {
-          confidenceMode: "off",
-          stopOnError: "off",
-        };
-      }
-      return {};
-    },
-  },
-  confidenceMode: {
-    key: "confidenceMode",
-    fa: { icon: "fa-backspace" },
-    displayString: "confidence mode",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      "When enabled, you will not be able to go back to previous words to fix mistakes. When turned up to the max, you won't be able to backspace at all.",
-    overrideConfig: ({ value }) => {
-      if (value !== "off") {
-        return {
-          freedomMode: false,
-          stopOnError: "off",
-          deleteOnError: "off",
-        };
-      }
-      return {};
-    },
-  },
-  quickEnd: {
-    key: "quickEnd",
-    fa: { icon: "fa-step-forward" },
-    displayString: "quick end",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      "This only applies to the words mode - when enabled, the test will end as soon as the last word has been typed, even if it's incorrect. When disabled, you need to manually confirm the last incorrect entry with a space.",
-  },
   indicateTypos: {
     key: "indicateTypos",
     fa: { icon: "fa-exclamation" },
@@ -430,25 +243,6 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       'Change how composition is displayed. "off" will just underline the letter if composition is active. "below" will show the composed character below the test. "replace" will replace the letter in the test with the composed character.',
   },
-  hideExtraLetters: {
-    key: "hideExtraLetters",
-    fa: { icon: "fa-eye-slash" },
-    displayString: "hide extra letters",
-    changeRequiresRestart: false,
-    group: "input",
-    description:
-      "Hides extra letters. This will completely avoid words jumping lines (due to changing width), but might feel a bit confusing when you press a key and nothing happens.",
-  },
-  codeUnindentOnBackspace: {
-    key: "codeUnindentOnBackspace",
-    fa: { icon: "fa-code" },
-    displayString: "code unindent on backspace",
-    changeRequiresRestart: true,
-    group: "input",
-    description:
-      "Automatically go back to the previous line when deleting line leading tab characters. Only works in code languages.",
-  },
-
   // sound
   soundVolume: {
     key: "soundVolume",

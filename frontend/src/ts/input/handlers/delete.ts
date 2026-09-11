@@ -1,8 +1,6 @@
 import * as TestUI from "../../test/test-ui";
-import * as TestWords from "../../test/test-words";
-import { getInputElementValue, setInputElementValue } from "../input-element";
+import { getInputElementValue } from "../input-element";
 
-import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
@@ -15,43 +13,6 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
   const activeWordIndexBeforeDelete = getActiveWordIndex();
 
   const inputAfterDelete = getInputElementValue().inputValue;
-
-  const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
-  const allTabsCorrect = TestWords.words
-    .getCurrent()
-    ?.textWithCommit.startsWith(inputAfterDelete);
-
-  //special check for code languages
-  if (
-    Config.language.startsWith("code") &&
-    Config.codeUnindentOnBackspace &&
-    inputBeforeDelete.length > 0 &&
-    beforeDeleteOnlyTabs &&
-    allTabsCorrect
-  ) {
-    // Clear N+1's tabs (the word the user was in)
-    logTestEvent("input", now, {
-      inputType: "deleteWordBackward",
-      wordIndex: activeWordIndexBeforeDelete,
-      charIndex: inputBeforeDelete.length,
-      inputValue: "",
-    });
-
-    setInputElementValue("");
-    goToPreviousWord(inputType);
-
-    // Record the resulting state of the previous word (newline removed)
-    const postNavInputValue = getInputElementValue().inputValue;
-    logTestEvent("input", now, {
-      inputType: "deleteContentBackward",
-      wordIndex: getActiveWordIndex(),
-      charIndex: postNavInputValue.length,
-      inputValue: postNavInputValue,
-    });
-
-    TestUI.afterTestDelete();
-    return;
-  }
 
   //normal backspace
   if (realInputValue === "") {

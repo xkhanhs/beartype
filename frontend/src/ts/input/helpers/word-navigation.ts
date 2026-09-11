@@ -35,7 +35,7 @@ export async function goToNextWord({
 
   TestUI.beforeTestWordChange("forward", correctInsert);
 
-  if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
+  if (Config.liveBurstStyle !== "off") {
     const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
     ret.lastBurst = burst;
   }

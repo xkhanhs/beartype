@@ -5,7 +5,7 @@ import { getDefaultConfig } from "../constants/default-config";
  * The settings a person can still change. Everything else in upstream's
  * config -- about a hundred keys -- is fixed.
  *
- * The typing code reads those keys everywhere (`Config.stopOnError`,
+ * The typing code reads those keys everywhere (`Config.caretStyle`,
  * `Config.mode === "custom"`, ...). Deleting the branches would mean editing
  * the code this app exists to leave alone, so the keys stay and their values
  * are pinned instead.

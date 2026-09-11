@@ -24,11 +24,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
-import {
-  getActiveWordIndex,
-  isTestActive,
-  setCurrentLiveStats,
-} from "../states/test";
+import { isTestActive, setCurrentLiveStats } from "../states/test";
 
 let emittedTicks = 0;
 let stopped = true;
@@ -138,33 +134,6 @@ export function clear(logEnd = false, now = performance.now()): void {
   }
 }
 
-function checkIfFailed(
-  wpmAndRaw: { wpm: number; raw: number },
-  acc: number,
-): boolean {
-  if (timerDebug) console.time("fail conditions");
-  if (
-    Config.minWpm === "custom" &&
-    wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    getActiveWordIndex() > 3
-  ) {
-    if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
-    slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min speed" });
-    return true;
-  }
-  if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
-    if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
-    slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min accuracy" });
-    return true;
-  }
-  if (timerDebug) console.timeEnd("fail conditions");
-  return false;
-}
-
 function checkIfTimeIsUp(testTime: number): void {
   if (timerDebug) console.time("times up check");
 
@@ -256,8 +225,7 @@ function timerStep(now: number, catchingUp: boolean): void {
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
-    const failed = checkIfFailed(wpmAndRaw, acc);
-    if (!failed) checkIfTimeIsUp(testTime);
+    checkIfTimeIsUp(testTime);
   }
 
   if (timerDebug) console.timeEnd("timer step -----------------------------");

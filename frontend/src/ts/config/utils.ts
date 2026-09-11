@@ -40,21 +40,8 @@ function sanitizeConfig(
 function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig,
 ): ConfigSchemas.PartialConfig {
-  //@ts-expect-error legacy configs
-  if (configObj.quickTab === true && configObj.quickRestart === undefined) {
-    configObj.quickRestart = "tab";
-  }
-
   if (typeof configObj.smoothCaret === "boolean") {
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
-  }
-
-  if (
-    //@ts-expect-error legacy configs
-    configObj.swapEscAndTab === true &&
-    configObj.quickRestart === undefined
-  ) {
-    configObj.quickRestart = "esc";
   }
 
   if (
@@ -148,13 +135,6 @@ function replaceLegacyValues(
     configObj.accountChart.length !== 4
   ) {
     configObj.accountChart = ["on", "on", "on", "on"];
-  }
-
-  if (
-    typeof configObj.minAccCustom === "number" &&
-    configObj.minAccCustom > 100
-  ) {
-    configObj.minAccCustom = 100;
   }
 
   if (
