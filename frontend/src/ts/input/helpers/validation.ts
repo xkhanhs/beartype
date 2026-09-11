@@ -19,7 +19,6 @@ export function isCharCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  if (Config.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
 
   // beartype: a letter is wrong when it makes a new mistake in the word.
@@ -64,8 +63,6 @@ export function shouldGoToNextWord(options: {
   } = options;
 
   if (commitType === false) return false;
-
-  if (Config.mode === "zen") return true;
 
   //strict space: a leading separator on empty input must not skip the word.
   //nospace commits (final letter of a 1-letter word) are legitimate here.

@@ -11,31 +11,6 @@ export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
 export const QuickRestartSchema = z.enum(["off", "esc", "tab", "enter"]);
 export type QuickRestart = z.infer<typeof QuickRestartSchema>;
 
-export const QuoteLengthSchema = z.union([
-  z.literal(-3),
-  z.literal(-2),
-  z.literal(0),
-  z.literal(1),
-  z.literal(2),
-  z.literal(3),
-]);
-export type QuoteLength = z.infer<typeof QuoteLengthSchema>;
-
-export const QuoteLengthConfigSchema = z
-  .array(QuoteLengthSchema)
-  .describe(
-    [
-      "|value|description|\n|-|-|",
-      "|-3|Favorite quotes|",
-      "|-2|Quote search|",
-      "|0|Short quotes|",
-      "|1|Medium quotes|",
-      "|2|Long quotes|",
-      "|3|Thicc quotes|",
-    ].join("\n"),
-  );
-export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
-
 export const CaretStyleSchema = z.enum([
   "off",
   "default",
@@ -218,9 +193,6 @@ export type Ads = z.infer<typeof AdsSchema>;
 export const MinimumAccuracySchema = z.enum(["off", "custom"]);
 export type MinimumAccuracy = z.infer<typeof MinimumAccuracySchema>;
 
-export const RepeatQuotesSchema = z.enum(["off", "typing"]);
-export type RepeatQuotes = z.infer<typeof RepeatQuotesSchema>;
-
 export const OppositeShiftModeSchema = z.enum(["off", "on", "keymap"]);
 export type OppositeShiftMode = z.infer<typeof OppositeShiftModeSchema>;
 
@@ -331,14 +303,12 @@ export const ConfigSchema = z
     words: WordCountSchema,
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
-    quoteLength: QuoteLengthConfigSchema,
     language: LanguageSchema,
     burstHeatmap: z.boolean(),
 
     // behavior
     difficulty: DifficultySchema,
     quickRestart: QuickRestartSchema,
-    repeatQuotes: RepeatQuotesSchema,
     resultSaving: z.boolean(),
     blindMode: z.boolean(),
     alwaysShowWordsHistory: z.boolean(),

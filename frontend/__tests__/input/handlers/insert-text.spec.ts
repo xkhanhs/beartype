@@ -76,7 +76,6 @@ vi.mock("../../../src/ts/states/test", () => ({
   isResultCalculating: () => false,
   isTestRestarting: () => false,
   wordsHaveNewline: () => false,
-  getCurrentQuote: () => null,
   getBailedOut: () => false,
   getKoreanStatus: () => false,
 }));

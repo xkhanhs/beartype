@@ -177,14 +177,6 @@ function replaceLegacyValues(
     configObj.customBackgroundFilter = [arr[0], arr[1], arr[2], arr[3]];
   }
 
-  if (typeof configObj.quoteLength === "number") {
-    if (configObj.quoteLength === -1) {
-      configObj.quoteLength = [0, 1, 2, 3];
-    } else {
-      configObj.quoteLength = [configObj.quoteLength];
-    }
-  }
-
   if (configObj.tapeMargin !== undefined) {
     if (configObj.tapeMargin < 10) {
       configObj.tapeMargin = 10;

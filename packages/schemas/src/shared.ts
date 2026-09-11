@@ -58,26 +58,22 @@ export const QuoteLengthSchema = z.union([
   z.literal("thicc"),
 ]);
 
-// // Step 1: Define the schema for specific string values "10" and "25"
-// const SpecificKeySchema = z.union([z.literal("10"), z.literal("25")]);
-
-// // Step 2: Use this schema as the key schema for another object
-// export const ExampleSchema = z.record(SpecificKeySchema, z.string());
-
-// //used by user, config, public
-export const ModeSchema = PersonalBestsSchema.keyof();
+/**
+ * beartype: quote and zen are gone (dead under `lockConfig`'s MODES). Custom
+ * stays -- it is not user-reachable either, but the miss-book drill
+ * (`beartype/miss-book.ts`, `test/practise-words.ts#initFromWords`) sets it
+ * directly to run a shuffled test of the words this pair of hands keeps
+ * missing, bypassing the lock the way `nosave` config changes always could.
+ */
+export const ModeSchema = z.enum(["time", "words", "custom"]);
 export type Mode = z.infer<typeof ModeSchema>;
 
-export const Mode2Schema = z.union(
-  [StringNumberSchema, literal("zen"), literal("custom")],
-  {
-    errorMap: () => ({
-      message: 'Needs to be either a number, "zen" or "custom".',
-    }),
-  },
-);
+export const Mode2Schema = z.union([StringNumberSchema, literal("custom")], {
+  errorMap: () => ({
+    message: 'Needs to be either a number or "custom".',
+  }),
+});
 
 export type Mode2<M extends Mode> = M extends M
   ? keyof PersonalBests[M]
   : never;
-export type Mode2Custom<M extends Mode> = Mode2<M> | "custom";

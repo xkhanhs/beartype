@@ -100,9 +100,3 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   });
   return true;
 }
-
-export function setQuoteLengthAll(nosave?: boolean): boolean {
-  return setConfig("quoteLength", [0, 1, 2, 3], {
-    nosave,
-  });
-}

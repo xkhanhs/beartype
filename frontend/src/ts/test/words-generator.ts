@@ -1,11 +1,6 @@
 import { Config } from "../config/store";
-import { setConfig, setQuoteLengthAll } from "../config/setters";
 import * as CustomText from "./custom-text";
 import { Wordset, withWords } from "./wordset";
-import QuotesController, {
-  Quote,
-  QuoteWithTextSplit,
-} from "../controllers/quotes-controller";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -16,14 +11,8 @@ import * as Arrays from "../utils/arrays";
 import * as GetText from "../utils/generate";
 import { WordGenError } from "../utils/word-gen-error";
 
-import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { LanguageObject } from "@monkeytype/schemas/languages";
-import {
-  getSelectedQuoteId,
-  getCurrentQuote,
-  isRepeated,
-  setCurrentQuote,
-} from "../states/test";
+import { isRepeated } from "../states/test";
 import * as TestWords from "./test-words";
 import { withToneStyle } from "../beartype/vietnamese";
 import { getToneStyle } from "../beartype/tone-style";
@@ -316,14 +305,6 @@ async function applyBritishEnglishToWord(
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
-  const currentQuote = getCurrentQuote();
-  if (
-    Config.mode === "quote" &&
-    currentQuote?.britishText !== undefined &&
-    currentQuote?.britishText !== ""
-  ) {
-    return word;
-  }
 
   return await BritishEnglish.replace(word, previousWord);
 }
@@ -337,17 +318,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 }
 
 export function getLimit(): number {
-  if (Config.mode === "zen") {
-    return 0;
-  }
-
   let limit = 100;
-
-  const currentQuote = getCurrentQuote();
-
-  if (Config.mode === "quote" && currentQuote === null) {
-    throw new WordGenError("Random quote is null");
-  }
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
@@ -355,9 +326,6 @@ export function getLimit(): number {
     }
     if (Config.mode === "words") {
       limit = Config.words;
-    }
-    if (Config.mode === "quote") {
-      limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
   }
 
@@ -385,13 +353,6 @@ export function getLimit(): number {
   }
 
   if (
-    Config.mode === "quote" &&
-    (currentQuote as QuoteWithTextSplit).textSplit.length < limit
-  ) {
-    limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
-  }
-
-  if (
     Config.mode === "custom" &&
     CustomText.getLimitMode() === "word" &&
     CustomText.getLimitValue() < limit &&
@@ -401,92 +362,6 @@ export function getLimit(): number {
   }
 
   return limit;
-}
-
-async function getQuoteWordList(language: LanguageObject): Promise<string[]> {
-  if (isRepeated()) {
-    if (currentWordset === null) {
-      throw new WordGenError("Current wordset is null");
-    }
-
-    setCurrentQuote(previousRandomQuote);
-
-    return currentWordset.words;
-  }
-  const languageToGet = language.name.startsWith("swiss_german")
-    ? "german"
-    : language.name;
-
-  showLoaderBar();
-  const quotesCollection = await QuotesController.getQuotes(
-    languageToGet,
-    Config.quoteLength,
-  );
-  hideLoaderBar();
-
-  if (quotesCollection.length === 0) {
-    setConfig("mode", "words");
-    throw new WordGenError(
-      `No ${Config.language
-        .replace(/_\d*k$/g, "")
-        .replace(/_/g, " ")} quotes found`,
-    );
-  }
-
-  let rq: Quote;
-  if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
-    if (targetQuote === undefined) {
-      setQuoteLengthAll();
-      throw new WordGenError(`Quote ${getSelectedQuoteId()} does not exist`);
-    }
-    rq = targetQuote;
-  } else if (Config.quoteLength.includes(-3)) {
-    const randomQuote = QuotesController.getRandomFavoriteQuote(
-      Config.language,
-    );
-    if (randomQuote === null) {
-      setQuoteLengthAll();
-      throw new WordGenError("No favorite quotes found");
-    }
-    rq = randomQuote;
-  } else {
-    const randomQuote = QuotesController.getRandomQuote();
-    if (randomQuote === null) {
-      setQuoteLengthAll();
-      throw new WordGenError("No quotes found for selected quote length");
-    }
-    rq = randomQuote;
-  }
-
-  rq.language = Strings.removeLanguageSize(Config.language);
-  rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  rq.text = rq.text.replace(/…/g, "...");
-  rq.text = rq.text.trim();
-
-  if (
-    rq.britishText !== undefined &&
-    rq.britishText !== "" &&
-    Config.britishEnglish
-  ) {
-    rq.textSplit = rq.britishText.split(" ");
-  } else {
-    rq.textSplit = rq.text.split(" ");
-  }
-
-  setCurrentQuote(rq as QuoteWithTextSplit);
-
-  const currentQuote = getCurrentQuote();
-  if (currentQuote === null) {
-    throw new WordGenError("Random quote is null");
-  }
-
-  if (currentQuote.textSplit === undefined) {
-    throw new WordGenError("Random quote textSplit is undefined");
-  }
-
-  return currentQuote.textSplit;
 }
 
 let currentWordset: Wordset | null = null;
@@ -501,16 +376,12 @@ type GenerateWordsReturn = {
   allJoiningScript?: boolean;
 };
 
-let previousRandomQuote: QuoteWithTextSplit | null = null;
-
 export async function generateWords(
   language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
   if (!isRepeated()) {
     previousGetNextWordReturns = [];
   }
-  previousRandomQuote = getCurrentQuote();
-  setCurrentQuote(null);
   currentSection = [];
   sectionIndex = 0;
   sectionHistory = [];
@@ -528,10 +399,6 @@ export async function generateWords(
   let wordList = language.words;
   if (Config.mode === "custom") {
     wordList = CustomText.getText();
-  } else if (Config.mode === "quote") {
-    wordList = await getQuoteWordList(language);
-  } else if (Config.mode === "zen") {
-    wordList = [];
   }
 
   const customAndUsingPipeDelimiter =
@@ -578,22 +445,12 @@ export async function generateWords(
     i++;
   }
 
-  const quote = getCurrentQuote();
-
-  if (Config.mode === "quote" && quote === null) {
-    throw new WordGenError("Random quote is null");
-  }
-
   ret.hasTab =
     ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
+    currentWordset.words.some((w) => w.includes("\t"));
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+    currentWordset.words.some((w) => w.includes("\n"));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
@@ -636,10 +493,7 @@ export async function getNextWord(
     throw new WordGenError("Current language is null");
   }
 
-  //because quote test can be repeated in the middle of a test
-  //we cant rely on data inside previousGetNextWordReturns
-  //because it might not include the full quote
-  if (isRepeated() && Config.mode !== "quote") {
+  if (isRepeated()) {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
@@ -686,9 +540,7 @@ export async function getNextWord(
     .toLowerCase();
 
   if (currentSection.length === 0) {
-    if (Config.mode === "quote") {
-      randomWord = currentWordset.nextWord();
-    } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
+    if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
       randomWord = currentWordset.nextWord();
     } else if (
       Config.mode === "custom" &&
@@ -773,7 +625,6 @@ export async function getNextWord(
 
   if (
     Config.mode !== "custom" &&
-    Config.mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
     !randomWordLanguage.startsWith("german") &&
@@ -856,8 +707,6 @@ export function areAllWordsGenerated(): boolean {
       CustomText.getLimitMode() === "word" &&
       TestWords.words.length >= CustomText.getLimitValue() &&
       CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
-      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "section" &&
       sectionIndex >= CustomText.getLimitValue() &&

@@ -38,20 +38,6 @@ describe("isCharCorrect", () => {
     replaceConfig({});
   });
 
-  describe("Zen Mode", () => {
-    it("always returns true", () => {
-      replaceConfig({ mode: "zen" });
-      expect(
-        isCharCorrect({
-          data: "a",
-          inputValue: "test",
-          targetWord: "word",
-          correctShiftUsed: true,
-        }),
-      ).toBe(true);
-    });
-  });
-
   describe("Shift Key", () => {
     it("returns false if correct shift was not used", () => {
       expect(
@@ -174,18 +160,6 @@ describe("shouldGoToNextWord", () => {
         commitCharacterType: false,
       }),
     ).toBe(false);
-  });
-
-  it("returns true in zen mode", () => {
-    replaceConfig({ mode: "zen" });
-    expect(
-      shouldGoToNextWord({
-        data: " ",
-        inputValue: "test",
-        targetWord: "test ",
-        commitCharacterType: "separator",
-      }),
-    ).toBe(true);
   });
 
   it("returns true when committing a word with a newline", () => {

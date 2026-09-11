@@ -132,7 +132,7 @@ export function updateActiveElement(
     let previousActiveWordTop: number | null = null;
     if (initial === undefined) {
       const previousActiveWord = wordsEl.qs(".active");
-      // in zen mode, because of the animation frame, previousActiveWord will be removed at this point, so check for null
+      // because of the animation frame, previousActiveWord may already be removed at this point, so check for null
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
@@ -478,28 +478,18 @@ function updateWordWrapperClasses(): void {
 function showWords(): void {
   wordsEl.setHtml("");
 
-  if (Config.mode === "zen") {
-    appendEmptyWordElement(0);
-  } else {
-    let wordsHTML = "";
-    for (let i = 0; i < TestWords.words.length; i++) {
-      const word = TestWords.words.get(i);
-      if (word === undefined) continue; // won't happen, but ts complains
-      wordsHTML += buildWordHTML(word.display, i);
-    }
-    wordsEl.setHtml(wordsHTML);
+  let wordsHTML = "";
+  for (let i = 0; i < TestWords.words.length; i++) {
+    const word = TestWords.words.get(i);
+    if (word === undefined) continue; // won't happen, but ts complains
+    wordsHTML += buildWordHTML(word.display, i);
   }
+  wordsEl.setHtml(wordsHTML);
 
   updateActiveElement({
     initial: true,
   });
   updateWordWrapperClasses();
-}
-
-export function appendEmptyWordElement(index: number): void {
-  wordsEl.appendHtml(
-    `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
-  );
 }
 
 export function updateWordsInputPosition(): void {
@@ -606,12 +596,9 @@ export function updateWordsWrapperHeight(force = false): void {
   if (showAllLines) {
     //allow the wrapper to grow and shink with the words
     wordsWrapperEl.setStyle({ height: "" });
-  } else if (Config.mode === "zen") {
-    //zen mode, showAllLines off
-    wordsWrapperEl.setStyle({ height: `${wordHeight * 2}px` });
   } else {
     if (Config.tapeMode === "off") {
-      //tape off, showAllLines off, non-zen mode
+      //tape off, showAllLines off
       const wordElements = wordsEl.qsa(".word");
       let lines = 0;
       let lastTop = 0;
@@ -717,37 +704,15 @@ export async function updateWordLetters({
     async () => {
       pendingWordData.delete(wordIndex);
       const currentWord = TestWords.words.get(wordIndex)?.display;
-      if (currentWord === undefined && Config.mode !== "zen") return;
+      if (currentWord === undefined) return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
       if (!wordAtIndex) return;
       const hintIndices: number[][] = [];
 
-      let newlineafter = false;
-
-      if (Config.mode === "zen") {
-        for (const char of input) {
-          if (char === "\t") {
-            ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-          } else if (char === "\n") {
-            newlineafter = true;
-            ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-          } else {
-            ret += `<letter class="correct">${char}</letter>`;
-          }
-        }
-        if (input === "" && compositionData === "") {
-          ret += `<letter class='invisible'>_</letter>`;
-        }
-
-        for (const char of compositionData) {
-          ret += `<letter class="dead">${char}</letter>`;
-        }
-      } else {
-        // beartype: lay the word out by keys, not by character index -- see
-        // beartype/word-html.ts.
-        ret = wordHtml(currentWord ?? "", input, compositionData);
-      }
+      // beartype: lay the word out by keys, not by character index -- see
+      // beartype/word-html.ts.
+      ret = wordHtml(currentWord ?? "", input, compositionData);
 
       wordAtIndex.setHtml(ret);
 
@@ -772,20 +737,13 @@ export async function updateWordLetters({
         );
       }
 
-      if (newlineafter) {
-        wordAtIndex.native.insertAdjacentHTML(
-          "afterend",
-          "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
-        );
-      }
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
-      if (Config.mode === "zen" || SlowTimer.get()) {
+      if (SlowTimer.get()) {
         // because we block word jumps in before-insert-text
-        // this check only needs to happen in zen mode
-        // unless slow timer is on, then it needs to happen
-        // because the word jump check is disabled
+        // this check only needs to happen when slow timer is on, then it
+        // needs to happen because the word jump check is disabled
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
           if (wordTopAfterUpdate > activeWordTop) {
@@ -1111,7 +1069,7 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
 }
 
 export function setJoiningClass(isEnabled: boolean): void {
-  if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
+  if (isEnabled || Config.mode === "custom") {
     wordsEl.addClass("joiningScript");
   } else {
     wordsEl.removeClass("joiningScript");
@@ -1326,28 +1284,6 @@ export async function afterTestWordChange(
       TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
     if (keyToHighlight !== undefined) {
       highlight(keyToHighlight);
-    }
-  }
-
-  if (direction === "forward") {
-    //
-  } else if (direction === "back") {
-    if (Config.mode === "zen") {
-      // because we need to delete newline, beforenewline and afternewline elements which dont have wordindex attributes
-      // we need to do this loop thingy and delete all elements after the active word
-      let deleteElements = false;
-      for (const child of wordsEl.getChildren()) {
-        if (deleteElements) {
-          child.remove();
-          continue;
-        }
-        const attr = child.getAttribute("data-wordindex");
-        if (attr === null) continue;
-        const wordIndex = parseInt(attr, 10);
-        if (wordIndex === getActiveWordIndex()) {
-          deleteElements = true;
-        }
-      }
     }
   }
 }

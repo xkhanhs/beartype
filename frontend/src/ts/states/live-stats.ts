@@ -9,7 +9,6 @@ import {
   currentLiveStats,
   getActiveWordIndex,
   getBailedOut,
-  getCurrentQuote,
   getFocus,
   isResultCalculating,
   isTestActive,
@@ -47,9 +46,6 @@ function getCurrentWordCount(): number {
 function getWordsTotal(): number {
   if (getConfig.mode === "words") return getConfig.words;
   if (getConfig.mode === "custom") return CustomText.getLimitValue();
-  if (getConfig.mode === "quote") {
-    return getCurrentQuote()?.textSplit.length ?? 1;
-  }
   return TestWords.words.length;
 }
 
@@ -113,7 +109,7 @@ export const getTimerText = createMemo(() => {
   // read the signal first so the memo subscribes to it on every branch below
   const wordCount = getCurrentWordCount();
   const wordsTotal = getWordsTotal();
-  if (getConfig.mode === "zen" || wordsTotal === 0) {
+  if (wordsTotal === 0) {
     return `${getActiveWordIndex()}`;
   }
   return `${wordCount}/${wordsTotal}`;

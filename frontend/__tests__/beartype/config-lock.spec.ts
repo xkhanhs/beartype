@@ -46,7 +46,7 @@ describe("lockConfig", () => {
   it("drops values no longer on offer", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
-      mode: "zen",
+      mode: "custom",
       time: 45,
       words: 500,
       language: "spanish",

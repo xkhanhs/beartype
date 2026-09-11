@@ -21,15 +21,6 @@ describe("british-english", () => {
       await expect(replace(" :Math-. ", "")).resolves.toEqual(" :Maths-. ");
     });
 
-    it("should not replace in quote mode if previousWord matches excepted words", async () => {
-      //GIVEN
-      Config.mode = "quote";
-
-      //WHEN/THEN
-      await expect(replace("tire", "will")).resolves.toEqual("tire");
-      await expect(replace("tire", "")).resolves.toEqual("tyre");
-    });
-
     it("should replace hyphenated words", async () => {
       await expect(replace("cream-colored", "")).resolves.toEqual(
         "cream-coloured",

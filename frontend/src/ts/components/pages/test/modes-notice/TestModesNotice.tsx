@@ -1,4 +1,3 @@
-import { getConfig } from "../../../../config/store";
 import { getFocus, isRepeated } from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
 import { Notice } from "./Notice";
@@ -25,7 +24,7 @@ export function TestModesNotice() {
 function Repeated() {
   return (
     <Notice
-      when={isRepeated() && getConfig.mode !== "quote"}
+      when={isRepeated()}
       class="text-error"
       icon="fa-sync-alt"
       text="bài gõ lại"

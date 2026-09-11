@@ -4,7 +4,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
-const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
+const mockState = vi.hoisted(() => ({ activeWordIndex: 0, bailedOut: false }));
 
 vi.mock("../../../src/ts/config/store", () => ({
   Config: { mode: "words", words: 25, time: 0 },
@@ -45,10 +45,9 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 }));
 
 vi.mock("../../../src/ts/states/test", () => ({
-  getCurrentQuote: () => null,
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
-  getBailedOut: () => false,
+  getBailedOut: () => mockState.bailedOut,
   getKoreanStatus: () => false,
 }));
 
@@ -197,6 +196,7 @@ describe("stats.ts", () => {
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     mockState.activeWordIndex = 0;
+    mockState.bailedOut = false;
     TestWords.reset();
     inputPerWord.clear();
   });
@@ -314,8 +314,8 @@ describe("stats.ts", () => {
       expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([]);
     });
 
-    it("adjusts end in zen mode by removing trailing afk", () => {
-      (Config as { mode: string }).mode = "zen";
+    it("adjusts end in a bailout by removing trailing afk", () => {
+      mockState.bailedOut = true;
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("keyup", 1600, keyUp());
@@ -495,8 +495,8 @@ describe("stats.ts", () => {
       expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(15);
     });
 
-    it("trims zen-mode trailing afk and caps tick count", () => {
-      (Config as { mode: string }).mode = "zen";
+    it("trims bailout trailing afk and caps tick count", () => {
+      mockState.bailedOut = true;
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("keyup", 1600, keyUp());
@@ -599,14 +599,6 @@ describe("stats.ts", () => {
       expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
     });
 
-    it("returns 0 in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1150, keyDown());
-
-      expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
-    });
-
     it("returns 0 if no events", () => {
       expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
     });
@@ -621,15 +613,6 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("end", 1));
 
       expect(getLastKeypressToEndMs(buildEventLog())).toBe(200);
-    });
-
-    it("returns 0 in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1500, keyDown());
-      logTestEvent("timer", 2000, timer("end", 1));
-
-      expect(getLastKeypressToEndMs(buildEventLog())).toBe(0);
     });
   });
 

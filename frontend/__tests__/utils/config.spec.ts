@@ -27,14 +27,14 @@ describe("config.ts", () => {
     });
     it("should correctly merge properties of various types", () => {
       const partialConfig = {
-        mode: "quote",
+        mode: "time",
         hideExtraLetters: true,
         time: 120,
         accountChart: ["off", "off", "off", "off"],
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
-      expect(result.mode).toEqual("quote");
+      expect(result.mode).toEqual("time");
       expect(result.hideExtraLetters).toEqual(true);
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);

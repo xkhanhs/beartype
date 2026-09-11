@@ -5,23 +5,16 @@ import { type CommitCharacterType } from "./util";
 /**
  * Check if the test should fail due to minimum burst settings
  * @param options - Options object
- * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.currentWord - Current target word
  * @param options.lastBurst - Burst speed in WPM
  */
 export function checkIfFailedDueToMinBurst(options: {
-  testInputWithData: string;
   currentWord: string;
   lastBurst: number | null;
 }): boolean {
-  const { testInputWithData, currentWord, lastBurst } = options;
+  const { currentWord, lastBurst } = options;
   if (Config.minBurst !== "off" && lastBurst !== null) {
-    let wordLength: number;
-    if (Config.mode === "zen") {
-      wordLength = testInputWithData.length;
-    } else {
-      wordLength = currentWord.length;
-    }
+    const wordLength: number = currentWord.length;
 
     const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
     if (
@@ -53,8 +46,6 @@ export function checkIfFailedDueToDifficulty(options: {
   const { data, testInput, targetWord, correct, commitCharacterType } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
-
-  if (Config.mode === "zen") return false;
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&

@@ -1,4 +1,3 @@
-import { Config } from "../config/store";
 import britishEnglishReplacements from "../constants/british-english";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
@@ -33,18 +32,7 @@ export async function replace(
 
     if (rule === undefined) return word;
 
-    const [britishWord, exceptions] =
-      typeof rule === "string"
-        ? [rule, []]
-        : [rule.britishWord, rule.exceptPreviousWords];
-
-    if (
-      Config.mode === "quote" &&
-      previousWord !== undefined &&
-      exceptions.includes(previousWord)
-    ) {
-      return word;
-    }
+    const britishWord = typeof rule === "string" ? rule : rule.britishWord;
 
     return word.replace(
       RegExp(`^(?:([\\W]*)(${cleanedWord})([\\W]*))$`, "gi"),

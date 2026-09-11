@@ -74,7 +74,6 @@ const ResultBaseSchema = z.object({
   acc: PercentageSchema.min(50),
   mode: ModeSchema,
   mode2: Mode2Schema,
-  quoteLength: z.number().int().nonnegative().max(3).optional(),
   timestamp: z.number().int().nonnegative(),
   testDuration: z.number().min(1),
   consistency: PercentageSchema,

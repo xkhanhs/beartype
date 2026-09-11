@@ -16,10 +16,7 @@ export function BarTimerProgress() {
     animate(barEl, target);
   });
 
-  const shown = () =>
-    showLiveStats() &&
-    getConfig.mode !== "zen" &&
-    getConfig.timerStyle === "bar";
+  const shown = () => showLiveStats() && getConfig.timerStyle === "bar";
 
   return (
     <div class="relative z-99" style={{ opacity: getConfig.timerOpacity }}>

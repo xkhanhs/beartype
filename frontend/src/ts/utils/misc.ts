@@ -1,6 +1,6 @@
 import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
-import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
+import { Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -234,10 +234,7 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof PersonalBests>(
-  config: Config,
-  randomQuote: { id: number } | null,
-): Mode2<M> {
+export function getMode2<M extends Mode>(config: Config): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -247,10 +244,6 @@ export function getMode2<M extends keyof PersonalBests>(
     retVal = config.words.toString();
   } else if (mode === "custom") {
     retVal = "custom";
-  } else if (mode === "zen") {
-    retVal = "zen";
-  } else if (mode === "quote") {
-    retVal = `${randomQuote?.id ?? -1}`;
   } else {
     throw new Error("Invalid mode");
   }
@@ -270,7 +263,6 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
       "charStats",
       "mode",
       "mode2",
-      "quoteLength",
       "restartCount",
       "testDuration",
       "afkDuration",
@@ -295,7 +287,6 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
       item.charStats.join(";"),
       item.mode,
       item.mode2,
-      item.quoteLength,
       item.restartCount,
       item.testDuration,
       item.afkDuration,

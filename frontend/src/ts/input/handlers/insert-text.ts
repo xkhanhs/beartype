@@ -310,8 +310,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   let lastBurst: null | number = null;
   if (goingToNextWord) {
     const result = await goToNextWord({
-      correctInsert:
-        Config.mode === "zen" ? true : testInput + data === currentWord,
+      correctInsert: testInput + data === currentWord,
       now,
     });
     lastBurst = result.lastBurst;
@@ -349,7 +348,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     } else if (
       increasedWordIndex &&
       checkIfFailedDueToMinBurst({
-        testInputWithData: testInput + data,
         currentWord,
         lastBurst,
       })

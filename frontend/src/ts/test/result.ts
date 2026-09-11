@@ -1,5 +1,4 @@
 import { Config } from "../config/store";
-import { Quote } from "../controllers/quotes-controller";
 // beartype: results live in this browser, not in an account snapshot
 import * as DB from "../beartype/local-results";
 
@@ -200,7 +199,7 @@ function updateWords(): void {
 // beartype: best and usual speed over the last tests on this browser, so the
 // number just typed has something to be read against
 function updateRecent(dontSave: boolean): void {
-  if (Config.mode === "custom" || Config.mode === "zen") {
+  if (Config.mode === "custom") {
     setResultHistory(null);
     return;
   }
@@ -242,7 +241,7 @@ export function updateCrownText(text: string): void {
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
   // beartype: a drill from the miss book is practice, not a test with a best
-  if (Config.mode === "quote" || Config.mode === "custom" || dontSave) {
+  if (Config.mode === "custom" || dontSave) {
     hideCrown();
     return;
   }
@@ -389,7 +388,7 @@ export function showConfetti(): void {
   })();
 }
 
-function updateTestType(randomQuote: Quote | null): void {
+function updateTestType(): void {
   let testType = "";
 
   testType += Config.mode;
@@ -398,10 +397,6 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += ` ${Config.time}`;
   } else if (Config.mode === "words") {
     testType += ` ${Config.words}`;
-  } else if (Config.mode === "quote") {
-    if (randomQuote?.group !== undefined) {
-      testType += ` ${["short", "medium", "long", "thicc"][randomQuote.group]}`;
-    }
   }
   if (Config.mode !== "custom") {
     testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
@@ -496,17 +491,6 @@ function updateOther(
     ?.setAttribute("data-balloon-break", "");
 }
 
-function updateQuoteSource(randomQuote: Quote | null): void {
-  if (Config.mode === "quote") {
-    qs("#result .stats .source")?.show();
-    qs("#result .stats .source .bottom")?.setHtml(
-      randomQuote?.source ?? "Error: Source unknown",
-    );
-  } else {
-    qs("#result .stats .source")?.hide();
-  }
-}
-
 export async function update(
   res: CompletedEvent,
   difficultyFailed: boolean,
@@ -514,17 +498,11 @@ export async function update(
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: Quote | null,
   dontSave: boolean,
 ): Promise<void> {
   result = structuredClone(res);
   hideCrown();
   qs("#retrySavingResultButton")?.hide();
-  qs(".pageTest #result #rateQuoteButton .icon")
-    ?.removeClass("fas")
-    ?.addClass("far");
-  qs(".pageTest #result #rateQuoteButton .rating")?.setText("");
-  qs(".pageTest #result #rateQuoteButton")?.hide();
   qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
@@ -536,8 +514,7 @@ export async function update(
   updateRecent(dontSave);
   updateWords();
   updateKey();
-  updateTestType(randomQuote);
-  updateQuoteSource(randomQuote);
+  updateTestType();
   await updateCrown(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
@@ -573,8 +550,6 @@ export async function update(
     );
   } else {
     qsa("main #result .stats")?.show();
-    qs("main #result #rateQuoteButton")?.hide();
-    qs("main #result #reportQuoteButton")?.hide();
     qs("main #result .stats .dailyLeaderboard")?.hide();
     qs("main #result #saveScreenshotButton")?.show();
   }

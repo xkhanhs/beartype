@@ -18,7 +18,6 @@ import {
 import { Keycode } from "../../constants/keys";
 import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
-import { getCustomTextIndicator } from "../../states/core";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
@@ -35,16 +34,12 @@ export async function handleEnter(
   _now: number,
 ): Promise<void> {
   if (e.shiftKey) {
-    if (Config.mode === "zen") {
-      void TestLogic.finish();
-      return;
-    } else if (
+    if (
       !canQuickRestart(
         Config.mode,
         Config.words,
         Config.time,
         CustomText.getData(),
-        getCustomTextIndicator()?.isLong ?? false,
       )
     ) {
       const delay = Date.now() - getLastBailoutAttempt();

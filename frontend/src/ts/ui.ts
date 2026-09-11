@@ -4,11 +4,7 @@ import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  getGlobalOffsetTop,
-} from "./states/core";
+import { getActivePage, getGlobalOffsetTop } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
@@ -86,7 +82,6 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      getCustomTextIndicator()?.isLong ?? false,
     )
   ) {
     //ignore

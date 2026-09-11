@@ -6,7 +6,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
-  showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
@@ -16,11 +15,7 @@ import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
 import * as TodayTracker from "./today-tracker";
 import * as Result from "./result";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  isAuthenticated,
-} from "../states/core";
+import { getActivePage } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -28,7 +23,6 @@ import {
   setLastEventLog,
   setIsTestRestarting,
   isTestRestarting,
-  getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
   getRestartCount,
@@ -73,7 +67,7 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { setInputElementValue } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
-import { setQuoteLengthAll, setConfig } from "../config/setters";
+import { setConfig } from "../config/setters";
 import {
   resetTestEvents,
   cleanupData,
@@ -150,14 +144,13 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   }
   if (isTestActive()) {
     if (options.isQuickRestart) {
-      if (Config.mode !== "zen") options.event?.preventDefault();
+      options.event?.preventDefault();
       if (
         !canQuickRestart(
           Config.mode,
           Config.words,
           Config.time,
           CustomText.getData(),
-          getCustomTextIndicator()?.isLong ?? false,
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -198,17 +191,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     }
   }
 
-  const currentQuote = getCurrentQuote();
-  if (
-    Config.mode === "quote" &&
-    currentQuote !== null &&
-    Config.language.startsWith(currentQuote.language) &&
-    Config.repeatQuotes === "typing" &&
-    (isTestActive() || failReason !== "")
-  ) {
-    options.withSameWordset = true;
-  }
-
   if (
     PractiseWords.before.mode !== null &&
     !options.withSameWordset &&
@@ -220,15 +202,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     }
     if (PractiseWords.before.numbers !== null) {
       setConfig("numbers", PractiseWords.before.numbers);
-    }
-
-    if (PractiseWords.before.customText) {
-      CustomText.setText(PractiseWords.before.customText.text);
-      CustomText.setLimitMode(PractiseWords.before.customText.limit.mode);
-      CustomText.setLimitValue(PractiseWords.before.customText.limit.value);
-      CustomText.setPipeDelimiter(
-        PractiseWords.before.customText.pipeDelimiter,
-      );
     }
 
     setConfig("mode", PractiseWords.before.mode);
@@ -315,12 +288,6 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (Config.mode === "quote") {
-    if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
-      setQuoteLengthAll();
-    }
-  }
-
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
 
   if (Config.lazyMode && !allowLazyMode) {
@@ -356,8 +323,7 @@ async function init(): Promise<boolean> {
       text: `${CustomText.getText().length} words`,
     },
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, null),
-    currentQuote: getCurrentQuote(),
+    mode2: Misc.getMode2(Config),
   });
 
   let wordsHaveTab = false;
@@ -429,7 +395,7 @@ async function init(): Promise<boolean> {
     TestWords.words.removeCommitCharacterFromLastWord();
   }
 
-  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+  if (Config.keymapMode === "next") {
     highlight(
       nthElementFromArray(
         // ignoring for now but this might need a different approach
@@ -456,11 +422,6 @@ async function init(): Promise<boolean> {
 
 //add word during the test
 export async function addWord(): Promise<void> {
-  if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
-    return;
-  }
-
   const bound = 100; // how many extra words to aim for AFTER the current word
 
   if (TestWords.words.length - (getActiveWordIndex() + 1) > bound) {
@@ -511,10 +472,7 @@ function buildCompletedEvent(
   // beartype: there are no tags
   const activeTagsIds: string[] = [];
 
-  let language = Config.language;
-  if (Config.mode === "quote") {
-    language = Strings.removeLanguageSize(Config.language);
-  }
+  const language = Config.language;
 
   let customText: CompletedEventCustomText | undefined = undefined;
   if (Config.mode === "custom") {
@@ -566,7 +524,6 @@ function buildCompletedEvent(
     err: getErrorCountHistory(eventLog),
   };
 
-  const currentQuote = getCurrentQuote();
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
     rawWpm: Numbers.roundTo2(
@@ -580,7 +537,6 @@ function buildCompletedEvent(
     lastKeyToEnd: getLastKeypressToEndMs(eventLog),
     startToFirstKey: getStartToFirstKeypressMs(eventLog),
     afkDuration: afkDuration,
-    quoteLength: currentQuote?.group ?? -1,
     customText: customText,
     tags: activeTagsIds,
     punctuation: Config.punctuation,
@@ -588,7 +544,7 @@ function buildCompletedEvent(
     lazyMode: Config.lazyMode,
     timestamp: Date.now(),
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, currentQuote),
+    mode2: Misc.getMode2(Config),
     bailedOut: getBailedOut(),
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
@@ -609,7 +565,6 @@ function buildCompletedEvent(
   };
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
-  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
 
   return completedEvent;
 }
@@ -632,10 +587,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   await Misc.sleep(0); //allow ui update
 
   TestUI.onTestFinish();
-
-  if (isRepeated() && Config.mode === "quote") {
-    setIsRepeated(false);
-  }
 
   forceReleaseAllKeys();
 
@@ -733,8 +684,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitValue() < 10) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "time" &&
-      CustomText.getLimitValue() < 15) ||
-    (Config.mode === "zen" && completedEvent.testDuration < 15)
+      CustomText.getLimitValue() < 15)
   ) {
     showNoticeNotification("Test invalid - too short");
     setIsTestInvalid(true);
@@ -789,56 +739,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  const customTextName = getCustomTextIndicator()?.name ?? "";
-  const isLong = getCustomTextIndicator()?.isLong === true;
-  if (Config.mode === "custom" && customTextName !== "" && isLong) {
-    // Let's update the custom text progress
-    if (
-      getBailedOut() ||
-      getInputHistory(eventLog).length < TestWords.words.length
-    ) {
-      // They bailed out
-
-      const history = getInputHistory(eventLog);
-      let historyLength = history?.length;
-      const wordIndex = historyLength - 1;
-
-      const lastWordInputLength = history[wordIndex]?.length ?? 0;
-
-      // compare against display.length (not textWithCommit.length): the input
-      // history holds the typed letters, not the committing space separator, so
-      // a space word is "complete" at text.length. display includes a newline
-      // commit, which is a required typed char.
-      if (
-        lastWordInputLength <
-        (TestWords.words.get(wordIndex)?.display.length ?? 0)
-      ) {
-        historyLength--;
-      }
-
-      const newProgress =
-        CustomText.getCustomTextLongProgress(customTextName) + historyLength;
-      CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      showSuccessNotification("Long custom text progress saved", {
-        durationMs: 5000,
-        important: true,
-      });
-
-      let newText = CustomText.getCustomText(customTextName, true);
-      newText = newText.slice(newProgress);
-      CustomText.setText(newText);
-    } else {
-      // They finished the test
-      CustomText.setCustomTextLongProgress(customTextName, 0);
-      const text = CustomText.getCustomText(customTextName, true);
-      CustomText.setText(text);
-      showSuccessNotification("Long custom text completed", {
-        durationMs: 5000,
-        important: true,
-      });
-    }
-  }
-
   TodayTracker.addSeconds(
     completedEvent.testDuration - completedEvent.afkDuration,
   );
@@ -858,7 +758,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     afkDetected,
     isRepeated(),
     tooShort,
-    getCurrentQuote(),
     dontSave,
   );
 
@@ -889,17 +788,7 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   if (isResultCalculating()) return;
-  if (
-    isTestActive() &&
-    Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
-  ) {
-    void restart({
-      withSameWordset: true,
-    });
-  } else {
-    void restart();
-  }
+  void restart();
 });
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
@@ -907,10 +796,6 @@ qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
-  if (Config.mode === "zen") {
-    showNoticeNotification("Repeat test disabled in zen mode");
-    return;
-  }
   void restart({
     withSameWordset: true,
   });
@@ -963,7 +848,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
     }
     if (key === "difficulty" && !nosave) void restart();
 
-    if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
+    if (key === "keymapMode" && newValue === "next") {
       setTimeout(() => {
         highlight(
           nthElementFromArray(

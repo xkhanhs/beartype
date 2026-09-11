@@ -1,5 +1,4 @@
 import "./event-handlers/global";
-import "./event-handlers/test";
 
 import * as Logger from "./utils/logger";
 import "./ui";

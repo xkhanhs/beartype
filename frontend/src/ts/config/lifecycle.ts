@@ -57,7 +57,6 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "minWpm",
   "minAcc",
   "minBurst",
-  "quoteLength", //quote length sets mode,
   "words",
   "time",
   "mode", // mode sets punctuation and numbers

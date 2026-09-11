@@ -1,7 +1,5 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
-import { z } from "zod";
 import { getConfig } from "../config/store";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { EventLog } from "../test/events/types";
 
 import { LayoutObject } from "@monkeytype/schemas/layouts";
@@ -10,12 +8,11 @@ import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
-import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getActivePage, getCustomTextIndicator } from "./core";
+import { getActivePage } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
@@ -80,8 +77,6 @@ export const getIncompleteSeconds = createMemo(() =>
 );
 
 export const [isRepeated, setIsRepeated] = createSignal(false);
-export const [getCurrentQuote, setCurrentQuote] =
-  createSignal<QuoteWithTextSplit | null>(null);
 
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
@@ -123,7 +118,6 @@ createEffect(() => {
       getConfig.words,
       getConfig.time,
       CustomText.getData(),
-      getCustomTextIndicator()?.isLong ?? false,
     ),
   );
 });
@@ -224,12 +218,6 @@ export const __nonReactive = {
     return result;
   },
 };
-
-export const [getSelectedQuoteId, setSelectedQuoteId] = useLocalStorage({
-  key: "selectedQuoteId",
-  schema: z.number().int().min(1),
-  fallback: 1,
-});
 
 export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);

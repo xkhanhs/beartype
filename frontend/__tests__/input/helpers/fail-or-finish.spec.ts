@@ -86,7 +86,6 @@ describe("checkIfFailedDueToMinBurst", () => {
     }
 
     const result = checkIfFailedDueToMinBurst({
-      testInputWithData: "test",
       currentWord: "test",
       lastBurst,
     });
@@ -94,20 +93,9 @@ describe("checkIfFailedDueToMinBurst", () => {
     expect(result).toBe(expected);
   });
 
-  it("uses correct length for whorf calculation in zen mode", () => {
-    replaceConfig({ minBurst: "flex", mode: "zen", minBurstCustomSpeed: 100 });
-    checkIfFailedDueToMinBurst({
-      testInputWithData: "zeninput",
-      currentWord: "ignored",
-      lastBurst: 50,
-    });
-    expect(Misc.whorf).toHaveBeenCalledWith(100, 8);
-  });
-
   it("uses correct length for whorf calculation in normal mode", () => {
     replaceConfig({ minBurst: "flex", mode: "time", minBurstCustomSpeed: 100 });
     checkIfFailedDueToMinBurst({
-      testInputWithData: "input",
       currentWord: "target",
       lastBurst: 50,
     });
@@ -128,27 +116,6 @@ describe("checkIfFailedDueToDifficulty", () => {
   });
 
   it.each([
-    {
-      desc: "zen mode, master - never fails",
-      config: { mode: "zen", difficulty: "master" },
-      correct: false,
-      data: " ",
-      testInput: "hello",
-      targetWord: "hello ",
-      commitCharacterType: "separator",
-      expected: false,
-    },
-    {
-      desc: "zen mode - never fails",
-      config: { mode: "zen", difficulty: "normal" },
-      correct: false,
-      data: " ",
-      testInput: "hello",
-      targetWord: "hello ",
-      commitCharacterType: "separator",
-      expected: false,
-    },
-    //
     {
       desc: "normal typing incorrect- never fails",
       config: { difficulty: "normal" },

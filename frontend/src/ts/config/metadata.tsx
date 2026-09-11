@@ -140,12 +140,6 @@ export const configMetadata: ConfigMetadataObject = {
     },
     changeRequiresRestart: true,
     group: "test",
-    overrideValue: ({ value, currentConfig }) => {
-      if (currentConfig.mode === "quote") {
-        return false;
-      }
-      return value;
-    },
   },
   numbers: {
     key: "numbers",
@@ -154,12 +148,6 @@ export const configMetadata: ConfigMetadataObject = {
     },
     changeRequiresRestart: true,
     group: "test",
-    overrideValue: ({ value, currentConfig }) => {
-      if (currentConfig.mode === "quote") {
-        return false;
-      }
-      return value;
-    },
   },
   words: {
     key: "words",
@@ -202,37 +190,16 @@ export const configMetadata: ConfigMetadataObject = {
       words: {
         fa: { icon: "fa-font" },
       },
-      quote: {
-        fa: { icon: "fa-quote-left" },
-      },
-      zen: {
-        fa: { icon: "fa-mountain" },
-      },
       custom: {
         fa: { icon: "fa-wrench" },
       },
     },
     group: "test",
     overrideConfig: ({ value }) => {
-      if (value === "custom" || value === "quote" || value === "zen") {
+      if (value === "custom") {
         return {
           numbers: false,
           punctuation: false,
-        };
-      }
-      return {};
-    },
-  },
-  quoteLength: {
-    key: "quoteLength",
-    fa: { icon: "fa-quote-right" },
-    displayString: "quote length",
-    changeRequiresRestart: true,
-    group: "test",
-    overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.mode !== "quote") {
-        return {
-          mode: "quote",
         };
       }
       return {};
@@ -271,15 +238,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       'Press tab, esc or enter to quickly restart the test, or to quickly jump to the test page. These options disable tab navigation on most parts of the website. Using the "esc" option will move opening the commandline to the tab key.',
-  },
-  repeatQuotes: {
-    key: "repeatQuotes",
-    fa: { icon: "fa-sync-alt" },
-    displayString: "repeat quotes",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description:
-      "This setting changes the restarting behavior when typing in quote mode. Changing it to 'typing' will repeat the quote if you restart while typing.",
   },
   resultSaving: {
     key: "resultSaving",

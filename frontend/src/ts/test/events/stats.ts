@@ -67,8 +67,8 @@ export function getTimerBoundaries(eventLog: EventLog): number[] {
   }
   if (endMs === undefined) return [];
 
-  // zen/bailout: trim trailing afk and cap tickCount to fit the adjusted end
-  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
+  // bailout: trim trailing afk and cap tickCount to fit the adjusted end
+  if (eventLog.context.bailedOut) {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
@@ -103,11 +103,8 @@ export function getLaggedTimerBoundaries(eventLog: EventLog): number[] {
     }
   }
 
-  // in zen/bailout, cap to adjusted end to remove trailing afk seconds
-  if (
-    endMs !== undefined &&
-    (eventLog.context.mode === "zen" || eventLog.context.bailedOut)
-  ) {
+  // in bailout, cap to adjusted end to remove trailing afk seconds
+  if (endMs !== undefined && eventLog.context.bailedOut) {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
@@ -143,8 +140,6 @@ function isTimedTest(eventLog: EventLog): boolean {
 }
 
 export function getStartToFirstKeypressMs(eventLog: EventLog): number {
-  if (eventLog.context.mode === "zen") return 0;
-
   const { events } = eventLog;
 
   let firstKeypress: number | undefined;
@@ -177,7 +172,7 @@ export function getStartToFirstKeypressMs(eventLog: EventLog): number {
 }
 
 // raw version is needed internally by getTestDurationMs to adjust
-// duration in zen/bailout — the public version returns 0 for zen
+// duration in a bailout
 function getRawLastKeypressToEndMs(eventLog: EventLog): number {
   const { events } = eventLog;
 
@@ -218,7 +213,6 @@ function getRawLastKeypressToEndMs(eventLog: EventLog): number {
 }
 
 export function getLastKeypressToEndMs(eventLog: EventLog): number {
-  if (eventLog.context.mode === "zen") return 0;
   return getRawLastKeypressToEndMs(eventLog);
 }
 
@@ -304,7 +298,7 @@ export function getTestDurationMs(eventLog: EventLog): number {
     return 0;
   }
 
-  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
+  if (eventLog.context.bailedOut) {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       end -= lkte;

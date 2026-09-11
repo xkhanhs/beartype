@@ -308,55 +308,23 @@ describe("Config", () => {
       }[] = [
         {
           display: "sanitizes config, remove extra keys",
-          value: { mode: "zen", unknownKey: true, unknownArray: [1, 2] } as any,
-          expected: { mode: "zen" },
+          value: {
+            mode: "time",
+            unknownKey: true,
+            unknownArray: [1, 2],
+          } as any,
+          expected: { mode: "time" },
         },
         {
           display: "applies config migration",
-          value: { mode: "zen", swapEscAndTab: true } as any,
-          expected: { mode: "zen", quickRestart: "esc" },
+          value: { mode: "time", swapEscAndTab: true } as any,
+          expected: { mode: "time", quickRestart: "esc" },
         },
       ];
 
       it.each(testCases)("$display", async ({ value, expected }) => {
         await Lifecycle.applyConfig(value);
 
-        const config = getConfig();
-        const applied = Object.fromEntries(
-          Object.entries(config).filter(([key]) =>
-            Object.keys(expected).includes(key),
-          ),
-        );
-        expect(applied).toEqual(expected);
-      });
-    });
-
-    describe("should apply keys in an order to avoid overrides", () => {
-      const testCases: {
-        display: string;
-        value: Partial<ConfigType>;
-        expected: Partial<ConfigType>;
-      }[] = [
-        {
-          display:
-            "quote length shouldnt override mode, punctuation and numbers",
-          value: {
-            punctuation: true,
-            numbers: true,
-            quoteLength: [0],
-            mode: "time",
-          },
-          expected: {
-            punctuation: true,
-            numbers: true,
-            quoteLength: [0],
-            mode: "time",
-          },
-        },
-      ];
-
-      it.each(testCases)("$display", async ({ value, expected }) => {
-        await Lifecycle.applyConfig(value);
         const config = getConfig();
         const applied = Object.fromEntries(
           Object.entries(config).filter(([key]) =>

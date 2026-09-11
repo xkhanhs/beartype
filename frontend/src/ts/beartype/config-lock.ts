@@ -6,9 +6,9 @@ import { getDefaultConfig } from "../constants/default-config";
  * config -- about a hundred keys -- is fixed.
  *
  * The typing code reads those keys everywhere (`Config.stopOnError`,
- * `Config.mode === "zen"`, ...). Deleting the branches would mean editing the
- * code this app exists to leave alone, so the keys stay and their values are
- * pinned instead.
+ * `Config.mode === "custom"`, ...). Deleting the branches would mean editing
+ * the code this app exists to leave alone, so the keys stay and their values
+ * are pinned instead.
  */
 export const USER_KEYS = [
   "mode",

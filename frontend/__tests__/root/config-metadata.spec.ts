@@ -28,7 +28,6 @@ describe("ConfigMeta", () => {
         "words",
         "time",
         "mode",
-        "quoteLength",
         "language",
         "difficulty",
         "minWpmCustomSpeed",
@@ -68,22 +67,8 @@ describe("ConfigMeta", () => {
       given?: Partial<ConfigType>;
       expected: Partial<ConfigType>;
     }> = {
-      punctuation: [
-        { value: true, expected: { punctuation: true } },
-        {
-          value: true,
-          given: { mode: "quote" },
-          expected: { punctuation: false },
-        },
-      ],
-      numbers: [
-        { value: true, expected: { numbers: true } },
-        {
-          value: true,
-          given: { mode: "quote" },
-          expected: { numbers: false },
-        },
-      ],
+      punctuation: [{ value: true, expected: { punctuation: true } }],
+      numbers: [{ value: true, expected: { numbers: true } }],
       keymapSize: [
         { value: 1, expected: { keymapSize: 1 } },
         { value: 1.234, expected: { keymapSize: 1.2 } },
@@ -184,18 +169,8 @@ describe("ConfigMeta", () => {
           given: { numbers: true, punctuation: true },
           expected: { numbers: false, punctuation: false },
         },
-        {
-          value: "quote",
-          given: { numbers: true, punctuation: true },
-          expected: { numbers: false, punctuation: false },
-        },
-        {
-          value: "zen",
-          given: { numbers: true, punctuation: true },
-          expected: { numbers: false, punctuation: false },
-        },
       ],
-      numbers: [{ value: false, given: { mode: "quote" } }],
+      numbers: [{ value: false, given: { mode: "time" } }],
       freedomMode: [
         {
           value: false,
