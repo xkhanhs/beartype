@@ -79,9 +79,6 @@ export const CustomThemeColorsSchema = z.tuple([
 ]);
 export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 
-export const DifficultySchema = Shared.DifficultySchema;
-export type Difficulty = Shared.Difficulty;
-
 export const ThemeNameSchema = Themes.ThemeNameSchema;
 export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
