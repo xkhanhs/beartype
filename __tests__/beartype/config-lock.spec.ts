@@ -44,10 +44,8 @@ describe("lockConfig", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
       resultSaving: false,
-      keymapMode: "react",
     });
     expect(config.resultSaving).toBe(true);
-    expect(config.keymapMode).toBe("off");
   });
 
   it("drops values no longer on offer", () => {
@@ -67,6 +65,76 @@ describe("lockConfig", () => {
     expect(config.language).toBe("vietnamese");
     expect(config.fontFamily).toBe("Roboto_Mono");
     expect(config.fontSize).toBe(2);
+  });
+});
+
+describe("sounds", () => {
+  it("are off until switched on", () => {
+    const config = lockConfig(undefined);
+    expect(config.playSoundOnClick).toBe("off");
+    expect(config.playSoundOnError).toBe("off");
+  });
+
+  it("keeps a set on offer, the error sound and the volume", () => {
+    const config = lockConfig({
+      ...getBeartypeDefaults(),
+      playSoundOnClick: "4",
+      playSoundOnError: "1",
+      soundVolume: 0.8,
+    });
+    expect(config.playSoundOnClick).toBe("4");
+    expect(config.playSoundOnError).toBe("1");
+    expect(config.soundVolume).toBe(0.8);
+  });
+
+  it("drops a set no longer shipped and a volume out of range", () => {
+    const config = lockConfig({
+      ...getBeartypeDefaults(),
+      // upstream's fart sound, whose file beartype does not ship
+      playSoundOnClick: "16" as Config["playSoundOnClick"],
+      playSoundOnError: "3" as Config["playSoundOnError"],
+      soundVolume: 4,
+    });
+    expect(config.playSoundOnClick).toBe("off");
+    expect(config.playSoundOnError).toBe("off");
+    expect(config.soundVolume).toBe(0.5);
+  });
+});
+
+describe("keymap", () => {
+  it("is off until switched on, and stays on once it is", () => {
+    expect(lockConfig(undefined).keymapMode).toBe("off");
+    expect(
+      lockConfig({ ...getBeartypeDefaults(), keymapMode: "react" }).keymapMode,
+    ).toBe("react");
+  });
+
+  it("drops upstream's other modes", () => {
+    expect(
+      lockConfig({
+        ...getBeartypeDefaults(),
+        keymapMode: "next" as Config["keymapMode"],
+      }).keymapMode,
+    ).toBe("off");
+  });
+});
+
+describe("typos under the words", () => {
+  it("are hidden until switched on, and stay on once they are", () => {
+    expect(lockConfig(undefined).indicateTypos).toBe("off");
+    expect(
+      lockConfig({ ...getBeartypeDefaults(), indicateTypos: "below" })
+        .indicateTypos,
+    ).toBe("below");
+  });
+
+  it("drops upstream's other ways of showing them", () => {
+    expect(
+      lockConfig({
+        ...getBeartypeDefaults(),
+        indicateTypos: "replace" as Config["indicateTypos"],
+      }).indicateTypos,
+    ).toBe("off");
   });
 });
 

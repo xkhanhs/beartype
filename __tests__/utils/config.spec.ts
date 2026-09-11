@@ -73,7 +73,7 @@ describe("config.ts", () => {
         { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
         {
           given: { indicateTypos: true },
-          expected: { indicateTypos: "replace" },
+          expected: { indicateTypos: "below" },
         },
         {
           given: { fontSize: "2" },

@@ -1,16 +1,17 @@
-import type { Config } from "../schemas/configs";
+import {
+  type Config,
+  IndicateTyposSchema,
+  KeymapModeSchema,
+  PlaySoundOnClickSchema,
+  PlaySoundOnErrorSchema,
+} from "../schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 
 /**
- * The settings a person can still change. Everything else in upstream's
- * config -- about a hundred keys -- is fixed.
- *
- * The typing code reads those keys everywhere (`Config.smoothCaret`,
- * `Config.mode === "custom"`, ...). Deleting the branches would mean editing
- * the code this app exists to leave alone, so the keys stay and their values
- * are pinned instead.
+ * The settings a person can change. The few other keys left in `Config` are
+ * fixed at beartype's defaults below.
  */
-export const USER_KEYS = [
+const USER_KEYS = [
   "mode",
   "time",
   "words",
@@ -20,6 +21,11 @@ export const USER_KEYS = [
   "smoothCaret",
   "fontFamily",
   "fontSize",
+  "playSoundOnClick",
+  "playSoundOnError",
+  "soundVolume",
+  "keymapMode",
+  "indicateTypos",
 ] as const satisfies readonly (keyof Config)[];
 
 type UserKey = (typeof USER_KEYS)[number];
@@ -40,9 +46,6 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   themeDark: "keybear_dark",
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
-  keymapMode: "off",
-  playSoundOnClick: "off",
-  playSoundOnError: "off",
   resultSaving: true,
 };
 
@@ -71,6 +74,10 @@ export const FONTS = [
  * choice still stands.
  */
 export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
+export const CLICK_SOUNDS = PlaySoundOnClickSchema.options;
+export const ERROR_SOUNDS = PlaySoundOnErrorSchema.options;
+export const KEYMAP_MODES = KeymapModeSchema.options;
+export const TYPO_INDICATORS = IndicateTyposSchema.options;
 export const THEMES = [
   "keybear_light",
   "keybear_dark",
@@ -97,7 +104,14 @@ function allowed(key: UserKey, value: unknown): boolean {
     fontFamily: FONTS,
     fontSize: FONT_SIZES,
     theme: THEMES,
+    playSoundOnClick: CLICK_SOUNDS,
+    playSoundOnError: ERROR_SOUNDS,
+    keymapMode: KEYMAP_MODES,
+    indicateTypos: TYPO_INDICATORS,
   };
+  if (key === "soundVolume") {
+    return typeof value === "number" && value >= 0 && value <= 1;
+  }
   const list = lists[key];
   return list === undefined || list.includes(value);
 }

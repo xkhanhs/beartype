@@ -54,6 +54,16 @@ function markKeysOf(mark: string, base: string): string {
  * Without the sort `ộ` would come out `ojo`, because NFD puts the dot below
  * ahead of the circumflex -- that is Unicode's order, not the typing order.
  */
+/**
+ * The key that last went into `char` in Telex: `w` for `ơ`, `s` for `ế`,
+ * the letter itself for a plain one. It is the key just pressed when an input
+ * method rewrites a letter, so it stands in for the key when all the event
+ * gives is the character.
+ */
+export function lastTelexKey(char: string): string {
+  return telexKeysOf(char).slice(-1) || char.toLowerCase();
+}
+
 export function telexKeysOf(char: string): string {
   const lower = char.toLowerCase();
   if (lower === STROKE_MARK) {

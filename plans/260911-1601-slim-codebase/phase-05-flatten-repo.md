@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Một package ở gốc repo"
-status: pending
+status: completed
 priority: P2
 effort: "3h"
 dependencies: [4]

@@ -50,8 +50,7 @@ function replaceLegacyValues(
   }
 
   if (typeof configObj.indicateTypos === "boolean") {
-    configObj.indicateTypos =
-      configObj.indicateTypos === false ? "off" : "replace";
+    configObj.indicateTypos = configObj.indicateTypos ? "below" : "off";
   }
 
   if (typeof configObj.fontSize === "string") {

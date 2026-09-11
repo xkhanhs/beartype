@@ -5,11 +5,3 @@ export type OneOf<T> = {
     [P in Exclude<keyof T, K>]?: never;
   };
 }[keyof T];
-
-export type ExactlyOneTrue<T extends Record<string, boolean>> = {
-  [K in keyof T]: {
-    [P in K]: true;
-  } & {
-    [P in Exclude<keyof T, K>]?: false | never;
-  };
-}[keyof T];

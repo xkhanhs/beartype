@@ -126,25 +126,6 @@ export function qsr<T extends HTMLElement = HTMLElement>(
   return new ElementWithUtils(el);
 }
 
-/**
- * Creates an ElementWithUtils wrapping a newly created element.
- * @param tagName The tag name of the element to create.
- * @param options Optional options to set on the element.
- * @returns An ElementWithUtils wrapping the created element.
- */
-export function createElementWithUtils<T extends HTMLElement>(
-  tagName: string,
-  options?: {
-    classList?: string[];
-  },
-): ElementWithUtils<T> {
-  const element = document.createElement(tagName) as T;
-  if (options?.classList !== undefined) {
-    element.classList.add(...options.classList);
-  }
-  return new ElementWithUtils(element);
-}
-
 type ElementWithValue =
   | HTMLInputElement
   | HTMLTextAreaElement

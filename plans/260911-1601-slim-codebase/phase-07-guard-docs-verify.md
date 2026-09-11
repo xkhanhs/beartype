@@ -1,7 +1,7 @@
 ---
 phase: 7
 title: "knip, tài liệu, nghiệm thu"
-status: pending
+status: completed
 priority: P2
 effort: "2h"
 dependencies: [6]
@@ -13,7 +13,7 @@ dependencies: [6]
 - **knip ở pre-push**: `.husky/pre-push` thành `pnpm ts-check && pnpm knip && pnpm test && pnpm build`.
   `knip.json` chỉ khai những entry thật (`src/ts/index.ts`, `index.html`, `scripts/build-vietnamese.ts`,
   `vite-plugins/*`). Không dùng `ignore` để lấp chỗ báo thật.
-- Bỏ bí danh `build-fe` sau khi Cloudflare đã đổi sang `pnpm build`.
+- Bỏ bí danh `build-fe` sau khi Cloudflare đã đổi sang `pnpm build`. (Đã đổi, đã bỏ.)
 - **Tài liệu**:
   - `CLAUDE.md`: bỏ đoạn "không sửa file cảm giác gõ" và mọi đường dẫn `frontend/`;
     cập nhật lệnh chạy (không còn `build-pkg`), cấu trúc thư mục, quy ước "dọn theo cụm,

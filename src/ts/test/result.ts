@@ -160,16 +160,16 @@ function updateKey(): void {
   );
 }
 
-export function showCrown(type: PbCrown.CrownType): void {
+function showCrown(type: PbCrown.CrownType): void {
   PbCrown.show();
   PbCrown.update(type);
 }
 
-export function updateCrownText(text: string): void {
+function updateCrownText(text: string): void {
   qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
 }
 
-export async function updateCrown(dontSave: boolean): Promise<void> {
+async function updateCrown(dontSave: boolean): Promise<void> {
   // beartype: a drill from the miss book is practice, not a test with a best
   if (Config.mode === "custom" || dontSave) {
     hideCrown();
@@ -221,18 +221,9 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   }
 }
 
-export function hideCrown(): void {
+function hideCrown(): void {
   PbCrown.hide();
   updateCrownText("");
-}
-
-export function showErrorCrownIfNeeded(): void {
-  if (PbCrown.getCurrentType() !== "pending") return;
-  PbCrown.show();
-  PbCrown.update("error");
-  updateCrownText(
-    `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
-  );
 }
 
 type CanGetPbObject = {
@@ -252,7 +243,7 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
   };
 }
 
-export function showConfetti(): void {
+function showConfetti(): void {
   if (SlowTimer.get()) return;
   const style = getComputedStyle(document.body);
   const colors = [

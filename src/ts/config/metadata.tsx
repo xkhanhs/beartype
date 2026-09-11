@@ -1,6 +1,6 @@
 import * as ConfigSchemas from "../schemas/configs";
 
-export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
+type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**
    * The config key that this metadata is for
    */

@@ -11,7 +11,7 @@ import * as TestWords from "./test-words";
 import { withToneStyle } from "../beartype/vietnamese";
 import { getToneStyle } from "../beartype/tone-style";
 
-export function getLimit(): number {
+function getLimit(): number {
   let limit = 100;
 
   //infinite words
@@ -141,8 +141,8 @@ export async function generateWords(
   return ret;
 }
 
-export let sectionIndex = 0;
-export let currentSection: string[] = [];
+let sectionIndex = 0;
+let currentSection: string[] = [];
 let sectionHistory: string[] = [];
 
 let previousGetNextWordReturns: GetNextWordReturn[] = [];
@@ -325,7 +325,7 @@ export async function getNextWord(
  * Appends the inter-word commit separator the way the generator does: a
  * trailing space, unless the word already ends with a newline.
  */
-export function appendCommitCharacter(word: string): string {
+function appendCommitCharacter(word: string): string {
   if (word.endsWith("\n")) {
     return word;
   }

@@ -2,7 +2,7 @@ import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import { wordHtml } from "../beartype/word-html";
+import { typoHints, wordHtml } from "../beartype/word-html";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
@@ -16,7 +16,6 @@ import {
 } from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "../utils/numbers";
-import { highlight } from "../events/keymap";
 import * as Focus from "../test/focus";
 import {
   blurInputElement,
@@ -82,7 +81,7 @@ export function focusWords(force = false): void {
   }
 }
 
-export function keepWordsInputInTheCenter(force = false): void {
+function keepWordsInputInTheCenter(force = false): void {
   const wordsInput = getInputElement();
   if (wordsInput === null || wordsWrapperEl === null) return;
 
@@ -108,11 +107,11 @@ export function getWordElement(index: number): ElementWithUtils | null {
   return el;
 }
 
-export function getActiveWordElement(): ElementWithUtils | null {
+function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-export function updateActiveElement(
+function updateActiveElement(
   options:
     | { direction: "forward" | "back"; initial?: undefined }
     | { direction?: undefined; initial: true },
@@ -184,7 +183,7 @@ function createHintsHtml(
 
       hintsHtml += `<hint data-chars-index=${blockIndices} style="left:${
         letter.getOffsetLeft() + letter.getOffsetWidth() / 2
-      }px;">${blockChars}</hint>`;
+      }px;">${Misc.escapeHTML(blockChars)}</hint>`;
     }
   }
   if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
@@ -279,7 +278,7 @@ async function updateHintsPosition(): Promise<void> {
   if (
     getActivePage() !== "test" ||
     getResultVisible() ||
-    (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
+    Config.indicateTypos !== "below"
   ) {
     return;
   }
@@ -315,7 +314,7 @@ async function updateHintsPosition(): Promise<void> {
       }
     }
 
-    hintText.push(...Strings.splitIntoCharacters(hintEl.innerHTML));
+    hintText.push(...Strings.splitIntoCharacters(hintEl.textContent));
   }
   await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
 
@@ -375,7 +374,7 @@ function updateWordWrapperClasses(): void {
   wordsEl.removeClass("blind");
   wordsWrapperEl.removeClass("blind");
 
-  if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
+  if (Config.indicateTypos === "below") {
     wordsEl.addClass("indicateTyposBelow");
     wordsWrapperEl.addClass("indicateTyposBelow");
   } else {
@@ -498,7 +497,7 @@ export async function centerActiveLine(): Promise<void> {
   }
 }
 
-export function updateWordsWrapperHeight(force = false): void {
+function updateWordsWrapperHeight(force = false): void {
   if (getActivePage() !== "test" || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
@@ -588,7 +587,7 @@ export function addWord(
 // make sure the currently typed word will not overflow to the next line
 export let pendingWordData: Map<number, string> = new Map();
 
-export async function updateWordLetters({
+async function updateWordLetters({
   wordIndex,
   input,
   compositionData,
@@ -608,25 +607,35 @@ export async function updateWordLetters({
       const wordAtIndex = getWordElement(wordIndex);
       if (!wordAtIndex) return;
       const hintIndices: number[][] = [];
+      const hintChars: string[] = [];
 
       // beartype: lay the word out by keys, not by character index -- see
-      // beartype/word-html.ts.
+      // beartype/word-html.ts. The typos hung under it come from the same
+      // layout, so a letter still being built never gets one.
       ret = wordHtml(currentWord ?? "", input, compositionData);
 
       wordAtIndex.setHtml(ret);
 
-      if (hintIndices?.length) {
-        const wordAtIndexLetters = wordAtIndex.qsa("letter");
-        let hintsHtml;
-        if (Config.indicateTypos === "both") {
-          hintsHtml = createHintsHtml(
-            hintIndices,
-            wordAtIndexLetters,
-            currentWord ?? "",
-          );
-        } else {
-          hintsHtml = createHintsHtml(hintIndices, wordAtIndexLetters, input);
+      if (Config.indicateTypos === "below") {
+        for (const { index, typed } of typoHints(currentWord, input)) {
+          // upstream's blocks: runs of adjacent wrong letters
+          const lastBlock = hintIndices[hintIndices.length - 1];
+          if (lastBlock?.[lastBlock.length - 1] === index - 1) {
+            lastBlock.push(index);
+          } else {
+            hintIndices.push([index]);
+          }
+          hintChars.push(typed);
         }
+      }
+
+      if (hintIndices.length) {
+        const wordAtIndexLetters = wordAtIndex.qsa("letter");
+        const hintsHtml = createHintsHtml(
+          hintIndices,
+          wordAtIndexLetters,
+          hintChars,
+        );
         wordAtIndex.appendHtml(hintsHtml);
         const hintElements = wordAtIndex.native.getElementsByTagName("hint");
         await joinOverlappingHints(
@@ -726,7 +735,7 @@ export function setJoiningClass(isEnabled: boolean): void {
   }
 }
 
-export function highlightBadWord(index: number): void {
+function highlightBadWord(index: number): void {
   requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
     getWordElement(index)?.addClass("error");
   });
@@ -785,14 +794,6 @@ function afterAnyTestInput(
   const acc = Numbers.roundTo2(getLiveCachedAccuracy());
   if (!isNaN(acc)) {
     setCurrentLiveStats({ acc });
-  }
-
-  if (Config.keymapMode === "next") {
-    const keyToHighlight =
-      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
-    if (keyToHighlight !== undefined) {
-      highlight(keyToHighlight);
-    }
   }
 
   Focus.set(true);
@@ -874,14 +875,6 @@ export async function afterTestWordChange(
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     setCurrentLiveStats({ burst: Math.round(lastBurst) });
   }
-
-  if (Config.keymapMode === "next") {
-    const keyToHighlight =
-      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
-    if (keyToHighlight !== undefined) {
-      highlight(keyToHighlight);
-    }
-  }
 }
 
 export function onTestStart(): void {
@@ -949,9 +942,6 @@ export function onTestRestart(_source: "testPage" | "resultPage"): void {
 export function onTestFinish(): void {
   Caret.hide();
   setTestFocusState("focused");
-  if (Config.playSoundOnClick === "16") {
-    void SoundController.playFartReverb();
-  }
 }
 
 qs("#wordsInput")?.on("focus", (e) => {

@@ -136,7 +136,7 @@ export type CompositionTestEventData =
       wordIndex: number;
     };
 
-export type EventLogContext = {
+type EventLogContext = {
   targetWords: string[];
   // isTimedTest: boolean;
   mode: Config["mode"];

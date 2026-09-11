@@ -315,6 +315,22 @@ button.bt-options-pill {
   }
 }
 
+// ----- the keyboard under the words -----
+
+// upstream's zoom steps at its default `keymapSize` of 1: half size on a
+// phone, full from the `sm` breakpoint up
+.bt-keymap {
+  zoom: 0.5;
+
+  @media (width >= 426px) {
+    zoom: 0.7;
+  }
+
+  @media (width >= 721px) {
+    zoom: 1;
+  }
+}
+
 // ----- buttons under the words and on the result -----
 
 // beartype: keybear's `.action`: a flat pill, no rim, the text faint until
@@ -596,6 +612,11 @@ footer {
   gap: 0.4rem;
   inline-size: max-content;
   max-inline-size: min(40rem, 94vw);
+  // on a short screen the rows scroll inside the card, which opens upward
+  // from the footer and would otherwise run off the top
+  max-block-size: calc(100dvh - 6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.3rem;
   border: 2px solid var(--kb-border);
   border-radius: 1.1rem;
@@ -667,6 +688,24 @@ button.bt-settings-choice {
     outline: var(--kb-focus);
     outline-offset: 2px;
     box-shadow: none;
+  }
+}
+
+// the volume: a slider as wide as a row of choices, its share beside it
+.bt-settings-slider {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  font-weight: bold;
+
+  input {
+    inline-size: 12rem;
+    accent-color: var(--main-color);
+  }
+
+  span {
+    min-inline-size: 3ch;
+    text-align: end;
   }
 }
 

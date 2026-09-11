@@ -84,7 +84,7 @@ export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
   return event.code as Keycode;
 }
 
-export function applyInputEvent(input: string, event: InputEventNoMs): string {
+function applyInputEvent(input: string, event: InputEventNoMs): string {
   if (event.data.inputType === "insertText") {
     if (event.data.inputStopped) return input;
     if (

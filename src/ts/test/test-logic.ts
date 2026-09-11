@@ -51,7 +51,6 @@ import * as WordsGenerator from "./words-generator";
 import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
-import { highlight } from "../events/keymap";
 import { CompletedEvent, CompletedEventCustomText } from "../schemas/results";
 import * as CompositionState from "../legacy-states/composition";
 import { WordGenError } from "../utils/word-gen-error";
@@ -92,7 +91,6 @@ import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
-import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
 
@@ -336,17 +334,6 @@ async function init(): Promise<boolean> {
 
   if (WordsGenerator.areAllWordsGenerated()) {
     TestWords.words.removeCommitCharacterFromLastWord();
-  }
-
-  if (Config.keymapMode === "next") {
-    highlight(
-      nthElementFromArray(
-        // ignoring for now but this might need a different approach
-        // oxlint-disable-next-line no-misused-spread
-        [...(TestWords.words.getCurrent()?.text ?? "")],
-        0,
-      ) as string,
-    );
   }
 
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
@@ -722,7 +709,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   learnToneStyle(history);
 }
 
-export function fail(reason: string): void {
+function fail(reason: string): void {
   failReason = reason;
   void finish(true);
 }
@@ -781,23 +768,10 @@ restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
-configEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key }) => {
   if (getActivePage() === "test") {
     if (key === "language") {
       void restart();
-    }
-
-    if (key === "keymapMode" && newValue === "next") {
-      setTimeout(() => {
-        highlight(
-          nthElementFromArray(
-            // ignoring for now but this might need a different approach
-            // oxlint-disable-next-line no-misused-spread
-            [...(TestWords.words.getCurrent()?.text ?? "")],
-            0,
-          ) as string,
-        );
-      }, 0);
     }
   }
 });

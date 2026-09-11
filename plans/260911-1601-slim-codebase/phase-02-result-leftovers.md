@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Màn kết quả: biểu đồ, replay, lịch sử gõ"
-status: pending
+status: completed
 priority: P1
 effort: "2h"
 dependencies: [1]

@@ -4,10 +4,9 @@ import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { getActivePage, getGlobalOffsetTop } from "./states/core";
+import { getActivePage } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
-import { FontName } from "./schemas/fonts";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import { convertRemToPixels } from "./utils/numbers";
@@ -15,17 +14,7 @@ import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
 import { getResultVisible, isTestActive } from "./states/test";
 
-let isPreviewingFont = false;
-export function previewFontFamily(font: FontName): void {
-  document.documentElement.style.setProperty(
-    "--font",
-    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "monospace"`,
-  );
-  void TestUI.updateHintsPositionDebounced();
-  isPreviewingFont = true;
-}
-
-export async function applyFontFamily(): Promise<void> {
+async function applyFontFamily(): Promise<void> {
   const font = replaceUnderscoresWithSpaces(Config.fontFamily);
 
   const preferredFont = (await getLanguage(Config.language))?.preferredFont;
@@ -40,12 +29,6 @@ export async function applyFontFamily(): Promise<void> {
   ].filter((it) => it !== undefined);
 
   document.documentElement.style.setProperty("--font", fonts.join(","));
-}
-
-export function clearFontPreview(): void {
-  if (!isPreviewingFont) return;
-  previewFontFamily(Config.fontFamily);
-  isPreviewingFont = false;
 }
 
 if (isDevEnvironment()) {
@@ -100,7 +83,7 @@ window.addEventListener("resize", () => {
 
 createEffect(() => {
   qsr("#app").setStyle({
-    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
+    paddingTop: `${convertRemToPixels(2)}px`,
   });
 });
 

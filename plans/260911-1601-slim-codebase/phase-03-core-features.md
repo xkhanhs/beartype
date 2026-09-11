@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Gỡ tính năng khỏi lõi, từng cụm"
-status: pending
+status: completed
 priority: P1
 effort: "8h"
 dependencies: [2]

@@ -313,26 +313,6 @@ export function getAllTestEvents(): TestEventNoMs[] {
   return cachedAllEvents;
 }
 
-export function logEventsDataToTheConsole(): void {
-  console.debug(
-    getAllTestEvents().map((event) => {
-      const d = event.data;
-      let e = {
-        ...event,
-        ...event.data,
-      };
-      //@ts-expect-error just for logging
-      delete e.data;
-      //@ts-expect-error just for logging
-      e = {
-        ...e,
-        ...d,
-      };
-      return e;
-    }),
-  );
-}
-
 export function logEventsDataToTheConsoleTable(): void {
   console.table(
     getAllTestEvents().map((event) => {
@@ -363,13 +343,6 @@ export function resetTestEvents(): void {
   pressedKeys = new Map();
   noCodeIndex = 0;
   resetLiveCache();
-}
-
-export function getPressedKeys(): Map<
-  Keycode | "NoCode" | `NoCode${number}`,
-  { timestamp: number }
-> {
-  return pressedKeys;
 }
 
 export function forceReleaseAllKeys(): void {

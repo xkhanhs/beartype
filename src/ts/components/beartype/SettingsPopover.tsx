@@ -1,18 +1,29 @@
 import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
-import { FONT_SIZES, FONTS, SMOOTH_CARETS } from "../../beartype/config-lock";
+import {
+  CLICK_SOUNDS,
+  ERROR_SOUNDS,
+  FONT_SIZES,
+  FONTS,
+  KEYMAP_MODES,
+  SMOOTH_CARETS,
+  TYPO_INDICATORS,
+} from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
+import { previewClick, previewError } from "../../controllers/sound-controller";
 import { getFocus } from "../../states/test";
 import { cn } from "../../utils/cn";
 import { Fa } from "../common/Fa";
 import { SettingsRow } from "./SettingsRow";
+import { SettingsSliderRow } from "./SettingsSliderRow";
 
 /**
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
- * that a person here actually changes: the caret and, as in keybear, the
- * font of the words and their size. It is one of keybear's settings cards;
+ * that a person here actually changes: the caret, as in keybear the font of
+ * the words and their size, the sounds of the keys and the keyboard under
+ * the words. It is one of keybear's settings cards;
  * the colours have their own pill beside it, as in keybear.
  */
 
@@ -45,6 +56,33 @@ const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
   3.5: "175%",
   4: "200%",
 };
+
+// upstream's names for the sets; a sound has no Vietnamese name to give it
+const CLICK_SOUND_LABELS: Record<(typeof CLICK_SOUNDS)[number], string> = {
+  off: "tắt",
+  1: "click",
+  3: "pop",
+  4: "nk creams",
+  5: "typewriter",
+  6: "osu",
+  8: "sine",
+};
+
+const ERROR_SOUND_LABELS: Record<(typeof ERROR_SOUNDS)[number], string> = {
+  off: "tắt",
+  1: "bật",
+};
+
+const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
+  off: "tắt",
+  react: "bật",
+};
+
+const TYPO_INDICATOR_LABELS: Record<(typeof TYPO_INDICATORS)[number], string> =
+  {
+    off: "tắt",
+    below: "bật",
+  };
 
 export function SettingsPopover(): JSXElement {
   const [open, setOpen] = createSignal(false);
@@ -109,6 +147,51 @@ export function SettingsPopover(): JSXElement {
             labels={FONT_SIZE_LABELS}
             value={getConfig.fontSize}
             onPick={(value) => setConfig("fontSize", value)}
+          />
+          <SettingsRow
+            label="tiếng gõ"
+            hint="một tiếng mỗi phím; chọn là nghe thử"
+            options={CLICK_SOUNDS}
+            labels={CLICK_SOUND_LABELS}
+            value={getConfig.playSoundOnClick}
+            onPick={(value) => {
+              setConfig("playSoundOnClick", value);
+              void previewClick(value);
+            }}
+          />
+          <SettingsRow
+            label="tiếng báo gõ sai"
+            hint="phím gõ sai kêu một tiếng riêng"
+            options={ERROR_SOUNDS}
+            labels={ERROR_SOUND_LABELS}
+            value={getConfig.playSoundOnError}
+            onPick={(value) => {
+              setConfig("playSoundOnError", value);
+              if (value !== "off") void previewError();
+            }}
+          />
+          <SettingsSliderRow
+            label="âm lượng"
+            hint="của tiếng gõ và tiếng báo gõ sai"
+            value={getConfig.soundVolume}
+            onInput={(value) => setConfig("soundVolume", value)}
+            onChange={() => void previewClick(getConfig.playSoundOnClick)}
+          />
+          <SettingsRow
+            label="hiện phím gõ sai"
+            hint="chữ đã gõ nhầm hiện nhỏ dưới chữ đích"
+            options={TYPO_INDICATORS}
+            labels={TYPO_INDICATOR_LABELS}
+            value={getConfig.indicateTypos}
+            onPick={(value) => setConfig("indicateTypos", value)}
+          />
+          <SettingsRow
+            label="bàn phím ảo"
+            hint="bàn phím QWERTY dưới bài gõ; phím sáng lên khi gõ"
+            options={KEYMAP_MODES}
+            labels={KEYMAP_MODE_LABELS}
+            value={getConfig.keymapMode}
+            onPick={(value) => setConfig("keymapMode", value)}
           />
         </div>
       </Show>

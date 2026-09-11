@@ -275,7 +275,7 @@ export function offTrack(target: string, typed: string): boolean {
   return extra.length > 0 || slots.some((slot) => slot.missed);
 }
 
-export type CharState =
+type CharState =
   /** Chưa gõ tới. */
   | "pending"
   /** Đúng hẳn. */
