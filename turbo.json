@@ -33,9 +33,6 @@
     "//#lint-styles": {
       "dependsOn": ["^parallel"]
     },
-    "@monkeytype/frontend#lint-json": {
-      "dependsOn": ["^parallel"]
-    },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
       "env": [],

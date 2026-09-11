@@ -18,11 +18,9 @@ import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
-import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
-import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
@@ -96,9 +94,6 @@ function getPlugins({
     tailwindcss(),
 
     solidPlugin(),
-    devtools({
-      autoname: true,
-    }),
   ];
 
   const devPlugins: PluginOption[] = [
@@ -107,7 +102,6 @@ function getPlugins({
       typeAware: true,
       overlay: isDevelopment,
     }),
-    Inspect(),
   ];
 
   const prodPlugins: PluginOption[] = [
