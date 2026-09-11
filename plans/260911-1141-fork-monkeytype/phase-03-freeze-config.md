@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Khoá cấu hình, chỉ còn chế độ, ngôn ngữ và một ô cài đặt nhỏ"
-status: pending
+status: completed
 priority: P1
 effort: "1d"
 dependencies: [2]

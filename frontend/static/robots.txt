@@ -1,4 +1,4 @@
 User-agent: *
-Disallow: 
+Allow: /
 
-Sitemap: https://monkeytype.com/sitemap.xml
+Sitemap: https://beartype.pages.dev/sitemap.xml

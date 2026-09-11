@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Khoác giao diện keybear"
-status: pending
+status: completed
 priority: P2
 effort: "1d"
 dependencies: [3]

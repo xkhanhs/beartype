@@ -36,10 +36,8 @@ export function envConfig(options: {
 
         const prodConfig: EnvConfig = {
           isDevelopment: false,
-          backendUrl: fallback(
-            options.env["BACKEND_URL"],
-            "https://api.monkeytype.com",
-          ),
+          // beartype has no backend; nothing reads this
+          backendUrl: "",
           recaptchaSiteKey: options.env["RECAPTCHA_SITE_KEY"] ?? "",
           quickLoginEmail: undefined,
           quickLoginPassword: undefined,
