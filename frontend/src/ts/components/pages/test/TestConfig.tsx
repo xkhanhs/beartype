@@ -10,6 +10,7 @@ import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
 import { getFocus } from "../../../states/test";
+import { drillBaseMode } from "../../../test/practise-words";
 import { cn } from "../../../utils/cn";
 
 // beartype: upstream's bar also carried punctuation, numbers, quote, zen,
@@ -30,6 +31,14 @@ const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], string> = {
 };
 
 export function TestConfig(): JSXElement {
+  // a miss-book drill runs as upstream's custom mode, but as long as the test
+  // it stands in for; the bar lights that one, time or words, so the typist
+  // still sees how long the round is
+  const mode = (): string =>
+    getConfig.mode === "custom"
+      ? (drillBaseMode() ?? getConfig.mode)
+      : getConfig.mode;
+
   return (
     <div
       class={cn(
@@ -54,12 +63,12 @@ export function TestConfig(): JSXElement {
       </For>
       <span class="bt-options-divider"></span>
       <For each={MODES}>
-        {(mode) => (
+        {(option) => (
           <Pill
-            text={MODE_LABELS[mode]}
-            active={getConfig.mode === mode}
+            text={MODE_LABELS[option]}
+            active={mode() === option}
             onClick={() => {
-              setConfig("mode", mode);
+              setConfig("mode", option);
               restartTestEvent.dispatch();
             }}
           />
@@ -67,7 +76,7 @@ export function TestConfig(): JSXElement {
       </For>
       <span class="bt-options-divider"></span>
       <Show
-        when={getConfig.mode === "words"}
+        when={mode() === "words"}
         fallback={
           <For each={TIMES}>
             {(time) => (
