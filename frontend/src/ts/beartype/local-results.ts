@@ -163,9 +163,6 @@ export async function getUserDailyBestOnce(
 /** How many recent tests the result screen compares against. */
 export const RECENT = 20;
 
-/** How many of those the result screen draws as bars, oldest on the left. */
-export const CHART_TESTS = 10;
-
 export type RecentTest = { wpm: number; acc: number; timestamp: number };
 
 export type RecentSummary = {
@@ -173,7 +170,7 @@ export type RecentSummary = {
   usual: number;
   usualAcc: number;
   count: number;
-  /** The last `CHART_TESTS`, oldest first, the one just typed last. */
+  /** Those tests, oldest first, the one just typed last. */
   recent: RecentTest[];
 };
 
@@ -207,7 +204,7 @@ export function recentSummary(
     usual: median(speeds),
     usualAcc: median(tests.map((t) => t.acc)),
     count: tests.length,
-    recent: tests.slice(-CHART_TESTS),
+    recent: tests,
   };
 }
 
