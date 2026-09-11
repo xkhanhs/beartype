@@ -16,6 +16,7 @@ import { migrateConfig } from "./utils";
 import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { typedKeys } from "@monkeytype/util/objects";
+import { lockConfig } from "../beartype/config-lock";
 
 export async function applyConfigFromJson(json: string): Promise<void> {
   try {
@@ -42,13 +43,12 @@ export async function applyConfigFromJson(json: string): Promise<void> {
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
-  const newConfig = configLS.get();
-  if (newConfig === undefined) {
-    await resetConfig();
-  } else {
-    await applyConfig(newConfig);
-    saveFullConfigToLocalStorage();
-  }
+  // beartype: only a handful of settings are the user's; the rest are pinned.
+  // With nothing stored yet, configLS hands back upstream's defaults, which
+  // must not pass for a choice the user made.
+  const firstRun = window.localStorage.getItem("config") === null;
+  await applyConfig(lockConfig(firstRun ? undefined : configLS.get()));
+  saveFullConfigToLocalStorage();
   loadDone();
 }
 
@@ -111,7 +111,7 @@ export async function applyConfig(
 }
 
 export async function resetConfig(): Promise<void> {
-  await applyConfig(getDefaultConfig());
+  await applyConfig(lockConfig(undefined));
   saveFullConfigToLocalStorage();
 }
 
