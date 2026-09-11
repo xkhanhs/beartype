@@ -40,6 +40,14 @@ file `.wav` đã bị xoá lúc fork. Bàn phím ảo đã bị gỡ hẳn, ché
 - Màu lấy từ biến theme; thử cả chín theme.
 - Config: `keymapMode` (`off` | `react`) thêm vào `USER_KEYS`, mặc định `off`.
 
+## Phím gõ sai dưới chữ
+- `indicateTypos`: chỉ còn `off` | `below`, thêm vào `USER_KEYS`, **mặc định `below`**.
+  Code vẽ `.hints` trong `test-ui.ts` giữ lại ở phase 3 (bỏ nhánh `replace`/`both`).
+- Kiểm với tiếng Việt: beartype vẽ từ đang gõ bằng `beartype/word-html.ts`, không
+  qua đường vẽ của upstream; phím sai phải hiện đúng dưới chữ đích, kể cả khi đang
+  dựng dấu dở (chữ `partial` không phải lỗi, không được hiện gợi ý).
+- Hàng trong thẻ cài đặt: "hiện phím gõ sai".
+
 ## Related Code Files
 - Create: `src/ts/components/pages/test/Keymap.tsx` (+ hai file đi kèm, gọn lại), `static/sounds/**`
 - Modify: `src/ts/controllers/sound-controller.ts`, `src/ts/constants/sounds.ts`,
