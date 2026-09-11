@@ -30,8 +30,8 @@ pnpm dev   # http://localhost:3200
 worker của app khác trả lời từ cache. Keybear giữ 3100.
 
 **Một push lên `main` là một lần deploy.** Cloudflare Pages build thẳng từ
-nhánh này (`pnpm build-fe`, bí danh của `pnpm build`; output `dist`,
-`NODE_VERSION=24`, `PNPM_VERSION=11.21.0`), không qua staging. `.husky/pre-push`
+nhánh này (`pnpm build`, output `dist`, `NODE_VERSION=24`,
+`PNPM_VERSION=11.21.0`), không qua staging. `.husky/pre-push`
 chạy ts-check, knip, test và build rồi mới cho push; đừng lách bằng
 `--no-verify`. knip báo export không ai import, file và package không ai dùng:
 xoá chúng, đừng thêm `ignore` vào `knip.ts`.

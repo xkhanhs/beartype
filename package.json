@@ -10,7 +10,6 @@
     "pre-commit": "lint-staged",
     "dev": "vite dev",
     "build": "vite build",
-    "build-fe": "pnpm build",
     "preview": "vite preview",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",

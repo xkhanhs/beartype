@@ -1,6 +1,6 @@
 ---
 title: "Dọn beartype về đúng những gì nó làm"
-status: in-progress
+status: completed
 branch: feat/sound-keymap
 created: 2026-09-11
 blockedBy: []
@@ -89,7 +89,7 @@ người dùng muốn giữ: âm thanh khi gõ và bàn phím ảo.
 | 4 | [Config, theme, util, component](phase-04-config-and-shell.md) | 3 | C | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
 | 5 | [Một package ở gốc repo](phase-05-flatten-repo.md) | 4 | C | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
 | 6 | [Âm thanh và bàn phím ảo](phase-06-sound-and-keymap.md) | 5 | D | Xong |
-| 7 | [knip, tài liệu, nghiệm thu](phase-07-guard-docs-verify.md) | 6 | D | Còn bỏ bí danh `build-fe` sau khi đổi lệnh build trên Cloudflare |
+| 7 | [knip, tài liệu, nghiệm thu](phase-07-guard-docs-verify.md) | 6 | D | Xong |
 
 PR A và B chưa đổi cấu trúc thư mục, deploy như cũ. PR C dời repo lên gốc, nên
 phải đổi cài đặt Cloudflare cùng lúc merge. PR D thêm tính năng.
