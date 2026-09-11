@@ -1,4 +1,5 @@
 import { CharCounts, countChars, isSpace } from "../../utils/strings";
+import { countKeysAsChars } from "../../beartype/scoring";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -444,6 +445,15 @@ function countCharsForWordIndex(
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 
+  // beartype: count keys, the way keybear scores Vietnamese. Characters make
+  // `ế` worth as much as `e`, and call the `e` typed on the way to it wrong.
+  if (!eventLog.context.koreanStatus) {
+    return countKeysAsChars(
+      simulatedInput,
+      targetWord,
+      lastWord && countPartial,
+    );
+  }
   return countChars(simulatedInput, targetWord, lastWord && countPartial);
 }
 
@@ -573,8 +583,13 @@ export function getAccuracy(
       incorrect++;
     }
   }
-  const total = correct + incorrect;
-  const percentage = total === 0 ? 0 : (correct / total) * 100;
+  // beartype: the percentage is keybear's -- keys typed toward the target
+  // over keys owed, read off what was left in each word. A mistake that was
+  // fixed costs nothing here; it is still counted in `incorrect`, which the
+  // result screen shows beside it.
+  const chars = getChars(eventLog, false, testMs);
+  const owed = chars.allCorrect + chars.incorrect + chars.extra + chars.missed;
+  const percentage = owed === 0 ? 0 : (chars.allCorrect / owed) * 100;
 
   return {
     correct: correct,

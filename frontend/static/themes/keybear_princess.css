@@ -1,0 +1,5 @@
+/* beartype: keybear's "unfinished" colour for this palette -- the accent
+   sits too close to red here to tell a letter being built from a wrong one */
+:root {
+  --partial-letter-color: #10786a;
+}

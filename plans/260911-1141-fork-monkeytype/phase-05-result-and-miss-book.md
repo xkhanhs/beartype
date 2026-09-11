@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Màn kết quả + sổ từ hay sai"
-status: pending
+status: completed
 priority: P2
 effort: "1d"
 dependencies: [4]

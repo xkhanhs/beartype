@@ -1,6 +1,5 @@
 import { createStore } from "solid-js/store";
 
-import { CommonResponsesType } from "@monkeytype/contracts/util/api";
 import { createErrorMessage } from "../utils/error";
 
 export type NotificationLevel = "error" | "notice" | "success";
@@ -107,7 +106,6 @@ export type AddNotificationOptions = Partial<
   >
 > & {
   details?: object | string;
-  response?: CommonResponsesType;
   error?: unknown;
 };
 
@@ -116,19 +114,7 @@ export function addNotificationWithLevel(
   level: NotificationLevel,
   options: AddNotificationOptions = {},
 ): number {
-  let details = options.details;
-
-  if (options.response !== undefined) {
-    details = {
-      status: options.response.status,
-      additionalDetails: options.details,
-      validationErrors:
-        options.response.status === 422
-          ? options.response.body.validationErrors
-          : undefined,
-    };
-    message = `${message}: ${options.response.body.message}`;
-  }
+  const details = options.details;
 
   if (options.error !== undefined) {
     message = createErrorMessage(options.error, message);

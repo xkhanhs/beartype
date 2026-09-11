@@ -29,8 +29,23 @@ cd frontend && pnpm dev # http://localhost:3200
 **Cổng dev là 3200, và `strictPort` bật.** Upstream dùng 3000, nhưng trên máy
 này cổng 3000 còn service worker của app khác trả lời từ cache. Keybear giữ 3100.
 
-Dev cần `frontend/src/ts/constants/firebase-config.ts` (gitignore). Chép từ
-`firebase-config-example.ts` cho tới khi phase 2 xoá Firebase.
+**Một push lên `main` là một lần deploy.** Cloudflare Pages build thẳng từ
+nhánh này (`pnpm build-fe`, output `frontend/dist`, `NODE_VERSION=24`,
+`PNPM_VERSION=11.21.0`), không qua staging. `.husky/pre-push` chạy ts-check,
+test và build rồi mới cho push; đừng lách bằng `--no-verify`.
+
+## Code của beartype nằm ở đâu
+
+- `frontend/src/ts/beartype/`: chấm điểm theo phím (`scoring.ts`, chép từ
+  keybear), kiểu bỏ dấu (`vietnamese.ts`, `tone-style.ts`), vẽ từ đang gõ
+  (`word-html.ts`), khoá cấu hình (`config-lock.ts`), kết quả lưu trên máy
+  (`local-results.ts`), sổ từ hay sai (`miss-book.ts`).
+- `frontend/src/ts/components/beartype/`: ô cài đặt và nút luyện từ hay sai.
+- `frontend/src/styles/beartype.scss`: mọi style riêng của beartype.
+- `frontend/scripts/build-vietnamese.ts`: dựng `static/languages/vietnamese.json`
+  từ danh sách từ của keybear.
+
+Test của beartype nằm ở `frontend/__tests__/beartype/`.
 
 ## Quy ước của code monkeytype, giữ khi sửa code của họ
 

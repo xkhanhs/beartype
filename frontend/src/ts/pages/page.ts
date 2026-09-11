@@ -5,19 +5,7 @@ import {
 } from "zod-urlsearchparams";
 import { ElementWithUtils } from "../utils/dom";
 
-export type PageName =
-  | "loading"
-  | "test"
-  | "settings"
-  | "about"
-  | "account"
-  | "login"
-  | "profile"
-  | "profileSearch"
-  | "404"
-  | "accountSettings"
-  | "leaderboards"
-  | "friends";
+export type PageName = "loading" | "test";
 
 type Options<T> = {
   params?: Record<string, string>;

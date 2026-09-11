@@ -34,4 +34,16 @@ git -C ../monkeytype show 91bd24bb:frontend/src/ts/test/test-ui.ts | diff - fron
 
 | File | Khối | Vì sao |
 |------|------|--------|
-| _(chưa có)_ | | |
+| `test/test-logic.ts` | bỏ `saveResult`, nhánh tài khoản trong `finish`, analytics, Sentry, tag | không còn tài khoản; kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với PB cũ |
+| `test/pace-caret.ts` | import `DB` và `getUserAverage10Once`… trỏ sang `beartype/local-results`; nhánh `tagPb` trả 0 | "average"/"pb" đọc kết quả trên máy; không còn tag |
+| `test/test-ui.ts` | gỡ 2 lời gọi `AdController` và import của nó | không còn quảng cáo |
+| `input/hotkeys/index.ts` | gỡ import `commandline` và `konami` | không còn commandline |
+| `input/helpers/validation.ts` | `isCharCorrect`: phím chữ sai khi nó **tạo thêm một lỗi** trong từ (`isWrongKey`) | `e` dưới `ế` là chưa xong, không phải sai; phím cách giữ luật cũ |
+| `test/events/stats.ts` | `countCharsForWordIndex` đếm theo phím (`countKeysAsChars`); phần trăm của `getAccuracy` theo keybear | WPM và độ chính xác theo phím đáng tốn, xem `beartype/scoring.ts` |
+| `test/test-ui.ts` | `updateWordLetters`: thêm nhánh `else if` vẽ từ đang gõ bằng `beartype/word-html.ts` khi không có funbox tự vẽ | mỗi chữ đích một ô, chữ đang dựng dấu là `partial`; code vẽ gốc nằm nguyên ở nhánh `else` |
+| `test/caret.ts` | `updatePosition`: chỉ số chữ lấy từ `caretIndex` | con trỏ không nhảy tới rồi lùi khi bộ gõ viết lại chữ |
+| `test/pace-caret.ts` | `stepSeconds`: mỗi chữ mất `spc × số phím` | con trỏ nhịp đi đúng tốc độ tính theo phím |
+| `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
+| `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
+
+Phần vận chuyển phím (`input/handlers`, `input/listeners`, `input-element.ts`), gom khung hình (`utils/debounced-animation-frame.ts`), cuộn dòng, `test-timer.ts` và `elements/caret.ts` chưa bị sửa dòng nào. Mọi chỗ ở bảng trên nằm trong khối có chú thích `beartype:`.

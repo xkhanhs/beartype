@@ -1,5 +1,7 @@
 import { Config } from "../../config/store";
 import { type CommitCharacterType } from "./util";
+import { isWrongKey } from "../../beartype/scoring";
+import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -19,6 +21,16 @@ export function isCharCorrect(options: {
 
   if (Config.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
+
+  // beartype: a letter is wrong when it makes a new mistake in the word.
+  // Upstream compares the character at the same index, which calls `e` wrong
+  // where `ế` stands -- but an input method builds `ế` out of exactly that
+  // `e`, so it is unfinished, not wrong. Spaces keep upstream's rule, so a
+  // word cut short still shows up as an error.
+  if (!isSpace(data) && data !== "\n") {
+    const target = targetWord.replace(/[ \n]$/, "");
+    return !isWrongKey(target, inputValue, inputValue + data);
+  }
 
   const targetChar = targetWord[inputValue.length];
 

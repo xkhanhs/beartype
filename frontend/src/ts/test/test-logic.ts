@@ -1,4 +1,3 @@
-import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
@@ -14,12 +13,11 @@ import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
-import * as DB from "../db";
+import * as LocalResults from "../beartype/local-results";
+import { learnToneStyle } from "../beartype/tone-style";
+import { committedWords, recordMisses } from "../beartype/miss-book";
 import * as Replay from "./replay-ui";
-import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
-import * as ChallengeContoller from "../controllers/challenge-controller";
-import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
 import {
   getActivePage,
@@ -51,7 +49,6 @@ import {
   getBailedOut,
   isResultCalculating,
   setBailedOut,
-  setLastSignedOutResult,
   setResultCalculating,
   setResultVisible,
   setTestActive,
@@ -66,13 +63,8 @@ import * as WordsGenerator from "./words-generator";
 import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
-import objectHash from "object-hash";
-import * as AnalyticsController from "../controllers/analytics-controller";
-import { getAuthenticatedUser } from "../firebase";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
-import Format from "../singletons/format";
-import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
   CompletedEventCustomText,
@@ -85,20 +77,15 @@ import {
   isFunboxActive,
   isFunboxActiveWithProperty,
 } from "./funbox/list";
-import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../legacy-states/composition";
-import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import * as Sentry from "../sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
-import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import { qs } from "../utils/dom";
-import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
@@ -138,12 +125,6 @@ let failReason = "";
 export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
-  }
-
-  if (isAuthenticated()) {
-    void AnalyticsController.log("testStarted");
-  } else {
-    void AnalyticsController.log("testStartedNoLogin");
   }
 
   setTestActive(true);
@@ -300,7 +281,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   setBailedOut(false);
   PaceCaret.reset();
   setKoreanStatus(false);
-  clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
   Strings.clearWordDirectionCache();
@@ -356,7 +336,7 @@ async function init(): Promise<boolean> {
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
-      void Sentry.captureException(lastInitError);
+      console.error(lastInitError);
       TestInitFailed.showError(
         `${lastInitError.name}: ${lastInitError.message}`,
       );
@@ -657,52 +637,13 @@ export async function addWord(): Promise<void> {
   }
 }
 
-type RetrySaving = {
-  completedEvent: CompletedEvent | null;
-  canRetry: boolean;
-};
-
-const retrySaving: RetrySaving = {
-  completedEvent: null,
-  canRetry: false,
-};
-
-export async function retrySavingResult(): Promise<void> {
-  const { completedEvent } = retrySaving;
-
-  if (completedEvent === null) {
-    showNoticeNotification(
-      "Could not retry saving the result as the result no longer exists.",
-      {
-        durationMs: 5000,
-        important: true,
-      },
-    );
-
-    return;
-  }
-
-  if (!retrySaving.canRetry) {
-    return;
-  }
-
-  retrySaving.canRetry = false;
-  qs("#retrySavingResultButton")?.hide();
-
-  showNoticeNotification("Retrying to save...");
-
-  await saveResult(completedEvent, true);
-}
-
 function buildCompletedEvent(
   eventLog: EventLog,
 ): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars(eventLog);
 
-  //tags
-  const activeTagsIds: string[] = __nonReactive
-    .getActiveTags()
-    .map((tag) => tag._id);
+  // beartype: there are no tags
+  const activeTagsIds: string[] = [];
 
   let language = Config.language;
   if (Config.mode === "quote") {
@@ -961,12 +902,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     showNoticeNotification("Test invalid - raw");
     setIsTestInvalid(true);
     dontSave = true;
-  } else if (
-    (!DB.getSnapshot()?.lbOptOut &&
-      (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (DB.getSnapshot()?.lbOptOut === true &&
-      (completedEvent.acc < 50 || completedEvent.acc > 100))
-  ) {
+  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     showNoticeNotification("Test invalid - accuracy");
     setIsTestInvalid(true);
     dontSave = true;
@@ -1038,38 +974,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
   Result.updateTodayTracker();
 
-  let savingResultPromise: ReturnType<typeof saveResult> =
-    Promise.resolve(null);
-  const user = getAuthenticatedUser();
-  if (user !== null) {
-    // logged in
-    if (dontSave) {
-      void AnalyticsController.log("testCompletedInvalid");
-    } else {
-      resetIncompleteTests();
-
-      if (!completedEvent.bailedOut) {
-        const challenge = ChallengeContoller.verify(completedEvent);
-        if (challenge !== null) completedEvent.challenge = challenge;
-      }
-
-      completedEvent.uid = user.uid;
-
-      savingResultPromise = saveResult(completedEvent, false);
-      void savingResultPromise.then((response) => {
-        if (response?.status === 200) {
-          void AnalyticsController.log("testCompleted");
-        }
-      });
-    }
-  } else {
-    // logged out
-    void AnalyticsController.log("testCompletedNoLogin");
-    if (!dontSave) {
-      // if its valid save it for later
-      setLastSignedOutResult(completedEvent);
-    }
-    dontSave = true;
+  // beartype: there is no account to save to. A valid result is kept in this
+  // browser, and only after the result screen has compared it with the best
+  // kept so far -- saved first, it would always be its own personal best.
+  if (!dontSave) {
+    resetIncompleteTests();
   }
 
   const resultUpdatePromise = Result.update(
@@ -1083,146 +992,20 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave,
   );
 
-  await Promise.all([savingResultPromise, resultUpdatePromise]);
-}
-
-async function saveResult(
-  completedEvent: CompletedEvent,
-  isRetrying: boolean,
-): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
-  if (!Config.resultSaving) {
-    showErrorNotification("Result not saved: disabled by user", {
-      durationMs: 3000,
-      customTitle: "Notice",
-      important: true,
-    });
-    return null;
+  await resultUpdatePromise;
+  // a drill from the miss book is practice, not a test to measure against
+  if (!dontSave && Config.mode !== "custom") {
+    LocalResults.saveResult(completedEvent);
   }
-
-  const result = structuredClone(completedEvent);
-
-  if (result.testDuration > 122) {
-    result.chartData = "toolong";
-    result.keySpacing = "toolong";
-    result.keyDuration = "toolong";
-  }
-  //@ts-expect-error just in case this is repeated and already has a hash
-  delete result.hash;
-  result.hash = objectHash(result);
-
-  setAccountButtonSpinner(true);
-
-  const response = await Ape.results.add({ body: { result } });
-
-  setAccountButtonSpinner(false);
-
-  if (response.status !== 200) {
-    //only allow retry if status is not in this list
-    if (![460, 461, 463, 464, 465, 466].includes(response.status)) {
-      retrySaving.canRetry = true;
-      qs("#retrySavingResultButton")?.show();
-      if (!isRetrying) {
-        retrySaving.completedEvent = result;
-      }
-    }
-    console.log("Error saving result", result);
-    if (response.body.message === "Old key data format") {
-      response.body.message =
-        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
-    }
-    if (
-      /"result\..+" is (not allowed|required)/gi.test(response.body.message)
-    ) {
-      response.body.message =
-        "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
-    }
-    showErrorNotification("Failed to save result", { response });
-    return response;
-  }
-
-  const data = response.body.data;
-  qs("#result .stats .tags .editTagsButton")?.setAttribute(
-    "data-result-id",
-    data.insertedId,
+  // beartype: the words this round missed go into the book behind the drill
+  // button; see beartype/miss-book.ts
+  const history = getInputHistory(eventLog);
+  const round = committedWords(
+    TestWords.words.get().map((word) => word.text),
+    history,
   );
-  qs("#result .stats .tags .editTagsButton")?.removeClass("invisible");
-
-  const localDataToSave: DB.SaveLocalResultData = {};
-
-  if (data.xp !== undefined) {
-    localDataToSave.xp = data.xp;
-    if (getResultVisible()) {
-      localDataToSave.xpBreakdown = data.xpBreakdown;
-    }
-  }
-
-  if (data.streak !== undefined) {
-    localDataToSave.streak = data.streak;
-  }
-
-  if (data.insertedId !== undefined) {
-    //TODO - this type cast was not needed before because we were using JSON cloning
-    // but now with the stronger types it shows that we are forcing completed event
-    // into a snapshot result - might not cuase issues but worth investigating
-    const snapshotResult = structuredClone(
-      result,
-    ) as unknown as SnapshotResult<Mode>;
-    snapshotResult._id = data.insertedId;
-    if (data.isPb !== undefined && data.isPb) {
-      snapshotResult.isPb = true;
-    }
-    localDataToSave.result = snapshotResult;
-  }
-
-  if (data.isPb !== undefined && data.isPb) {
-    //new pb
-    const localPb = DB.getLocalPB(
-      result.mode,
-      result.mode2,
-      result.punctuation,
-      result.numbers,
-      result.language,
-      result.difficulty,
-      result.lazyMode,
-      getFunbox(result.funbox),
-    );
-
-    if (localPb !== undefined) {
-      Result.showConfetti();
-    }
-    Result.showCrown("normal");
-
-    localDataToSave.isPb = true;
-  } else {
-    Result.showErrorCrownIfNeeded();
-  }
-
-  const dailyLeaderboardEl = document.querySelector(
-    "#result .stats .dailyLeaderboard",
-  ) as HTMLElement;
-
-  if (data.dailyLeaderboardRank === undefined) {
-    dailyLeaderboardEl.classList.add("hidden");
-  } else {
-    dailyLeaderboardEl.classList.remove("hidden");
-    dailyLeaderboardEl.style.maxWidth = "13rem";
-
-    animate(dailyLeaderboardEl, {
-      opacity: [0, 1],
-      duration: Misc.applyReducedMotion(250),
-    });
-
-    qs("#result .stats .dailyLeaderboard .bottom")?.setHtml(
-      Format.rank(data.dailyLeaderboardRank, { fallback: "" }),
-    );
-  }
-
-  qs("#retrySavingResultButton")?.hide();
-  if (isRetrying) {
-    showSuccessNotification("Result saved", { important: true });
-  }
-  DB.saveLocalResult(localDataToSave);
-  return response;
+  recordMisses(Config.language, round.words, round.typed);
+  learnToneStyle(history);
 }
 
 export function fail(reason: string): void {
@@ -1272,12 +1055,6 @@ qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
     void restart();
   }
 });
-
-qs(".pageTest")?.onChild(
-  "click",
-  "#retrySavingResultButton",
-  retrySavingResult,
-);
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
   void restart();

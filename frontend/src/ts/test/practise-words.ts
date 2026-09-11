@@ -183,6 +183,41 @@ export function init(
   return true;
 }
 
+/**
+ * beartype: a drill built from a given list of words -- the miss book's --
+ * rather than from the last test's misses. Same road as `init`: a custom test
+ * that `restart` reverts from afterwards. It runs as long as the test it
+ * replaces, and the words are shuffled on every pass so the hands learn the
+ * words, not the order.
+ */
+export function initFromWords(words: readonly string[]): boolean {
+  if (words.length === 0 || Config.mode === "zen") return false;
+
+  const mode = before.mode ?? Config.mode;
+  const punctuation = before.punctuation ?? Config.punctuation;
+  const numbers = before.numbers ?? Config.numbers;
+  const byTime = mode === "time";
+  const length = byTime ? Config.time : Config.words;
+
+  setConfig("mode", "custom", {
+    nosave: true,
+  });
+  CustomText.setPipeDelimiter(false);
+  CustomText.setText([...words]);
+  CustomText.setMode("shuffle");
+  CustomText.setLimitMode(byTime ? "time" : "word");
+  CustomText.setLimitValue(length);
+
+  setCustomTextIndicator({ name: "practice", isLong: false });
+
+  before.mode = mode;
+  before.punctuation = punctuation;
+  before.numbers = numbers;
+  before.customText = null;
+
+  return true;
+}
+
 export function resetBefore(): void {
   before.mode = null;
   before.punctuation = null;

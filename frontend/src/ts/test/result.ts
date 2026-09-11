@@ -3,20 +3,16 @@ import { Chart, type PluginChartOptions } from "chart.js";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import QuotesController, { Quote } from "../controllers/quotes-controller";
-import * as DB from "../db";
+import { Quote } from "../controllers/quotes-controller";
+// beartype: results live in this browser, not in an account snapshot
+import * as DB from "../beartype/local-results";
 
-import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
-  showErrorNotification,
   showSuccessNotification,
-  addNotificationWithLevel,
 } from "../states/notifications";
-import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { getQuoteStats } from "../states/quote-rate";
+import { getCustomTextIndicator } from "../states/core";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
@@ -34,31 +30,18 @@ import * as CustomText from "./custom-text";
 import * as Funbox from "./funbox/funbox";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
-import type {
-  AnnotationOptions,
-  LabelPosition,
-} from "chartjs-plugin-annotation";
-import Ape from "../ape";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import {
-  getLocalTagPB,
-  saveLocalTagPB,
-  type TagItem,
-  __nonReactive,
-} from "../collections/tags";
-import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import { blurInputElement } from "../input/input-element";
-import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import {
   getLastEventLog,
-  getCurrentQuote,
   getResultVisible,
   isTestInvalid,
   setResultCalculating,
@@ -75,9 +58,6 @@ let maxChartVal: number;
 
 let useSmoothedBurst = true;
 let useFakeChartData = false;
-
-let quoteLang: Language | undefined;
-let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
@@ -470,6 +450,41 @@ export function updateTodayTracker(): void {
   );
 }
 
+// beartype: best and usual speed over the last tests on this browser, so the
+// number just typed has something to be read against
+function updateRecent(dontSave: boolean): void {
+  const group = qs("#result .stats .history");
+  if (Config.mode === "custom" || Config.mode === "zen") {
+    group?.hide();
+    return;
+  }
+  const summary = DB.recentSummary(
+    {
+      mode: result.mode,
+      mode2: result.mode2,
+      punctuation: result.punctuation ?? false,
+      numbers: result.numbers ?? false,
+      language: result.language,
+      difficulty: result.difficulty,
+      lazyMode: result.lazyMode ?? false,
+    },
+    // an invalid test is not kept, so it does not count here either
+    dontSave ? { wpm: Number.NaN } : { wpm: result.wpm },
+  );
+  const speeds = [summary.best, summary.usual];
+  if (!speeds.every(Number.isFinite)) {
+    group?.hide();
+    return;
+  }
+  group?.show();
+  qs("#result .stats .history .top")?.setText(
+    `tốt nhất · thường (${summary.count} bài)`,
+  );
+  qs("#result .stats .history .bottom")?.setText(
+    speeds.map((wpm) => Format.typingSpeed(wpm)).join(" · "),
+  );
+}
+
 function updateKey(): void {
   qs("#result .stats .key .bottom")?.setText(
     `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
@@ -492,7 +507,8 @@ export function updateCrownText(text: string, wide = false): void {
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
-  if (Config.mode === "quote" || dontSave) {
+  // beartype: a drill from the miss book is practice, not a test with a best
+  if (Config.mode === "quote" || Config.mode === "custom" || dontSave) {
     hideCrown();
     return;
   }
@@ -520,12 +536,14 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       hideCrown();
       console.debug("Hiding crown");
     } else {
-      //show half crown as the pb is not confirmed by the server
-      console.debug("Showing pending crown");
-      showCrown("pending");
+      // beartype: this browser keeps the only record, so a new best is
+      // final -- upstream showed a half crown until its server agreed
+      console.debug("Showing new pb crown");
+      showCrown("normal");
       updateCrownText(
         `+${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
       );
+      if (localPb !== undefined) showConfetti();
     }
   } else {
     const localPb = DB.getLocalPB(
@@ -655,118 +673,6 @@ export function showConfetti(): void {
   })();
 }
 
-async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: TagItem[] = __nonReactive.getActiveTags();
-  const userTagsCount = __nonReactive.getTags().length;
-
-  if (userTagsCount === 0) {
-    qs("#result .stats .tags")?.hide();
-  } else {
-    qs("#result .stats .tags")?.show();
-  }
-  if (activeTags.length === 0) {
-    qs("#result .stats .tags .bottom")?.setHtml(
-      "<div class='noTags'>no tags</div>",
-    );
-  } else {
-    qs("#result .stats .tags .bottom")?.setText("");
-  }
-  qs("#result .stats .tags .editTagsButton")?.setAttribute(
-    "data-result-id",
-    "",
-  );
-  qs("#result .stats .tags .editTagsButton")?.setAttribute(
-    "data-active-tag-ids",
-    activeTags.map((t) => t._id).join(","),
-  );
-  qs("#result .stats .tags .editTagsButton")?.addClass("invisible");
-
-  let annotationSide: LabelPosition = "start";
-  let labelAdjust = 15;
-  for (const tag of activeTags) {
-    const tpb = getLocalTagPB(
-      tag._id,
-      Config.mode,
-      result.mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-    );
-    qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
-    `);
-    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-    if (
-      Config.mode !== "quote" &&
-      !dontSave &&
-      (await resultCanGetPb()).value
-    ) {
-      if (tpb < result.wpm) {
-        //new pb for that tag
-        saveLocalTagPB(
-          tag._id,
-          Config.mode,
-          result.mode2,
-          Config.punctuation,
-          Config.numbers,
-          Config.language,
-          Config.difficulty,
-          Config.lazyMode,
-          result.wpm,
-          result.acc,
-          result.rawWpm,
-          result.consistency,
-        );
-        qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`)?.show();
-        qs(
-          `#result .stats .tags .bottom div[tagid="${tag._id}"]`,
-        )?.setAttribute("aria-label", `+${Numbers.roundTo2(result.wpm - tpb)}`);
-        // console.log("new pb for tag " + tag.display);
-      } else {
-        const themecolors = getTheme();
-        resultAnnotation.push({
-          display: true,
-          type: "line",
-          id: "tpb",
-          scaleID: "wpm",
-          value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: `${themecolors.sub}55`,
-          borderWidth: 1,
-          // borderDash: [4, 16],
-          label: {
-            backgroundColor: themecolors.sub,
-            font: {
-              family: Config.fontFamily.replace(/_/g, " "),
-              size: 11,
-              style: "normal",
-              weight: Chart.defaults.font.weight as string,
-              lineHeight: Chart.defaults.font.lineHeight as number,
-            },
-            color: themecolors.bg,
-            padding: 3,
-            borderRadius: 3,
-            position: annotationSide,
-            xAdjust: labelAdjust,
-            display: true,
-            content: `${tag.name} PB: ${Numbers.roundTo2(
-              typingSpeedUnit.fromWpm(tpb),
-            ).toFixed(2)}`,
-          },
-        });
-        if (annotationSide === "start") {
-          annotationSide = "end";
-          labelAdjust = -15;
-        } else {
-          annotationSide = "start";
-          labelAdjust = 15;
-        }
-      }
-    }
-  }
-}
-
 function updateTestType(randomQuote: Quote | null): void {
   let testType = "";
 
@@ -874,61 +780,6 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: Quote | null): void {
-  if (Config.mode === "quote") {
-    if (randomQuote === null) {
-      console.error(
-        "Failed to update quote rating button: randomQuote is null",
-      );
-      return;
-    }
-
-    const userqr =
-      DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
-    if (Numbers.isSafeNumber(userqr)) {
-      qs(".pageTest #result #rateQuoteButton .icon")
-        ?.removeClass("far")
-        ?.addClass("fas");
-    }
-    getQuoteStats(randomQuote)
-      .then((quoteStats) => {
-        qs(".pageTest #result #rateQuoteButton .rating")?.setText(
-          quoteStats?.average?.toFixed(1) ?? "",
-        );
-      })
-      .catch((_e: unknown) => {
-        qs(".pageTest #result #rateQuoteButton .rating")?.setText("?");
-      });
-    qs(".pageTest #result #rateQuoteButton")
-      ?.setStyle({ opacity: "0" })
-      ?.show()
-      ?.setStyle({ opacity: "1" });
-  }
-}
-
-function updateQuoteFavorite(randomQuote: Quote | null): void {
-  const icon = qs(".pageTest #result #favoriteQuoteButton .icon");
-
-  if (Config.mode !== "quote" || !isAuthenticated()) {
-    icon?.getParent()?.hide();
-    return;
-  }
-
-  if (randomQuote === null) {
-    console.error(
-      "Failed to update quote favorite button: randomQuote is null",
-    );
-    return;
-  }
-
-  quoteLang = Config.mode === "quote" ? randomQuote.language : undefined;
-  quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
-
-  const userFav = QuotesController.isQuoteFavorite(randomQuote);
-  icon?.removeClass(userFav ? "far" : "fas")?.addClass(userFav ? "fas" : "far");
-  icon?.getParent()?.show();
-}
-
 function updateQuoteSource(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     qs("#result .stats .source")?.show();
@@ -967,35 +818,21 @@ export async function update(
   qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
-  if (isAuthenticated()) {
-    qs("#result .loginTip")?.hide();
-  } else {
-    qs("#result .loginTip")?.show();
-  }
-  if (Config.ads === "off" || Config.ads === "result") {
-    qs("#result #watchVideoAdButton")?.hide();
-  } else {
-    qs("#result #watchVideoAdButton")?.show();
-  }
-
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
+  qs("#result .loginTip")?.hide();
 
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
+  updateRecent(dontSave);
   updateKey();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
-  updateQuoteFavorite(randomQuote);
   await updateCrown(dontSave);
   await updateChartData();
   updateResultChartDataVisibility();
   updateMinMaxChartValues();
   await updateChartPBLine();
   applyMinMaxChartValues();
-  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -1041,14 +878,8 @@ export async function update(
   } else {
     qsa("main #result .stats")?.show();
     qs("main #result .chart")?.show();
-    if (!isAuthenticated()) {
-      qs("main #result .loginTip")?.show();
-      qs("main #result #rateQuoteButton")?.hide();
-      qs("main #result #reportQuoteButton")?.hide();
-    } else {
-      updateRateQuote(getCurrentQuote());
-      qs("main #result #reportQuoteButton")?.show();
-    }
+    qs("main #result #rateQuoteButton")?.hide();
+    qs("main #result #reportQuoteButton")?.hide();
     qs("main #result .stats .dailyLeaderboard")?.hide();
     qs("main #result #showWordHistoryButton")?.show();
     qs("main #result #watchReplayButton")?.show();
@@ -1092,7 +923,6 @@ export async function update(
   if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
     void TestUI.toggleResultWords(true);
   }
-  AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
 
   qs(".pageTest .loading")?.hide();
@@ -1109,7 +939,6 @@ export async function update(
   });
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
-  void AdController.renderResult();
   setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
@@ -1217,11 +1046,6 @@ function updateResultChartDataVisibility(): void {
 
   const buttons = qsa(".pageTest #result .chart .chartLegend button");
 
-  // Check if there are any tag PB annotations
-  const hasTagPbAnnotations = resultAnnotation.some(
-    (annotation) => annotation.id === "tpb",
-  );
-
   for (const button of buttons) {
     const id = button?.getAttribute("data-id") as string;
 
@@ -1241,66 +1065,11 @@ function updateResultChartDataVisibility(): void {
 
     button.toggleClass("active", vis[id]);
 
-    if (id === "pbLine") {
-      button.toggleClass("hidden", !isAuthenticated());
-    } else if (id === "tagPbLine") {
-      button.toggleClass("hidden", !isAuthenticated() || !hasTagPbAnnotations);
+    // beartype: the pb line comes from this browser's results; there are no tags
+    if (id === "tagPbLine") {
+      button.toggleClass("hidden", true);
     }
   }
-}
-
-export function updateTagsAfterEdit(
-  tagIds: string[],
-  tagPbIds: string[],
-): void {
-  const tagNames: string[] = [];
-
-  if (tagIds.length > 0) {
-    for (const tag of tagIds) {
-      const localTag = __nonReactive.getTag(tag);
-      if (localTag !== undefined) {
-        tagNames.push(localTag.name);
-      }
-    }
-  }
-
-  if (tagIds.length === 0) {
-    qs(`.pageTest #result .tags .bottom`)?.setHtml(
-      "<div class='noTags'>no tags</div>",
-    );
-  } else {
-    qs(`.pageTest #result .tags .bottom div.noTags`)?.remove();
-    const currentElements = qsa(`.pageTest #result .tags .bottom div[tagid]`);
-
-    const checked: string[] = [];
-    currentElements.forEach((element) => {
-      const tagId = element.getAttribute("tagid") ?? "";
-      if (!tagIds.includes(tagId)) {
-        element?.remove();
-      } else {
-        checked.push(tagId);
-      }
-    });
-
-    let html = "";
-
-    tagIds.forEach((tag, index) => {
-      if (checked.includes(tag)) return;
-      if (tagPbIds.includes(tag)) {
-        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
-      } else {
-        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
-      }
-    });
-
-    // qs(`.pageTest #result .tags .bottom`)?.setHtml(tagNames.join("<br>"));
-    qs(`.pageTest #result .tags .bottom`)?.appendHtml(html);
-  }
-
-  qs(`.pageTest #result .tags .top .editTagsButton`)?.setAttribute(
-    "data-active-tag-ids",
-    tagIds.join(","),
-  );
 }
 
 qsa(".pageTest #result .chart .chartLegend button")?.on(
@@ -1333,61 +1102,6 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
     ChartController.result.update();
   },
 );
-
-qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
-  if (quoteLang === undefined || quoteId === "") {
-    showErrorNotification("Could not get quote stats!");
-    return;
-  }
-
-  const $button = qs(".pageTest #favoriteQuoteButton .icon");
-  const dbSnapshot = DB.getSnapshot();
-  if (!dbSnapshot) return;
-
-  if ($button?.hasClass("fas")) {
-    // Remove from
-    showLoaderBar();
-    const response = await Ape.users.removeQuoteFromFavorites({
-      body: {
-        language: quoteLang,
-        quoteId,
-      },
-    });
-    hideLoaderBar();
-
-    addNotificationWithLevel(
-      response.body.message,
-      response.status === 200 ? "success" : "error",
-    );
-
-    if (response.status === 200) {
-      $button?.removeClass("fas")?.addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
-        quoteId,
-      ) as number;
-      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
-    }
-  } else {
-    // Add to favorites
-    showLoaderBar();
-    const response = await Ape.users.addQuoteToFavorites({
-      body: { language: quoteLang, quoteId },
-    });
-    hideLoaderBar();
-
-    addNotificationWithLevel(
-      response.body.message,
-      response.status === 200 ? "success" : "error",
-    );
-
-    if (response.status === 200) {
-      $button?.removeClass("far")?.addClass("fas");
-      dbSnapshot.favoriteQuotes ??= {};
-      dbSnapshot.favoriteQuotes[quoteLang] ??= [];
-      dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
-    }
-  }
-});
 
 configEvent.subscribe(async ({ key }) => {
   if (

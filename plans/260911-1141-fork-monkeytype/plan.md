@@ -1,6 +1,6 @@
 ---
 title: "beartype — fork monkeytype, giữ lõi gõ, bỏ phần còn lại"
-status: in-progress
+status: completed
 created: 2026-09-11
 upstream: monkeytypegame/monkeytype (ghim SHA ở phase 1)
 ---
@@ -115,3 +115,21 @@ giác lệch, bisect chỉ ra ngay cụm nào mang nó đi.
 
 - Phần cấu hình monkeytype.com của anh chưa có trong ảnh (font, cỡ chữ, tape
   mode, …) — cần trước phase 3, xem danh sách ở đó.
+
+## Đã làm khác plan (2026-09-11)
+
+- **Phase 2 không tách được thành từng cụm cho bisect.** Trang, modal, tài khoản
+  và API import lẫn nhau, nên không có lát cắt nhỏ hơn nào compile được; chúng
+  vào chung một commit (`refactor: strip accounts and every page but the test`).
+  Các cụm sau (backend, tài nguyên tĩnh, gói npm, quảng cáo) vẫn mỗi cụm một
+  commit.
+- **`quickRestart` giữ `"off"` của monkeytype**, không ép `"tab"`: ở `"off"`, Tab
+  tới nút làm bài mới rồi Enter bấm, đúng cách keybear làm.
+- **Luật phím sai là "phím này có tạo thêm lỗi không"** (`isWrongKey`), không phải
+  "từ có chệch đường không": luật thứ hai tính cả các phím đúng sau một phím sai
+  là sai, lệch khỏi monkeytype ở tiếng Anh.
+- **Con trỏ đổi luôn sang `caretIndex` ở phase 4**, không chờ đo: một khi chữ vẽ
+  theo ô của keybear thì số ô không còn bằng số ký tự nhập, con trỏ theo ký tự
+  sẽ đứng sai ô.
+- **Cấu hình monkeytype.com của anh chưa được chép** (font, cỡ chữ, tape mode…);
+  đang dùng mặc định của monkeytype cho mọi khoá ngoài smooth caret và pace caret.

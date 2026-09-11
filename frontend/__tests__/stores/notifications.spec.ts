@@ -9,7 +9,6 @@ import {
   getNotifications,
   getNotificationHistory,
   __testing,
-  AddNotificationOptions,
 } from "../../src/ts/states/notifications";
 
 const { clearNotificationHistory } = __testing;
@@ -62,18 +61,6 @@ describe("notifications store", () => {
     it("respects custom durationMs", () => {
       addNotificationWithLevel("msg", "notice", { durationMs: 5000 });
       expect(getNotifications()[0]?.durationMs).toBe(5000);
-    });
-
-    it("appends response body message", () => {
-      const response = {
-        status: 400,
-        body: { message: "Bad request" },
-      } as AddNotificationOptions["response"];
-
-      addNotificationWithLevel("Request failed", "error", { response });
-      expect(getNotifications()[0]?.message).toBe(
-        "Request failed: Bad request",
-      );
     });
 
     it("appends error message via createErrorMessage", () => {

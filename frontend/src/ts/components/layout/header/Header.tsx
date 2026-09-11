@@ -4,7 +4,6 @@ import { getIsScreenshotting } from "../../../states/core";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Logo } from "./Logo";
-import { Nav } from "./Nav";
 
 export function Header(): JSXElement {
   return (
@@ -16,7 +15,6 @@ export function Header(): JSXElement {
       data-focused={getFocus() ? "" : undefined}
     >
       <Logo />
-      <Nav />
     </header>
   );
 }

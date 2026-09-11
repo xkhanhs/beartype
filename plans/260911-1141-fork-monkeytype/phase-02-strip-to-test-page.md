@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Xoá backend, tài khoản và mọi thứ ngoài màn test"
-status: pending
+status: completed
 priority: P1
 effort: "1-2d"
 dependencies: [1]
