@@ -63,9 +63,10 @@ body.darkMode #words {
   --kb-shadow: color-mix(in srgb, var(--text-color) 22%, transparent);
   --kb-popup-shadow: 0 0.5rem 3rem var(--kb-shadow);
   --kb-focus: 3px solid var(--main-color);
-  // the rim of a strip sunk below the page: 12% of the text in the page colour,
-  // so it reads darker than the page on a light palette and lighter
-  // on a dark one, as keybear's card rim does
+  // the rim of a strip sunk below the page, and keybear's `--separator-color`
+  // for rules drawn on the page: 12% of the text in the page colour, so it
+  // reads darker than the page on a light palette and lighter on a dark one,
+  // as keybear's `primary-d1` does
   --kb-sunk-rim: color-mix(in srgb, var(--text-color) 12%, var(--bg-color));
 }
 
@@ -753,7 +754,7 @@ button.bt-settings-choice {
   align-items: center;
   inline-size: min(32rem, 90vw);
   padding-block-start: 1.4rem;
-  border-block-start: 1px solid var(--kb-border);
+  border-block-start: 1px solid var(--kb-sunk-rim);
 }
 
 .bt-history-row {
@@ -802,7 +803,7 @@ button.bt-settings-choice {
   z-index: 1;
   inset-inline: 0;
   block-size: 0;
-  border-block-start: 2px dashed var(--kb-border);
+  border-block-start: 2px dashed var(--kb-sunk-rim);
 }
 
 .bt-chart-slot {
