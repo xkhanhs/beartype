@@ -17,7 +17,7 @@ import {
   getLiveCachedTimerStartMs,
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
-import { isTestActive, setCurrentLiveStats } from "../states/test";
+import { setCurrentLiveStats } from "../states/test";
 
 let emittedTicks = 0;
 let stopped = true;
@@ -90,19 +90,7 @@ const newTimer = createTimer({
   },
 });
 
-type TimerStats = {
-  dateNow: number;
-  now: number;
-  expected: number;
-  nextDelay: number;
-};
-
 let slowTimerCount = 0;
-let timer: NodeJS.Timeout | null = null;
-const interval = 1000;
-let expected = 0;
-
-let slowTimerFailEnabled = true;
 
 let timerDebug = false;
 export function enableTimerDebug(): void {
@@ -113,7 +101,6 @@ export function clear(logEnd = false, now = performance.now()): void {
   stopped = true;
   clearLowFpsMode();
   newTimer.reset();
-  if (timer !== null) clearTimeout(timer);
   if (logEnd) {
     logTestEvent("timer", now, {
       event: "end",
@@ -135,7 +122,6 @@ function checkIfTimeIsUp(testTime: number): void {
   }
   if (maxTime !== undefined && maxTime !== 0 && testTime >= maxTime) {
     //times up
-    if (timer !== null) clearTimeout(timer);
     Caret.hide();
     SlowTimer.clear();
     slowTimerCount = 0;
@@ -147,12 +133,6 @@ function checkIfTimeIsUp(testTime: number): void {
 }
 
 // ---------------------------------------
-
-let timerStats: TimerStats[] = [];
-
-export function getTimerStats(): TimerStats[] {
-  return timerStats;
-}
 
 function timerStep(now: number, catchingUp: boolean): void {
   if (timerDebug) console.time("timer step -----------------------------");
@@ -199,7 +179,6 @@ function timerStep(now: number, catchingUp: boolean): void {
 }
 
 function checkIfTimerIsSlow(drift: number): void {
-  if (!slowTimerFailEnabled) return;
   if (
     (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
     (Config.mode === "words" && Config.words < 250 && Config.words > 0)
@@ -225,7 +204,6 @@ export async function start(now: number): Promise<void> {
   slowTimerCount = 0;
   emittedTicks = 0;
   void _startNew(now);
-  // void _startOld(now);
 }
 
 async function _startNew(now: number): Promise<void> {
@@ -237,47 +215,4 @@ async function _startNew(now: number): Promise<void> {
     timer: 0,
     date: new Date().getTime(),
   });
-}
-
-async function _startOld(now: number): Promise<void> {
-  timerStats = [];
-  expected = now + interval;
-  logTestEvent("timer", now, {
-    event: "start",
-    timer: 0,
-    date: new Date().getTime(),
-  });
-  (function loop(): void {
-    const delay = expected - performance.now();
-    timerStats.push({
-      dateNow: Date.now(),
-      now: performance.now(),
-      expected: expected,
-      nextDelay: delay,
-    });
-    const drift = roundTo2(Math.abs(interval - delay));
-    checkIfTimerIsSlow(drift);
-    timer = setTimeout(function () {
-      if (!isTestActive()) {
-        if (timer !== null) clearTimeout(timer);
-        SlowTimer.clear();
-        slowTimerCount = 0;
-        return;
-      }
-
-      const now = performance.now();
-
-      logTestEvent("timer", now, {
-        event: "step",
-        timer: getLiveCachedTestSeconds(now),
-        drift: drift,
-        slowTimer: SlowTimer.get() ? true : undefined,
-      });
-
-      timerStep(now, false);
-
-      expected += interval;
-      loop();
-    }, delay);
-  })();
 }
