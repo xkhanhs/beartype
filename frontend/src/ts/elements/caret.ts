@@ -9,23 +9,6 @@ import * as TestWords from "../test/test-words";
 
 const wordsCache = qsr("#words");
 
-let caretDebug = false;
-
-export function toggleCaretDebug(): void {
-  caretDebug = !caretDebug;
-  if (!caretDebug) {
-    for (const l of document.querySelectorAll(".word letter")) {
-      l.classList.remove("debugCaret");
-      l.classList.remove("debugCaretTarget");
-      l.classList.remove("debugCaretTarget2");
-    }
-  } else {
-    for (const l of document.querySelectorAll(".word letter")) {
-      l.classList.add("debugCaret");
-    }
-  }
-}
-
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
@@ -334,9 +317,7 @@ export class Caret {
       );
     }
 
-    if (!caretDebug) {
-      this.element.removeClass("debug");
-    }
+    this.element.removeClass("debug");
 
     // in zen or custom mode we need to check per-letter
     const checkRtlByLetter = Config.mode === "custom";
@@ -357,9 +338,6 @@ export class Caret {
           letter = loopLetter;
           break;
         }
-      }
-      if (caretDebug) {
-        letter.addClass("debugCaretTarget2");
       }
     }
 

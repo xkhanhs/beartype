@@ -16,8 +16,3 @@ const active = isDevEnvironment() && profilerModeLS.get();
 export function isProfilerMode(): boolean {
   return active;
 }
-
-export function setProfilerMode(value: boolean): void {
-  if (!isDevEnvironment()) return;
-  profilerModeLS.set(value);
-}
