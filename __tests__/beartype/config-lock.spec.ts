@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Config } from "../../src/ts/schemas/configs";
-import {
-  getBeartypeDefaults,
-  lockConfig,
-} from "../../src/ts/beartype/config-lock";
+import { lockConfig } from "../../src/ts/beartype/config-lock";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
 describe("lockConfig", () => {
@@ -16,7 +13,7 @@ describe("lockConfig", () => {
 
   it("keeps what the user chose", () => {
     const config = lockConfig({
-      ...getBeartypeDefaults(),
+      ...getDefaultConfig(),
       mode: "words",
       words: 25,
       language: "english",
@@ -34,7 +31,7 @@ describe("lockConfig", () => {
 
   it("takes the text size in Chrome's zoom steps", () => {
     const at = (fontSize: number): number =>
-      lockConfig({ ...getBeartypeDefaults(), fontSize }).fontSize;
+      lockConfig({ ...getDefaultConfig(), fontSize }).fontSize;
     expect(at(2.2)).toBe(2.2); // 110%
     expect(at(4)).toBe(4); // 200%
     expect(at(2.4)).toBe(2); // 120% is not a step
@@ -69,7 +66,7 @@ describe("sounds", () => {
 
   it("keeps a set on offer, the error sound and the volume", () => {
     const config = lockConfig({
-      ...getBeartypeDefaults(),
+      ...getDefaultConfig(),
       playSoundOnClick: "4",
       playSoundOnError: "1",
       soundVolume: 0.8,
@@ -81,7 +78,7 @@ describe("sounds", () => {
 
   it("keeps keybear's click and blip", () => {
     const config = lockConfig({
-      ...getBeartypeDefaults(),
+      ...getDefaultConfig(),
       playSoundOnClick: "keybear",
       playSoundOnError: "keybear",
     });
@@ -91,7 +88,7 @@ describe("sounds", () => {
 
   it("drops a set no longer shipped and a volume out of range", () => {
     const config = lockConfig({
-      ...getBeartypeDefaults(),
+      ...getDefaultConfig(),
       // upstream's fart sound, whose file beartype does not ship
       playSoundOnClick: "16" as Config["playSoundOnClick"],
       playSoundOnError: "3" as Config["playSoundOnError"],
@@ -107,14 +104,14 @@ describe("keymap", () => {
   it("is off until switched on, and stays on once it is", () => {
     expect(lockConfig(undefined).keymapMode).toBe("off");
     expect(
-      lockConfig({ ...getBeartypeDefaults(), keymapMode: "react" }).keymapMode,
+      lockConfig({ ...getDefaultConfig(), keymapMode: "react" }).keymapMode,
     ).toBe("react");
   });
 
   it("drops upstream's other modes", () => {
     expect(
       lockConfig({
-        ...getBeartypeDefaults(),
+        ...getDefaultConfig(),
         keymapMode: "next" as Config["keymapMode"],
       }).keymapMode,
     ).toBe("off");
@@ -125,7 +122,7 @@ describe("typos under the words", () => {
   it("are hidden until switched on, and stay on once they are", () => {
     expect(lockConfig(undefined).indicateTypos).toBe("off");
     expect(
-      lockConfig({ ...getBeartypeDefaults(), indicateTypos: "below" })
+      lockConfig({ ...getDefaultConfig(), indicateTypos: "below" })
         .indicateTypos,
     ).toBe("below");
   });
@@ -133,7 +130,7 @@ describe("typos under the words", () => {
   it("drops upstream's other ways of showing them", () => {
     expect(
       lockConfig({
-        ...getBeartypeDefaults(),
+        ...getDefaultConfig(),
         indicateTypos: "replace" as Config["indicateTypos"],
       }).indicateTypos,
     ).toBe("off");
@@ -149,14 +146,14 @@ describe("themes", () => {
   it("keeps a keybear theme and drops an upstream one", () => {
     expect(
       lockConfig({
-        ...getBeartypeDefaults(),
+        ...getDefaultConfig(),
         theme: "keybear_ocean",
         autoSwitchTheme: false,
       }).theme,
     ).toBe("keybear_ocean");
     expect(
       lockConfig({
-        ...getBeartypeDefaults(),
+        ...getDefaultConfig(),
         // an upstream theme name that no longer exists
         theme: "serika_dark" as Config["theme"],
       }).theme,

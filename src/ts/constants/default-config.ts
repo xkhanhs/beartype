@@ -1,13 +1,15 @@
 import { Config } from "../schemas/configs";
 
 const obj: Config = {
+  // keybear's palettes, following the computer's light or dark setting
   theme: "keybear_light",
-  autoSwitchTheme: false,
-  smoothCaret: "medium",
+  autoSwitchTheme: true,
+  // the caret this app was measured against on monkeytype.com
+  smoothCaret: "slow",
   words: 50,
   time: 30,
   mode: "time",
-  language: "english",
+  language: "vietnamese",
   fontSize: 2,
   indicateTypos: "off",
   keymapMode: "off",

@@ -6,45 +6,7 @@ import {
   PlaySoundOnErrorSchema,
 } from "../schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
-
-/**
- * The settings a person can change. The few other keys left in `Config` are
- * fixed at beartype's defaults below.
- */
-const USER_KEYS = [
-  "mode",
-  "time",
-  "words",
-  "language",
-  "theme",
-  "autoSwitchTheme",
-  "smoothCaret",
-  "fontFamily",
-  "fontSize",
-  "playSoundOnClick",
-  "playSoundOnError",
-  "soundVolume",
-  "keymapMode",
-  "indicateTypos",
-] as const satisfies readonly (keyof Config)[];
-
-type UserKey = (typeof USER_KEYS)[number];
-
-/**
- * Where beartype departs from upstream's defaults.
- *
- * The caret is the setting this app was measured against on monkeytype.com;
- * the rest turn off features that no longer exist here, so that nothing waits
- * on them.
- */
-const BEARTYPE_DEFAULTS: Partial<Config> = {
-  language: "vietnamese",
-  // keybear's palettes, following the computer's light or dark setting
-  theme: "keybear_light",
-  autoSwitchTheme: true,
-  smoothCaret: "slow",
-  fontFamily: "Roboto_Mono",
-};
+import { typedKeys } from "../utils/objects";
 
 /** Times and word counts on offer; anything else falls back to the default. */
 export const TIMES = [15, 30, 60, 120] as const;
@@ -87,12 +49,8 @@ export const THEMES = [
   "keybear_hero",
 ] as const;
 
-export function getBeartypeDefaults(): Config {
-  return { ...getDefaultConfig(), ...BEARTYPE_DEFAULTS };
-}
-
-function allowed(key: UserKey, value: unknown): boolean {
-  const lists: Partial<Record<UserKey, readonly unknown[]>> = {
+function allowed(key: keyof Config, value: unknown): boolean {
+  const lists: Partial<Record<keyof Config, readonly unknown[]>> = {
     mode: MODES,
     time: TIMES,
     words: WORD_COUNTS,
@@ -114,14 +72,14 @@ function allowed(key: UserKey, value: unknown): boolean {
 }
 
 /**
- * The config to run with, given what was stored. Only the user keys survive
- * from `stored`, and only with a value on offer: an old localStorage entry or
- * a hand-edited one cannot bring back a feature that was taken out.
+ * The config to run with, given what was stored. A stored value survives only
+ * if it is on offer: an old localStorage entry or a hand-edited one cannot
+ * bring back a feature that was taken out.
  */
 export function lockConfig(stored: Config | undefined): Config {
-  const config = getBeartypeDefaults();
+  const config = getDefaultConfig();
   if (stored === undefined) return config;
-  for (const key of USER_KEYS) {
+  for (const key of typedKeys(config)) {
     if (allowed(key, stored[key])) {
       // @ts-expect-error the key indexes both objects with the same type
       config[key] = stored[key];
