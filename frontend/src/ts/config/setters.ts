@@ -1,4 +1,4 @@
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "../schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
 import { configEvent } from "../events/config";
@@ -6,7 +6,7 @@ import { triggerResize } from "../utils/misc";
 import { configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
-import { typedKeys } from "@monkeytype/util/objects";
+import { typedKeys } from "../utils/objects";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,

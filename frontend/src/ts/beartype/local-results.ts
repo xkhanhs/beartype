@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { ModeSchema } from "@monkeytype/schemas/shared";
-import type { CompletedEvent } from "@monkeytype/schemas/results";
-import type { Mode, Mode2 } from "@monkeytype/schemas/shared";
+import { ModeSchema } from "../schemas/shared";
+import type { CompletedEvent } from "../schemas/results";
+import type { Mode, Mode2 } from "../schemas/shared";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 /**

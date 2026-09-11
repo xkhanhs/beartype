@@ -5,7 +5,7 @@ import * as PractiseWords from "./practise-words";
 import * as Arrays from "../utils/arrays";
 import { WordGenError } from "../utils/word-gen-error";
 
-import { LanguageObject } from "@monkeytype/schemas/languages";
+import { LanguageObject } from "../schemas/languages";
 import { isRepeated } from "../states/test";
 import * as TestWords from "./test-words";
 import { withToneStyle } from "../beartype/vietnamese";

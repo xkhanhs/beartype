@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseWithSchema } from "../src/json";
+import { parseWithSchema } from "../../src/ts/utils/json";
 import { z } from "zod";
 
 describe("json", () => {

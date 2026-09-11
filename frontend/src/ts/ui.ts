@@ -7,7 +7,7 @@ import * as TestUI from "./test/test-ui";
 import { getActivePage, getGlobalOffsetTop } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
-import { FontName } from "@monkeytype/schemas/fonts";
+import { FontName } from "./schemas/fonts";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import { convertRemToPixels } from "./utils/numbers";

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { CompletedEvent } from "@monkeytype/schemas/results";
+import type { CompletedEvent } from "../../src/ts/schemas/results";
 import {
   __testing,
   getLocalPB,

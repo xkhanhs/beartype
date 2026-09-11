@@ -1,4 +1,4 @@
-import { Language } from "@monkeytype/schemas/languages";
+import { Language } from "../schemas/languages";
 
 /**
  * Highlights all occurrences of specified words within a given text.

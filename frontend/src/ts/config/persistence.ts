@@ -1,6 +1,6 @@
-import { Config as ConfigSchema } from "@monkeytype/schemas/configs";
+import { Config as ConfigSchema } from "../schemas/configs";
 import { Config } from "./store";
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "../schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { migrateConfig } from "./utils";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";

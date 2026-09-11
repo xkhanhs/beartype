@@ -19,7 +19,7 @@ import {
 import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../constants/keys";
-import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
+import { isSafeNumber, mean, roundTo2 } from "../../utils/numbers";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";

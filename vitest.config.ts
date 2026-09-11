@@ -6,10 +6,7 @@ let globalPlugins: any[] = [];
 
 export default defineConfig({
   test: {
-    projects: [
-      ...convertTests(frontendProjects, "frontend"),
-      "packages/**/vitest.config.ts",
-    ],
+    projects: [...convertTests(frontendProjects, "frontend")],
   },
   plugins: globalPlugins,
 });

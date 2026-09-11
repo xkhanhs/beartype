@@ -1,4 +1,4 @@
-import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
+import type { Config as ConfigSchema } from "../schemas/configs";
 import { configMetadata } from "./metadata";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";

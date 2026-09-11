@@ -1,4 +1,4 @@
-import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
+import { PlaySoundOnClick } from "../schemas/configs";
 
 export const soundsConfig: SoundConfigType = {
   1: { numberOfSounds: 3 },

@@ -1,10 +1,10 @@
-import { Config } from "@monkeytype/schemas/configs";
+import { Config } from "../../schemas/configs";
 import { Keycode } from "../../constants/keys";
 import {
   DeleteInputType,
   InsertInputType,
 } from "../../input/helpers/input-type";
-import { CustomTextLimitMode } from "@monkeytype/schemas/util";
+import { CustomTextLimitMode } from "../../schemas/util";
 import { getMode2 } from "../../utils/misc";
 
 export type TestEventType =

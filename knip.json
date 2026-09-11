@@ -14,10 +14,6 @@
         "scripts/**/*.ts",
         "vite-plugins/**/*.ts"
       ]
-    },
-    "packages/*": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
     }
   }
 }

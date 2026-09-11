@@ -1,4 +1,4 @@
-import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { KnownFontName } from "../schemas/fonts";
 
 /**
  * The typing fonts served from `static/webfonts` (their latin letters; the

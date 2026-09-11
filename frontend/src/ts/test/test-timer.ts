@@ -14,7 +14,7 @@ import { timerEvent } from "../events/timer";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { buildEventLog, logTestEvent } from "./events/data";
-import { roundTo2 } from "@monkeytype/util/numbers";
+import { calculateWpm, roundTo2 } from "../utils/numbers";
 import {
   getLiveCachedAccuracy,
   getLiveCachedTestDurationMs,
@@ -22,7 +22,6 @@ import {
   getLiveCachedTimerStartMs,
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
-import { calculateWpm } from "../utils/numbers";
 import { isTestActive, setCurrentLiveStats } from "../states/test";
 
 let emittedTicks = 0;

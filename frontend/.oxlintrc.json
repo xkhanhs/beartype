@@ -1,10 +1,6 @@
 {
   "ignorePatterns": ["node_modules", "dist", "coverage", ".turbo"],
-  "extends": [
-    "../packages/oxlint-config/index.jsonc",
-    "../packages/oxlint-config/plugin.jsonc"
-    // "@monkeytype/oxlint-config"
-  ],
+  "extends": ["../oxlint-config/index.jsonc", "../oxlint-config/plugin.jsonc"],
   "jsPlugins": ["eslint-plugin-compat"],
   "rules": {
     "compat/compat": "error"

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { nameWithSeparators, slug } from "../src/util";
+import { nameWithSeparators, slug } from "../../src/ts/schemas/util";
 
 describe("Schema Validation Tests", () => {
   describe("nameWithSeparators", () => {

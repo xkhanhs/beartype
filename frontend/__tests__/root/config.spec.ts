@@ -9,7 +9,7 @@ import {
   ConfigKey,
   Config as ConfigType,
   SmoothCaretSchema,
-} from "@monkeytype/schemas/configs";
+} from "../../src/ts/schemas/configs";
 import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import { configLS } from "../../src/ts/config/persistence";

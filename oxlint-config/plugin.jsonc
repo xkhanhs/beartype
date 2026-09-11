@@ -9,25 +9,25 @@
     "restriction": "off",
     "nursery": "off",
   },
-  "jsPlugins": ["./plugins/monkeytype-rules.js"],
+  "jsPlugins": ["./plugins/beartype-rules.js"],
   "rules": {
-    "monkeytype-rules/no-testing-access": "error",
-    "monkeytype-rules/no-mixed-nullish-coalescing": "error",
+    "beartype-rules/no-testing-access": "error",
+    "beartype-rules/no-mixed-nullish-coalescing": "error",
   },
   "overrides": [
     {
       "files": ["__tests__/**/*.ts"],
       "rules": {
-        "monkeytype-rules/no-testing-access": "off",
+        "beartype-rules/no-testing-access": "off",
       },
     },
     {
       "files": ["**/*.tsx"],
       "rules": {
-        "monkeytype-rules/no-non-reactive-access-in-components": "error",
-        "monkeytype-rules/prefer-arrow-in-component": "error",
-        "monkeytype-rules/one-component-per-file": "error",
-        "monkeytype-rules/component-pascal-case": "error",
+        "beartype-rules/no-non-reactive-access-in-components": "error",
+        "beartype-rules/prefer-arrow-in-component": "error",
+        "beartype-rules/one-component-per-file": "error",
+        "beartype-rules/component-pascal-case": "error",
       },
     },
   ],

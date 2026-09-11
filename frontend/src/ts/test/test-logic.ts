@@ -2,7 +2,7 @@ import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "../utils/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -52,13 +52,10 @@ import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import { highlight } from "../events/keymap";
-import {
-  CompletedEvent,
-  CompletedEventCustomText,
-} from "@monkeytype/schemas/results";
+import { CompletedEvent, CompletedEventCustomText } from "../schemas/results";
 import * as CompositionState from "../legacy-states/composition";
 import { WordGenError } from "../utils/word-gen-error";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { tryCatch } from "../utils/trycatch";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { setInputElementValue } from "../input/input-element";

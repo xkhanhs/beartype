@@ -1,4 +1,4 @@
-import type { Config } from "@monkeytype/schemas/configs";
+import type { Config } from "../schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 
 /**

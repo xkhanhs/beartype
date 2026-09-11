@@ -19,7 +19,7 @@ import { versionFile } from "./vite-plugins/version-file";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
-import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { KnownFontName } from "./src/ts/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 

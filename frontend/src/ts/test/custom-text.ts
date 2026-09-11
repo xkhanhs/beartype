@@ -1,10 +1,10 @@
-import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { CustomTextLimitMode, CustomTextMode } from "../schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import {
   CustomTextSettings,
   CustomTextSettingsSchema,
-} from "@monkeytype/schemas/results";
+} from "../schemas/results";
 
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 

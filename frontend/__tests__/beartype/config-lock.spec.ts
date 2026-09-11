@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Config } from "@monkeytype/schemas/configs";
+import type { Config } from "../../src/ts/schemas/configs";
 import {
   getBeartypeDefaults,
   lockConfig,

@@ -1,4 +1,4 @@
-import { Config } from "@monkeytype/schemas/configs";
+import { Config } from "../schemas/configs";
 
 const obj: Config = {
   theme: "keybear_light",

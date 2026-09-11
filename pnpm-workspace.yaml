@@ -1,6 +1,5 @@
 packages:
   - frontend
-  - packages/*
 
 allowBuilds:
   "@fortawesome/fontawesome-free": true

@@ -1,4 +1,4 @@
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { ThemeName } from "../schemas/configs";
 import { z } from "zod";
 
 const hexColorSchema = z

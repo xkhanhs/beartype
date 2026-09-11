@@ -2,7 +2,7 @@ import { describe, it, expect, afterAll, vi } from "vitest";
 import { configMetadata } from "../../src/ts/config/metadata";
 import { __testing } from "../../src/ts/config/testing";
 import { setConfig } from "../../src/ts/config/setters";
-import { ConfigKey, Config as ConfigType } from "@monkeytype/schemas/configs";
+import { ConfigKey, Config as ConfigType } from "../../src/ts/schemas/configs";
 
 const { replaceConfig, getConfig } = __testing;
 

@@ -1,4 +1,4 @@
-import { CaretStyle } from "@monkeytype/schemas/configs";
+import { CaretStyle } from "../schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";

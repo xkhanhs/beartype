@@ -1,8 +1,7 @@
 import { CharCounts, countChars, isSpace } from "../../utils/strings";
 import { countKeysAsChars } from "../../beartype/scoring";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
-import { calculateWpm } from "../../utils/numbers";
-import { roundTo2 } from "@monkeytype/util/numbers";
+import { calculateWpm, roundTo2 } from "../../utils/numbers";
 import { EventLog, TestEventNoMs } from "./types";
 import Hangul from "hangul-js";
 

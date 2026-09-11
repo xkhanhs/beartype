@@ -1,5 +1,5 @@
-import { Config } from "@monkeytype/schemas/configs";
-import { Mode, Mode2 } from "@monkeytype/schemas/shared";
+import { Config } from "../schemas/configs";
+import { Mode, Mode2 } from "../schemas/shared";
 import { animate, AnimationParams } from "animejs";
 import { isDevEnvironment } from "./env";
 

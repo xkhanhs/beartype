@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "@monkeytype/util/numbers";
+import { randomIntFromRange } from "./numbers";
 
 /**
  * Shuffle an array of elements using the Fisher–Yates algorithm.

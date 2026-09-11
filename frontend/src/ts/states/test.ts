@@ -2,8 +2,8 @@ import { createEffect, createMemo, createSignal } from "solid-js";
 import { getConfig } from "../config/store";
 import { EventLog } from "../test/events/types";
 
-import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
+import { LayoutObject } from "../schemas/layouts";
+import { CompletedEvent, IncompleteTest } from "../schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";

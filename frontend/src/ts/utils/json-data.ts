@@ -1,5 +1,5 @@
-import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { Language, LanguageObject } from "../schemas/languages";
+import { LayoutObject } from "../schemas/layouts";
 import { languageHashes } from "virtual:language-hashes";
 import { isDevEnvironment } from "./env";
 import { toHex } from "./strings";

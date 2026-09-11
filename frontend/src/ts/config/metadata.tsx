@@ -1,4 +1,4 @@
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "../schemas/configs";
 
 export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   /**

@@ -1,4 +1,4 @@
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "./numbers";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;

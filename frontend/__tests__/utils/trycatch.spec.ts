@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { tryCatch, tryCatchSync } from "../src/trycatch";
+import { tryCatch, tryCatchSync } from "../../src/ts/utils/trycatch";
 
 describe("tryCatch", () => {
   it("should return data on successful promise resolution", async () => {

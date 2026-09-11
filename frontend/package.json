@@ -18,8 +18,6 @@
   },
   "dependencies": {
     "@leonabcd123/modern-caps-lock": "3.1.3",
-    "@monkeytype/schemas": "workspace:*",
-    "@monkeytype/util": "workspace:*",
     "@solid-primitives/refs": "1.1.3",
     "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
@@ -36,8 +34,6 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/oxlint-config": "workspace:*",
-    "@monkeytype/typescript-config": "workspace:*",
     "@solidjs/testing-library": "0.8.10",
     "@tailwindcss/vite": "4.3.2",
     "@testing-library/dom": "10.4.1",

@@ -4,7 +4,7 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import { configEvent } from "../events/config";
-import { Mode } from "@monkeytype/schemas/shared";
+import { Mode } from "../schemas/shared";
 import { MIN_DRILL_WORDS, missWords } from "../beartype/miss-book";
 
 type Before = {

@@ -6,12 +6,12 @@ import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as Numbers from "@monkeytype/util/numbers";
+import * as Numbers from "../utils/numbers";
 import * as PbCrown from "./pb-crown";
 import * as Focus from "./focus";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
-import { CompletedEvent } from "@monkeytype/schemas/results";
+import { CompletedEvent } from "../schemas/results";
 import { blurInputElement } from "../input/input-element";
 import { qs, qsa } from "../utils/dom";
 import {

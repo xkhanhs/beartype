@@ -1,4 +1,4 @@
-import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import * as ConfigSchemas from "../schemas/configs";
 import {
   configLS,
   saveToLocalStorage,
@@ -10,7 +10,7 @@ import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
 import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
-import { typedKeys } from "@monkeytype/util/objects";
+import { typedKeys } from "../utils/objects";
 import { lockConfig } from "../beartype/config-lock";
 
 export async function loadFromLocalStorage(): Promise<void> {
