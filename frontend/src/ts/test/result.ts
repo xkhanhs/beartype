@@ -743,57 +743,60 @@ function updateOther(
   isRepeated: boolean,
   tooShort: boolean,
 ): void {
-  // beartype: what was odd about this test, in a quiet line under the figures
-  const notes: string[] = [];
+  // beartype: a test that is not kept says so in one quiet word under the
+  // figures; the balloon on it gives the reasons, with the bar each missed.
+  // The checks themselves are upstream's, in test-logic.ts `finish`.
+  const fast = result.mode === "words" && result.mode2 === "10" ? 420 : 350;
+  const reasons: string[] = [];
   if (difficultyFailed) {
-    notes.push(
-      `không đạt (${failReason === "slow timer" ? "máy chạy chậm" : failReason})`,
+    reasons.push(
+      failReason === "slow timer"
+        ? "máy chạy chậm, đồng hồ trễ nên bài bị dừng"
+        : `không đạt (${failReason})`,
     );
+  }
+  // the lengths on offer here are all long enough; only a test over in under
+  // a second is too short
+  if (tooShort) {
+    reasons.push("bài xong trong chưa tới 1 giây");
   }
   if (afkDetected) {
-    notes.push("có lúc ngừng gõ");
-  }
-  if (isTestInvalid()) {
-    const extra: string[] = [];
-    if (
-      result.wpm < 0 ||
-      (result.wpm > 350 && result.mode !== "words" && result.mode2 !== "10") ||
-      (result.wpm > 420 && result.mode === "words" && result.mode2 === "10")
-    ) {
-      extra.push("wpm");
-    }
-    if (
-      result.rawWpm < 0 ||
-      (result.rawWpm > 350 &&
-        result.mode !== "words" &&
-        result.mode2 !== "10") ||
-      (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
-    ) {
-      extra.push("tốc độ thô");
-    }
-    if (result.acc < 75 || result.acc > 100) {
-      extra.push("độ chính xác");
-    }
-    notes.push(
-      extra.length > 0 ? `không hợp lệ (${extra.join(", ")})` : "không hợp lệ",
-    );
+    reasons.push("có lúc ngừng gõ quá lâu giữa bài");
   }
   if (isRepeated) {
-    notes.push("bài gõ lại");
+    reasons.push("gõ lại đúng bài vừa rồi");
+  }
+  if (result.wpm < 0 || result.wpm > fast) {
+    reasons.push(`tốc độ trên ${fast} wpm`);
+  }
+  if (result.rawWpm < 0 || result.rawWpm > fast) {
+    reasons.push(`tốc độ thô trên ${fast} wpm`);
+  }
+  if (result.acc < 75 || result.acc > 100) {
+    reasons.push("độ chính xác dưới 75%");
   }
   if (result.bailedOut) {
-    notes.push("bỏ dở");
+    reasons.push("bỏ dở giữa chừng");
   }
-  if (tooShort) {
-    notes.push("bài quá ngắn");
+  // the one check left: a timed test whose clock disagrees with the date
+  if (isTestInvalid() && reasons.length === 0) {
+    reasons.push("thời gian đo lệch với đồng hồ của máy");
   }
 
-  if (notes.length === 0) {
-    qs("#result .stats .info")?.hide();
-  } else {
-    qs("#result .stats .info")?.show();
-    qs("#result .stats .info .bottom")?.setText(notes.join(" · "));
+  const info = qs("#result .stats .info");
+  if (reasons.length === 0) {
+    info?.hide();
+    return;
   }
+  info?.show();
+  qs("#result .stats .info .bottom")
+    ?.setHtml(`không hợp lệ <i class="fas fa-info-circle"></i>`)
+    ?.setAttribute(
+      "aria-label",
+      `không lưu vào sổ vì:\n${reasons.map((r) => `· ${r}`).join("\n")}`,
+    )
+    ?.setAttribute("data-balloon-pos", "up")
+    ?.setAttribute("data-balloon-break", "");
 }
 
 function updateQuoteSource(randomQuote: Quote | null): void {

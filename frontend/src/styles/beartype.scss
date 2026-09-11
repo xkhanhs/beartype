@@ -579,10 +579,15 @@ button.bt-settings-choice {
     &.notes {
       margin-block-start: -1rem;
 
+      // "không hợp lệ" and an info icon; the reasons are in its balloon
       .group .bottom {
+        display: inline-flex;
+        gap: 0.35em;
+        align-items: center;
         color: var(--kb-text-f1);
         font-size: 0.9rem;
         font-weight: normal;
+        cursor: help;
       }
     }
   }
