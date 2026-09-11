@@ -476,7 +476,7 @@ function updateWords(): void {
   );
 }
 
-// beartype: best and usual speed over the last tests on this browser, so the
+// beartype: best and usual speed over the tests on this browser, so the
 // number just typed has something to be read against
 function updateRecent(dontSave: boolean): void {
   if (Config.mode === "custom" || Config.mode === "zen") {
