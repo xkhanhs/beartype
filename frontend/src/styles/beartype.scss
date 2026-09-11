@@ -554,6 +554,22 @@ button.bt-settings-choice {
       }
     }
 
+    // the new-best crown stands over the number, not beside the "wpm" label.
+    // It stays in the label's box, where upstream's styles and pb-crown.ts
+    // find it, and is lifted out of the flow so it moves nothing.
+    .group.wpm {
+      position: relative;
+
+      .top .crown {
+        position: absolute;
+        inset-block-end: calc(100% + 0.3rem);
+        inset-inline-start: 50%;
+        margin: 0;
+        border-radius: 99px;
+        transform: translateX(-50%);
+      }
+    }
+
     &.morestats .group .bottom {
       color: var(--text-color);
       font-size: 1.75rem;
