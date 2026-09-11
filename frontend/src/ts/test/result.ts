@@ -208,11 +208,8 @@ function updateRecent(dontSave: boolean): void {
       {
         mode: result.mode,
         mode2: result.mode2,
-        punctuation: result.punctuation ?? false,
-        numbers: result.numbers ?? false,
         language: result.language,
         difficulty: result.difficulty,
-        lazyMode: result.lazyMode ?? false,
       },
       // an invalid test is not kept, so it does not count here either
       dontSave
@@ -255,11 +252,8 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
-      Config.punctuation,
-      Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode,
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -281,11 +275,8 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
-      Config.punctuation,
-      Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode,
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -401,17 +392,8 @@ function updateTestType(): void {
   if (Config.mode !== "custom") {
     testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
   }
-  if (Config.punctuation) {
-    testType += "<br>punctuation";
-  }
-  if (Config.numbers) {
-    testType += "<br>numbers";
-  }
   if (Config.blindMode) {
     testType += "<br>blind";
-  }
-  if (Config.lazyMode) {
-    testType += "<br>lazy";
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";

@@ -1,14 +1,8 @@
 import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import { Wordset, withWords } from "./wordset";
-import * as BritishEnglish from "./british-english";
-import * as LazyMode from "./lazy-mode";
-import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
-import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
-import * as GetText from "../utils/generate";
 import { WordGenError } from "../utils/word-gen-error";
 
 import { LanguageObject } from "@monkeytype/schemas/languages";
@@ -16,306 +10,6 @@ import { isRepeated } from "../states/test";
 import * as TestWords from "./test-words";
 import { withToneStyle } from "../beartype/vietnamese";
 import { getToneStyle } from "../beartype/tone-style";
-
-//pin implementation
-const random = Math.random;
-
-function shouldCapitalize(lastChar: string): boolean {
-  return /[?!.؟]/.test(lastChar);
-}
-
-let spanishSentenceTracker = "";
-export async function punctuateWord(
-  previousWord: string | undefined,
-  currentWord: string,
-  index: number,
-  maxindex: number,
-): Promise<string> {
-  let word = currentWord;
-
-  const currentLanguage = Config.language.split("_")[0];
-
-  const lastChar =
-    previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
-
-  if (
-    currentLanguage !== "code" &&
-    currentLanguage !== "georgian" &&
-    (index === 0 || (lastChar !== undefined && shouldCapitalize(lastChar)))
-  ) {
-    //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
-
-    word = Strings.capitalizeFirstLetterOfEachWord(word);
-
-    if (currentLanguage === "turkish") {
-      word = word.replace(/I/g, "İ");
-    }
-
-    if (currentLanguage === "spanish") {
-      const rand = random();
-      if (rand > 0.9) {
-        word = `¿${word}`;
-        spanishSentenceTracker = "?";
-      } else if (rand > 0.8) {
-        word = `¡${word}`;
-        spanishSentenceTracker = "!";
-      }
-    }
-  } else if (
-    (random() < 0.1 &&
-      lastChar !== "." &&
-      lastChar !== "," &&
-      index !== maxindex - 2) ||
-    index === maxindex - 1
-  ) {
-    if (currentLanguage === "spanish") {
-      if (spanishSentenceTracker === "?" || spanishSentenceTracker === "!") {
-        word += spanishSentenceTracker;
-        spanishSentenceTracker = "";
-      }
-    } else {
-      const rand = random();
-      if (rand <= 0.8) {
-        if (currentLanguage === "kurdish") {
-          word += ".";
-        } else if (
-          currentLanguage === "nepali" ||
-          currentLanguage === "bangla" ||
-          currentLanguage === "hindi"
-        ) {
-          word += "।";
-        } else if (
-          currentLanguage === "japanese" ||
-          currentLanguage === "chinese"
-        ) {
-          word += "。";
-        } else {
-          word += ".";
-        }
-      } else if (rand > 0.8 && rand < 0.9) {
-        if (currentLanguage === "french") {
-          word = "?";
-        } else if (
-          currentLanguage === "arabic" ||
-          currentLanguage === "persian" ||
-          currentLanguage === "urdu" ||
-          currentLanguage === "kurdish"
-        ) {
-          word += "؟";
-        } else if (currentLanguage === "greek") {
-          word += ";";
-        } else if (
-          currentLanguage === "japanese" ||
-          currentLanguage === "chinese"
-        ) {
-          word += "？";
-        } else {
-          word += "?";
-        }
-      } else {
-        if (currentLanguage === "french") {
-          word = "!";
-        } else if (
-          currentLanguage === "japanese" ||
-          currentLanguage === "chinese"
-        ) {
-          word += "！";
-        } else {
-          word += "!";
-        }
-      }
-    }
-  } else if (
-    random() < 0.01 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    currentLanguage !== "russian"
-  ) {
-    word = `"${word}"`;
-  } else if (
-    random() < 0.011 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian" &&
-    currentLanguage !== "slovak"
-  ) {
-    word = `'${word}'`;
-  } else if (random() < 0.012 && lastChar !== "," && lastChar !== ".") {
-    if (currentLanguage === "code") {
-      const r = random();
-      const brackets = ["()", "{}", "[]", "<>"];
-
-      // add `word` in javascript
-      if (Config.language.startsWith("code_javascript")) {
-        brackets.push("``");
-      }
-
-      const index = Math.floor(r * brackets.length);
-      const bracket = brackets[index] as string;
-
-      word = `${bracket[0]}${word}${bracket[1]}`;
-    } else if (
-      currentLanguage === "japanese" ||
-      currentLanguage === "chinese"
-    ) {
-      word = `（${word}）`;
-    } else {
-      word = `(${word})`;
-    }
-  } else if (
-    random() < 0.013 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    lastChar !== ";" &&
-    lastChar !== "؛" &&
-    lastChar !== ":" &&
-    lastChar !== "；" &&
-    lastChar !== "："
-  ) {
-    if (currentLanguage === "french") {
-      word = ":";
-    } else if (currentLanguage === "chinese") {
-      word += "：";
-    } else {
-      word += ":";
-    }
-  } else if (
-    random() < 0.014 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    previousWord !== "-"
-  ) {
-    word = "-";
-  } else if (
-    random() < 0.015 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    lastChar !== ";" &&
-    lastChar !== "؛" &&
-    lastChar !== "；" &&
-    lastChar !== "："
-  ) {
-    if (currentLanguage === "french") {
-      word = ";";
-    } else if (currentLanguage === "greek") {
-      // Normally U+00B7 ('middle dot' or 'ano teleia') would be used here.
-      // However, a) it has fallen into disuse in contemporary times and
-      // b) there isn't a dedicated key on a keyboard to input it
-      word = ".";
-    } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
-      word += "؛";
-    } else if (currentLanguage === "chinese") {
-      word += "；";
-    } else {
-      word += ";";
-    }
-  } else if (random() < 0.2 && lastChar !== ",") {
-    if (
-      currentLanguage === "arabic" ||
-      currentLanguage === "urdu" ||
-      currentLanguage === "persian" ||
-      currentLanguage === "kurdish"
-    ) {
-      word += "،";
-    } else if (currentLanguage === "japanese") {
-      word += "、";
-    } else if (currentLanguage === "chinese") {
-      word += "，";
-    } else {
-      word += ",";
-    }
-  } else if (random() < 0.25 && currentLanguage === "code") {
-    const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
-    const specialsC = [
-      "{",
-      "}",
-      "[",
-      "]",
-      "(",
-      ")",
-      ";",
-      "=",
-      "+",
-      "%",
-      "/",
-      "/*",
-      "*/",
-      "//",
-      "!=",
-      "==",
-      "<=",
-      ">=",
-      "||",
-      "&&",
-      "<<",
-      ">>",
-      "%=",
-      "&=",
-      "*=",
-      "++",
-      "+=",
-      "--",
-      "-=",
-      "/=",
-      "^=",
-      "|=",
-    ];
-
-    if (
-      (Config.language.startsWith("code_c") &&
-        !Config.language.startsWith("code_css")) ||
-      Config.language.startsWith("code_arduino")
-    ) {
-      word = Arrays.randomElementFromArray(specialsC);
-    } else {
-      if (Config.language.startsWith("code_javascript")) {
-        word = Arrays.randomElementFromArray([...specials, "`"]);
-      } else {
-        word = Arrays.randomElementFromArray(specials);
-      }
-    }
-  } else if (
-    random() < 0.5 &&
-    currentLanguage === "english" &&
-    (await EnglishPunctuation.check(word))
-  ) {
-    word = await applyEnglishPunctuationToWord(word);
-  }
-
-  if (word.includes("\t")) {
-    word = word.replace(/\t/g, "");
-    word += "\t";
-  }
-  if (word.includes("\n")) {
-    word = word.replace(/\n/g, "");
-    word += "\n";
-  }
-
-  return word;
-}
-
-async function applyEnglishPunctuationToWord(word: string): Promise<string> {
-  return EnglishPunctuation.replace(word);
-}
-
-async function applyBritishEnglishToWord(
-  word: string,
-  previousWord: string | undefined,
-): Promise<string> {
-  if (!Config.britishEnglish) return word;
-  if (!Config.language.includes("english")) return word;
-
-  return await BritishEnglish.replace(word, previousWord);
-}
-
-function applyLazyModeToWord(word: string, language: LanguageObject): string {
-  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-  if (Config.lazyMode && allowLazyMode) {
-    word = LazyMode.replaceAccents(word, language.additionalAccents);
-  }
-  return word;
-}
 
 export function getLimit(): number {
   let limit = 100;
@@ -569,33 +263,22 @@ export async function getNextWord(
       }
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
-      let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
-      let firstAfterSplitLazy = applyLazyModeToWord(
-        firstAfterSplit,
-        currentLanguage,
-      );
+      let firstAfterSplitLazy = (
+        randomWord.split(" ")[0] as string
+      ).toLowerCase();
       while (
         regenarationCount < 100 &&
         (previousWordRaw === firstAfterSplitLazy ||
           previousWord2Raw === firstAfterSplitLazy ||
+          (Config.mode !== "custom" && randomWord === "I") ||
           (Config.mode !== "custom" &&
-            !Config.punctuation &&
-            randomWord === "I") ||
-          (Config.mode !== "custom" &&
-            !Config.punctuation &&
             !Config.language.startsWith("code") &&
             /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
-          (Config.mode !== "custom" &&
-            !Config.numbers &&
-            /[0-9]/i.test(randomWord)))
+          (Config.mode !== "custom" && /[0-9]/i.test(randomWord)))
       ) {
         regenarationCount++;
         randomWord = currentWordset.randomWord();
-        firstAfterSplit = randomWord.split(" ")[0] as string;
-        firstAfterSplitLazy = applyLazyModeToWord(
-          firstAfterSplit,
-          currentLanguage,
-        );
+        firstAfterSplitLazy = randomWord.split(" ")[0] as string;
       }
     }
     randomWord = randomWord.replace(/ +/g, " ");
@@ -626,7 +309,6 @@ export async function getNextWord(
   if (
     Config.mode !== "custom" &&
     /[A-Z]/.test(randomWord) &&
-    !Config.punctuation &&
     !randomWordLanguage.startsWith("german") &&
     !randomWordLanguage.startsWith("swiss_german") &&
     !randomWordLanguage.startsWith("code") &&
@@ -637,37 +319,9 @@ export async function getNextWord(
 
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-  randomWord = applyLazyModeToWord(randomWord, currentLanguage);
 
   if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
-  }
-
-  if (Config.punctuation && !currentLanguage.originalPunctuation) {
-    randomWord = await punctuateWord(
-      previousWord,
-      randomWord,
-      wordIndex,
-      wordsBound,
-    );
-  }
-
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
-
-  if (Config.numbers) {
-    if (random() < 0.1) {
-      randomWord = GetText.getNumbers(4);
-
-      if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabic(randomWord);
-      } else if (Config.language.startsWith("nepali")) {
-        randomWord = Misc.convertNumberToNepali(randomWord);
-      } else if (Config.language.startsWith("bangla")) {
-        randomWord = Misc.convertNumberToBangla(randomWord);
-      } else if (Config.language.startsWith("hindi")) {
-        randomWord = Misc.convertNumberToHindi(randomWord);
-      }
-    }
   }
 
   // beartype: draw the tone the way this computer's input method writes it

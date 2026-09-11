@@ -176,10 +176,10 @@ describe("Config", () => {
 
     it("saves to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ numbers: false });
+      replaceConfig({ burstHeatmap: false });
 
       //WHEN
-      Config.setConfig("numbers", true);
+      Config.setConfig("burstHeatmap", true);
 
       //THEN
       //wait for debounce
@@ -187,7 +187,7 @@ describe("Config", () => {
 
       //save
       expect(saveConfigMock).toHaveBeenCalledWith(
-        expect.objectContaining({ numbers: true }),
+        expect.objectContaining({ burstHeatmap: true }),
       );
     });
 
@@ -214,10 +214,10 @@ describe("Config", () => {
     it("does not save to localstorage if nosave=true", async () => {
       //GIVEN
 
-      replaceConfig({ numbers: false });
+      replaceConfig({ burstHeatmap: false });
 
       //WHEN
-      Config.setConfig("numbers", true, {
+      Config.setConfig("burstHeatmap", true, {
         nosave: true,
       });
 
@@ -230,17 +230,17 @@ describe("Config", () => {
 
     it("dispatches event on set", () => {
       //GIVEN
-      replaceConfig({ numbers: false });
+      replaceConfig({ burstHeatmap: false });
 
       //WHEN
-      Config.setConfig("numbers", true, {
+      Config.setConfig("burstHeatmap", true, {
         nosave: true,
       });
 
       //THEN
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "numbers",
+        key: "burstHeatmap",
         newValue: true,
         nosave: true,
         previousValue: false,
@@ -291,13 +291,13 @@ describe("Config", () => {
         mode: "words",
       });
       await Lifecycle.applyConfig({
-        numbers: true,
-        punctuation: true,
+        burstHeatmap: true,
+        quickEnd: true,
       });
       const config = getConfig();
       expect(config.mode).toBe("time");
-      expect(config.numbers).toBe(true);
-      expect(config.punctuation).toBe(true);
+      expect(config.burstHeatmap).toBe(true);
+      expect(config.quickEnd).toBe(true);
     });
 
     describe("should reset to default if setting failed", () => {
@@ -337,14 +337,14 @@ describe("Config", () => {
 
     it("should apply a partial config but keep the rest unchanged", async () => {
       replaceConfig({
-        numbers: true,
+        burstHeatmap: true,
       });
       await Lifecycle.applyConfig({
         ...ConfigUtils.getConfigChanges(),
-        punctuation: true,
+        quickEnd: true,
       });
       const config = getConfig();
-      expect(config.numbers).toBe(true);
+      expect(config.burstHeatmap).toBe(true);
     });
 
     it("should not enable minWpm if not provided", async () => {

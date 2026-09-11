@@ -298,8 +298,6 @@ export type PlayTimeWarning = z.infer<typeof PlayTimeWarningSchema>;
 export const ConfigSchema = z
   .object({
     // test
-    punctuation: z.boolean(),
-    numbers: z.boolean(),
     words: WordCountSchema,
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
@@ -319,7 +317,6 @@ export const ConfigSchema = z
     minAccCustom: MinimumAccuracyCustomSchema,
     minBurst: MinimumBurstSchema,
     minBurstCustomSpeed: MinimumBurstCustomSpeedSchema,
-    britishEnglish: z.boolean(),
 
     // input
     freedomMode: z.boolean(),
@@ -332,7 +329,6 @@ export const ConfigSchema = z
     indicateTypos: IndicateTyposSchema,
     compositionDisplay: CompositionDisplaySchema,
     hideExtraLetters: z.boolean(),
-    lazyMode: z.boolean(),
     layout: LayoutSchema,
     codeUnindentOnBackspace: z.boolean(),
 

@@ -133,22 +133,6 @@ const caretOptionsMetadata = {
 };
 export const configMetadata: ConfigMetadataObject = {
   // test
-  punctuation: {
-    key: "punctuation",
-    fa: {
-      icon: "fa-at",
-    },
-    changeRequiresRestart: true,
-    group: "test",
-  },
-  numbers: {
-    key: "numbers",
-    fa: {
-      icon: "fa-hashtag",
-    },
-    changeRequiresRestart: true,
-    group: "test",
-  },
   words: {
     key: "words",
     fa: { icon: "fa-font" },
@@ -195,15 +179,6 @@ export const configMetadata: ConfigMetadataObject = {
       },
     },
     group: "test",
-    overrideConfig: ({ value }) => {
-      if (value === "custom") {
-        return {
-          numbers: false,
-          punctuation: false,
-        };
-      }
-      return {};
-    },
   },
   language: {
     key: "language",
@@ -346,15 +321,6 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
     group: "behavior",
   },
-  britishEnglish: {
-    key: "britishEnglish",
-    fa: { icon: "fa-language" },
-    displayString: "british english",
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "When enabled, the website will use the British spelling instead of American. Note that this might not replace all words correctly. If you find any issues, please let us know.",
-  },
   // input
   freedomMode: {
     key: "freedomMode",
@@ -481,15 +447,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Hides extra letters. This will completely avoid words jumping lines (due to changing width), but might feel a bit confusing when you press a key and nothing happens.",
-  },
-  lazyMode: {
-    key: "lazyMode",
-    fa: { icon: "fa-couch" },
-    displayString: "lazy mode",
-    changeRequiresRestart: true,
-    group: "input",
-    description:
-      "Replaces accents / diacritics / special characters with their normal letter equivalents.",
   },
   layout: {
     key: "layout",

@@ -88,11 +88,8 @@ const ResultBaseSchema = z.object({
   tags: z.array(IdSchema).optional(),
   bailedOut: z.boolean().optional(),
   blindMode: z.boolean().optional(),
-  lazyMode: z.boolean().optional(),
   language: LanguageSchema.optional(),
   difficulty: DifficultySchema.optional(),
-  numbers: z.boolean().optional(),
-  punctuation: z.boolean().optional(),
 });
 
 export const ResultSchema = ResultBaseSchema.extend({
@@ -126,11 +123,8 @@ export const CompletedEventSchema = ResultBaseSchema.required({
   tags: true,
   bailedOut: true,
   blindMode: true,
-  lazyMode: true,
   language: true,
   difficulty: true,
-  numbers: true,
-  punctuation: true,
 })
   .extend({
     charTotal: z.number().int().nonnegative(),

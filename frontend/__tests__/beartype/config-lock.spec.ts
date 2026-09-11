@@ -43,11 +43,11 @@ describe("lockConfig", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
       stopOnError: "letter",
-      punctuation: true,
+      blindMode: true,
       keymapMode: "react",
     });
     expect(config.stopOnError).toBe("off");
-    expect(config.punctuation).toBe(false);
+    expect(config.blindMode).toBe(false);
     expect(config.keymapMode).toBe("off");
   });
 

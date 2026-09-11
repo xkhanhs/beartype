@@ -41,8 +41,6 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
   ads: "off",
-  punctuation: false,
-  numbers: false,
   keymapMode: "off",
   playSoundOnClick: "off",
   playSoundOnError: "off",

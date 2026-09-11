@@ -59,9 +59,7 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "minBurst",
   "words",
   "time",
-  "mode", // mode sets punctuation and numbers
-  "numbers",
-  "punctuation",
+  "mode",
 ]);
 
 export async function applyConfig(

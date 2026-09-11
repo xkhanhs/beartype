@@ -21,10 +21,7 @@ const LocalResultSchema = z.object({
   mode: ModeSchema,
   mode2: z.string(),
   language: z.string(),
-  punctuation: z.boolean(),
-  numbers: z.boolean(),
   difficulty: DifficultySchema,
-  lazyMode: z.boolean(),
   wpm: z.number(),
   acc: z.number(),
   rawWpm: z.number(),
@@ -56,10 +53,7 @@ export function saveResult(event: CompletedEvent): void {
     mode: event.mode,
     mode2: event.mode2,
     language: event.language,
-    punctuation: event.punctuation,
-    numbers: event.numbers,
     difficulty: event.difficulty,
-    lazyMode: event.lazyMode,
     wpm: event.wpm,
     acc: event.acc,
     rawWpm: event.rawWpm,
@@ -74,11 +68,8 @@ export function saveResult(event: CompletedEvent): void {
 export type SettingsFilter = {
   mode: Mode;
   mode2: Mode2<Mode>;
-  punctuation: boolean;
-  numbers: boolean;
   language: string;
   difficulty: Difficulty;
-  lazyMode: boolean;
 };
 
 function matching(filter: SettingsFilter): LocalResult[] {
@@ -88,11 +79,8 @@ function matching(filter: SettingsFilter): LocalResult[] {
       (r) =>
         r.mode === filter.mode &&
         r.mode2 === filter.mode2 &&
-        r.punctuation === filter.punctuation &&
-        r.numbers === filter.numbers &&
         r.language === filter.language &&
-        r.difficulty === filter.difficulty &&
-        r.lazyMode === filter.lazyMode,
+        r.difficulty === filter.difficulty,
     );
 }
 
@@ -100,21 +88,15 @@ function matching(filter: SettingsFilter): LocalResult[] {
 export function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean,
 ): { wpm: number; acc: number } | undefined {
   let best: LocalResult | undefined;
   for (const r of matching({
     mode,
     mode2,
-    punctuation,
-    numbers,
     language,
     difficulty,
-    lazyMode,
   })) {
     if (best === undefined || r.wpm > best.wpm) {
       best = r;

@@ -23,8 +23,6 @@ describe("ConfigMeta", () => {
 
     expect(configsRequiringRestarts).toEqual(
       [
-        "punctuation",
-        "numbers",
         "words",
         "time",
         "mode",
@@ -36,10 +34,8 @@ describe("ConfigMeta", () => {
         "minAccCustom",
         "minBurst",
         "minBurstCustomSpeed",
-        "britishEnglish",
         "strictSpace",
         "stopOnError",
-        "lazyMode",
         "layout",
         "codeUnindentOnBackspace",
       ].sort(),
@@ -67,8 +63,8 @@ describe("ConfigMeta", () => {
       given?: Partial<ConfigType>;
       expected: Partial<ConfigType>;
     }> = {
-      punctuation: [{ value: true, expected: { punctuation: true } }],
-      numbers: [{ value: true, expected: { numbers: true } }],
+      blindMode: [{ value: true, expected: { blindMode: true } }],
+      quickEnd: [{ value: true, expected: { quickEnd: true } }],
       keymapSize: [
         { value: 1, expected: { keymapSize: 1 } },
         { value: 1.234, expected: { keymapSize: 1.2 } },
@@ -162,15 +158,6 @@ describe("ConfigMeta", () => {
       given: Partial<ConfigType>;
       expected?: Partial<ConfigType>;
     }> = {
-      mode: [
-        { value: "time", given: { numbers: true, punctuation: true } },
-        {
-          value: "custom",
-          given: { numbers: true, punctuation: true },
-          expected: { numbers: false, punctuation: false },
-        },
-      ],
-      numbers: [{ value: false, given: { mode: "time" } }],
       freedomMode: [
         {
           value: false,

@@ -53,7 +53,6 @@ import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import { highlight } from "../events/keymap";
-import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import {
   CompletedEvent,
   CompletedEventCustomText,
@@ -197,13 +196,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     !options.practiseMissed
   ) {
     showNoticeNotification("Reverting to previous settings.");
-    if (PractiseWords.before.punctuation !== null) {
-      setConfig("punctuation", PractiseWords.before.punctuation);
-    }
-    if (PractiseWords.before.numbers !== null) {
-      setConfig("numbers", PractiseWords.before.numbers);
-    }
-
     setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -253,7 +245,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 }
 
 let lastInitError: Error | null = null;
-let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
@@ -286,27 +277,6 @@ async function init(): Promise<boolean> {
 
   if (!language || language.name !== Config.language) {
     return await init();
-  }
-
-  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-
-  if (Config.lazyMode && !allowLazyMode) {
-    LazyModeState.setRemember(true);
-    if (!showedLazyModeNotification) {
-      showNoticeNotification("This language does not support lazy mode.", {
-        important: true,
-      });
-      showedLazyModeNotification = true;
-    }
-    setConfig("lazyMode", false);
-  } else if (LazyModeState.getRemember() && allowLazyMode) {
-    setConfig("lazyMode", true);
-    LazyModeState.setRemember(false);
-    showedLazyModeNotification = false;
-  }
-
-  if (!Config.lazyMode && !language.noLazyMode) {
-    LazyModeState.setRemember(false);
   }
 
   if (Config.mode === "custom") {
@@ -539,9 +509,6 @@ function buildCompletedEvent(
     afkDuration: afkDuration,
     customText: customText,
     tags: activeTagsIds,
-    punctuation: Config.punctuation,
-    numbers: Config.numbers,
-    lazyMode: Config.lazyMode,
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config),
@@ -835,15 +802,6 @@ restartTestEvent.subscribe((event) => void restart(event));
 configEvent.subscribe(({ key, newValue, nosave }) => {
   if (getActivePage() === "test") {
     if (key === "language") {
-      //automatically enable lazy mode for arabic
-      if (
-        (newValue as string)?.startsWith("arabic") &&
-        LazyModeState.getArabicPref()
-      ) {
-        setConfig("lazyMode", true, {
-          nosave: true,
-        });
-      }
       void restart();
     }
     if (key === "difficulty" && !nosave) void restart();
@@ -859,11 +817,6 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           ) as string,
         );
       }, 0);
-    }
-  }
-  if (key === "lazyMode" && !nosave) {
-    if (Config.language.startsWith("arabic")) {
-      LazyModeState.setArabicPref(newValue);
     }
   }
 });

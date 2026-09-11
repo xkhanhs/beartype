@@ -6,14 +6,10 @@ import { Mode } from "@monkeytype/schemas/shared";
 
 type Before = {
   mode: Mode | null;
-  punctuation: boolean | null;
-  numbers: boolean | null;
 };
 
 export const before: Before = {
   mode: null,
-  punctuation: null,
-  numbers: null,
 };
 
 /**
@@ -26,8 +22,6 @@ export function initFromWords(words: readonly string[]): boolean {
   if (words.length === 0) return false;
 
   const mode = before.mode ?? Config.mode;
-  const punctuation = before.punctuation ?? Config.punctuation;
-  const numbers = before.numbers ?? Config.numbers;
   const byTime = mode === "time";
   const length = byTime ? Config.time : Config.words;
 
@@ -41,16 +35,12 @@ export function initFromWords(words: readonly string[]): boolean {
   CustomText.setLimitValue(length);
 
   before.mode = mode;
-  before.punctuation = punctuation;
-  before.numbers = numbers;
 
   return true;
 }
 
 export function resetBefore(): void {
   before.mode = null;
-  before.punctuation = null;
-  before.numbers = null;
 }
 
 configEvent.subscribe(({ key }) => {
