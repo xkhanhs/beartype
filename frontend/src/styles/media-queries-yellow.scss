@@ -1,0 +1,26 @@
+@use "./media.scss" as *;
+
+@include media-query(yellow) {
+  .content-grid {
+    --content-max-width: 1024px;
+  }
+
+  .testActivity {
+    // --box-size: 0.9em;
+    // --font-size: 0.9em;
+    --gap-size: 0.15em;
+    // .days {
+    //   font-size: 0.8em;
+    // }
+    .activity div,
+    .legend div {
+      height: var(--box-size);
+    }
+    .days {
+      display: grid;
+    }
+    .daysFull {
+      display: none;
+    }
+  }
+}

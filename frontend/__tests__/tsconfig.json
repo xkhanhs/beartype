@@ -1,0 +1,19 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["node"]
+  },
+  "files": ["vitest.d.ts"],
+  "include": [
+    "./__harness__/**/*.ts",
+    "./**/*.spec.ts",
+    "./**/*.spec.tsx",
+    "./**/*.jsdom-spec.ts",
+    "./setup-tests.ts"
+  ]
+}
