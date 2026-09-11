@@ -313,12 +313,12 @@ describe("ConfigMeta", () => {
       ],
       keymapLayout: [
         {
-          value: "3l",
+          value: "qwerty",
           given: { keymapMode: "react" },
           expected: { keymapMode: "react" },
         },
         {
-          value: "3l",
+          value: "qwerty",
           given: { keymapMode: "off" },
           expected: { keymapMode: "static" },
         },
