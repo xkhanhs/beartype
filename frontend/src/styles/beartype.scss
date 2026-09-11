@@ -417,7 +417,8 @@ a.bt-footer-pill {
   border-radius: 99px;
   color: var(--kb-text-f1);
   background-color: transparent;
-  font-weight: bold;
+  // the weight of the buttons under the words; bold here outshouted the page
+  font-weight: normal;
 
   &:hover,
   &[aria-expanded="true"] {
