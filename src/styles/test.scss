@@ -197,15 +197,7 @@
     }
   }
 
-  /* a little hack for right-to-left languages */
-  &.rightToLeftTest {
-    //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
-    direction: rtl;
-
-    .wordRtl {
-      unicode-bidi: bidi-override;
-    }
-  }
+  // the drill's layout, see updateDrillLayout in test-ui.ts
   &.joiningScript {
     .word {
       overflow-wrap: anywhere;

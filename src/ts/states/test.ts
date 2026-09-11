@@ -108,10 +108,6 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
-  createSignal(false);
-export const [isDirectionReversed, setIsDirectionReversed] =
-  createSignal(false);
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
   null,

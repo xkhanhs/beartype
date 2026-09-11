@@ -1,5 +1,4 @@
 import * as TestUI from "./test-ui";
-import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
@@ -13,8 +12,6 @@ import { idleReason } from "../beartype/idle";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
-  setIsDirectionReversed,
-  setIsLanguageRightToLeft,
   setLastEventLog,
   setIsTestRestarting,
   isTestRestarting,
@@ -165,7 +162,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   setTestActive(false);
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
 
@@ -252,8 +248,6 @@ async function init(): Promise<boolean> {
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
-  let allRightToLeft: boolean | undefined = undefined;
-  let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
@@ -262,7 +256,6 @@ async function init(): Promise<boolean> {
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
-    ({ allRightToLeft, allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -287,11 +280,7 @@ async function init(): Promise<boolean> {
     TestWords.words.removeCommitCharacterFromLastWord();
   }
 
-  TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
-
-  const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  setIsLanguageRightToLeft(isLanguageRTL);
-  setIsDirectionReversed(false);
+  TestUI.updateDrillLayout();
 
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(

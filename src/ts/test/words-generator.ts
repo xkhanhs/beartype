@@ -57,8 +57,6 @@ type GenerateWordsReturn = {
   sectionIndexes: number[];
   hasTab: boolean;
   hasNewline: boolean;
-  allRightToLeft?: boolean;
-  allJoiningScript?: boolean;
 };
 
 export async function generateWords(
@@ -77,8 +75,6 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
-    allRightToLeft: language.rightToLeft,
-    allJoiningScript: language.joiningScript ?? false,
   };
 
   let wordList = language.words;

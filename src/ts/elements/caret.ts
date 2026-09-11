@@ -1,5 +1,4 @@
 import { Config } from "../config/store";
-import { isWordRightToLeft } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
@@ -160,8 +159,6 @@ export class Caret {
   public goTo(options: {
     wordIndex: number;
     letterIndex: number;
-    isLanguageRightToLeft: boolean;
-    isDirectionReversed: boolean;
     animate?: boolean;
     animationOptions?: {
       duration?: number;
@@ -197,10 +194,7 @@ export class Caret {
       const { left, top } = this.getTargetPosition({
         word,
         letterIndex: options.letterIndex,
-        wordText,
         side,
-        isLanguageRightToLeft: options.isLanguageRightToLeft,
-        isDirectionReversed: options.isDirectionReversed,
       });
 
       // animation uses inline styles, so its fine to read inline here instead
@@ -249,10 +243,7 @@ export class Caret {
   private getTargetPosition(options: {
     word: ElementWithUtils;
     letterIndex: number;
-    wordText: string;
     side: "beforeLetter" | "afterLetter";
-    isLanguageRightToLeft: boolean;
-    isDirectionReversed: boolean;
   }): { left: number; top: number } {
     const letters = options.word?.qsa("letter");
 
@@ -267,14 +258,6 @@ export class Caret {
         `Caret getTargetPosition: letter not found for index ${options.letterIndex}`,
       );
     }
-
-    // in zen or custom mode we need to check per-letter
-    const checkRtlByLetter = Config.mode === "custom";
-    const [isWordRTL, isFullMatch] = isWordRightToLeft(
-      checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
-      options.isLanguageRightToLeft,
-      options.isDirectionReversed,
-    );
 
     //if the letter is not visible, use the closest visible letter
     const isLetterVisible = letter.getOffsetWidth() > 0;
@@ -293,26 +276,13 @@ export class Caret {
     let left = 0;
     let top = 0;
 
-    // yes, this is all super verbose, but its easier to maintain and understand
-    if (isWordRTL) {
-      if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
-      let afterLetterCorrection = 0;
-      if (options.side === "afterLetter") {
-        afterLetterCorrection += letter.getOffsetWidth() * -1;
-      }
-      left += letter.getOffsetWidth();
-      left += letter.getOffsetLeft();
-      left += options.word.getOffsetLeft();
-      left += afterLetterCorrection;
-    } else {
-      let afterLetterCorrection = 0;
-      if (options.side === "afterLetter") {
-        afterLetterCorrection += letter.getOffsetWidth();
-      }
-      left += letter.getOffsetLeft();
-      left += options.word.getOffsetLeft();
-      left += afterLetterCorrection;
+    let afterLetterCorrection = 0;
+    if (options.side === "afterLetter") {
+      afterLetterCorrection += letter.getOffsetWidth();
     }
+    left += letter.getOffsetLeft();
+    left += options.word.getOffsetLeft();
+    left += afterLetterCorrection;
 
     //top position
     top += letter.getOffsetTop();

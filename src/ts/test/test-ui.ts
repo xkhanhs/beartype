@@ -31,8 +31,6 @@ import {
   qsr,
 } from "../utils/dom";
 import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
@@ -192,12 +190,6 @@ async function joinOverlappingHints(
   const currentWord = TestWords.words.getCurrent();
   if (currentWord === undefined) return;
 
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    currentWord.text,
-    isLanguageRightToLeft(),
-    isDirectionReversed(),
-  );
-
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
   let HintBlocksCount = hintElements.length;
@@ -233,12 +225,9 @@ async function joinOverlappingHints(
     const sameTop =
       block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
 
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
-
     // block edge is offset half its width because of transform: translate(-50%)
-    const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
-    const rightBlockStarts = rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
+    const leftBlockEnds = hintBlock1.offsetLeft + hintBlock1.offsetWidth / 2;
+    const rightBlockStarts = hintBlock2.offsetLeft - hintBlock2.offsetWidth / 2;
 
     if (sameTop && leftBlockEnds > rightBlockStarts) {
       // join hint blocks
@@ -247,9 +236,7 @@ async function joinOverlappingHints(
         ...block2Indices,
       ].join(",");
 
-      const block1Letter1Pos =
-        block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
+      const block1Letter1Pos = block1Letter1.getOffsetLeft();
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
@@ -374,12 +361,6 @@ function updateWordWrapperClasses(): void {
     fontSize: `${Config.fontSize}rem`,
   });
 
-  if (isLanguageRightToLeft()) {
-    wordsEl.addClass("rightToLeftTest");
-  } else {
-    wordsEl.removeClass("rightToLeftTest");
-  }
-
   const existing =
     wordsEl.native.className
       .split(/\s+/)
@@ -424,9 +405,6 @@ function showWords(): void {
 
 export function updateWordsInputPosition(): void {
   if (getActivePage() !== "test") return;
-  const isTestRightToLeft = isDirectionReversed()
-    ? !isLanguageRightToLeft()
-    : isLanguageRightToLeft();
 
   const el = getInputElement();
 
@@ -452,12 +430,7 @@ export function updateWordsInputPosition(): void {
   }
 
   el.style.top = `${targetTop}px`;
-
-  if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
-    el.style.left = `${activeWord.getOffsetLeft() - letterHeight}px`;
-  } else {
-    el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
-  }
+  el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
 
   keepWordsInputInTheCenter();
 }
@@ -709,8 +682,10 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
   return;
 }
 
-export function setJoiningClass(isEnabled: boolean): void {
-  if (isEnabled || Config.mode === "custom") {
+// A drill (custom mode) keeps upstream's layout for custom text, which it
+// shared with joining scripts: letters inline, long words free to break.
+export function updateDrillLayout(): void {
+  if (Config.mode === "custom") {
     wordsEl.addClass("joiningScript");
   } else {
     wordsEl.removeClass("joiningScript");
