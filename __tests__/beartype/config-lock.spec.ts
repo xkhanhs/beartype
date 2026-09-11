@@ -44,10 +44,8 @@ describe("lockConfig", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
       resultSaving: false,
-      keymapMode: "react",
     });
     expect(config.resultSaving).toBe(true);
-    expect(config.keymapMode).toBe("off");
   });
 
   it("drops values no longer on offer", () => {
@@ -100,6 +98,24 @@ describe("sounds", () => {
     expect(config.playSoundOnClick).toBe("off");
     expect(config.playSoundOnError).toBe("off");
     expect(config.soundVolume).toBe(0.5);
+  });
+});
+
+describe("keymap", () => {
+  it("is off until switched on, and stays on once it is", () => {
+    expect(lockConfig(undefined).keymapMode).toBe("off");
+    expect(
+      lockConfig({ ...getBeartypeDefaults(), keymapMode: "react" }).keymapMode,
+    ).toBe("react");
+  });
+
+  it("drops upstream's other modes", () => {
+    expect(
+      lockConfig({
+        ...getBeartypeDefaults(),
+        keymapMode: "next" as Config["keymapMode"],
+      }).keymapMode,
+    ).toBe("off");
   });
 });
 

@@ -22,7 +22,7 @@ export type CaretStyle = z.infer<typeof CaretStyleSchema>;
 export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
-export const KeymapModeSchema = z.enum(["off", "static", "react", "next"]);
+export const KeymapModeSchema = z.enum(["off", "react"]);
 export type KeymapMode = z.infer<typeof KeymapModeSchema>;
 
 // upstream's ids, so the sound files keep their paths; see constants/sounds.ts

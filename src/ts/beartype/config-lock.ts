@@ -1,5 +1,6 @@
 import {
   type Config,
+  KeymapModeSchema,
   PlaySoundOnClickSchema,
   PlaySoundOnErrorSchema,
 } from "../schemas/configs";
@@ -22,6 +23,7 @@ export const USER_KEYS = [
   "playSoundOnClick",
   "playSoundOnError",
   "soundVolume",
+  "keymapMode",
 ] as const satisfies readonly (keyof Config)[];
 
 type UserKey = (typeof USER_KEYS)[number];
@@ -42,7 +44,6 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   themeDark: "keybear_dark",
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
-  keymapMode: "off",
   resultSaving: true,
 };
 
@@ -73,6 +74,7 @@ export const FONTS = [
 export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
 export const CLICK_SOUNDS = PlaySoundOnClickSchema.options;
 export const ERROR_SOUNDS = PlaySoundOnErrorSchema.options;
+export const KEYMAP_MODES = KeymapModeSchema.options;
 export const THEMES = [
   "keybear_light",
   "keybear_dark",
@@ -101,6 +103,7 @@ function allowed(key: UserKey, value: unknown): boolean {
     theme: THEMES,
     playSoundOnClick: CLICK_SOUNDS,
     playSoundOnError: ERROR_SOUNDS,
+    keymapMode: KEYMAP_MODES,
   };
   if (key === "soundVolume") {
     return typeof value === "number" && value >= 0 && value <= 1;

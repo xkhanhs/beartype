@@ -5,6 +5,7 @@ import {
   ERROR_SOUNDS,
   FONT_SIZES,
   FONTS,
+  KEYMAP_MODES,
   SMOOTH_CARETS,
 } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
@@ -20,7 +21,8 @@ import { SettingsSliderRow } from "./SettingsSliderRow";
  * The only settings left, behind the gear in the footer. Upstream's settings
  * page had a hundred rows; this has the ones that shape how typing feels and
  * that a person here actually changes: the caret, as in keybear the font of
- * the words and their size, and the sounds of the keys. It is one of keybear's settings cards;
+ * the words and their size, the sounds of the keys and the keyboard under
+ * the words. It is one of keybear's settings cards;
  * the colours have their own pill beside it, as in keybear.
  */
 
@@ -68,6 +70,11 @@ const CLICK_SOUND_LABELS: Record<(typeof CLICK_SOUNDS)[number], string> = {
 const ERROR_SOUND_LABELS: Record<(typeof ERROR_SOUNDS)[number], string> = {
   off: "tắt",
   1: "bật",
+};
+
+const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
+  off: "tắt",
+  react: "bật",
 };
 
 export function SettingsPopover(): JSXElement {
@@ -162,6 +169,14 @@ export function SettingsPopover(): JSXElement {
             value={getConfig.soundVolume}
             onInput={(value) => setConfig("soundVolume", value)}
             onChange={() => void previewClick(getConfig.playSoundOnClick)}
+          />
+          <SettingsRow
+            label="bàn phím ảo"
+            hint="bàn phím QWERTY dưới bài gõ; phím sáng lên khi gõ"
+            options={KEYMAP_MODES}
+            labels={KEYMAP_MODE_LABELS}
+            value={getConfig.keymapMode}
+            onPick={(value) => setConfig("keymapMode", value)}
           />
         </div>
       </Show>

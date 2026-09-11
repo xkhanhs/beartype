@@ -1,8 +1,12 @@
-import { createEffect, createMemo, createSignal } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  createSignal,
+} from "solid-js";
 import { getConfig } from "../config/store";
 import { EventLog } from "../test/events/types";
 
-import { LayoutObject } from "../schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "../schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
@@ -10,9 +14,7 @@ import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { getLayout } from "../utils/json-data";
 import { canQuickRestart } from "../utils/quick-restart";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage } from "./core";
-import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
@@ -121,69 +123,52 @@ createEffect(() => {
   );
 });
 
-export const getKeymapLayout = createMemo<{
-  layout: string;
-  layoutNameDisplayString: string;
-  isMirrored: boolean;
-}>(() => {
-  // beartype: this used to sync to the input layout emulator's own setting,
-  // and to the keymapLayout config -- both are gone now, so this is always
-  // qwerty.
-  return {
-    layout: "qwerty",
-    layoutNameDisplayString: replaceUnderscoresWithSpaces("default"),
-    isMirrored: false,
-  };
-});
+/**
+ * The keymap's layout, fetched only once the keymap is switched on. beartype
+ * draws QWERTY alone, whatever the typist's own layout.
+ */
+export const getKeymapLayout = createMemo(() =>
+  getConfig.keymapMode === "off" ? undefined : "qwerty",
+);
 
-const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
-  string | undefined
->(undefined);
-
-export { getKeymapHighlightKey };
+export const [keymapLayoutObject] = createResource(getKeymapLayout, getLayout);
 
 export type FlashEntry = { tick: number; correct: boolean };
 
+/** The keys lit on the keymap, by `KeyboardEvent.code`. */
 const [getKeymapFlashState, setKeymapFlashState] = createStore<
   Record<string, FlashEntry | undefined>
 >({});
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-keymapEvent.useListener(({ mode, key, correct }) => {
-  const mappedKey = key === "" ? " " : key;
-  setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+function flashKey(code: string, correct: boolean): void {
+  const existing = getKeymapFlashState[code];
+  setKeymapFlashState(code, {
+    tick: existing ? existing.tick + 1 : 1,
+    correct,
+  });
+}
 
-  if (mode === "flash" && getConfig.keymapMode === "react") {
-    const existing = getKeymapFlashState[mappedKey];
-    setKeymapFlashState(mappedKey, {
-      tick: existing ? existing.tick + 1 : 1,
-      correct: correct ?? true,
-    });
-  }
+// beartype: the keymap lights the key that was pressed, found by its code.
+// Upstream lit the key labelled with the character typed, but an input method
+// puts no such character in: Telex turns the `s` of `as` into the mark on
+// `á`, and no key is labelled `á`.
+let lastKeyCode: string | undefined;
+document.addEventListener("keydown", (event) => {
+  if (getConfig.keymapMode !== "react" || event.repeat) return;
+  if ((event.target as HTMLElement | null)?.id !== "wordsInput") return;
+  lastKeyCode = event.code;
+  flashKey(event.code, true);
 });
 
-const [keymapLayoutObject, keymapLayoutPromise] = useResourceWithPromise(
-  getKeymapLayout,
-  async (layout) => {
-    return await getLayout(layout.layout);
-  },
-);
-export { keymapLayoutObject };
-
-/**
- * Used for non reactive access. Do not use in Solid components.
- */
-export const __nonReactive = {
-  getKeymapLayout: async (): Promise<LayoutObject> => {
-    await keymapLayoutPromise.promise;
-    const result = keymapLayoutObject();
-    if (result === undefined) {
-      throw new Error("Failed to load keymap layout");
-    }
-    return result;
-  },
-};
+// the typing code tells which characters were wrong; the key that typed one
+// turns red
+keymapEvent.useListener(({ correct }) => {
+  if (correct === false && lastKeyCode !== undefined) {
+    flashKey(lastKeyCode, false);
+  }
+});
 
 export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);

@@ -315,6 +315,22 @@ button.bt-options-pill {
   }
 }
 
+// ----- the keyboard under the words -----
+
+// upstream's zoom steps at its default `keymapSize` of 1: half size on a
+// phone, full from the `sm` breakpoint up
+.bt-keymap {
+  zoom: 0.5;
+
+  @media (width >= 426px) {
+    zoom: 0.7;
+  }
+
+  @media (width >= 721px) {
+    zoom: 1;
+  }
+}
+
 // ----- buttons under the words and on the result -----
 
 // beartype: keybear's `.action`: a flat pill, no rim, the text faint until
