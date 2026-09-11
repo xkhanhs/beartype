@@ -1,8 +1,3 @@
-import type { JSX, ParentProps } from "solid-js";
-
-import { splitProps } from "solid-js";
-import { Dynamic } from "solid-js/web";
-
 export type BalloonProps = {
   text?: string;
   position?: BalloonPosition;
@@ -11,11 +6,6 @@ export type BalloonProps = {
 };
 
 type BalloonPosition = "up" | "down" | "left" | "right";
-
-type Props = ParentProps<BalloonProps> &
-  Omit<JSX.HTMLAttributes<HTMLElement>, "aria-label"> & {
-    inline?: boolean;
-  };
 
 export function buildBalloonHtmlProperties(
   options: BalloonProps | undefined,
@@ -33,23 +23,4 @@ export function buildBalloonHtmlProperties(
     ...(options.break ? { "data-balloon-break": "" } : {}),
     ...(options.length ? { "data-balloon-length": options.length } : {}),
   };
-}
-
-export function Balloon(props: Props) {
-  const [local, rest] = splitProps(props, [
-    "text",
-    "position",
-    "break",
-    "length",
-    "inline",
-    "children",
-  ]);
-
-  const attrs = () => buildBalloonHtmlProperties(local);
-
-  return (
-    <Dynamic component={local.inline ? "span" : "div"} {...attrs()} {...rest}>
-      {local.children}
-    </Dynamic>
-  );
 }

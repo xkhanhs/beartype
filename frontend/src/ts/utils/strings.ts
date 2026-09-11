@@ -1,18 +1,6 @@
 import { Language } from "@monkeytype/schemas/languages";
 
 /**
- * Capitalizes the first letter of each word in a string.
- * @param str The input string.
- * @returns A new string with the first letter of each word capitalized.
- */
-export function capitalizeFirstLetterOfEachWord(str: string): string {
-  return str
-    .split(/ +/)
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" ");
-}
-
-/**
  * Highlights all occurrences of specified words within a given text.
  * Each match is wrapped in a <span class="highlight"> element.
  * Matches are ignored if they appear as part of a larger word
@@ -159,7 +147,7 @@ export function isWordRightToLeft(
     : [result[0], result[1] === word.length];
 }
 
-export const CHAR_EQUIVALENCE_SETS = [
+const CHAR_EQUIVALENCE_SETS = [
   new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
   new Set([`"`, "”", "“", "„"]),
   new Set(["–", "—", "-", "‐", "‑"]),
@@ -168,8 +156,7 @@ export const CHAR_EQUIVALENCE_SETS = [
 
 // beartype: only vietnamese and english are selectable, and neither needs a
 // language-specific equivalence set (upstream had one for russian).
-export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
-  {};
+const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> = {};
 
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
