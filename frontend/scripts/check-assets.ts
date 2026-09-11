@@ -18,8 +18,6 @@ import { Fonts } from "../src/ts/constants/fonts";
 import { themes, ThemeSchema, ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
-import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
-import { clickSoundConfig } from "../src/ts/constants/sounds";
 import * as ghCore from "@actions/core";
 
 const stepSummary =
@@ -140,97 +138,6 @@ async function validateLayouts(): Promise<void> {
 
   if (problems.hasError()) {
     throw new Error("layouts with errors");
-  }
-}
-
-async function validateQuotes(): Promise<void> {
-  const problems = new Problems<string, never>("Quotes", {});
-
-  const shortQuotes = JSON.parse(
-    fs.readFileSync("./scripts/short-quotes.json", "utf8"),
-  ) as Record<QuoteData["language"], number[]>;
-
-  const quotesFiles = fs.readdirSync("./static/quotes/");
-  for (let quotefilename of quotesFiles) {
-    quotefilename = quotefilename.split(".")[0] as string;
-    let quoteData;
-
-    try {
-      quoteData = JSON.parse(
-        fs.readFileSync(`./static/quotes/${quotefilename}.json`, {
-          encoding: "utf8",
-          flag: "r",
-        }),
-      ) as QuoteData;
-    } catch (e) {
-      problems.add(
-        quotefilename,
-        `Unable to parse ${e instanceof Error ? e.message : e}`,
-      );
-      continue;
-    }
-
-    //check filename matching language
-    if (quoteData.language !== quotefilename) {
-      problems.add(
-        quotefilename,
-        `Name not matching language ${quoteData.language}`,
-      );
-    }
-
-    //check schema
-    problems.addValidation(quotefilename, QuoteDataSchema.safeParse(quoteData));
-
-    //check for duplicate ids
-    const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
-    if (duplicates.length !== 0) {
-      problems.add(
-        quotefilename,
-        `contains ${duplicates.length} duplicates:\n ${duplicates.join(",")}`,
-      );
-    }
-
-    //check quote length
-    quoteData.quotes.forEach((quote) => {
-      if (quote.text.length !== quote.length) {
-        problems.add(
-          quotefilename,
-          `ID ${quote.id}: expected length ${quote.text.length}`,
-        );
-      }
-
-      if (!shortQuotes[quoteData.language]?.includes(quote.id)) {
-        if (quote.text.length < 60) {
-          problems.add(
-            quotefilename,
-            `ID ${quote.id}: length too short (under 60 characters)`,
-          );
-        }
-      }
-    });
-
-    //check groups
-    let last = -1;
-    for (const group of quoteData.groups) {
-      if (group[0] !== last + 1) {
-        problems.add(
-          quotefilename,
-          `error in  group ${group}: expect to start at ${last + 1}`,
-        );
-      } else if (group[0] >= group[1]) {
-        problems.add(
-          quotefilename,
-          `error in  group ${group}: second number to be greater than first number`,
-        );
-      }
-      last = group[1];
-    }
-  }
-
-  console.log(problems.toString());
-
-  if (problems.hasError()) {
-    throw new Error("quotes with errors");
   }
 }
 
@@ -416,54 +323,6 @@ async function validateThemes(): Promise<void> {
   }
 }
 
-async function validateSounds(): Promise<void> {
-  const problems = new Problems<string, "_additional">("Sounds", {
-    _additional:
-      "Sound files present but missing in frontend/src/ts/constants/sounds",
-  });
-
-  const soundFiles = new Set(
-    fs
-      .readdirSync("./static/sounds")
-      .filter((it) => it.startsWith("click"))
-      .flatMap((folder) =>
-        fs
-          .readdirSync(`./static/sounds/${folder}`)
-          .map((it) => `${folder}/${it}`),
-      ),
-  );
-
-  //missing sound files
-
-  Object.entries(clickSoundConfig).forEach(([key, value]) => {
-    value
-      .map((file) => file.substring("../sounds/".length))
-      .filter((it) => !soundFiles.has(it))
-      .forEach((file) =>
-        problems.add(
-          `click${key}`,
-          `missing file frontend/static/sounds/${file}`,
-        ),
-      );
-  });
-
-  //additional files
-  const expectedSoundFiles = new Set(
-    Object.values(clickSoundConfig).flatMap((it) =>
-      it.map((file) => file.substring("../sounds/".length)),
-    ),
-  );
-  [...soundFiles]
-    .filter((name) => !expectedSoundFiles.has(name))
-    .forEach((file) => problems.add("_additional", file));
-
-  console.log(problems.toString());
-
-  if (problems.hasError()) {
-    throw new Error("sounds with errors");
-  }
-}
-
 type Validator = () => Promise<void>;
 
 async function main(): Promise<void> {
@@ -473,13 +332,12 @@ async function main(): Promise<void> {
   const keys = args.filter((arg) => !arg.startsWith("-"));
 
   const validators: Record<string, Validator[]> = {
-    quotes: [validateQuotes],
+    // beartype ships no quotes and no sounds
     languages: [validateLanguages],
     layouts: [validateLayouts],
     fonts: [validateFonts],
     themes: [validateThemes],
-    sounds: [validateSounds],
-    others: [validateLayouts, validateFonts, validateThemes, validateSounds],
+    others: [validateLayouts, validateFonts, validateThemes],
   };
 
   // flags
