@@ -934,7 +934,7 @@ export function onTestFinish(): void {
 
 qs("#wordsInput")?.on("focus", (e) => {
   if (!isInputElementFocused()) return;
-  if (!getResultVisible() && Config.showOutOfFocusWarning) {
+  if (!getResultVisible()) {
     setTestFocusState("focused");
   }
   Caret.show(true);
@@ -961,10 +961,7 @@ document.addEventListener("visibilitychange", () => {
   setTestFocusState("unfocusedWindow");
 });
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "showOutOfFocusWarning" && !newValue) {
-    setTestFocusState("focused");
-  }
+configEvent.subscribe(({ key }) => {
   if (["fontSize", "fontFamily"].includes(key ?? "")) {
     void updateHintsPositionDebounced();
   }

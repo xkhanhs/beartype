@@ -42,11 +42,8 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   // keybear's palettes, following the computer's light or dark setting
   theme: "keybear_light",
   autoSwitchTheme: true,
-  themeLight: "keybear_light",
-  themeDark: "keybear_dark",
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
-  resultSaving: true,
 };
 
 /** Times and word counts on offer; anything else falls back to the default. */

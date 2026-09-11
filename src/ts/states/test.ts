@@ -39,7 +39,7 @@ export const [testFocusState, { setTestFocusState }] =
   });
 
 export const showOutOfFocusWarning = createMemo(
-  () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
+  () => testFocusState() !== "focused",
 );
 
 // max-height of the warning, kept in sync with the words wrapper by test-ui.

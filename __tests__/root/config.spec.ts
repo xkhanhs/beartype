@@ -103,10 +103,10 @@ describe("Config", () => {
 
     it("saves to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true);
+      Config.setConfig("autoSwitchTheme", true);
 
       //THEN
       //wait for debounce
@@ -114,7 +114,7 @@ describe("Config", () => {
 
       //save
       expect(saveConfigMock).toHaveBeenCalledWith(
-        expect.objectContaining({ resultSaving: true }),
+        expect.objectContaining({ autoSwitchTheme: true }),
       );
     });
 
@@ -141,10 +141,10 @@ describe("Config", () => {
     it("does not save to localstorage if nosave=true", async () => {
       //GIVEN
 
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true, {
+      Config.setConfig("autoSwitchTheme", true, {
         nosave: true,
       });
 
@@ -157,17 +157,17 @@ describe("Config", () => {
 
     it("dispatches event on set", () => {
       //GIVEN
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true, {
+      Config.setConfig("autoSwitchTheme", true, {
         nosave: true,
       });
 
       //THEN
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "resultSaving",
+        key: "autoSwitchTheme",
         newValue: true,
         nosave: true,
         previousValue: false,
@@ -183,7 +183,7 @@ describe("Config", () => {
 
     it("does not triggers resize if property is not set", () => {
       ///WHEN
-      Config.setConfig("resultSaving", true);
+      Config.setConfig("autoSwitchTheme", true);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
@@ -203,13 +203,13 @@ describe("Config", () => {
         mode: "words",
       });
       await Lifecycle.applyConfig({
-        resultSaving: false,
-        capsLockWarning: false,
+        autoSwitchTheme: true,
+        keymapMode: "react",
       });
       const config = getConfig();
       expect(config.mode).toBe("time");
-      expect(config.resultSaving).toBe(false);
-      expect(config.capsLockWarning).toBe(false);
+      expect(config.autoSwitchTheme).toBe(true);
+      expect(config.keymapMode).toBe("react");
     });
 
     describe("should reset to default if setting failed", () => {
@@ -249,14 +249,14 @@ describe("Config", () => {
 
     it("should apply a partial config but keep the rest unchanged", async () => {
       replaceConfig({
-        resultSaving: false,
+        autoSwitchTheme: true,
       });
       await Lifecycle.applyConfig({
-        resultSaving: false,
-        capsLockWarning: false,
+        autoSwitchTheme: true,
+        keymapMode: "react",
       });
       const config = getConfig();
-      expect(config.resultSaving).toBe(false);
+      expect(config.autoSwitchTheme).toBe(true);
     });
   });
 });

@@ -30,14 +30,14 @@ describe("config.ts", () => {
         mode: "time",
         theme: "keybear_ocean",
         time: 120,
-        capsLockWarning: false,
+        autoSwitchTheme: true,
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
       expect(result.mode).toEqual("time");
       expect(result.theme).toEqual("keybear_ocean");
       expect(result.time).toEqual(120);
-      expect(result.capsLockWarning).toEqual(false);
+      expect(result.autoSwitchTheme).toEqual(true);
     });
     describe("should replace value with default config if invalid", () => {
       it.for([

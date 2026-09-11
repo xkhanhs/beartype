@@ -59,11 +59,9 @@ export async function clearPreview(applyTheme = true): Promise<void> {
     isPreviewingTheme = false;
     if (applyTheme) {
       if (Config.autoSwitchTheme) {
-        // beartype: under "follow the computer" the theme on screen is
-        // themeLight or themeDark, not Config.theme
-        await apply(
-          prefersColorSchemeDark() ? Config.themeDark : Config.themeLight,
-        );
+        // under "follow the computer" the theme on screen is keybear's light
+        // or dark palette, not Config.theme
+        await apply(autoTheme());
       } else {
         await apply(Config.theme);
       }
@@ -73,18 +71,14 @@ export async function clearPreview(applyTheme = true): Promise<void> {
 
 window
   .matchMedia?.("(prefers-color-scheme: dark)")
-  ?.addEventListener?.("change", (event) => {
+  ?.addEventListener?.("change", () => {
     if (!Config.autoSwitchTheme) return;
-    if (event.matches) {
-      void set(Config.themeDark, true);
-    } else {
-      void set(Config.themeLight, true);
-    }
+    void set(autoTheme(), true);
   });
 
 let ignoreConfigEvent = false;
 
-configEvent.subscribe(async ({ key, newValue, nosave }) => {
+configEvent.subscribe(async ({ key, newValue }) => {
   if (key === "fullConfigChange") {
     ignoreConfigEvent = true;
   }
@@ -94,11 +88,7 @@ configEvent.subscribe(async ({ key, newValue, nosave }) => {
     await clearPreview(false);
 
     if (Config.autoSwitchTheme) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
+      await set(autoTheme(), true);
     } else {
       await set(Config.theme);
     }
@@ -114,33 +104,15 @@ configEvent.subscribe(async ({ key, newValue, nosave }) => {
   }
   if (key === "autoSwitchTheme") {
     if (newValue) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
+      await set(autoTheme(), true);
     } else {
       await set(Config.theme);
     }
   }
-  if (
-    key === "themeLight" &&
-    Config.autoSwitchTheme &&
-    !prefersColorSchemeDark() &&
-    !nosave
-  ) {
-    await set(Config.themeLight, true);
-  }
-  if (
-    key === "themeDark" &&
-    Config.autoSwitchTheme &&
-    window.matchMedia?.("(prefers-color-scheme: dark)")?.matches &&
-    !nosave
-  ) {
-    await set(Config.themeDark, true);
-  }
 });
 
-function prefersColorSchemeDark(): boolean {
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+function autoTheme(): ThemeIdentifier {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "keybear_dark"
+    : "keybear_light";
 }

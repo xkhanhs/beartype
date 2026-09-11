@@ -57,9 +57,6 @@ export const ConfigSchema = z
     mode: Shared.ModeSchema,
     language: LanguageSchema,
 
-    // behavior
-    resultSaving: z.boolean(),
-
     // input
     indicateTypos: IndicateTyposSchema,
 
@@ -78,13 +75,7 @@ export const ConfigSchema = z
 
     // theme
     autoSwitchTheme: z.boolean(),
-    themeLight: ThemeNameSchema,
-    themeDark: ThemeNameSchema,
     theme: ThemeNameSchema,
-
-    // hide elements
-    showOutOfFocusWarning: z.boolean(),
-    capsLockWarning: z.boolean(),
   } satisfies Record<string, ZodSchema>)
   .strict();
 

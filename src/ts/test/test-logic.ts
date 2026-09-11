@@ -135,17 +135,15 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
-      // Finalize the abandoned test before measuring it: logging the timer
-      // "end" event gives getAfkDuration its interval boundaries, so idle time
-      // is actually subtracted. Without it AFK is always 0 and the full
-      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
-      TestTimer.clear(true);
-      const liveEventLog = buildEventLog();
-      const tt = getIncompleteTestSeconds(liveEventLog);
-      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
-      pushIncompleteTest({ acc, seconds: tt });
-    }
+    // Finalize the abandoned test before measuring it: logging the timer
+    // "end" event gives getAfkDuration its interval boundaries, so idle time
+    // is actually subtracted. Without it AFK is always 0 and the full
+    // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+    TestTimer.clear(true);
+    const liveEventLog = buildEventLog();
+    const tt = getIncompleteTestSeconds(liveEventLog);
+    const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+    pushIncompleteTest({ acc, seconds: tt });
   }
 
   // beartype: a new test during a drill is the drill's next round, built
@@ -601,12 +599,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // test is valid
 
   if (isRepeated() || difficultyFailed) {
-    if (Config.resultSaving) {
-      pushIncompleteTest({
-        acc: completedEvent.acc,
-        seconds: getIncompleteTestSeconds(eventLog),
-      });
-    }
+    pushIncompleteTest({
+      acc: completedEvent.acc,
+      seconds: getIncompleteTestSeconds(eventLog),
+    });
   }
 
   // beartype: there is no account to save to. A valid result is kept in this

@@ -40,14 +40,6 @@ describe("lockConfig", () => {
     expect(at(2.4)).toBe(2); // 120% is not a step
   });
 
-  it("pins every setting the user cannot reach", () => {
-    const config = lockConfig({
-      ...getDefaultConfig(),
-      resultSaving: false,
-    });
-    expect(config.resultSaving).toBe(true);
-  });
-
   it("drops values no longer on offer", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
@@ -152,8 +144,6 @@ describe("themes", () => {
   it("follows the computer's light or dark setting by default", () => {
     const config = lockConfig(undefined);
     expect(config.autoSwitchTheme).toBe(true);
-    expect(config.themeLight).toBe("keybear_light");
-    expect(config.themeDark).toBe("keybear_dark");
   });
 
   it("keeps a keybear theme and drops an upstream one", () => {

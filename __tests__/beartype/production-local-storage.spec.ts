@@ -28,6 +28,12 @@ const PRODUCTION_CONFIG = {
   quickRestart: "esc",
   difficulty: "normal",
   layout: "default",
+  // fixed at one value in beartype, then taken out of the config
+  resultSaving: true,
+  themeLight: "keybear_light",
+  themeDark: "keybear_dark",
+  showOutOfFocusWarning: true,
+  capsLockWarning: true,
   mode: "words",
   time: 60,
   words: 25,
@@ -56,6 +62,11 @@ describe("a production localStorage config", () => {
       "quickRestart",
       "difficulty",
       "layout",
+      "resultSaving",
+      "themeLight",
+      "themeDark",
+      "showOutOfFocusWarning",
+      "capsLockWarning",
     ]) {
       expect(stored).not.toHaveProperty(upstreamOnlyKey);
     }

@@ -93,11 +93,6 @@ export const configMetadata: ConfigMetadataObject = {
     key: "language",
     displayString: "language",
   },
-  // behavior
-  resultSaving: {
-    key: "resultSaving",
-    displayString: "result saving",
-  },
   // input
   indicateTypos: {
     key: "indicateTypos",
@@ -140,24 +135,7 @@ export const configMetadata: ConfigMetadataObject = {
     key: "autoSwitchTheme",
     displayString: "auto switch theme",
   },
-  themeLight: {
-    key: "themeLight",
-    displayString: "theme light",
-  },
-  themeDark: {
-    key: "themeDark",
-    displayString: "theme dark",
-  },
   theme: {
     key: "theme",
-  },
-  // hide elements
-  showOutOfFocusWarning: {
-    key: "showOutOfFocusWarning",
-    displayString: "show out of focus warning",
-  },
-  capsLockWarning: {
-    key: "capsLockWarning",
-    displayString: "caps lock warning",
   },
 };

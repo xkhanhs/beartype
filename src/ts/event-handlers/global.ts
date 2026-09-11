@@ -1,6 +1,5 @@
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../legacy-states/page-transition";
-import { Config } from "../config/store";
 import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
@@ -35,9 +34,7 @@ document.addEventListener("keydown", (e) => {
     ) {
       //autofocus
       focusWords();
-      if (Config.showOutOfFocusWarning) {
-        e.preventDefault();
-      }
+      e.preventDefault();
     }
   }
 });
