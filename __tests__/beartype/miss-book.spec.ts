@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { applyMisses, committedWords } from "../../src/ts/beartype/miss-book";
 
 describe("applyMisses", () => {
@@ -76,6 +76,43 @@ describe("committedWords", () => {
       words: ["tôi", "đi"],
       typed: ["tôi", "đi"],
       stumbled: [false, true],
+    });
+  });
+});
+
+describe("the miss book on disk", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("keeps one page per language, whatever the mode it was missed in", async () => {
+    const book = await import("../../src/ts/beartype/miss-book");
+    book.recordMisses("vietnamese", ["tiếng"], ["tieng"], [false]);
+    book.recordMisses("vietnamese", ["nghiêng"], ["nghieng"], [false]);
+    book.recordMisses("english", ["their"], ["thier"], [false]);
+    expect(book.missWords("vietnamese").sort()).toEqual(["nghiêng", "tiếng"]);
+    expect(book.missWords("english")).toEqual(["their"]);
+  });
+
+  it("merges a page kept under an old Vietnamese list into Vietnamese", async () => {
+    window.localStorage.setItem(
+      "beartype:v1:missbook",
+      JSON.stringify({
+        vietnamese_1k: { hoa: { n: 3, at: 1 }, tôi: { n: 1, at: 1 } },
+        vietnamese: { tôi: { n: 2, at: 2 } },
+        english: { their: { n: 1, at: 1 } },
+      }),
+    );
+    const book = await import("../../src/ts/beartype/miss-book");
+    expect(book.missWords("vietnamese")).toEqual(["hoa", "tôi"]);
+
+    book.recordMisses("vietnamese", ["hoa"], ["hoa"], [false]);
+    expect(
+      JSON.parse(window.localStorage.getItem("beartype:v1:missbook") ?? ""),
+    ).toEqual({
+      vietnamese: { hoa: { n: 2, at: 1 }, tôi: { n: 2, at: 2 } },
+      english: { their: { n: 1, at: 1 } },
     });
   });
 });
