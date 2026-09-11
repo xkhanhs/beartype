@@ -1,3 +1,33 @@
+// beartype: keybear's letter colours (`TypeTestScreen.module.less`). Upstream
+// sets these on `#words` too, and this file loads later, so they win.
+// - pending: keybear's `text-color-f2` (60% text) at 0.8 opacity, which on
+//   the page is 48% text; mixed rather than faded so a composing letter drawn
+//   over it is not faded as well
+// - wrong and extra: keybear's reds for letters standing straight on the
+//   page, not the theme's own: a red picked for a boxed letter reads almost
+//   as the plain text colour here
+#words {
+  --correct-letter-color: var(--text-color);
+  --untyped-letter-color: color-mix(
+    in srgb,
+    var(--text-color) 48%,
+    var(--bg-color)
+  );
+  --incorrect-letter-color: #d0212f;
+  --extra-letter-color: #c2666e;
+}
+
+body.darkMode #words {
+  --incorrect-letter-color: #ff6b78;
+}
+
+// A word typed wrong is told by its red letters alone, not by a line under
+// the whole word as well.
+#words .word.error {
+  border-bottom-color: transparent;
+  text-shadow: none;
+}
+
 // beartype: a letter the input method is still building -- `e` typed toward
 // `ế`. The target letter is what shows, fully marked, so without a sign of
 // its own an unfinished `ế` looks exactly like a finished one; keybear learnt
@@ -33,6 +63,11 @@
   --kb-shadow: color-mix(in srgb, var(--text-color) 22%, transparent);
   --kb-popup-shadow: 0 0.5rem 3rem var(--kb-shadow);
   --kb-focus: 3px solid var(--main-color);
+  // the rim of a strip sunk below the page, and keybear's `--separator-color`
+  // for rules drawn on the page: 12% of the text in the page colour, so it
+  // reads darker than the page on a light palette and lighter on a dark one,
+  // as keybear's `primary-d1` does
+  --kb-sunk-rim: color-mix(in srgb, var(--text-color) 12%, var(--bg-color));
 }
 
 body.darkMode {
@@ -138,43 +173,122 @@ body,
   white-space: pre-line;
 }
 
+// A balloon at an edge opens inwards. balloon.css set its arrow 5px in from
+// the bubble's edge, inside the round corner, where it hung off the curve and
+// off the middle of a narrow chart bar. The arrow points at the element's
+// middle, and the bubble starts a corner and a bit before it, so the arrow
+// meets a straight edge.
+[aria-label][data-balloon-pos][data-balloon-pos*="-left"]::before {
+  left: calc(50% - 5px);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-left"]::after {
+  left: calc(50% - 5px - 0.9rem);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-right"]::before {
+  right: calc(50% - 5px);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-right"]::after {
+  right: calc(50% - 5px - 0.9rem);
+}
+
 // The words keep --font, the one a person picks in the settings.
 #wordsWrapper {
   font-family: var(--font);
 }
 
+// ----- the page column -----
+
+// beartype: keybear's `Screen` -- one column 70rem wide in the middle of the
+// page, not upstream's 1536px. The header, the words and the footer all sit
+// in it, so the lines of words stop where the column does.
+#app {
+  max-inline-size: 70rem;
+  margin-inline: auto;
+}
+
+// ----- the hint over the words when they lose the focus -----
+
+// beartype: keybear's `PauseNotice` -- a pill in the options strip's colours,
+// the accent filling a round pause sign at its start. The sign sits as far
+// from the rim on its left as above and below it.
+.bt-pause-notice {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  max-inline-size: 100%;
+  padding: 0.6rem 1.4rem 0.6rem 0.6rem;
+  border: 2px solid var(--kb-sunk-rim);
+  border-radius: 99px;
+  color: var(--text-color);
+  background-color: var(--kb-border);
+  box-shadow: 0 0 1rem var(--kb-shadow);
+  // it sits in the words' box, which carries the typing font
+  font-family: Quicksand, sans-serif;
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.bt-pause-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: 50%;
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+  font-size: 0.85rem;
+}
+
 // ----- the options bar above the words -----
 
 // beartype: keybear's `.options` -- one rounded strip, the groups split by a
-// thin rule, the choice in use filled with the accent.
+// thin rule, the choice in use filled with the accent. The strip is sunk a
+// shade below the page, keybear's border colour, inside a rim of its own.
 .bt-options {
   display: flex;
-  flex-wrap: wrap;
+  // one row always; a narrow screen scrolls it sideways instead
+  flex-wrap: nowrap;
   gap: 0.4rem;
   align-items: center;
-  justify-content: center;
+  // `safe`, so a strip wider than the screen scrolls from its first pill
+  justify-content: safe center;
   // the same on every side, so a filled pill at either end sits as far from
-  // the rim across as it does above and below
-  padding: 0.35rem;
-  border: 2px solid var(--kb-border);
+  // the rim across as it does above and below. In whole pixels, with the
+  // pill 28px tall, so no edge falls on half a pixel: the strip's round ends
+  // (radius 20px inside the rim) and the pill's (14px) share a centre, and
+  // the gap is 6px all the way round.
+  padding: 0.375rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 2px solid var(--kb-sunk-rim);
   border-radius: 99px;
-  background-color: var(--kb-card);
+  background-color: var(--kb-border);
 }
 
 .bt-options-divider {
   inline-size: 1px;
   block-size: 1.4rem;
   margin-inline: 0.4rem;
-  background-color: var(--kb-border);
+  background-color: color-mix(in srgb, var(--kb-text-f1) 25%, var(--kb-border));
 }
 
 button.bt-options-pill {
-  padding: 0.3rem 0.8rem;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  block-size: 1.75rem;
+  padding: 0 0.8rem;
   border-radius: 99px;
   color: var(--kb-text-f1);
   background: transparent;
   font-size: 1rem;
   line-height: 1.2;
+  white-space: nowrap;
 
   &:hover {
     color: var(--text-color);
@@ -201,11 +315,16 @@ button.bt-options-pill {
 
 // ----- buttons under the words and on the result -----
 
-// beartype: keybear's `.action`: a pill with a thin rim, the text faint
-// until pointed at. Every one in a row has the same rim, padding and type, so
-// they stand the same height; "next" only fills its own with the accent.
-// Selectors carry the element and the page so they outrank upstream's
-// `button.text` and `#result .wrapper button`.
+// beartype: keybear's `.action`: a flat pill, no rim, the text faint until
+// pointed at, when a shade darker than the page shows behind it. "next" on
+// the result fills its own with the accent. Selectors carry the element and
+// the page so they outrank upstream's `button.text` and `#result .wrapper
+// button`.
+//
+// Every one in a row stands the same height, 44px: the same padding above
+// and below, and a line as tall as the biggest icon (next's, 1.4rem), so no
+// icon makes its own pill taller. The row's `align-items: stretch` did not
+// even them out on the result.
 .pageTest button.bt-action {
   display: inline-flex;
   gap: 0.45rem;
@@ -213,19 +332,20 @@ button.bt-options-pill {
   justify-content: center;
   padding: 0.55rem 1.3rem;
   margin: 0;
-  border: 2px solid var(--kb-border);
+  border: 2px solid transparent;
   border-radius: 99px;
   color: var(--kb-text-f1);
   background: transparent;
   font-size: 1rem;
-  line-height: 1.2;
+  line-height: 1.4rem;
   // upstream turns the restart button into a block on touch screens, where
   // the label would otherwise break under its icon
   white-space: nowrap;
 
+  // sunk below the page, as keybear's card is on its dark palettes
   &:hover {
     color: var(--text-color);
-    background-color: var(--kb-card);
+    background-color: var(--kb-border);
   }
 
   &:focus-visible {
@@ -234,17 +354,31 @@ button.bt-options-pill {
     box-shadow: none;
   }
 
-  // an icon box as tall as the text and centred on it, whatever the glyph
-  .fas {
-    display: inline-grid;
-    place-items: center;
-    block-size: 1.2em;
-    font-size: 0.95em;
-    line-height: 1;
+  // keybear's Material Design icons, drawn in the text colour
+  // inline, against Tailwind's `svg { display: block }`: on a touch screen
+  // upstream turns the restart button into a block, where a block icon
+  // stood over its label
+  .bt-action-icon {
+    display: inline-block;
+    flex: none;
+    vertical-align: -0.25em;
+    inline-size: 1.2rem;
+    block-size: 1.2rem;
+    fill: currentColor;
   }
 
-  // "next" is what comes after almost every test, and Enter presses it
+  // keybear's `.action_on`: the drill running, which must be seen from
+  // across the room -- it tells the typist why the words keep coming back
+  &.bt-action-on,
+  &.bt-action-on:hover {
+    border-color: var(--main-color);
+    color: var(--main-color);
+  }
+
+  // "next" is what comes after almost every test, and Enter presses it:
+  // keybear makes it the wider pill in the row, the text the same size
   &.bt-action-primary {
+    padding-inline: 1.6rem;
     border-color: var(--main-color);
     color: var(--kb-on-accent);
     background-color: var(--main-color);
@@ -253,6 +387,11 @@ button.bt-options-pill {
       color: var(--kb-on-accent);
       background-color: var(--main-color);
       filter: brightness(1.08);
+    }
+
+    .bt-action-icon {
+      inline-size: 1.4rem;
+      block-size: 1.4rem;
     }
   }
 }
@@ -279,7 +418,9 @@ button.bt-options-pill {
 // ----- the pills in the footer -----
 
 // beartype: keybear's `ThemeMenu` pill, which the gear and the link to the
-// source beside it share, so the three stand the same height.
+// source beside it share, so the three stand the same height. Flat like the
+// buttons under the words: no rim, no fill, no shadow until pointed at or
+// open.
 footer .bt-footer-pill {
   font-size: 0.95rem;
 }
@@ -291,16 +432,17 @@ a.bt-footer-pill {
   align-items: center;
   block-size: 2.5rem;
   padding: 0 0.8rem;
-  border: 2px solid var(--kb-border);
+  border: none;
   border-radius: 99px;
-  color: var(--text-color);
-  background-color: var(--kb-card);
-  box-shadow: 0 12px 28px -14px var(--kb-shadow);
-  font-weight: bold;
+  color: var(--kb-text-f1);
+  background-color: transparent;
+  // the weight of the buttons under the words; bold here outshouted the page
+  font-weight: normal;
 
-  &:hover {
+  &:hover,
+  &[aria-expanded="true"] {
     color: var(--text-color);
-    background-color: var(--kb-accent-xlt);
+    background-color: var(--kb-card);
   }
 
   &:focus-visible {
@@ -532,24 +674,39 @@ button.bt-settings-choice {
 // the two figures that matter big and in the accent, the label under each.
 // `.pageTest` matches upstream's media queries, which re-grid these rows on
 // narrower screens.
+//
+// The four figures read as one block, the buttons as the next: each part sets
+// its own space above, tight inside the block and wide before the buttons. A
+// single gap for all of them left the rows as far from each other as from the
+// buttons, and nothing grouped.
 .pageTest #result .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0;
   align-items: center;
 
   .stats {
     display: flex;
-    gap: 4rem;
+    gap: 1.5rem;
     align-items: baseline;
     justify-content: center;
 
     // upstream lays this row out as a grid, at this same specificity
     &.morestats {
       display: flex;
-      gap: 2.5rem;
+      gap: 1.5rem;
       align-items: baseline;
       justify-content: center;
+      margin-block-start: 1rem;
+    }
+
+    // Two columns of one width, so "số từ" stands under "wpm" and "thời gian"
+    // under "chính xác". Each row sized to its own figures put the small ones
+    // off the big ones' centres, and the block read as two staggered rows.
+    // A minimum, so a figure wider than its column pushes it out rather than
+    // spilling off one side.
+    &:not(.notes) .group {
+      min-inline-size: 9rem;
     }
 
     .group {
@@ -597,8 +754,14 @@ button.bt-settings-choice {
       font-weight: normal;
     }
 
+    // "không hợp lệ" belongs to the figures, just under them; with nothing to
+    // say the row goes, so it adds no space of its own
     &.notes {
-      margin-block-start: -1rem;
+      margin-block-start: 0.75rem;
+
+      &:not(:has(.group:not(.hidden))) {
+        display: none;
+      }
 
       // "không hợp lệ" and an info icon; the reasons are in its balloon
       .group .bottom {
@@ -618,10 +781,15 @@ button.bt-settings-choice {
     gap: 0.6rem;
     align-items: stretch;
     justify-content: center;
+    margin-block-start: 3rem;
 
     // upstream pads every button here `1em 2em` from an id selector
     button.bt-action {
       padding: 0.55rem 1.3rem;
+    }
+
+    button.bt-action-primary {
+      padding-inline: 1.6rem;
     }
   }
 }
@@ -635,8 +803,10 @@ button.bt-settings-choice {
   gap: 0.8rem;
   align-items: center;
   inline-size: min(32rem, 90vw);
+  // the result's column sets no gap; this is the space under the buttons
+  margin-block-start: 2rem;
   padding-block-start: 1.4rem;
-  border-block-start: 1px solid var(--kb-border);
+  border-block-start: 1px solid var(--kb-sunk-rim);
 }
 
 .bt-history-row {
@@ -685,15 +855,23 @@ button.bt-settings-choice {
   z-index: 1;
   inset-inline: 0;
   block-size: 0;
-  border-block-start: 2px dashed var(--kb-border);
+  border-block-start: 2px dashed var(--kb-sunk-rim);
 }
 
+// The whole column, the chart's height tall: it carries the balloon, so every
+// balloon opens at the same height, and it takes the pointer and the focus.
 .bt-chart-slot {
   display: flex;
+  position: relative;
   flex: 1;
   align-items: flex-end;
   align-self: stretch;
   min-inline-size: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--main-color);
+    outline-offset: 2px;
+  }
 }
 
 .bt-chart-bar {
@@ -702,35 +880,30 @@ button.bt-settings-choice {
   justify-content: center;
   inline-size: 100%;
   border-radius: 3px 3px 0 0;
-  // A mix, not opacity: the balloon is the bar's own ::after, and an opacity
-  // on the bar faded it with the bar.
   background-color: color-mix(in srgb, var(--main-color) 40%, var(--bg-color));
-
-  &:hover,
-  &:focus-visible {
-    background-color: color-mix(
-      in srgb,
-      var(--main-color) 75%,
-      var(--bg-color)
-    );
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--main-color);
-    outline-offset: 2px;
-  }
 }
 
-.bt-chart-bar-last,
-.bt-chart-bar-last:hover,
-.bt-chart-bar-last:focus-visible {
+.bt-chart-slot:hover .bt-chart-bar,
+.bt-chart-slot:focus-visible .bt-chart-bar {
+  background-color: color-mix(in srgb, var(--main-color) 75%, var(--bg-color));
+}
+
+.bt-chart-slot-last .bt-chart-bar,
+.bt-chart-slot-last:hover .bt-chart-bar,
+.bt-chart-slot-last:focus-visible .bt-chart-bar {
   background-color: var(--main-color);
 }
 
+// Over the usual-speed line, on a patch of the page, so the dashes do not run
+// through the digits when the last test is close to the usual.
 .bt-chart-value {
   position: absolute;
+  z-index: 2;
   inset-block-end: calc(100% + 0.2rem);
+  padding-inline: 0.2rem;
+  border-radius: 0.3rem;
   color: var(--text-color);
+  background-color: var(--bg-color);
   font-size: 0.8rem;
   font-weight: bold;
   font-variant-numeric: tabular-nums;

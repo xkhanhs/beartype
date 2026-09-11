@@ -45,7 +45,11 @@ git -C ../monkeytype show 91bd24bb:frontend/src/ts/test/test-ui.ts | diff - fron
 | `test/pace-caret.ts` | `stepSeconds`: mỗi chữ mất `spc × số phím` | con trỏ nhịp đi đúng tốc độ tính theo phím |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
+| `test/test-logic.ts` | cuối `finish`: ghi các từ đã chốt vào sổ từ hay sai (`beartype/miss-book.ts`), kể cả từ có phím sai đã xoá trước dấu cách (đọc `correct` của sự kiện `insertText`) | nút luyện từ hay sai; beartype có phím xoá nên chỉ đọc từ đã chốt thì sổ trống với người sửa lỗi ngay khi gõ |
 | `test/test-timer.ts` | hai thông báo khi đồng hồ chạy chậm, dịch sang tiếng Việt | chỉ đổi chữ; điều kiện dừng bài giữ nguyên |
+| `test/test-logic.ts` | ba thông báo dịch sang tiếng Việt: thôi luyện từ hay sai (`restart`), không tải được bộ từ (`init`), không tạo được bài gõ | chỉ đổi chữ |
+| `test/test-logic.ts` | `restart`: tuỳ chọn `leaveDrill`; bài mới trong lúc luyện từ hay sai là lượt luyện kế (`PractiseWords.continueDrill`), chỉ về cài đặt cũ khi bấm tắt hoặc sổ không còn đủ từ | chế độ luyện giữ tới khi người gõ tự tắt |
+| `test/test-logic.ts` | hai chốt chống gian lận (cửa sổ lấy lại focus, tab hiện lại) khởi động lại với `withSameWordset: isRepeated()` | bài gõ lại giữ nguyên từ và giữ nhãn "bài gõ lại"; từ đã biết nên không có gì để gian lận |
 | `test/test-logic.ts` | `finish`: một `showNoticeNotification` rỗng che hàm cùng tên, ngay trước các phép kiểm tra bài hợp lệ | màn kết quả đã ghi lý do bằng tiếng Việt; các phép kiểm tra (quá ngắn, ngừng gõ, độ chính xác dưới 75%...) giữ nguyên |
 
 Phần vận chuyển phím (`input/handlers`, `input/listeners`, `input-element.ts`), gom khung hình (`utils/debounced-animation-frame.ts`), cuộn dòng và `elements/caret.ts` chưa bị sửa dòng nào; `test-timer.ts` chỉ đổi chữ của hai thông báo. Mọi chỗ ở bảng trên nằm trong khối có chú thích `beartype:`.

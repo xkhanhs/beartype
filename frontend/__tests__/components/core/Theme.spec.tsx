@@ -107,7 +107,7 @@ describe("Theme component", () => {
     expect(loaderShowMock).toHaveBeenCalledOnce();
     fireEvent.error(css);
     expect(loaderHideMock).toHaveBeenCalledOnce();
-    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme");
+    expect(notificationAddMock).toHaveBeenCalledWith("Không tải được bộ màu");
   });
 
   it("renders favicon", () => {

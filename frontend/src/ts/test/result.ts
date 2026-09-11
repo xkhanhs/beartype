@@ -59,16 +59,15 @@ function updateWpmAndAcc(): void {
     qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
     qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
 
-    qs("#result .stats .acc .bottom")
-      ?.setAttribute(
-        "aria-label",
-        `${
-          result.acc === 100
-            ? "100%"
-            : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${acc.correct} đúng\n${acc.incorrect} sai`,
-      )
-      ?.setAttribute("data-balloon-break", "");
+    // beartype: one line, the parts split by a middle dot
+    qs("#result .stats .acc .bottom")?.setAttribute(
+      "aria-label",
+      `${
+        result.acc === 100
+          ? "100%"
+          : Format.percentage(result.acc, { showDecimalPlaces: true })
+      } · ${acc.correct} đúng · ${acc.incorrect} sai`,
+    );
   }
 }
 
@@ -131,7 +130,7 @@ function updateWords(): void {
   );
 }
 
-// beartype: best and usual speed over the last tests on this browser, so the
+// beartype: best and usual speed over the tests on this browser, so the
 // number just typed has something to be read against
 function updateRecent(dontSave: boolean): void {
   if (Config.mode === "custom") {

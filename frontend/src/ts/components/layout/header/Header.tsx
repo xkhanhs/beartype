@@ -8,7 +8,7 @@ import { Logo } from "./Logo";
 export function Header(): JSXElement {
   return (
     <header
-      class={cn("flex place-items-center gap-2", {
+      class={cn("flex place-items-center justify-center gap-2", {
         "opacity-0": getIsScreenshotting(),
       })}
       data-ui-element="header"

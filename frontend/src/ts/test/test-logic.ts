@@ -118,6 +118,8 @@ type RestartOptions = {
   nosave?: boolean;
   event?: KeyboardEvent;
   practiseMissed?: boolean;
+  // beartype: the drill button turning a drill off
+  leaveDrill?: boolean;
   noAnim?: boolean;
 };
 
@@ -157,12 +159,17 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     }
   }
 
+  // beartype: a new test during a drill is the drill's next round, built
+  // again from the book (`continueDrill`); only the drill button's
+  // `leaveDrill`, or a book too thin to drill, goes back to the settings
+  // from before
   if (
     PractiseWords.before.mode !== null &&
     !options.withSameWordset &&
-    !options.practiseMissed
+    !options.practiseMissed &&
+    (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
-    showNoticeNotification("Reverting to previous settings.");
+    showNoticeNotification("Thôi luyện từ hay sai, quay về bài thường.");
     setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -239,7 +246,8 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    showErrorNotification("Failed to load language", { error });
+    // beartype: only the words change
+    showErrorNotification("Không tải được bộ từ", { error });
   }
 
   if (!language || language.name !== Config.language) {
@@ -289,7 +297,8 @@ async function init(): Promise<boolean> {
         });
       }
     } else {
-      showErrorNotification("Failed to generate words", {
+      // beartype: only the words change
+      showErrorNotification("Không tạo được bài gõ", {
         error: e,
         important: true,
       });
@@ -693,13 +702,26 @@ export async function finish(difficultyFailed = false): Promise<void> {
     LocalResults.saveResult(completedEvent);
   }
   // beartype: the words this round missed go into the book behind the drill
-  // button; see beartype/miss-book.ts
+  // button; see beartype/miss-book.ts. A wrong key counts even when it was
+  // rubbed out before the space; `correct` is judged by keybear's key rule,
+  // so a mark still on its way is not one.
   const history = getInputHistory(eventLog);
+  const stumbledAt = new Set<number>();
+  for (const event of eventLog.events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      stumbledAt.add(event.data.wordIndex);
+    }
+  }
   const round = committedWords(
     TestWords.words.get().map((word) => word.text),
     history,
+    stumbledAt,
   );
-  recordMisses(Config.language, round.words, round.typed);
+  recordMisses(Config.language, round.words, round.typed, round.stumbled);
   learnToneStyle(history);
 }
 
@@ -736,6 +758,8 @@ window.addEventListener("focus", () => {
   ) {
     void restart({
       noAnim: true,
+      // beartype: a repeat keeps its words; they are known already
+      withSameWordset: isRepeated(),
     });
   }
 });
@@ -750,6 +774,8 @@ document.addEventListener("visibilitychange", () => {
   ) {
     void restart({
       noAnim: true,
+      // beartype: a repeat keeps its words; they are known already
+      withSameWordset: isRepeated(),
     });
   }
 });

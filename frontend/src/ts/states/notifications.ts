@@ -122,7 +122,7 @@ export function addNotificationWithLevel(
 
   const title =
     options.customTitle ??
-    (level === "success" ? "Success" : level === "error" ? "Error" : "Notice");
+    (level === "success" ? "xong" : level === "error" ? "lỗi" : "thông báo");
 
   setNotificationHistory((prev) => {
     const next = [

@@ -99,7 +99,7 @@ export function getLocalPB<M extends Mode>(
   return best === undefined ? undefined : { wpm: best.wpm, acc: best.acc };
 }
 
-/** How many recent tests the result screen compares against. */
+/** How many recent tests the result screen draws a bar for. */
 export const RECENT = 20;
 
 export type RecentTest = { wpm: number; acc: number; timestamp: number };
@@ -108,8 +108,9 @@ export type RecentSummary = {
   best: number;
   usual: number;
   usualAcc: number;
+  /** Every test with these settings, not only the ones drawn. */
   count: number;
-  /** Those tests, oldest first, the one just typed last. */
+  /** The last `RECENT` tests, oldest first, the one just typed last. */
   recent: RecentTest[];
 };
 
@@ -122,19 +123,20 @@ function median(values: number[]): number {
 }
 
 /**
- * The best and the usual speed over the last `RECENT` tests with the same
- * settings, `current` included -- it is not saved until the result screen
- * has been drawn; `null` when it will not be saved at all. "Usual" is the
- * median: one interrupted test should not drag it down the way it drags a
- * mean.
+ * The count, the best and the usual speed over every test with the same
+ * settings, and the last `RECENT` of them for the chart, as keybear's
+ * `testStats` does. `current` is included -- it is not saved until the
+ * result screen has been drawn; `null` when it will not be saved at all.
+ * "Usual" is the median: one interrupted test should not drag it down the way
+ * it drags a mean.
  */
 export function recentSummary(
   filter: SettingsFilter,
   current: RecentTest | null,
 ): RecentSummary | null {
-  const tests: RecentTest[] = matching(filter)
-    .slice(-(RECENT - (current === null ? 0 : 1)))
-    .map(({ wpm, acc, timestamp }) => ({ wpm, acc, timestamp }));
+  const tests: RecentTest[] = matching(filter).map(
+    ({ wpm, acc, timestamp }) => ({ wpm, acc, timestamp }),
+  );
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
   const speeds = tests.map((t) => t.wpm);
@@ -143,7 +145,7 @@ export function recentSummary(
     usual: median(speeds),
     usualAcc: median(tests.map((t) => t.acc)),
     count: tests.length,
-    recent: tests,
+    recent: tests.slice(-RECENT),
   };
 }
 

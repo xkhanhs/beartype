@@ -9,7 +9,8 @@ import {
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
-import { getResultVisible, getFocus } from "../../../states/test";
+import { getFocus } from "../../../states/test";
+import { drillBaseMode } from "../../../test/practise-words";
 import { cn } from "../../../utils/cn";
 
 // beartype: upstream's bar also carried punctuation, numbers, quote, zen,
@@ -30,12 +31,21 @@ const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], string> = {
 };
 
 export function TestConfig(): JSXElement {
+  // a miss-book drill runs as upstream's custom mode, but as long as the test
+  // it stands in for; the bar lights that one, time or words, so the typist
+  // still sees how long the round is
+  const mode = (): string =>
+    getConfig.mode === "custom"
+      ? (drillBaseMode() ?? getConfig.mode)
+      : getConfig.mode;
+
   return (
     <div
       class={cn(
-        "bt-options relative mx-auto mb-8 w-max max-w-full place-self-center",
+        "bt-options relative mx-auto mb-8 w-max max-w-[calc(100%-2rem)] place-self-center",
         "transition-opacity duration-125",
-        getFocus() || getResultVisible() ? "pointer-events-none opacity-0" : "",
+        // it stays on the result, which says what the test just taken was
+        getFocus() ? "pointer-events-none opacity-0" : "",
       )}
       data-ui-element="testConfig"
     >
@@ -53,12 +63,12 @@ export function TestConfig(): JSXElement {
       </For>
       <span class="bt-options-divider"></span>
       <For each={MODES}>
-        {(mode) => (
+        {(option) => (
           <Pill
-            text={MODE_LABELS[mode]}
-            active={getConfig.mode === mode}
+            text={MODE_LABELS[option]}
+            active={mode() === option}
             onClick={() => {
-              setConfig("mode", mode);
+              setConfig("mode", option);
               restartTestEvent.dispatch();
             }}
           />
@@ -66,7 +76,7 @@ export function TestConfig(): JSXElement {
       </For>
       <span class="bt-options-divider"></span>
       <Show
-        when={getConfig.mode === "words"}
+        when={mode() === "words"}
         fallback={
           <For each={TIMES}>
             {(time) => (
@@ -110,7 +120,7 @@ function Pill(props: {
       class="bt-options-pill"
       aria-pressed={props.active}
       onClick={() => props.onClick()}
-      disabled={getFocus() || getResultVisible()}
+      disabled={getFocus()}
     >
       {props.text}
     </button>
