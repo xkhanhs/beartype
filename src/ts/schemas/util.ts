@@ -9,27 +9,6 @@ export const StringNumberSchema = z
   .or(z.number().transform(String));
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 
-export const slug = (): ZodString =>
-  z
-    .string()
-    .regex(
-      /^[0-9a-zA-Z_.-]+$/,
-      "Only letters, numbers, underscores, dots and hyphens allowed",
-    )
-    .regex(/^[^.].*$/, "Cannot start with a dot");
-
-export const nameWithSeparators = (): ZodString =>
-  z
-    .string()
-    .regex(
-      /^[0-9a-zA-Z_-]+$/,
-      "Only letters, numbers, underscores and hyphens allowed",
-    )
-    .regex(
-      /^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/,
-      "Separators cannot be at the start or end, or appear multiple times in a row",
-    );
-
 export const IdSchema = token();
 
 export const PercentageSchema = z.number().nonnegative().max(100);

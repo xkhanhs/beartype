@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
-import * as ConfigUtils from "../../src/ts/config/utils";
 import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
 import * as Env from "../../src/ts/utils/env";
@@ -259,7 +258,7 @@ describe("Config", () => {
         resultSaving: false,
       });
       await Lifecycle.applyConfig({
-        ...ConfigUtils.getConfigChanges(),
+        resultSaving: false,
         capsLockWarning: false,
       });
       const config = getConfig();

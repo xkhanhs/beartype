@@ -3,7 +3,6 @@ import * as ConfigSchemas from "../schemas/configs";
 import { typedKeys } from "../utils/objects";
 import { getDefaultConfig } from "../constants/default-config";
 import { sanitize } from "../utils/sanitize";
-import { Config } from "./store";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
@@ -70,17 +69,4 @@ function replaceLegacyValues(
   }
 
   return configObj;
-}
-
-export function getConfigChanges(): Partial<ConfigSchema> {
-  const configChanges: Partial<ConfigSchema> = {};
-  typedKeys(Config)
-    .filter((key) => {
-      return Config[key] !== getDefaultConfig()[key];
-    })
-    .forEach((key) => {
-      //@ts-expect-error this is fine
-      configChanges[key] = Config[key];
-    });
-  return configChanges;
 }
