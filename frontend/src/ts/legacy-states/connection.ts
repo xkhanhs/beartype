@@ -19,7 +19,7 @@ export function showOfflineBanner(): void {
   if (bannerAlreadyClosed) return;
   noInternetBannerId ??= addBanner({
     level: "notice",
-    text: "No internet connection",
+    text: "Mất kết nối mạng",
     icon: "fas fa-exclamation-triangle",
     onClose: () => {
       bannerAlreadyClosed = true;
@@ -31,8 +31,8 @@ export function showOfflineBanner(): void {
 const throttledHandleState = debounce(5000, () => {
   if (state) {
     if (noInternetBannerId !== undefined) {
-      showSuccessNotification("You're back online", {
-        customTitle: "Connection",
+      showSuccessNotification("Đã có mạng trở lại", {
+        customTitle: "kết nối",
       });
       removeBanner(noInternetBannerId);
       noInternetBannerId = undefined;

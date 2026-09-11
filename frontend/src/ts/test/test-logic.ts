@@ -249,7 +249,8 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     !options.withSameWordset &&
     !options.practiseMissed
   ) {
-    showNoticeNotification("Reverting to previous settings.");
+    // beartype: only the words change
+    showNoticeNotification("Thôi luyện từ hay sai, quay về bài thường.");
     if (PractiseWords.before.punctuation !== null) {
       setConfig("punctuation", PractiseWords.before.punctuation);
     }
@@ -356,7 +357,8 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    showErrorNotification("Failed to load language", { error });
+    // beartype: only the words change
+    showErrorNotification("Không tải được bộ từ", { error });
   }
 
   if (!language || language.name !== Config.language) {
@@ -478,7 +480,8 @@ async function init(): Promise<boolean> {
         });
       }
     } else {
-      showErrorNotification("Failed to generate words", {
+      // beartype: only the words change
+      showErrorNotification("Không tạo được bài gõ", {
         error: e,
         important: true,
       });

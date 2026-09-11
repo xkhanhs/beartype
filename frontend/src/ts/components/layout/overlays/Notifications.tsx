@@ -133,7 +133,7 @@ export function Notifications(): JSXElement {
           onClick={() => clearAllNotifications()}
         >
           <Fa icon="fa-times" class="mr-1" />
-          Clear all
+          xoá hết
         </button>
       </AnimeShow>
       <AnimePresence mode="list">
