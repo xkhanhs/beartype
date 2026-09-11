@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import * as TestWords from "./test-words";
 import { showNoticeNotification } from "../states/notifications";
 
@@ -29,6 +30,12 @@ export const before: Before = {
   numbers: null,
   customText: null,
 };
+
+// beartype: `before.mode` as a signal, so the options bar can light the mode
+// a drill runs in -- time or words -- instead of neither. Kept in step with
+// the plain field wherever it is written.
+const [drillBaseMode, setDrillBaseMode] = createSignal<Mode | null>(null);
+export { drillBaseMode };
 
 export function init(
   missed: "off" | "words" | "biwords",
@@ -180,6 +187,7 @@ export function init(
   before.punctuation = punctuation;
   before.numbers = numbers;
   before.customText = customText;
+  setDrillBaseMode(mode);
 
   return true;
 }
@@ -215,6 +223,7 @@ export function initFromWords(words: readonly string[]): boolean {
   before.punctuation = punctuation;
   before.numbers = numbers;
   before.customText = null;
+  setDrillBaseMode(mode);
 
   return true;
 }
@@ -237,6 +246,7 @@ export function resetBefore(): void {
   before.punctuation = null;
   before.numbers = null;
   before.customText = null;
+  setDrillBaseMode(null);
 }
 
 configEvent.subscribe(({ key }) => {
