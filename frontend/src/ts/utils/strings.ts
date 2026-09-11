@@ -145,7 +145,7 @@ export function highlightMatches(text: string, matches: string[]): string {
  * @returns A display string for the language.
  */
 export function getLanguageDisplayString(
-  language: Language,
+  language: string,
   noSizeString = false,
 ): string {
   let out = "";
@@ -158,12 +158,14 @@ export function getLanguageDisplayString(
 }
 
 /**
- * Removes the size indicator from a language string.
+ * Removes the size indicator from a language string. This works on any
+ * string, not just beartype's two selectable languages, so tests can still
+ * exercise it with upstream's larger set of language names.
  * @param language The language string.
  * @returns The language string with the size indicator removed.
  */
-export function removeLanguageSize(language: Language): Language {
-  return language.replace(/_\d*k$/g, "") as Language;
+export function removeLanguageSize(language: string): string {
+  return language.replace(/_\d*k$/g, "");
 }
 
 /**
@@ -297,10 +299,10 @@ export const CHAR_EQUIVALENCE_SETS = [
   new Set([",", "‚"]),
 ];
 
+// beartype: only vietnamese and english are selectable, and neither needs a
+// language-specific equivalence set (upstream had one for russian).
 export const LANGUAGE_EQUIVALENCE_SETS: Partial<Record<Language, Set<string>>> =
-  {
-    russian: new Set(["ё", "е", "e"]),
-  };
+  {};
 
 /**
  * Checks if two characters are visually/typographically equivalent for typing purposes.
@@ -335,7 +337,8 @@ export function areCharactersVisuallyEqual(
   }
 
   if (language !== undefined) {
-    const langMap = LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language)];
+    const langMap =
+      LANGUAGE_EQUIVALENCE_SETS[removeLanguageSize(language) as Language];
     if (langMap !== undefined) {
       if (langMap.has(char1) && langMap.has(char2)) {
         return true;

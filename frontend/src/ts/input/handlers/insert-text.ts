@@ -187,23 +187,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
   }
 
-  //this COULD be the next word because we are awaiting goToNextWord
-  const nextWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
-  const doesNextWordHaveTab = /^\t+/.test(nextWord);
-  const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
-
-  //code mode - auto insert tabs
-  if (
-    Config.language.startsWith("code") &&
-    correct &&
-    doesNextWordHaveTab &&
-    isCurrentCharTab
-  ) {
-    setTimeout(() => {
-      void emulateInsertText({ data: "\t", now, automatic: true });
-    }, 0);
-  }
-
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
       checkIfFinished({

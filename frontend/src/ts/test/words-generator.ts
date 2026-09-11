@@ -263,7 +263,6 @@ export async function getNextWord(
           previousWord2Raw === firstAfterSplitLazy ||
           (Config.mode !== "custom" && randomWord === "I") ||
           (Config.mode !== "custom" &&
-            !Config.language.startsWith("code") &&
             /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
           (Config.mode !== "custom" && /[0-9]/i.test(randomWord)))
       ) {
@@ -295,25 +294,15 @@ export async function getNextWord(
     throw new WordGenError("Random word contains spaces");
   }
 
-  const randomWordLanguage = Config.language;
-
-  if (
-    Config.mode !== "custom" &&
-    /[A-Z]/.test(randomWord) &&
-    !randomWordLanguage.startsWith("german") &&
-    !randomWordLanguage.startsWith("swiss_german") &&
-    !randomWordLanguage.startsWith("code") &&
-    !randomWordLanguage.startsWith("klingon")
-  ) {
+  // beartype: language is always vietnamese or english, so upstream's
+  // per-language exceptions here (german/swiss_german/code/klingon
+  // capitalization, swiss_german's ß) never apply and were dropped.
+  if (Config.mode !== "custom" && /[A-Z]/.test(randomWord)) {
     randomWord = randomWord.toLowerCase();
   }
 
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-
-  if (Config.language.startsWith("swiss_german")) {
-    randomWord = randomWord.replace(/ß/g, "ss");
-  }
 
   // beartype: draw the tone the way this computer's input method writes it
   // (`hoà` or `hòa`); see beartype/tone-style.ts

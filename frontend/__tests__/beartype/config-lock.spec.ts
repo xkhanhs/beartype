@@ -56,7 +56,8 @@ describe("lockConfig", () => {
       mode: "custom",
       time: 45,
       words: 500,
-      language: "spanish",
+      // an upstream language that no longer exists
+      language: "spanish" as Config["language"],
       fontFamily: "Comic_Sans_MS",
       fontSize: 7,
     });

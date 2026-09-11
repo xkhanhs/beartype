@@ -8,14 +8,13 @@ import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
-import { Language } from "@monkeytype/schemas/languages";
 import { getErrorMessage } from "../../src/ts/utils/error";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
     it("should return correctly formatted strings", () => {
       const tests: {
-        input: Language;
+        input: string;
         noSizeString: boolean;
         expected: string;
       }[] = [
@@ -59,7 +58,7 @@ describe("misc.ts", () => {
   });
   describe("removeLanguageSize", () => {
     it("should remove language size", () => {
-      const tests: { input: Language; expected: Language }[] = [
+      const tests: { input: string; expected: string }[] = [
         {
           input: "english",
           expected: "english",
