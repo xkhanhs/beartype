@@ -66,5 +66,3 @@ export const ChallengeNameSchema = z.enum(
     errorMap: customEnumErrorHandler("Must be a known challenge name"),
   },
 );
-
-export type ChallengeName = z.infer<typeof ChallengeNameSchema>;

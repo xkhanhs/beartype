@@ -104,24 +104,6 @@ export function stdDev(array: number[]): number {
 }
 
 /**
- * Calculates the median of an array of numbers.
- * https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
- * @param arr An array of numbers.
- * @returns The median of the input array.
- */
-export function median(arr: number[]): number {
-  try {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0
-      ? (nums[mid] as number)
-      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
  * Calculates consistency by mapping COV from [0, +infinity) to [100, 0).
  * The mapping function is a version of the sigmoid function tanh(x) that is closer to the identity function tanh(arctanh(x)) in [0, 1).
  * @param cov The coefficient of variation of an array of numbers (standard deviation / mean).

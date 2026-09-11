@@ -109,9 +109,6 @@ const interval = 1000;
 let expected = 0;
 
 let slowTimerFailEnabled = true;
-export function disableSlowTimerFail(): void {
-  slowTimerFailEnabled = false;
-}
 
 let timerDebug = false;
 export function enableTimerDebug(): void {

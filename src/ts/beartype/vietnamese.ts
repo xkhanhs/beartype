@@ -132,17 +132,6 @@ export function marksOf(char: string): readonly string[] {
   return marks.every((mark) => MARKS.has(mark)) ? marks : [];
 }
 
-/** Mọi dấu của cả một từ, không trùng lặp. */
-export function wordMarks(word: string): ReadonlySet<string> {
-  const marks = new Set<string>();
-  for (const char of word) {
-    for (const mark of marksOf(char)) {
-      marks.add(mark);
-    }
-  }
-  return marks;
-}
-
 const TONES = "̣̀́̃̉";
 
 /**

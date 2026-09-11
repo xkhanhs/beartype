@@ -11,7 +11,7 @@ import { getDefaultConfig } from "../constants/default-config";
  * The settings a person can change. The few other keys left in `Config` are
  * fixed at beartype's defaults below.
  */
-export const USER_KEYS = [
+const USER_KEYS = [
   "mode",
   "time",
   "words",

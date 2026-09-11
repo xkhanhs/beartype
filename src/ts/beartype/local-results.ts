@@ -100,7 +100,7 @@ export function getLocalPB<M extends Mode>(
 }
 
 /** How many recent tests the result screen draws a bar for. */
-export const RECENT = 20;
+const RECENT = 20;
 
 export type RecentTest = { wpm: number; acc: number; timestamp: number };
 

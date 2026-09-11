@@ -15,15 +15,6 @@ export function shuffle(elements: unknown[]): void {
 }
 
 /**
- * Returns the last element of an array.
- * @param array The input array.
- * @returns The last element of the array, or undefined if the array is empty.
- */
-export function lastElementFromArray<T>(array: T[]): T | undefined {
-  return array[array.length - 1];
-}
-
-/**
  * Returns a random element from an array.
  * @param array The input array.
  * @returns A random element from the array.

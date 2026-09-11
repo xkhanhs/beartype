@@ -1,6 +1,5 @@
 import { JSXElement } from "solid-js";
 
-import { getIsScreenshotting } from "../../../states/core";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { SettingsPopover } from "../../beartype/SettingsPopover";
@@ -9,11 +8,7 @@ import { Fa } from "../../common/Fa";
 
 export function Footer(): JSXElement {
   return (
-    <footer
-      class={cn("relative text-sm text-sub", {
-        "opacity-0": getIsScreenshotting(),
-      })}
-    >
+    <footer class="relative text-sm text-sub">
       <div
         class={cn(
           "flex flex-wrap items-center justify-center gap-x-3 gap-y-1 transition-opacity",

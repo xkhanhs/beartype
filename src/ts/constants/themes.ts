@@ -8,7 +8,7 @@ const hexColorSchema = z
     "Invalid hex color",
   );
 
-export const ThemeSchema = z.object({
+const ThemeSchema = z.object({
   hasCss: z.boolean().optional(),
   bg: hexColorSchema,
   main: hexColorSchema,
@@ -141,11 +141,3 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulErrorExtra: "#9a263a",
   },
 };
-
-export type ThemeWithName = Theme & { name: ThemeName };
-export const ThemesList: ThemeWithName[] = Object.keys(themes)
-  .sort()
-  .map((it) => ({
-    ...themes[it as ThemeName],
-    name: it as ThemeName,
-  }));

@@ -12,4 +12,3 @@ export const FontNameSchema = KnownFontNameSchema.or(
     .max(50)
     .regex(/^[a-zA-Z0-9_\-+.]+$/),
 );
-export type FontName = z.infer<typeof FontNameSchema>;

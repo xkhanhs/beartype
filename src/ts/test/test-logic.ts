@@ -709,7 +709,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   learnToneStyle(history);
 }
 
-export function fail(reason: string): void {
+function fail(reason: string): void {
   failReason = reason;
   void finish(true);
 }

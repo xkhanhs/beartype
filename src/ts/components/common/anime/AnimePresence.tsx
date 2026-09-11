@@ -13,7 +13,7 @@ import {
   onMount,
 } from "solid-js";
 
-export type AnimePresenceAPI = {
+type AnimePresenceAPI = {
   exit?: AnimationParams;
   playExitAnimation: () => Promise<void>;
   cancelExitAnimation: () => void;

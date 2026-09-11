@@ -44,10 +44,6 @@ export function getLiveCachedAccuracy(): number {
     : (cache.correctInputs / cache.totalInputs) * 100;
 }
 
-export function getLiveCachedMsSinceLastInputEvent(): number | null {
-  return cache.msSinceLastInputEvent.value;
-}
-
 export function getLiveCachedTimerStartMs(): number | null {
   return cache.timerStartMs;
 }

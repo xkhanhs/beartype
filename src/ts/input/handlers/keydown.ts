@@ -10,7 +10,7 @@ import { setBailedOut, wordsHaveTab } from "../../states/test";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
-export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
+async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
@@ -18,10 +18,7 @@ export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   }
 }
 
-export async function handleEnter(
-  e: KeyboardEvent,
-  _now: number,
-): Promise<void> {
+async function handleEnter(e: KeyboardEvent, _now: number): Promise<void> {
   if (e.shiftKey) {
     if (
       !canQuickRestart(

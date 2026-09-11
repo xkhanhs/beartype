@@ -41,7 +41,7 @@ async function fetchJson<T>(url: string): Promise<T> {
  * @param getKey Optional function to compute a cache key from the function arguments. If omitted, the first argument is used as the key.
  * @returns A memoized version of the async function with the same signature.
  */
-export function memoizeAsync<P, Args extends unknown[], R>(
+function memoizeAsync<P, Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
   getKey?: (...args: Args) => P,
 ): (...args: Args) => Promise<R> {
@@ -66,7 +66,7 @@ export function memoizeAsync<P, Args extends unknown[], R>(
  * @param url - The URL used to fetch JSON data.
  * @returns A promise that resolves to the cached JSON data.
  */
-export const cachedFetchJson = memoizeAsync(fetchJson);
+const cachedFetchJson = memoizeAsync(fetchJson);
 
 /**
  * Fetches a layout by name from the server.
@@ -77,12 +77,6 @@ export const cachedFetchJson = memoizeAsync(fetchJson);
 export async function getLayout(layoutName: string): Promise<LayoutObject> {
   return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
-
-// used for polyglot wordset language-specific properties
-export type LanguageProperties = Pick<
-  LanguageObject,
-  "noLazyMode" | "joiningScript" | "rightToLeft" | "additionalAccents"
->;
 
 let currentLanguage: LanguageObject;
 

@@ -16,7 +16,7 @@ export const LanguageSchema = z.enum(
 
 export type Language = z.infer<typeof LanguageSchema>;
 
-export const LanguageObjectSchema = z
+const LanguageObjectSchema = z
   .object({
     name: LanguageSchema,
     rightToLeft: z.boolean().optional(),

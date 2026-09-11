@@ -14,11 +14,6 @@ export type CrownType =
   | "warning";
 
 let visible = false;
-let currentType: CrownType = "normal";
-
-export function getCurrentType(): CrownType {
-  return currentType;
-}
 
 export function show(): void {
   if (visible) return;
@@ -35,7 +30,6 @@ export function show(): void {
 }
 
 export function update(type: CrownType): void {
-  currentType = type;
   qs("#result .stats .wpm .crown")
     ?.removeClass("ineligible")
     ?.removeClass("pending")

@@ -20,10 +20,6 @@ function cancelIfPending(frameId: string): void {
   }
 }
 
-export function cancelPendingAnimationFrame(frameId: string): void {
-  cancelIfPending(frameId);
-}
-
 export function cancelPendingAnimationFramesStartingWith(prefix: string): void {
   for (const frameId of pendingFrames.keys()) {
     if (frameId.startsWith(prefix)) {

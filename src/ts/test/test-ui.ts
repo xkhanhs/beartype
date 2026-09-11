@@ -81,7 +81,7 @@ export function focusWords(force = false): void {
   }
 }
 
-export function keepWordsInputInTheCenter(force = false): void {
+function keepWordsInputInTheCenter(force = false): void {
   const wordsInput = getInputElement();
   if (wordsInput === null || wordsWrapperEl === null) return;
 
@@ -107,11 +107,11 @@ export function getWordElement(index: number): ElementWithUtils | null {
   return el;
 }
 
-export function getActiveWordElement(): ElementWithUtils | null {
+function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-export function updateActiveElement(
+function updateActiveElement(
   options:
     | { direction: "forward" | "back"; initial?: undefined }
     | { direction?: undefined; initial: true },
@@ -497,7 +497,7 @@ export async function centerActiveLine(): Promise<void> {
   }
 }
 
-export function updateWordsWrapperHeight(force = false): void {
+function updateWordsWrapperHeight(force = false): void {
   if (getActivePage() !== "test" || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
@@ -587,7 +587,7 @@ export function addWord(
 // make sure the currently typed word will not overflow to the next line
 export let pendingWordData: Map<number, string> = new Map();
 
-export async function updateWordLetters({
+async function updateWordLetters({
   wordIndex,
   input,
   compositionData,
@@ -735,7 +735,7 @@ export function setJoiningClass(isEnabled: boolean): void {
   }
 }
 
-export function highlightBadWord(index: number): void {
+function highlightBadWord(index: number): void {
   requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
     getWordElement(index)?.addClass("error");
   });
