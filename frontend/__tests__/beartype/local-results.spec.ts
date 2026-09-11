@@ -79,12 +79,12 @@ describe("local results", () => {
     expect(recentSummary(filter, null)).toBeNull();
   });
 
-  it("draws only the last few", () => {
+  it("keeps only the last twenty", () => {
     for (let wpm = 1; wpm <= 25; wpm++) save(wpm);
     const summary = recentSummary(filter, null);
     expect(summary?.count).toBe(20);
-    expect(summary?.recent.map((t) => t.wpm)).toEqual([
-      16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-    ]);
+    expect(summary?.recent.map((t) => t.wpm)).toEqual(
+      Array.from({ length: 20 }, (_, i) => i + 6),
+    );
   });
 });

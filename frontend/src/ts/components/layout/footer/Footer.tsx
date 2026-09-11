@@ -6,7 +6,6 @@ import { cn } from "../../../utils/cn";
 import { SettingsPopover } from "../../beartype/SettingsPopover";
 import { ThemeMenu } from "../../beartype/ThemeMenu";
 import { Fa } from "../../common/Fa";
-import { Keytips } from "./Keytips";
 
 export function Footer(): JSXElement {
   return (
@@ -15,7 +14,6 @@ export function Footer(): JSXElement {
         "opacity-0": getIsScreenshotting(),
       })}
     >
-      <Keytips />
       <div
         class={cn(
           "flex flex-wrap items-center justify-center gap-x-3 gap-y-1 transition-opacity",

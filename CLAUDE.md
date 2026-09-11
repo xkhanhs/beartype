@@ -66,7 +66,8 @@ Test của beartype nằm ở `frontend/__tests__/beartype/`.
   `components/beartype/`.
 - Style đè lên upstream trong `beartype.scss`: file này nạp sau cùng nhưng
   cùng layer, nên chỉ thắng khi selector cao bằng hoặc hơn. Upstream viết
-  `button:hover`, `button.text` (cần `button.bt-…`) và media query
+  `button:hover`, `button.text` (cần `button.bt-…`), `#result .wrapper
+  button` (cần selector có `#result`) và media query
   `.pageTest #result .wrapper …` (cần tiền tố `.pageTest`). Nhớ thử ở khung
   hẹp, vì media query chỉ lộ ra ở đó.
 - Xoá code theo từng cụm, mỗi cụm một commit. Nếu cảm giác gõ lệch, `git bisect`
