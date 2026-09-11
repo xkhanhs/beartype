@@ -368,12 +368,6 @@ function updateWordWrapperClasses(): void {
   // outoffocus applies transition, need to remove it
   setTestFocusState("focused");
 
-  wordsEl.removeClass("tape");
-  wordsWrapperEl.removeClass("tape");
-
-  wordsEl.removeClass("blind");
-  wordsWrapperEl.removeClass("blind");
-
   if (Config.indicateTypos === "below") {
     wordsEl.addClass("indicateTyposBelow");
     wordsWrapperEl.addClass("indicateTyposBelow");
@@ -381,12 +375,6 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("indicateTyposBelow");
     wordsWrapperEl.removeClass("indicateTyposBelow");
   }
-
-  wordsEl.removeClass("hideExtraLetters");
-  wordsWrapperEl.removeClass("hideExtraLetters");
-
-  wordsEl.removeClass("flipped");
-  wordsEl.removeClass("colorfulMode");
 
   qsa("#caret, #typingTest, #wordsInput").setStyle({
     fontSize: `${Config.fontSize}rem`,

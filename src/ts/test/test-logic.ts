@@ -27,7 +27,6 @@ import {
   resetIncompleteTests,
   setIsRepeated,
   setIsTestInvalid,
-  setLastResult,
   getActiveWordIndex,
   resetActiveWordIndex,
   getBailedOut,
@@ -37,7 +36,6 @@ import {
   setResultVisible,
   setTestActive,
   setWordsHaveNewline,
-  setWordsHaveNumbers,
   setWordsHaveTab,
   getResultVisible,
 } from "../states/test";
@@ -282,15 +280,6 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -519,7 +508,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   setLastEventLog(eventLog);
-  setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready
 

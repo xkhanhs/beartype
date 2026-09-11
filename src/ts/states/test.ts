@@ -1,24 +1,15 @@
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-} from "solid-js";
+import { createMemo, createResource, createSignal } from "solid-js";
 import { getConfig } from "../config/store";
 import { EventLog } from "../test/events/types";
 
-import { CompletedEvent, IncompleteTest } from "../schemas/results";
+import { IncompleteTest } from "../schemas/results";
 import { createStore } from "solid-js/store";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import * as CustomText from "../test/custom-text";
 import { getLayout } from "../utils/json-data";
-import { canQuickRestart } from "../utils/quick-restart";
-import { getActivePage } from "./core";
 import { clearTimeouts } from "../utils/misc";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
-export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getResultVisible, setResultVisible] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
@@ -59,11 +50,6 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
-export const [isLongTest, setIsLongTest] = createSignal(false);
-export const [getLastResult, setLastResult] = createSignal<Omit<
-  CompletedEvent,
-  "hash" | "uid"
-> | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
@@ -77,9 +63,6 @@ export const getIncompleteSeconds = createMemo(() =>
 );
 
 export const [isRepeated, setIsRepeated] = createSignal(false);
-
-export const [getLastSignedOutResult, setLastSignedOutResult] =
-  createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
 
@@ -109,18 +92,6 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   burst?: number;
   seconds?: number;
 }>({});
-
-createEffect(() => {
-  getActivePage(); // depend on active page
-  setIsLongTest(
-    !canQuickRestart(
-      getConfig.mode,
-      getConfig.words,
-      getConfig.time,
-      CustomText.getData(),
-    ),
-  );
-});
 
 /**
  * The keymap's layout, fetched only once the keymap is switched on. beartype
