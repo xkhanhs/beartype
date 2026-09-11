@@ -173,6 +173,27 @@ body,
   white-space: pre-line;
 }
 
+// A balloon at an edge opens inwards. balloon.css set its arrow 5px in from
+// the bubble's edge, inside the round corner, where it hung off the curve and
+// off the middle of a narrow chart bar. The arrow points at the element's
+// middle, and the bubble starts a corner and a bit before it, so the arrow
+// meets a straight edge.
+[aria-label][data-balloon-pos][data-balloon-pos*="-left"]::before {
+  left: calc(50% - 5px);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-left"]::after {
+  left: calc(50% - 5px - 0.9rem);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-right"]::before {
+  right: calc(50% - 5px);
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos*="-right"]::after {
+  right: calc(50% - 5px - 0.9rem);
+}
+
 // The words keep --font, the one a person picks in the settings.
 #wordsWrapper,
 #resultWordsHistory .words,
