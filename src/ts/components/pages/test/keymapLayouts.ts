@@ -1,3 +1,4 @@
+import { lastTelexKey } from "../../../beartype/telex-keys";
 import { LayoutObject } from "../../../schemas/layouts";
 
 /**
@@ -88,11 +89,40 @@ export function convertLayoutToKeymap(
   ];
 }
 
-/** The code of the drawn key labelled `char`, shifted or not. */
-export function codeOfLegend(
+/**
+ * The drawn key that `char` was typed with: its last Telex key (see
+ * `lastTelexKey`), looked up by label. `undefined` for a character no drawn
+ * key carries, such as a digit.
+ */
+export function codeOfTypedChar(
   layout: LayoutObject,
   char: string,
 ): string | undefined {
+  return codeOfLegend(layout, lastTelexKey(char));
+}
+
+/**
+ * The key to light for a keydown: the key labelled with what the system typed,
+ * not the key under the finger.
+ *
+ * The character is the only part of the event to trust. The typist's layout
+ * may not be QWERTY (Colemak here), so the physical key names the wrong
+ * letter; and an input method that types for them -- VTX in its tap mode --
+ * posts every character as a made-up key with virtual keycode 0, which the
+ * browser reports as `KeyA` whatever was typed. Only an event with no
+ * character (`Process`, while an input method composes) falls back to the
+ * physical key.
+ */
+export function keyCodeToLight(
+  event: Pick<KeyboardEvent, "key" | "code">,
+  layout: LayoutObject,
+): string | undefined {
+  if ([...event.key].length !== 1) return event.code;
+  return codeOfTypedChar(layout, event.key);
+}
+
+/** The code of the drawn key labelled `char`, shifted or not. */
+function codeOfLegend(layout: LayoutObject, char: string): string | undefined {
   if (char === " ") return "Space";
   for (const name of ["row2", "row3", "row4"] as const) {
     const col = layout.keys[name].findIndex((legends) =>

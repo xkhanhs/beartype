@@ -1,6 +1,6 @@
 import { createMemo, For, JSXElement, onCleanup, Show } from "solid-js";
+import { reconcile } from "solid-js/store";
 
-import { telexKeysOf } from "../../../beartype/telex-keys";
 import { getConfig } from "../../../config/store";
 import { keymapEvent } from "../../../events/keymap";
 import { LayoutObject } from "../../../schemas/layouts";
@@ -12,9 +12,10 @@ import {
 import { getTheme } from "../../../states/theme";
 import { Anime } from "../../common/anime";
 import {
-  codeOfLegend,
+  codeOfTypedChar,
   convertLayoutToKeymap,
   KeyDefinition,
+  keyCodeToLight,
 } from "./keymapLayouts";
 
 /**
@@ -25,7 +26,13 @@ import {
  */
 export function Keymap(): JSXElement {
   return (
-    <Show when={getConfig.keymapMode === "react" && keymapLayoutObject()}>
+    <Show
+      when={
+        getConfig.keymapMode === "react" &&
+        keymapLayoutObject.state === "ready" &&
+        keymapLayoutObject()
+      }
+    >
       {(layout) => {
         const keyboardDef = createMemo(() => convertLayoutToKeymap(layout()));
         listenForKeys(layout);
@@ -58,30 +65,6 @@ function flashKey(code: string, correct: boolean): void {
   });
 }
 
-/**
- * The key to light for a keydown: the key labelled with what the system typed,
- * not the key under the finger.
- *
- * The character is the only part of the event to trust. The typist's layout
- * may not be QWERTY (Colemak here), so the physical key names the wrong
- * letter; and an input method that types for them -- VTX in its tap mode --
- * posts every character as a made-up key with virtual keycode 0, which the
- * browser reports as `KeyA` whatever was typed.
- *
- * A letter with a mark lights the last Telex key it takes, which is the key
- * that just turned the letter into it: `w` when `o` becomes `ơ`, `s` when
- * `ê` becomes `ế`. Only an event with no character (`Process`, while an
- * input method composes) falls back to the physical key.
- */
-function keyCodeToLight(
-  event: KeyboardEvent,
-  layout: LayoutObject,
-): string | undefined {
-  if ([...event.key].length !== 1) return event.code;
-  const keys = telexKeysOf(event.key);
-  return codeOfLegend(layout, keys[keys.length - 1] ?? event.key);
-}
-
 /** Lights keys while the keymap is shown. */
 function listenForKeys(layout: () => LayoutObject): void {
   let lastCode: string | undefined;
@@ -92,12 +75,20 @@ function listenForKeys(layout: () => LayoutObject): void {
     if (lastCode !== undefined) flashKey(lastCode, true);
   };
   document.addEventListener("keydown", onKeyDown);
-  onCleanup(() => document.removeEventListener("keydown", onKeyDown));
+  onCleanup(() => {
+    document.removeEventListener("keydown", onKeyDown);
+    // a flash cut short would otherwise replay when the keymap comes back
+    setKeymapFlashState(reconcile({}));
+  });
 
   // the typing code tells which characters were wrong; the key that typed
-  // one turns red
-  keymapEvent.useListener(({ correct }) => {
-    if (correct === false && lastCode !== undefined) flashKey(lastCode, false);
+  // the wrong one turns red -- found from the character, since the last
+  // keydown may be another key (the space that commits a composition, or
+  // the last letter of a syllable an input method rewrote)
+  keymapEvent.useListener(({ key, correct }) => {
+    if (correct !== false) return;
+    const code = codeOfTypedChar(layout(), key) ?? lastCode;
+    if (code !== undefined) flashKey(code, false);
   });
 }
 
