@@ -4,7 +4,6 @@ import { getConfig } from "../config/store";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { EventLog } from "../test/events/types";
 
-import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
@@ -24,8 +23,6 @@ export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
 export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
-export const [getLoadedChallenge, setLoadedChallenge] =
-  createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
 // it covers the words fade-out that getResultVisible() is still false during.

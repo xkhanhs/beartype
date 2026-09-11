@@ -1,5 +1,4 @@
 import { defineConfig, UserWorkspaceConfig } from "vitest/config";
-import { projects as backendProjects } from "./backend/vitest.config";
 import { projects as frontendProjects } from "./frontend/vitest.config";
 
 //oxlint-disable-next-line no-explicit-any
@@ -8,7 +7,6 @@ let globalPlugins: any[] = [];
 export default defineConfig({
   test: {
     projects: [
-      ...convertTests(backendProjects, "backend"),
       ...convertTests(frontendProjects, "frontend"),
       "packages/**/vitest.config.ts",
     ],
@@ -37,7 +35,7 @@ function convertTests(
         root,
         name: updatedName,
       },
-    } as UserWorkspaceConfig;
+    };
   });
 }
 

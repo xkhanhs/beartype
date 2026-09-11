@@ -1,7 +1,0 @@
-{
-  "extends": "@monkeytype/typescript-config/base.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]
-}
