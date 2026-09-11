@@ -58,7 +58,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "fa-keyboard",
+          icon: "fa-search",
         }}
       />
     ));
@@ -66,11 +66,11 @@ describe("Button component", () => {
     const icon = container.querySelector("i");
     expect(icon).toBeTruthy();
     expect(icon).toHaveClass("fas");
-    expect(icon).toHaveClass("fa-keyboard");
+    expect(icon).toHaveClass("fa-search");
   });
 
   it("renders icon when icon prop has changed", () => {
-    const [icon, setIcon] = createSignal<FaSolidIcon>("fa-keyboard");
+    const [icon, setIcon] = createSignal<FaSolidIcon>("fa-search");
     const { container } = render(() => (
       <Button
         onClick={() => {
@@ -83,12 +83,12 @@ describe("Button component", () => {
       />
     ));
 
-    setIcon("fa-backward");
+    setIcon("fa-cog");
 
     const i = container.querySelector("i");
     expect(i).toBeTruthy();
     expect(i).toHaveClass("fas");
-    expect(i).toHaveClass("fa-backward");
+    expect(i).toHaveClass("fa-cog");
     expect(i).toHaveClass("test");
   });
 
@@ -100,7 +100,7 @@ describe("Button component", () => {
         }}
         fa={{
           fixedWidth: true,
-          icon: "fa-keyboard",
+          icon: "fa-search",
         }}
         text="Hello"
       />
@@ -117,7 +117,7 @@ describe("Button component", () => {
           //
         }}
         fa={{
-          icon: "fa-keyboard",
+          icon: "fa-search",
         }}
         text="Hello"
       />

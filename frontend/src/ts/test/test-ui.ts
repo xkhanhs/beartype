@@ -33,7 +33,6 @@ import {
   qsa,
   qsr,
 } from "../utils/dom";
-import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
@@ -922,7 +921,10 @@ export async function fadeInAfterRestart(noAnim: boolean): Promise<void> {
   });
 }
 
-export function onTestRestart(source: "testPage" | "resultPage"): void {
+// beartype: `source` no longer branches here (upstream's XP breakdown skip
+// dispatched an event nothing subscribed to); kept in the signature so
+// callers stay unchanged.
+export function onTestRestart(_source: "testPage" | "resultPage"): void {
   qs("#result")?.hide();
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
@@ -937,10 +939,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   focusWords(true);
   Caret.resetPosition();
   TestInitFailed.hide();
-
-  if (source === "resultPage") {
-    skipBreakdownEvent.dispatch();
-  }
 
   currentTestLine = 0;
   void SoundController.clearAllSounds();

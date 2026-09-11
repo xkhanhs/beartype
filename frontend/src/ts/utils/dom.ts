@@ -3,7 +3,6 @@ import {
   AnimationParams,
   JSAnimation,
 } from "animejs";
-import { addBanner } from "../states/banners";
 
 /**
  * list of deferred callbacks to be executed once we reached ready state
@@ -1136,13 +1135,6 @@ function checkUniqueSelector(
       elements.native,
     );
     console.trace("Stack trace for qs/qsr call:");
-    if (document.querySelector("#domUtilsQsWarning") !== null) return;
-
-    addBanner({
-      level: "error",
-      icon: "fas fa-exclamation-triangle",
-      text: "Warning: qs/qsr detected selector(s) matching multiple elements, check console for details.",
-    });
   }
 }
 

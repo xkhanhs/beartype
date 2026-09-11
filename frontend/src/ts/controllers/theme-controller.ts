@@ -7,7 +7,6 @@ import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { themes } from "../constants/themes";
 import { qs } from "../utils/dom";
-import { setThemeIndicator } from "../states/core";
 import { setTheme, ThemeIdentifier } from "../states/theme";
 
 let isPreviewingTheme = false;
@@ -19,18 +18,11 @@ async function apply(themeName: ThemeIdentifier): Promise<void> {
 
   setTheme({ ...themeColors, name: themeName });
 
-  updateThemeIndicator();
-
   if (isColorDark(themeColors.bg)) {
     qs("body")?.addClass("darkMode");
   } else {
     qs("body")?.removeClass("darkMode");
   }
-}
-
-function updateThemeIndicator(): void {
-  const str = Config.theme.replace(/_/g, " ");
-  setThemeIndicator({ text: str, isFavorite: false });
 }
 
 let previewTheme: ThemeIdentifier | null = null;
@@ -148,9 +140,6 @@ configEvent.subscribe(async ({ key, newValue, nosave }) => {
     !nosave
   ) {
     await set(Config.themeDark, true);
-  }
-  if (key === "theme") {
-    updateThemeIndicator();
   }
 });
 

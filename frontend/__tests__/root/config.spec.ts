@@ -36,7 +36,6 @@ describe("Config", () => {
       Notifications,
       "showNoticeNotification",
     );
-    const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
     const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
 
@@ -45,7 +44,6 @@ describe("Config", () => {
       dispatchConfigEventMock,
       saveConfigMock,
       notificationAddMock,
-      miscReloadAfterMock,
       miscTriggerResizeMock,
       stateIsTestActiveMock,
     ];
