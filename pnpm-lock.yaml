@@ -80,12 +80,6 @@ importers:
       '@solidjs/meta':
         specifier: 0.29.4
         version: 0.29.4(solid-js@1.9.13)
-      '@tanstack/solid-form':
-        specifier: 1.33.0
-        version: 1.33.0(solid-js@1.9.13)
-      '@tanstack/solid-hotkeys':
-        specifier: 0.10.0
-        version: 0.10.0(solid-js@1.9.13)
       animejs:
         specifier: 4.2.2
         version: 4.2.2
@@ -116,9 +110,6 @@ importers:
       zod:
         specifier: 3.23.8
         version: 3.23.8
-      zod-urlsearchparams:
-        specifier: 0.0.16
-        version: 0.0.16(zod@3.23.8)
     devDependencies:
       '@fortawesome/fontawesome-free':
         specifier: 5.15.4
@@ -1924,41 +1915,6 @@ packages:
     resolution: {integrity: sha512-eHpMeX4JXfVNJDEcsouTeCBubJBTcTLigeaw/NTUW6PB5ATKKXdyonnXgTBX2VuRbjz1hjfz6C5XAhr52ImQXA==}
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
-
-  '@tanstack/devtools-event-client@0.4.3':
-    resolution: {integrity: sha512-OZI6QyULw0FI0wjgmeYzCIfbgPsOEzwJtCpa69XrfLMtNXLGnz3d/dIabk7frg0TmHo+Ah49w5I4KC7Tufwsvw==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  '@tanstack/form-core@1.33.0':
-    resolution: {integrity: sha512-AV4Pw9Dk4orFsuPBcDssfWMJFs+yMYBae7zZ4oTqrCf4ftNGQKxvrQRZeqKHG6A4TkiLeSvf2kzIjcVkrW7E6w==}
-
-  '@tanstack/hotkeys@0.8.0':
-    resolution: {integrity: sha512-vqH7X9nb0MTJ/O08++dB5bP9jgj4+BIPOUu/U+6myG86lDsirZSVSobpq5UQpE7nBuk62i8eIYeOhd+OMl/UrA==}
-    engines: {node: '>=18'}
-
-  '@tanstack/pacer-lite@0.1.1':
-    resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
-    engines: {node: '>=18'}
-
-  '@tanstack/solid-form@1.33.0':
-    resolution: {integrity: sha512-+KXp+T/fD+nO5JarDj1W5GctEm4aFuz13DkHVJrdIHGo0evMXlFNWJT57n+TOyvoLoKehknKjM1o41rrKClSTQ==}
-    peerDependencies:
-      solid-js: '>=1.9.9'
-
-  '@tanstack/solid-hotkeys@0.10.0':
-    resolution: {integrity: sha512-jThxkZMt1ShaQ/ynvyzHfwdbl15gTxJWXnQtbHuRHrzYFvuBB5fx4+D0jKQJ3sSq6XN3HwB3f9cVI0na5rN+Bw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      solid-js: '>=1.7.0'
-
-  '@tanstack/solid-store@0.11.0':
-    resolution: {integrity: sha512-2isL0ZnnyI1iN0V+QPrxE3OcPndohBgVlBcHZYoAOIAiU1WoWjVy0q5gb0suPu1Id0h5cKC23JnwzQTxWDZD0w==}
-    peerDependencies:
-      solid-js: ^1.6.0
-
-  '@tanstack/store@0.11.0':
-    resolution: {integrity: sha512-WlzzCt3xi0G6pCAJu1U+2jiECwabETDpQDi3hfkFZvJii9AuZqEKbOiVarX1/bWhTNjU486yQtJCCasi/0q+Cw==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -4704,11 +4660,6 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod-urlsearchparams@0.0.16:
-    resolution: {integrity: sha512-BF9RfjiMXpGgtPHkKORXqNDXkLGbV5um7Mgn4/ghAxg8RNuiLdKCKPBIzGHk7OfE52Ew103x6Lahs187hadLVg==}
-    peerDependencies:
-      zod: ^3.0.0
-
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
@@ -5766,39 +5717,6 @@ snapshots:
       '@tailwindcss/oxide': 4.3.2
       tailwindcss: 4.3.2
       vite: 8.0.5(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.9.1)(esbuild@0.27.7)(jiti@2.7.0)(sass@1.70.0)(terser@5.49.1)(tsx@4.21.0)(yaml@2.8.3)
-
-  '@tanstack/devtools-event-client@0.4.3': {}
-
-  '@tanstack/form-core@1.33.0':
-    dependencies:
-      '@tanstack/devtools-event-client': 0.4.3
-      '@tanstack/pacer-lite': 0.1.1
-      '@tanstack/store': 0.11.0
-
-  '@tanstack/hotkeys@0.8.0':
-    dependencies:
-      '@tanstack/store': 0.11.0
-
-  '@tanstack/pacer-lite@0.1.1': {}
-
-  '@tanstack/solid-form@1.33.0(solid-js@1.9.13)':
-    dependencies:
-      '@tanstack/form-core': 1.33.0
-      '@tanstack/solid-store': 0.11.0(solid-js@1.9.13)
-      solid-js: 1.9.13
-
-  '@tanstack/solid-hotkeys@0.10.0(solid-js@1.9.13)':
-    dependencies:
-      '@tanstack/hotkeys': 0.8.0
-      '@tanstack/solid-store': 0.11.0(solid-js@1.9.13)
-      solid-js: 1.9.13
-
-  '@tanstack/solid-store@0.11.0(solid-js@1.9.13)':
-    dependencies:
-      '@tanstack/store': 0.11.0
-      solid-js: 1.9.13
-
-  '@tanstack/store@0.11.0': {}
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -8688,10 +8606,6 @@ snapshots:
   yaml@2.9.0: {}
 
   yocto-queue@0.1.0: {}
-
-  zod-urlsearchparams@0.0.16(zod@3.23.8):
-    dependencies:
-      zod: 3.23.8
 
   zod@3.23.8: {}
 

@@ -1,126 +1,47 @@
-import * as PageController from "./page-controller";
+import * as TestLogic from "../test/test-logic";
 import * as PageTransition from "../legacy-states/page-transition";
-import { navigationEvent, type NavigateOptions } from "../events/navigation";
-import { isTestRestarting, isResultCalculating } from "../states/test";
-
-//source: https://www.youtube.com/watch?v=OstALBk-jTc
-// https://www.youtube.com/watch?v=OstALBk-jTc
-
-function pathToRegex(path: string): RegExp {
-  return new RegExp(`^${path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)")}$`);
-}
-
-function getParams(match: {
-  route: Route;
-  result: RegExpMatchArray;
-}): Record<string, string> {
-  const values = match.result.slice(1);
-  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
-    (result) => result[1],
-  );
-
-  const a = keys.map((key, index) => [key, values[index]]);
-  return Object.fromEntries(a) as Record<string, string>;
-}
-
-type Route = {
-  path: string;
-  load: (
-    params: Record<string, string>,
-    navigateOptions: NavigateOptions,
-  ) => Promise<void>;
-};
-
-// beartype has one page; every path lands on the test.
-const routes: Route[] = [
-  {
-    path: "/",
-    load: async (_params, options) => {
-      await PageController.change("test", options);
-    },
-  },
-];
-
-export async function navigate(
-  url = window.location.pathname +
-    window.location.search +
-    window.location.hash,
-  options = {} as NavigateOptions,
-): Promise<void> {
-  if (
-    !options.force &&
-    (isTestRestarting() || isResultCalculating() || PageTransition.get())
-  ) {
-    console.debug(
-      `navigate: ${url} ignored, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
-    );
-    return;
-  }
-
-  url = url.replace(/\/$/, "");
-  if (url === "") url = "/";
-
-  // only push to history if we're navigating to a different URL
-  const currentUrl = new URL(window.location.href);
-  const targetUrl = new URL(url, window.location.origin);
-
-  if (
-    currentUrl.pathname + currentUrl.search + currentUrl.hash !==
-    targetUrl.pathname + targetUrl.search + targetUrl.hash
-  ) {
-    history.pushState(null, "", url);
-  }
-
-  await router(options);
-}
-
-async function router(options = {} as NavigateOptions): Promise<void> {
-  const matches = routes.map((r) => {
-    return {
-      route: r,
-      result: location.pathname.match(pathToRegex(r.path)),
-    };
-  });
-
-  const match = matches.find((m) => m.result !== null) as {
-    route: Route;
-    result: RegExpMatchArray;
-  };
-
-  if (match === undefined) {
-    history.replaceState(null, "", "/");
-    await PageController.change("test", { force: true });
-    return;
-  }
-
-  await match.route.load(getParams(match), options);
-}
-
-window.addEventListener("popstate", () => {
-  void router();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.body.addEventListener("click", (e) => {
-    const target = e?.target as HTMLLinkElement;
-    if (target.matches("[router-link]") && target?.href) {
-      e.preventDefault();
-      void navigate(target.href);
-    }
-  });
-});
-
-navigationEvent.subscribe(({ url, options }) => {
-  void navigate(url, options);
-});
+import * as Focus from "../test/focus";
+import { setActivePage } from "../states/core";
+import { resetIncompleteTests } from "../states/test";
+import { applyReducedMotion, updateTitle } from "../utils/misc";
+import { qsr } from "../utils/dom";
 
 /**
- * Routes the page the browser opened on. Upstream waited for Firebase to
- * report the auth state before doing this; with no accounts there is nothing
- * to wait for.
+ * beartype has one page. Upstream's router matched a URL, loaded the target
+ * page module and ran its lifecycle through a generic multi-page transition
+ * (fade out the current page, run its hooks, fade in the next one, run
+ * that page's hooks). With only the test page reachable, this does that
+ * transition directly: fade out the loading screen, reset the test, fade
+ * in the test page. `PageTransition` still guards input the same way it did
+ * during that transition (see `test/focus.ts`, `test/test-logic.ts`).
  */
-export function start(): void {
-  void navigate(undefined, { force: true }).finally(() => {
-    document.body.classList.remove("loading");
+export async function start(): Promise<void> {
+  PageTransition.set(true);
+
+  const loadingEl = qsr(".page.pageLoading");
+  const testEl = qsr(".page.pageTest");
+  const totalDuration = applyReducedMotion(250);
+
+  await loadingEl.promiseAnimate({
+    opacity: "0",
+    duration: totalDuration / 2,
   });
+  loadingEl.hide();
+
+  updateTitle();
+  setActivePage("test");
+  Focus.set(false);
+
+  resetIncompleteTests();
+  void TestLogic.restart({ noAnim: true });
+
+  testEl.show().setStyle({ opacity: "0" });
+  await testEl.promiseAnimate({
+    opacity: "1",
+    duration: totalDuration / 2,
+  });
+  testEl.addClass("active");
+
+  PageTransition.set(false);
+  document.body.classList.remove("loading");
 }

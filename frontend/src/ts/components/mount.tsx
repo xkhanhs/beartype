@@ -8,7 +8,6 @@ import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
-import { Modals } from "./modals/Modals";
 import { CapsWarning } from "./pages/test/CapsWarning";
 import { LiveStatsMini } from "./pages/test/live-stats/LiveStatsMini";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
@@ -17,7 +16,6 @@ import { TestConfig } from "./pages/test/TestConfig";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
-  modals: () => <Modals />,
   overlays: () => <Overlays />,
   theme: () => <Theme />,
   header: () => <Header />,
