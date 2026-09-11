@@ -1,19 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "workspaces": {
-    "frontend": {
-      "entry": [
-        "src/ts/index.ts",
-        "scripts/build-vietnamese.ts",
-        "__tests__/**/*.{ts,tsx}",
-        "__tests__/global-setup.ts",
-        "__tests__/__harness__/*.ts"
-      ],
-      "project": [
-        "src/**/*.{ts,tsx}",
-        "scripts/**/*.ts",
-        "vite-plugins/**/*.ts"
-      ]
-    }
-  }
+  "entry": [
+    "src/ts/index.ts",
+    "scripts/build-vietnamese.ts",
+    "__tests__/**/*.{ts,tsx}",
+    "__tests__/global-setup.ts",
+    "__tests__/__harness__/*.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "vite-plugins/**/*.ts"]
 }

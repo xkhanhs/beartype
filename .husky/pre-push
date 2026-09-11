@@ -10,4 +10,4 @@ if [ -d /opt/homebrew/opt/node@24/bin ]; then
   export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 fi
 
-pnpm ts-check && pnpm test && pnpm build-fe
+pnpm ts-check && pnpm test && pnpm build

@@ -21,7 +21,7 @@
       "files": ["**/*.tsx"],
       "options": {
         "experimentalTailwindcss": {
-          "stylesheet": "./frontend/src/styles/tailwind.css",
+          "stylesheet": "./src/styles/tailwind.css",
           "attributes": ["cn"],
           "functions": ["cn"]
         },
