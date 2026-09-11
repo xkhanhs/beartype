@@ -358,7 +358,7 @@ function updateWpmAndAcc(): void {
 
       qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        `${acc.correct} đúng\n${acc.incorrect} sai`,
+        `${acc.correct} đúng · ${acc.incorrect} sai`,
       );
     } else {
       //not showing decimal places
@@ -380,16 +380,15 @@ function updateWpmAndAcc(): void {
         rawWpmHover,
       );
 
-      qs("#result .stats .acc .bottom")
-        ?.setAttribute(
-          "aria-label",
-          `${
-            result.acc === 100
-              ? "100%"
-              : Format.percentage(result.acc, { showDecimalPlaces: true })
-          }\n${acc.correct} đúng\n${acc.incorrect} sai`,
-        )
-        ?.setAttribute("data-balloon-break", "");
+      // beartype: one line, the parts split by a middle dot
+      qs("#result .stats .acc .bottom")?.setAttribute(
+        "aria-label",
+        `${
+          result.acc === 100
+            ? "100%"
+            : Format.percentage(result.acc, { showDecimalPlaces: true })
+        } · ${acc.correct} đúng · ${acc.incorrect} sai`,
+      );
     }
   }
 }
