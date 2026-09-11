@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+  beartype: its presence is what switches Cloudflare Pages out of SPA mode,
+  so that _redirects can answer a missing asset with this page and a real 404
+  instead of index.html and a 200 (see _redirects). Every other path is
+  still the app, through the catch-all there.
+-->
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Không có trang này · beartype</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        gap: 1rem;
+        text-align: center;
+        font-family: system-ui, sans-serif;
+        background: #f4f0f0;
+        color: #282640;
+      }
+      a {
+        color: #3d475c;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Không có trang này.</p>
+    <p><a href="/">Về trang đo tốc độ gõ</a></p>
+  </body>
+</html>
