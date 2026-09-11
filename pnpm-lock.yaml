@@ -35,9 +35,6 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
-      date-fns:
-        specifier: 3.6.0
-        version: 3.6.0
       hangul-js:
         specifier: 0.2.6
         version: 0.2.6
@@ -1913,9 +1910,6 @@ packages:
   data-urls@6.0.0:
     resolution: {integrity: sha512-BnBS08aLUM+DKamupXs3w2tJJoqU+AkaE/+6vQxi/G/DPmIZFJJp9Dkb1kM03AZx8ADehDUZgsNxju3mPXZYIA==}
     engines: {node: '>=20'}
-
-  date-fns@3.6.0:
-    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -4790,8 +4784,6 @@ snapshots:
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
     optional: true
-
-  date-fns@3.6.0: {}
 
   debug@4.4.3(supports-color@10.2.2):
     dependencies:
