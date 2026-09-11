@@ -54,7 +54,7 @@ export function Theme(): JSXElement {
 
   const isThemeWithCss = () => {
     const name = getThemeName();
-    return name !== "custom" && (themes[name]?.hasCss ?? false);
+    return themes[name]?.hasCss ?? false;
   };
 
   createEffect(() => {

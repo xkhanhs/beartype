@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { ColorName, Theme } from "../constants/themes";
 import { ThemeName } from "@monkeytype/schemas/configs";
 
-export type ThemeIdentifier = ThemeName | "custom";
+export type ThemeIdentifier = ThemeName;
 const defaultTheme: Theme & { name: ThemeIdentifier } = {
   name: "serika_dark",
   bg: "#323437",

@@ -4,7 +4,6 @@ import * as Logger from "./utils/logger";
 import "./ui";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
-import { enable } from "./legacy-states/glarses-mode";
 import "./input/listeners";
 import { start as startRouter } from "./controllers/route-controller";
 import "./elements/no-css";
@@ -44,7 +43,6 @@ Focus.set(true, true);
 
 addToGlobal({
   config: Config,
-  glarsesMode: enable,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleDebugLogs: Logger.toggleDebugLogs,

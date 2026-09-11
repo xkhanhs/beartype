@@ -24,10 +24,8 @@ import {
   getInputElement,
   isInputElementFocused,
 } from "../input/input-element";
-import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as Joining from "./break-joining";
-import * as ThemeController from "../controllers/theme-controller";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -48,7 +46,6 @@ import {
   getResultVisible,
 } from "../states/test";
 import { createEffect } from "solid-js";
-import * as ConnectionState from "../legacy-states/connection";
 import * as TestInitFailed from "../elements/test-init-failed";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -809,8 +806,6 @@ export function afterTestTextInput(
   inputOverride?: string,
   goingToNextWord = false,
 ): void {
-  void MonkeyPower.addPower(correct);
-
   let input = inputOverride ?? getCurrentInput();
   if (goingToNextWord) {
     input = input.replace(/ $/, "");
@@ -940,18 +935,10 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     seconds: undefined,
   });
   focusWords(true);
-  MonkeyPower.reset();
   Caret.resetPosition();
   TestInitFailed.hide();
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
-
   if (source === "resultPage") {
-    if (Config.randomTheme !== "off") {
-      void ThemeController.randomizeTheme();
-    }
     skipBreakdownEvent.dispatch();
   }
 

@@ -11,7 +11,6 @@ import {
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import { timerEvent } from "../events/timer";
-import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { buildEventLog, logTestEvent } from "./events/data";
@@ -57,7 +56,7 @@ const newTimer = createTimer({
 
     // Catch up missed ticks via the cheap timerStep path, so a stall recovery
     // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
-    // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
+    // gets a step event.
     const ticksDue = Math.floor((now - timerStartMs) / 1000);
     while (!stopped && emittedTicks + 1 < ticksDue) {
       console.debug(
@@ -157,26 +156,6 @@ function checkIfTimeIsUp(testTime: number): void {
   if (timerDebug) console.timeEnd("times up check");
 }
 
-function playTimeWarning(testTime: number): void {
-  if (timerDebug) console.time("play timer warning");
-
-  let maxTime = undefined;
-
-  if (Config.mode === "time") {
-    maxTime = Config.time;
-  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
-    maxTime = CustomText.getLimitValue();
-  }
-
-  if (
-    maxTime !== undefined &&
-    testTime === maxTime - parseInt(Config.playTimeWarning, 10)
-  ) {
-    void SoundController.playTimeWarning();
-  }
-  if (timerDebug) console.timeEnd("play timer warning");
-}
-
 // ---------------------------------------
 
 let timerStats: TimerStats[] = [];
@@ -194,7 +173,6 @@ function timerStep(now: number, catchingUp: boolean): void {
   if (catchingUp) {
     // cheap per-tick side effects — must run for every missed tick during catch-up
     // so warnings/layout switches still fire on the correct seconds
-    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
     checkIfTimeIsUp(testTime);
   } else {
     //calc — only the final, real-time tick pays for these
@@ -224,7 +202,6 @@ function timerStep(now: number, catchingUp: boolean): void {
     });
 
     //logic
-    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
     checkIfTimeIsUp(testTime);
   }
 

@@ -13,7 +13,6 @@ import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
-import * as TodayTracker from "./today-tracker";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
@@ -670,11 +669,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       });
     }
   }
-
-  TodayTracker.addSeconds(
-    completedEvent.testDuration - completedEvent.afkDuration,
-  );
-  Result.updateTodayTracker();
 
   // beartype: there is no account to save to. A valid result is kept in this
   // browser, and only after the result screen has compared it with the best

@@ -2,16 +2,12 @@ import { Config } from "../config/store";
 // beartype: results live in this browser, not in an account snapshot
 import * as DB from "../beartype/local-results";
 
-import { showNoticeNotification } from "../states/notifications";
-import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Arrays from "../utils/arrays";
 import * as PbCrown from "./pb-crown";
-import * as TodayTracker from "./today-tracker";
 import * as Focus from "./focus";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
@@ -113,12 +109,6 @@ function updateTime(): void {
     `${Numbers.roundTo2(result.testDuration)}s (${
       result.afkDuration
     }s ngừng gõ, ${afkSecondsPercent}%)`,
-  );
-}
-
-export function updateTodayTracker(): void {
-  qs("#result .stats .time .bottom .timeToday")?.setText(
-    TodayTracker.getString(),
   );
 }
 
@@ -411,56 +401,9 @@ export async function update(
     qs("#result .stats .infoAndTags")?.show();
   }
 
-  if (GlarsesMode.get()) {
-    qs("main #result .noStressMessage")?.remove();
-    qs("main #result")?.prependHtml(`
-
-      <div class='noStressMessage' style="
-        text-align: center;
-        grid-column: 1/3;
-        font-size: 2rem;
-        padding-bottom: 2rem;
-      ">
-      <i class="fas fa-check"></i>
-      </div>
-
-    `);
-    qsa("main #result .stats")?.hide();
-    qs("main #result .loginTip")?.hide();
-    qs("main #result #saveScreenshotButton")?.hide();
-
-    console.log(
-      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`,
-    );
-  } else {
-    qsa("main #result .stats")?.show();
-    qs("main #result .stats .dailyLeaderboard")?.hide();
-    qs("main #result #saveScreenshotButton")?.show();
-  }
-
-  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
-    const roundedTime = Math.round(res.testDuration);
-
-    const messages = [
-      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
-      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
-      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
-      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
-      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
-      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
-      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
-      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
-      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
-      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
-    ];
-
-    showConfetti();
-    showNoticeNotification(Arrays.randomElementFromArray(messages), {
-      customTitle: "Nice",
-      durationMs: 15000,
-      important: true,
-    });
-  }
+  qsa("main #result .stats")?.show();
+  qs("main #result .stats .dailyLeaderboard")?.hide();
+  qs("main #result #saveScreenshotButton")?.show();
 
   Focus.set(false);
 

@@ -40,15 +40,9 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   themeDark: "keybear_dark",
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
-  ads: "off",
   keymapMode: "off",
   playSoundOnClick: "off",
   playSoundOnError: "off",
-  playTimeWarning: "off",
-  monkey: false,
-  monkeyPowerLevel: "off",
-  customBackground: "",
-  randomTheme: "off",
   resultSaving: true,
 };
 

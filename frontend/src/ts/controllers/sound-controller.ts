@@ -43,14 +43,7 @@ type ErrorSounds = Record<Exclude<PlaySoundOnError, "off">, Howl[]>;
 
 let errorSounds: ErrorSounds | null = null;
 
-let timeWarning: Howl | null = null;
-
 let fartReverb: Howl | null = null;
-
-async function initTimeWarning(): Promise<void> {
-  if (timeWarning !== null) return;
-  timeWarning = await getHowl("../sounds/timeWarning.wav");
-}
 
 async function initFartReverb(): Promise<void> {
   if (fartReverb !== null) return;
@@ -297,14 +290,6 @@ function playScale(validNotes: ValidNotes[], scaleMeta: ScaleData): void {
   oscillatorNode.start(audioCtx.currentTime);
   gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
   oscillatorNode.stop(audioCtx.currentTime + 2);
-}
-
-export async function playTimeWarning(): Promise<void> {
-  if (timeWarning === null) await initTimeWarning();
-  const soundToPlay = timeWarning as Howl;
-  soundToPlay.stop();
-  soundToPlay.seek(0);
-  soundToPlay.play();
 }
 
 export async function playFartReverb(): Promise<void> {

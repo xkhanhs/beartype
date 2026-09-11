@@ -1,11 +1,7 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { JSXElement } from "solid-js";
 
-import { getDefaultConfig } from "../constants/default-config";
-import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
-import { isDevEnvironment } from "../utils/env";
-import { reloadAfter } from "../utils/misc";
 import { getOptions } from "../utils/zod";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
@@ -253,23 +249,6 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "Plays a short sound if you press an incorrect key or press space too early.",
   },
-  playTimeWarning: {
-    key: "playTimeWarning",
-    optionsMetadata: {
-      off: {},
-      "1": { displayString: "1 second" },
-      "3": { displayString: "3 seconds" },
-      "5": { displayString: "5 seconds" },
-      "10": { displayString: "10 seconds" },
-    },
-    fa: { icon: "fa-exclamation-triangle" },
-    displayString: "play time warning",
-    changeRequiresRestart: false,
-    group: "sound",
-    description:
-      "Play a short warning sound if you are close to the end of a timed test.",
-  },
-
   // caret
   smoothCaret: {
     key: "smoothCaret",
@@ -313,35 +292,6 @@ export const configMetadata: ConfigMetadataObject = {
       "Displays your current layout while taking a test. React shows what you pressed and Next shows what you need to press next.",
   },
   // theme
-  customBackground: {
-    key: "customBackground",
-    fa: { icon: "fa-link" },
-    displayString: "custom background",
-    changeRequiresRestart: false,
-    group: "theme",
-    overrideValue: ({ value }) => {
-      return value.trim();
-    },
-    description:
-      "Set an image url or local image to be a custom background image. Local image always take priority over the image url. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
-  },
-  customBackgroundSize: {
-    key: "customBackgroundSize",
-    fa: { icon: "fa-image" },
-    displayString: "custom background size",
-    changeRequiresRestart: false,
-    group: "theme",
-    description:
-      "Set an image url or local image to be a custom background image. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
-  },
-  customBackgroundFilter: {
-    key: "customBackgroundFilter",
-    fa: { icon: "fa-image" },
-    displayString: "custom background filter",
-    changeRequiresRestart: false,
-    group: "theme",
-    description: "Apply various effects to the custom background.",
-  },
   autoSwitchTheme: {
     key: "autoSwitchTheme",
     fa: { icon: "fa-palette" },
@@ -365,41 +315,6 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "theme",
   },
-  randomTheme: {
-    key: "randomTheme",
-    fa: { icon: "fa-palette" },
-    changeRequiresRestart: false,
-    displayString: "random theme",
-    group: "theme",
-    description:
-      "After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto' dark or light themes are used, depending on your system theme. If set to 'custom', custom themes will be randomized.",
-    optionsMetadata: {
-      fav: {
-        displayString: "favorite",
-      },
-      auto: {},
-      custom: {},
-      dark: {},
-      light: {},
-      off: {},
-      on: {},
-    },
-    isBlocked: ({ value }) => {
-      if (value === "custom") {
-        // beartype: saved custom themes lived in the account
-        showNoticeNotification("Random theme 'custom' is unavailable");
-        return true;
-      }
-      return false;
-    },
-  },
-  favThemes: {
-    key: "favThemes",
-    fa: { icon: "fa-palette" },
-    displayString: "favorite themes",
-    changeRequiresRestart: false,
-    group: "theme",
-  },
   theme: {
     key: "theme",
     fa: { icon: "fa-palette" },
@@ -407,33 +322,6 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
-    overrideConfig: () => {
-      return {
-        customTheme: false,
-      };
-    },
-  },
-  customTheme: {
-    key: "customTheme",
-    fa: { icon: "fa-palette" },
-    displayString: "custom theme",
-    changeRequiresRestart: false,
-    group: "theme",
-  },
-  customThemeColors: {
-    key: "customThemeColors",
-    fa: { icon: "fa-palette" },
-    displayString: "custom theme colors",
-    changeRequiresRestart: false,
-    group: "theme",
-    overrideValue: ({ value }) => {
-      const allColorsThesame = value.every((color) => color === value[0]);
-      if (allColorsThesame) {
-        return getDefaultConfig().customThemeColors;
-      } else {
-        return value;
-      }
-    },
   },
 
   // hide elements
@@ -460,49 +348,6 @@ export const configMetadata: ConfigMetadataObject = {
     optionsMetadata: {
       true: { displayString: "show" },
       false: { displayString: "hide" },
-    },
-  },
-  // other (hidden)
-  monkey: {
-    key: "monkey",
-    fa: { icon: "fa-egg" },
-    displayString: "monkey",
-    changeRequiresRestart: false,
-    group: "hidden",
-  },
-  monkeyPowerLevel: {
-    key: "monkeyPowerLevel",
-    fa: { icon: "fa-egg" },
-    displayString: "monkey power level",
-    changeRequiresRestart: false,
-    group: "hidden",
-  },
-
-  // ads
-  ads: {
-    key: "ads",
-    fa: { icon: "fa-ad" },
-    changeRequiresRestart: false,
-    description: `You can disable or enable ads at any time. "Result" will show one ad on the result page, "on" will add floating vertical banners, and "sellout" will add multiple ads on every page.`,
-    group: "ads",
-    overrideValue: ({ value }) => {
-      if (isDevEnvironment()) {
-        return "off";
-      }
-      return value;
-    },
-    isBlocked: ({ value }) => {
-      if (value !== "off" && isDevEnvironment()) {
-        showNoticeNotification("Ads are disabled in development mode.");
-        return true;
-      }
-      return false;
-    },
-    afterSet: ({ nosave }) => {
-      if (!nosave && !isDevEnvironment()) {
-        reloadAfter(3);
-        showNoticeNotification("Ad settings changed. Refreshing...");
-      }
     },
   },
 };

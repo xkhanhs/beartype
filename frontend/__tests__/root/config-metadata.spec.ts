@@ -34,74 +34,29 @@ describe("ConfigMeta", () => {
 
     expect(configsWithTriggeResize).toEqual(["fontSize"].sort());
   });
-  describe("overrideValue", () => {
-    const testCases: TestsByConfig<{
-      given?: Partial<ConfigType>;
-      expected: Partial<ConfigType>;
-    }> = {
-      customBackground: [
-        {
-          value: " https://example.com/test.jpg ",
-          expected: { customBackground: "https://example.com/test.jpg" },
-        },
-      ],
-    };
-
-    it.for(
-      Object.entries(testCases).flatMap(([key, value]) =>
-        value.flatMap((it) => ({ key: key as ConfigKey, ...it })),
-      ),
-    )(
-      `$key value=$value given=$given expect=$expected`,
-      ({ key, value, given, expected }) => {
-        //GIVEN
-        replaceConfig(given ?? {});
-
-        //WHEN
-        setConfig(key, value as any);
-
-        //THEN
-        expect(getConfig()).toMatchObject(expected);
-      },
-    );
-  });
-  describe("isBlocked", () => {
-    const testCases: TestsByConfig<{
-      given?: Partial<ConfigType>;
-      fail?: true;
-    }> = {
-      randomTheme: [{ value: "off" }, { value: "custom", fail: true }],
-    };
-
-    it.for(
-      Object.entries(testCases).flatMap(([key, value]) =>
-        value.flatMap((it) => ({ key: key as ConfigKey, ...it })),
-      ),
-    )(
-      `$key value=$value given=$given fail=$fail`,
-      ({ key, value, given, fail }) => {
-        //GIVEN
-        replaceConfig(given ?? {});
-
-        //WHEN
-        const applied = setConfig(key, value as any);
-
-        //THEN
-        expect(applied).toEqual(!fail);
-      },
-    );
-  });
 
   describe("overrideConfig", () => {
     const testCases: TestsByConfig<{
       given: Partial<ConfigType>;
       expected?: Partial<ConfigType>;
     }> = {
-      theme: [
+      words: [
         {
-          value: "8008",
-          given: { customTheme: true },
-          expected: { customTheme: false },
+          value: 25,
+          given: { mode: "time" },
+          expected: { mode: "words" },
+        },
+        {
+          value: 25,
+          given: { mode: "words" },
+          expected: { mode: "words" },
+        },
+      ],
+      time: [
+        {
+          value: 60,
+          given: { mode: "words" },
+          expected: { mode: "time" },
         },
       ],
     };

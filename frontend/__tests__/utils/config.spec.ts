@@ -46,18 +46,8 @@ describe("config.ts", () => {
           expected: { theme: defaultConfig.theme },
         },
         {
-          given: { ads: "invalid" },
-          expected: { ads: defaultConfig.ads },
-        },
-        {
-          given: { customThemeColors: ["#ffffff"] },
-          expected: { customThemeColors: defaultConfig.customThemeColors },
-        },
-        {
-          given: {
-            favThemes: ["nord", "invalid", "serika_dark", "invalid2", "8008"],
-          },
-          expected: { favThemes: ["nord", "serika_dark", "8008"] },
+          given: { keymapMode: "invalid" },
+          expected: { keymapMode: defaultConfig.keymapMode },
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
@@ -84,14 +74,6 @@ describe("config.ts", () => {
         {
           given: { indicateTypos: true },
           expected: { indicateTypos: "replace" },
-        },
-        {
-          given: {
-            favThemes: ["purpurite", "80s_after_dark", "luna", "pulse"],
-          },
-          expected: {
-            favThemes: ["80s_after_dark", "luna", "pulse"],
-          },
         },
         {
           given: { fontSize: "2" },

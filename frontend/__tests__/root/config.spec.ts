@@ -74,15 +74,6 @@ describe("Config", () => {
       }).toThrow(`Config metadata for key "nonExistentKey" is not defined.`);
     });
 
-    //TODO isBlocked
-    it("should fail if config is blocked", () => {
-      //GIVEN
-      replaceConfig({});
-
-      //WHEN / THEN
-      expect(Config.setConfig("randomTheme", "custom")).toBe(false);
-    });
-
     it("fails if config is invalid", () => {
       //GIVEN
       isConfigValueValidMock.mockReturnValue(false);
@@ -98,24 +89,24 @@ describe("Config", () => {
 
     it("sets overrideConfigs", () => {
       //GIVEN
-      replaceConfig({ customTheme: true });
+      replaceConfig({ mode: "time" });
 
       //WHEN
-      Config.setConfig("theme", "8008");
+      Config.setConfig("words", 25);
 
       //THEN
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "customTheme",
-        newValue: false,
+        key: "mode",
+        newValue: "words",
         nosave: false,
-        previousValue: true,
+        previousValue: "time",
       });
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "theme",
-        newValue: "8008",
+        key: "words",
+        newValue: 25,
         nosave: false,
-        previousValue: "serika_dark",
+        previousValue: 50,
       });
     });
 
@@ -138,10 +129,10 @@ describe("Config", () => {
 
     it("saves configOverride values to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ customTheme: true });
+      replaceConfig({ mode: "time" });
 
       //WHEN
-      Config.setConfig("theme", "8008");
+      Config.setConfig("words", 25);
 
       //THEN
       //wait for debounce
@@ -150,8 +141,8 @@ describe("Config", () => {
       //save
       expect(saveConfigMock).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          theme: "8008",
-          customTheme: false,
+          words: 25,
+          mode: "words",
         }),
       );
     });
@@ -211,21 +202,6 @@ describe("Config", () => {
       Config.setConfig("fontSize", 2.5, { nosave: true });
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
-    });
-
-    it("calls afterSet", () => {
-      //GIVEN
-      isDevEnvironmentMock.mockReturnValue(false);
-      replaceConfig({ ads: "off" });
-
-      //WHEN
-      Config.setConfig("ads", "sellout");
-
-      //THEN
-      expect(notificationAddMock).toHaveBeenCalledWith(
-        "Ad settings changed. Refreshing...",
-      );
-      expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
     });
   });
 

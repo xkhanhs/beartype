@@ -10,7 +10,6 @@ import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
-import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
@@ -27,24 +26,7 @@ export function previewFontFamily(font: FontName): void {
 }
 
 export async function applyFontFamily(): Promise<void> {
-  let font = replaceUnderscoresWithSpaces(Config.fontFamily);
-
-  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
-  if (localFont === undefined) {
-    //use config font
-    qs(".customFont")?.empty();
-  } else {
-    font = "LOCALCUSTOM";
-
-    qs(".customFont")?.setHtml(`
-      @font-face{ 
-        font-family: LOCALCUSTOM;
-        src: url(${localFont});
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }`);
-  }
+  const font = replaceUnderscoresWithSpaces(Config.fontFamily);
 
   const preferredFont = (await getLanguage(Config.language))?.preferredFont;
 
