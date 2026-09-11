@@ -11,15 +11,14 @@ không quote, không funbox. Chỉ còn một màn:
   bằng tiếng Việt hoặc tiếng Anh.
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, rồi mức tốt
   nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
-- **Giao diện của keybear**: chín bảng màu (rê chuột để xem thử), sáu phông chữ
-  bài gõ đủ dấu tiếng Việt, cỡ chữ theo các mức phóng của Chrome (80% tới
-  200%), và con trỏ mượt tuỳ chỉnh được.
+- **Giao diện của keybear**: chín bảng màu (rê chuột để xem thử), phông bài gõ
+  theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh), cỡ
+  chữ theo các mức phóng của Chrome (80% tới 200%), và con trỏ mượt tuỳ chỉnh
+  được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
-- **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: tiếng gõ phím (tiếng của
-  keybear, năm bộ tiếng của monkeytype và một nốt sine), tiếng báo gõ sai (của
-  keybear hoặc monkeytype), âm lượng; phím đã gõ nhầm hiện nhỏ dưới chữ; và bàn
-  phím QWERTY dưới bài gõ, phím sáng lên khi gõ, kể cả khi gõ Telex.
+- **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: phím đã gõ nhầm hiện nhỏ dưới
+  chữ, và bàn phím QWERTY dưới bài gõ, phím sáng lên khi gõ, kể cả khi gõ Telex.
 
 ## Chấm tiếng Việt theo phím
 
@@ -58,3 +57,6 @@ Xem [CLAUDE.md](CLAUDE.md) để biết cách chạy, và [docs/upstream.md](doc
 
 GPL-3.0, như monkeytype. Mã nguồn gốc là của Miodec và
 [những người đóng góp cho monkeytype](https://github.com/monkeytypegame/monkeytype/graphs/contributors).
+Icon lấy từ [Lucide](https://lucide.dev) (ISC, một phần từ Feather, MIT) và dấu
+GitHub của [Simple Icons](https://simpleicons.org) (CC0); giấy phép ghi ở đầu
+[src/html/icons.html](src/html/icons.html).

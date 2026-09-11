@@ -1,6 +1,6 @@
 ---
 title: "Dọn tiếp: bỏ âm thanh, chốt phông, icon SVG, xoá phần upstream còn sót"
-status: pending
+status: done, chờ người dùng gõ thử trước khi merge
 branch: worktree-chore+slim-further
 created: 2026-09-11
 blockedBy: []
@@ -71,14 +71,30 @@ Thứ tự này để pre-push xanh sau từng commit. Phase 4 đi sau phase 3 v
 đụng `test-ui.ts`/`test-logic.ts`, và trước phase 6 vì vương miện chỉ gọn được
 khi nhánh bỏ ngang (`bailedOut`) đã đi.
 
-## Ước lượng sau khi xong
+## Số liệu sau khi xong
 
-| | Trước | Sau (ước) |
+| | Trước (`e9673a4`) | Sau |
 |---|---|---|
-| `src/` | 20.420 dòng | ~17.300 dòng (−15%) |
-| `__tests__/` | 9.724 dòng | ~8.200 dòng |
-| `static/` | 916 KB | ~210 KB |
-| Dependency bỏ | | `howler`, `@types/howler`, `hangul-js`, `date-fns`, `@fortawesome/fontawesome-free`, `fontawesome-subset`, `jsdom` |
+| `src/` | 20.420 dòng, 160 file TS | 16.231 dòng (−20%), 145 file TS |
+| `__tests__/` | 9.724 dòng, 813 test | 7.370 dòng, 564 test |
+| `static/` | 916 KB | 180 KB |
+| `dist` | 1,4 MB; JS 344 KB; CSS 127 KB | 512 KB; JS 271 KB; CSS 50 KB |
+| Dependency bỏ | | `howler`, `@types/howler`, `hangul-js`, `date-fns`, `@fortawesome/fontawesome-free`, `fontawesome-subset`, `jsdom`, `autoprefixer` |
+
+Làm thêm ngoài danh sách ban đầu, vì cùng loại code chết: `break-joining.ts`
+(no-op), hỗ trợ chữ viết phải sang trái và chữ nối, bộ đếm giờ `setTimeout` cũ,
+hai bộ mặc định gộp làm một (`default-config.ts`), các lệnh ghi vào ô kết quả
+không còn trong HTML, `types/validation.d.ts`. Lớp `joiningScript` được giữ cho
+bài luyện (`updateDrillLayout`), vì nó đổi cách vẽ chữ khi luyện.
+
+Để lại, chưa làm: hỗ trợ ký tự tab và xuống dòng trong bài (`wordsHaveTab`,
+`wordsHaveNewline`, `.newline`…). Không danh sách từ nào có hai ký tự này,
+nhưng phần này đan vào cách xử lý phím Enter và nhảy dòng, nên gỡ ra có rủi ro
+lệch cảm giác gõ mà thu về ít.
+
+Sửa môi trường test: vitest tìm jest-dom từ thư mục cha của gốc dự án, nên
+worktree nằm trong `.claude/worktrees/` nạp nhầm bản của repo chính;
+`vitest.config.ts` giờ chỉ thẳng đường dẫn.
 
 ## Tiêu chí xong
 
@@ -94,7 +110,7 @@ khi nhánh bỏ ngang (`bailedOut`) đã đi.
 
 ## Ngoài phạm vi, đã ghi lại
 
-- Tải danh sách từ thất bại (mất mạng, 404) thì `init()` thử lại mãi, màn không
-  báo gì (`test-logic.ts` ~244-303). Đây là lỗi thật, sửa ở một nhánh riêng.
-- Thư mục `packages/` ở repo chính: rác cũ bị git bỏ qua (1,9 MB), chỉ nằm trên
-  máy. Xoá tay khi người dùng đồng ý.
+- Tải danh sách từ thất bại (mất mạng, 404): reviewer nói `init()` thử lại mãi.
+  Đọc lại thì không phải: `testReinitCount` dừng sau 3 lần và hiện
+  `TestInitFailed`. Màn lỗi đó vẫn là chữ tiếng Anh của upstream.
+- Thư mục `packages/` ở repo chính: rác cũ bị git bỏ qua (1,9 MB), đã xoá.
