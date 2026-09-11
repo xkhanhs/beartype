@@ -6,11 +6,7 @@ import { LayoutObject } from "../../../schemas/layouts";
  * letters and the space bar, no number row, no modifiers.
  */
 export type KeyDefinition = {
-  /**
-   * `KeyboardEvent.code` of the key, which is what lights it. An input method
-   * hides the key behind the character: Telex turns the `s` of `as` into the
-   * mark on `á`, and no key is labelled `á`.
-   */
+  /** `KeyboardEvent.code` of the key; the lit keys are kept by it. */
   code: string;
   legend: string;
   /** width in u */
@@ -90,4 +86,19 @@ export function convertLayoutToKeymap(
     row("row4", 1.5),
     [{ code: "Space", legend: "", width: 6, x: 3.5 }],
   ];
+}
+
+/** The code of the drawn key labelled `char`, shifted or not. */
+export function codeOfLegend(
+  layout: LayoutObject,
+  char: string,
+): string | undefined {
+  if (char === " ") return "Space";
+  for (const name of ["row2", "row3", "row4"] as const) {
+    const col = layout.keys[name].findIndex((legends) =>
+      legends.includes(char),
+    );
+    if (col >= 0) return CODES[name][col];
+  }
+  return undefined;
 }

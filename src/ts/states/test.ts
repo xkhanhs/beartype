@@ -9,7 +9,6 @@ import { EventLog } from "../test/events/types";
 
 import { CompletedEvent, IncompleteTest } from "../schemas/results";
 import { createStore } from "solid-js/store";
-import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { getLayout } from "../utils/json-data";
@@ -135,40 +134,12 @@ export const [keymapLayoutObject] = createResource(getKeymapLayout, getLayout);
 
 export type FlashEntry = { tick: number; correct: boolean };
 
-/** The keys lit on the keymap, by `KeyboardEvent.code`. */
+/** The keys lit on the keymap, by the `code` of the key drawn. */
 const [getKeymapFlashState, setKeymapFlashState] = createStore<
   Record<string, FlashEntry | undefined>
 >({});
 
 export { getKeymapFlashState, setKeymapFlashState };
-
-function flashKey(code: string, correct: boolean): void {
-  const existing = getKeymapFlashState[code];
-  setKeymapFlashState(code, {
-    tick: existing ? existing.tick + 1 : 1,
-    correct,
-  });
-}
-
-// beartype: the keymap lights the key that was pressed, found by its code.
-// Upstream lit the key labelled with the character typed, but an input method
-// puts no such character in: Telex turns the `s` of `as` into the mark on
-// `á`, and no key is labelled `á`.
-let lastKeyCode: string | undefined;
-document.addEventListener("keydown", (event) => {
-  if (getConfig.keymapMode !== "react" || event.repeat) return;
-  if ((event.target as HTMLElement | null)?.id !== "wordsInput") return;
-  lastKeyCode = event.code;
-  flashKey(event.code, true);
-});
-
-// the typing code tells which characters were wrong; the key that typed one
-// turns red
-keymapEvent.useListener(({ correct }) => {
-  if (correct === false && lastKeyCode !== undefined) {
-    flashKey(lastKeyCode, false);
-  }
-});
 
 export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);

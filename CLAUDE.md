@@ -56,8 +56,10 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   tải gì, bật thì chỉ tải howler và bộ đang chọn.
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
-  `src/ts/states/test.ts`. Phím sáng theo `event.code`, nên gõ Telex vẫn sáng
-  đúng phím vật lý. `static/layouts/qwerty.json` chỉ tải khi bật.
+  `src/ts/states/test.ts`. Phím sáng theo ký tự hệ thống nhận (`event.key`), chữ
+  có dấu sáng phím Telex cuối của nó (`ơ` sáng `w`), không theo `event.code`:
+  người gõ dùng Colemak, và VTX gửi mọi phím với mã 0, trình duyệt đọc thành
+  `KeyA`. `static/layouts/qwerty.json` chỉ tải khi bật.
 - Phím gõ sai dưới chữ (`indicateTypos: "below"`): `test-ui.ts` treo các
   `hint` lấy từ `typoHints` trong `beartype/word-html.ts`; chữ đang dựng dấu
   không bao giờ có hint.

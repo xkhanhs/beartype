@@ -59,14 +59,15 @@ file `.wav` đã bị xoá lúc fork. Bàn phím ảo đã bị gỡ hẳn, ché
 ## Success Criteria
 - [x] Tắt thì không tải howler hay file âm thanh nào; bật một bộ thì chỉ tải bộ đó (đo trong Network).
       Tiếng phát bất đồng bộ, không chặn keydown. Nghe thử gõ nhanh: còn chờ người dùng.
-- [x] Bàn phím ảo sáng theo `event.code` (thử với `keydown` `key: "Process"` như Telex), phím
-      gõ sai đỏ. Gõ Telex thật trên máy: còn chờ người dùng.
+- [x] Bàn phím ảo sáng theo ký tự hệ thống nhận (thử với `keydown` giả như VTX: `code: "KeyA"`,
+      `key` là `o`, `ơ`, `ế`, `Đ`), phím gõ sai đỏ.
 - [x] Lựa chọn giữ qua lần tải lại; test config-lock phủ khoá mới.
 
 ## Đã làm (khác bản kế hoạch)
-- Bàn phím ảo sáng theo **phím vật lý** (`event.code` của `keydown`), không theo ký tự
-  chèn vào như upstream: Telex không chèn ký tự nào cho phím dấu, nên cách của upstream
-  không sáng. Cờ gõ sai từ `insert-text.ts` chỉ tô đỏ phím vừa bấm. Ghi trong `docs/upstream.md`.
+- Bàn phím ảo sáng theo **ký tự hệ thống nhận** (`event.key` của `keydown`); chữ có dấu sáng
+  phím Telex cuối của nó (`o` rồi `w` thành `ơ`: sáng O rồi W). Bản đầu sáng theo `event.code`
+  và hỏng với người dùng: gõ Colemak qua VTX, VTX gửi phím giả mã 0 nên chỉ `KeyA` sáng.
+  Cờ gõ sai từ `insert-text.ts` tô đỏ phím vừa sáng. Ghi trong `docs/upstream.md`.
 - Phím gõ sai dưới chữ lấy từ `typoHints` (`beartype/word-html.ts`), cùng phép so với cách
   vẽ từ. Như keybear, một chữ có dấu gõ nhầm (`ố` thay cho `ế`) có thể làm hỏng vài ô và
   treo cùng một chữ dưới mỗi ô.

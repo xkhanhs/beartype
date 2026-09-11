@@ -1,6 +1,9 @@
-import { createMemo, For, JSXElement, Show } from "solid-js";
+import { createMemo, For, JSXElement, onCleanup, Show } from "solid-js";
 
+import { telexKeysOf } from "../../../beartype/telex-keys";
 import { getConfig } from "../../../config/store";
+import { keymapEvent } from "../../../events/keymap";
+import { LayoutObject } from "../../../schemas/layouts";
 import {
   getKeymapFlashState,
   keymapLayoutObject,
@@ -8,11 +11,15 @@ import {
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { Anime } from "../../common/anime";
-import { convertLayoutToKeymap, KeyDefinition } from "./keymapLayouts";
+import {
+  codeOfLegend,
+  convertLayoutToKeymap,
+  KeyDefinition,
+} from "./keymapLayouts";
 
 /**
  * The on-screen keyboard under the words, upstream's `react` keymap: a key
- * lights up in the accent when pressed, in the error colour when it made a
+ * lights up in the accent when typed, in the error colour when it made a
  * mistake. Upstream's other modes and board styles are gone; see
  * `keymapLayouts.ts`.
  */
@@ -21,6 +28,7 @@ export function Keymap(): JSXElement {
     <Show when={getConfig.keymapMode === "react" && keymapLayoutObject()}>
       {(layout) => {
         const keyboardDef = createMemo(() => convertLayoutToKeymap(layout()));
+        listenForKeys(layout);
         return (
           <div
             data-ui-element="keymap"
@@ -40,6 +48,57 @@ export function Keymap(): JSXElement {
       }}
     </Show>
   );
+}
+
+function flashKey(code: string, correct: boolean): void {
+  const existing = getKeymapFlashState[code];
+  setKeymapFlashState(code, {
+    tick: existing ? existing.tick + 1 : 1,
+    correct,
+  });
+}
+
+/**
+ * The key to light for a keydown: the key labelled with what the system typed,
+ * not the key under the finger.
+ *
+ * The character is the only part of the event to trust. The typist's layout
+ * may not be QWERTY (Colemak here), so the physical key names the wrong
+ * letter; and an input method that types for them -- VTX in its tap mode --
+ * posts every character as a made-up key with virtual keycode 0, which the
+ * browser reports as `KeyA` whatever was typed.
+ *
+ * A letter with a mark lights the last Telex key it takes, which is the key
+ * that just turned the letter into it: `w` when `o` becomes `ơ`, `s` when
+ * `ê` becomes `ế`. Only an event with no character (`Process`, while an
+ * input method composes) falls back to the physical key.
+ */
+function keyCodeToLight(
+  event: KeyboardEvent,
+  layout: LayoutObject,
+): string | undefined {
+  if ([...event.key].length !== 1) return event.code;
+  const keys = telexKeysOf(event.key);
+  return codeOfLegend(layout, keys[keys.length - 1] ?? event.key);
+}
+
+/** Lights keys while the keymap is shown. */
+function listenForKeys(layout: () => LayoutObject): void {
+  let lastCode: string | undefined;
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.repeat) return;
+    if ((event.target as HTMLElement | null)?.id !== "wordsInput") return;
+    lastCode = keyCodeToLight(event, layout());
+    if (lastCode !== undefined) flashKey(lastCode, true);
+  };
+  document.addEventListener("keydown", onKeyDown);
+  onCleanup(() => document.removeEventListener("keydown", onKeyDown));
+
+  // the typing code tells which characters were wrong; the key that typed
+  // one turns red
+  keymapEvent.useListener(({ correct }) => {
+    if (correct === false && lastCode !== undefined) flashKey(lastCode, false);
+  });
 }
 
 function Key(props: KeyDefinition): JSXElement {
