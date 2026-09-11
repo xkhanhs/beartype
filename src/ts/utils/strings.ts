@@ -203,24 +203,6 @@ export function areCharactersVisuallyEqual(
   return false;
 }
 
-export function toHex(buffer: ArrayBuffer): string {
-  const u8 = new Uint8Array(buffer);
-
-  // Use native toHex if available (modern browsers / future runtimes)
-  if (
-    "toHex" in u8 &&
-    typeof (u8 as { toHex?: unknown }).toHex === "function"
-  ) {
-    return (u8 as unknown as { toHex(): string }).toHex();
-  }
-
-  const hashArray = Array.from(u8);
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return hashHex;
-}
-
 // hoisted to module scope so isSpace doesn't allocate a Set on every call
 // (it runs per keystroke via areCharactersVisuallyEqual)
 const SPACE_CODE_POINTS = new Set([

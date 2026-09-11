@@ -1,24 +1,17 @@
 import { defineConfig, UserWorkspaceConfig } from "vitest/config";
-import { languageHashes } from "./vite-plugins/language-hashes";
 import { envConfig } from "./vite-plugins/env-config";
 import solidPlugin from "vite-plugin-solid";
 
 const plugins = [
-  languageHashes({ skip: true }),
-  envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
+  envConfig({ isDevelopment: true, clientVersion: "TESTING" }),
   solidPlugin({ hot: false }),
 ];
 
-const tanstackSolidNoExternal: (string | RegExp)[] = [
-  "@solidjs/meta",
-  /@tanstack\/solid-.*/,
-];
+const ssr = (): { noExternal: string[] } => ({ noExternal: ["@solidjs/meta"] });
 
 export const projects: UserWorkspaceConfig[] = [
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr: ssr(),
     test: {
       name: { label: "unit", color: "blue" },
       include: ["__tests__/**/*.spec.ts"],
@@ -27,16 +20,13 @@ export const projects: UserWorkspaceConfig[] = [
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
         "__tests__/__harness__/mock-dom.ts",
-        "__tests__/__harness__/mock-env-config.ts",
         "__tests__/__harness__/mock-static.ts",
       ],
     },
     plugins,
   },
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr: ssr(),
     test: {
       name: { label: "jsdom", color: "yellow" },
       include: ["__tests__/**/*.jsdom-spec.ts"],
@@ -46,9 +36,7 @@ export const projects: UserWorkspaceConfig[] = [
     plugins,
   },
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr: ssr(),
     test: {
       name: { label: "jsx", color: "green" },
       include: ["__tests__/**/*.spec.tsx"],

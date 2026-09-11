@@ -1,12 +1,7 @@
 import { Language, LanguageObject } from "../schemas/languages";
 import { LayoutObject } from "../schemas/layouts";
-import { languageHashes } from "virtual:language-hashes";
-import { isDevEnvironment } from "./env";
-import { toHex } from "./strings";
-
 //pin implementation
 const fetch = window.fetch;
-const cryptoSubtle = window.crypto.subtle;
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -81,23 +76,8 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
 let currentLanguage: LanguageObject;
 
 const cachedFetchLanguage = memoizeAsync(
-  async (lang: Language): Promise<LanguageObject> => {
-    const loaded = await fetchJson<LanguageObject>(`/languages/${lang}.json`);
-
-    if (!isDevEnvironment()) {
-      //check the content to make it less easy to manipulate
-      const encoder = new TextEncoder();
-      const data = encoder.encode(JSON.stringify(loaded, null, 0));
-      const hashBuffer = await cryptoSubtle.digest("SHA-256", data);
-      const hash = toHex(hashBuffer);
-      if (hash !== languageHashes[lang]) {
-        throw new Error(
-          "Integrity check failed. Try refreshing the page. If this error persists, please contact support.",
-        );
-      }
-    }
-    return loaded;
-  },
+  async (lang: Language): Promise<LanguageObject> =>
+    await fetchJson<LanguageObject>(`/languages/${lang}.json`),
 );
 /**
  * Fetches the language object for a given language from the server.

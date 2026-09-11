@@ -13,9 +13,7 @@ import autoprefixer from "autoprefixer";
 import { Fonts } from "./src/ts/constants/fonts";
 import { fontawesomeSubset } from "./vite-plugins/fontawesome-subset";
 import { envConfig } from "./vite-plugins/env-config";
-import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
-import { versionFile } from "./vite-plugins/version-file";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
@@ -71,25 +69,15 @@ function getClientVersion(isDevelopment: boolean): string {
   }
 }
 
-/** Enable for font awesome v6 */
-/*
-function sassList(values) {
-  return values.map((it) => `"${it}"`).join(",");
-}
-*/
-
 function getPlugins({
   isDevelopment,
-  env,
 }: {
   isDevelopment: boolean;
-  env: Record<string, string>;
 }): PluginOption[] {
   const clientVersion = getClientVersion(isDevelopment);
 
   const plugins: PluginOption[] = [
-    envConfig({ isDevelopment, clientVersion, env }),
-    languageHashes({ skip: isDevelopment }),
+    envConfig({ isDevelopment, clientVersion }),
     injectHTML() as PluginOption,
     tailwindcss(),
 
@@ -106,7 +94,6 @@ function getPlugins({
 
   const prodPlugins: PluginOption[] = [
     fontawesomeSubset(),
-    versionFile({ clientVersion }),
     ViteMinifyPlugin(),
     injectPreload(),
     minifyJson(),
@@ -149,25 +136,12 @@ function getBuildOptions({
           ) {
             return `webfonts/[name]-[hash].${extType}`;
           }
-          // oxlint-disable-next-line no-deprecated
-          if (assetInfo.name === "misc.css") {
-            return `${extType}/vendor.[hash][extname]`;
-          }
-
           return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
         codeSplitting: {
           groups: [
-            {
-              name: "vendor-tanstack",
-              test: /node_modules\/@tanstack\//,
-            },
-            {
-              name: "monkeytype-packages",
-              test: /monkeytype\/packages\//,
-            },
             {
               name: "monkeytype-utils",
               test: /src\/ts\/utils\//,
@@ -202,17 +176,6 @@ function getCssOptions({
       scss: {
         additionalData(source: string, fp: string) {
           if (isDevelopment || fp.endsWith("index.scss")) {
-            /** Enable for font awesome v6 */
-            /*
-                const fontawesomeClasses = getFontawesomeConfig();
-
-                //inject variables into sass context
-                $fontawesomeBrands: ${sassList(
-                  fontawesomeClasses.brands
-                )};             
-                $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-              */
-
             const bypassFonts = isDevelopment
               ? `
                 $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`
@@ -240,7 +203,7 @@ export default defineConfig(({ mode }): UserConfig => {
   const isDevelopment = mode !== "production";
 
   return {
-    plugins: getPlugins({ isDevelopment, env }),
+    plugins: getPlugins({ isDevelopment }),
     build: getBuildOptions({ enableSourceMaps: false }),
     css: getCssOptions({ isDevelopment }),
     server: {
@@ -249,12 +212,6 @@ export default defineConfig(({ mode }): UserConfig => {
       // answering out of its cache; a port that never moves is the fix.
       port: 3200,
       strictPort: true,
-      host: env["BACKEND_URL"] !== undefined,
-      watch: {
-        //we rebuild the whole contracts package when a file changes
-        //so we only want to watch one file
-        ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
-      },
     },
     clearScreen: false,
     root: "src",
