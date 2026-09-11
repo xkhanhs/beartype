@@ -13,6 +13,7 @@ import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
+import { idleReason } from "../beartype/idle";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
@@ -565,6 +566,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     .slice(-5)
     .every((kps) => kps === 0);
   if (getBailedOut()) afkDetected = false;
+  // beartype: a long stop anywhere in the test, not only at its end
+  const idle = idleReason(
+    eventLog,
+    completedEvent.afkDuration,
+    completedEvent.testDuration,
+  );
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -616,6 +623,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (afkDetected) {
     showNoticeNotification("Test invalid - AFK detected");
+    setIsTestInvalid(true);
+    dontSave = true;
+  } else if (idle !== null) {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (isRepeated()) {
@@ -678,6 +688,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     isRepeated(),
     tooShort,
     dontSave,
+    idle,
   );
 
   await resultUpdatePromise;

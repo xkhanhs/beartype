@@ -295,6 +295,7 @@ function updateOther(
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
+  idle: string | null,
 ): void {
   // beartype: a test that is not kept says so in one quiet word under the
   // figures; the balloon on it gives the reasons, with the bar each missed.
@@ -314,7 +315,10 @@ function updateOther(
     reasons.push("bài xong trong chưa tới 1 giây");
   }
   if (afkDetected) {
-    reasons.push("có lúc ngừng gõ quá lâu giữa bài");
+    reasons.push("5 giây cuối không gõ phím nào");
+  }
+  if (idle !== null) {
+    reasons.push(idle);
   }
   if (isRepeated) {
     reasons.push("gõ lại đúng bài vừa rồi");
@@ -360,6 +364,7 @@ export async function update(
   isRepeated: boolean,
   tooShort: boolean,
   dontSave: boolean,
+  idle: string | null,
 ): Promise<void> {
   result = structuredClone(res);
   hideCrown();
@@ -377,7 +382,14 @@ export async function update(
   updateKey();
   updateTestType();
   await updateCrown(dontSave);
-  updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
+  updateOther(
+    difficultyFailed,
+    failReason,
+    afkDetected,
+    isRepeated,
+    tooShort,
+    idle,
+  );
 
   if (
     qs("#result .stats .tags")?.hasClass("hidden") &&
