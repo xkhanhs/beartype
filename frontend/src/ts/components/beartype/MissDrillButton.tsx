@@ -20,7 +20,7 @@ export function MissDrillButton(): JSXElement {
   return (
     <Button
       variant="text"
-      class={cn("px-4 py-2 transition-opacity", {
+      class={cn("px-4 py-2 text-base transition-opacity", {
         "pointer-events-none opacity-0": getFocus(),
       })}
       fa={{ icon: "fa-exclamation-triangle", fixedWidth: true }}

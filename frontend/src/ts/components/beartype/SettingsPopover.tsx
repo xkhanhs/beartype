@@ -1,6 +1,6 @@
 import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 
-import { PACE_CARETS, SMOOTH_CARETS } from "../../beartype/config-lock";
+import { PACE_CARETS, SMOOTH_CARETS, THEMES } from "../../beartype/config-lock";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../events/test";
@@ -14,6 +14,22 @@ import { SettingsRow } from "./SettingsRow";
  * page had a hundred rows; this has the ones that shape how typing feels and
  * that a person here actually changes.
  */
+
+const THEME_OPTIONS = ["system", ...THEMES] as const;
+
+// keybear's names for its palettes, so the two apps call them the same
+const THEME_LABELS: Record<(typeof THEME_OPTIONS)[number], string> = {
+  system: "tự động",
+  keybear_light: "ban ngày",
+  keybear_dark: "ban đêm",
+  keybear_princess: "hồng phấn",
+  keybear_ocean: "biển xanh",
+  keybear_forest: "rừng cây",
+  keybear_racing: "đua xe",
+  keybear_dracula: "ma cà rồng",
+  keybear_pixel: "pixel",
+  keybear_hero: "siêu nhân",
+};
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
   off: "tắt",
@@ -49,6 +65,7 @@ export function SettingsPopover(props: { rows?: JSXElement }): JSXElement {
   return (
     <div
       ref={setRoot}
+      data-ui-element="settings"
       class={cn("relative transition-opacity", {
         "pointer-events-none opacity-0": getFocus(),
       })}
@@ -62,11 +79,25 @@ export function SettingsPopover(props: { rows?: JSXElement }): JSXElement {
       />
       <Show when={open()}>
         <div
-          class="absolute bottom-full left-1/2 z-50 mb-2 grid w-max -translate-x-1/2 gap-4 rounded-(--roundness) bg-sub-alt p-4 text-sm text-text shadow-lg"
+          class="fixed bottom-16 left-1/2 z-50 grid w-max max-w-[92vw] -translate-x-1/2 gap-4 rounded-(--roundness) bg-sub-alt p-4 text-sm text-text shadow-lg"
           role="dialog"
           aria-label="cài đặt"
         >
           {props.rows}
+          <SettingsRow
+            label="màu"
+            options={THEME_OPTIONS}
+            labels={THEME_LABELS}
+            value={getConfig.autoSwitchTheme ? "system" : getConfig.theme}
+            onPick={(value) => {
+              if (value === "system") {
+                setConfig("autoSwitchTheme", true);
+              } else {
+                setConfig("autoSwitchTheme", false);
+                setConfig("theme", value);
+              }
+            }}
+          />
           <SettingsRow
             label="con trỏ mượt"
             options={SMOOTH_CARETS}

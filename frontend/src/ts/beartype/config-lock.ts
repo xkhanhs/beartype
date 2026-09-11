@@ -17,8 +17,6 @@ export const USER_KEYS = [
   "language",
   "theme",
   "autoSwitchTheme",
-  "themeLight",
-  "themeDark",
   "smoothCaret",
   "paceCaret",
 ] as const satisfies readonly (keyof Config)[];
@@ -34,6 +32,11 @@ type UserKey = (typeof USER_KEYS)[number];
  */
 const BEARTYPE_DEFAULTS: Partial<Config> = {
   language: "vietnamese",
+  // keybear's palettes, following the computer's light or dark setting
+  theme: "keybear_light",
+  autoSwitchTheme: true,
+  themeLight: "keybear_light",
+  themeDark: "keybear_dark",
   smoothCaret: "slow",
   paceCaret: "average",
   ads: "off",
@@ -58,6 +61,17 @@ export const LANGUAGES = ["vietnamese", "english"] as const;
 export const MODES = ["time", "words"] as const;
 export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 export const PACE_CARETS = ["off", "average", "pb", "last"] as const;
+export const THEMES = [
+  "keybear_light",
+  "keybear_dark",
+  "keybear_princess",
+  "keybear_ocean",
+  "keybear_forest",
+  "keybear_racing",
+  "keybear_dracula",
+  "keybear_pixel",
+  "keybear_hero",
+] as const;
 
 export function getBeartypeDefaults(): Config {
   return { ...getDefaultConfig(), ...BEARTYPE_DEFAULTS };
@@ -71,6 +85,7 @@ function allowed(key: UserKey, value: unknown): boolean {
     language: LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
     paceCaret: PACE_CARETS,
+    theme: THEMES,
   };
   const list = lists[key];
   return list === undefined || list.includes(value);

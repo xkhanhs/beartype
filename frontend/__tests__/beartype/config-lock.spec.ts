@@ -59,3 +59,25 @@ describe("lockConfig", () => {
     expect(config.paceCaret).toBe("average");
   });
 });
+
+describe("themes", () => {
+  it("follows the computer's light or dark setting by default", () => {
+    const config = lockConfig(undefined);
+    expect(config.autoSwitchTheme).toBe(true);
+    expect(config.themeLight).toBe("keybear_light");
+    expect(config.themeDark).toBe("keybear_dark");
+  });
+
+  it("keeps a keybear theme and drops an upstream one", () => {
+    expect(
+      lockConfig({
+        ...getBeartypeDefaults(),
+        theme: "keybear_ocean",
+        autoSwitchTheme: false,
+      }).theme,
+    ).toBe("keybear_ocean");
+    expect(
+      lockConfig({ ...getBeartypeDefaults(), theme: "serika_dark" }).theme,
+    ).toBe("keybear_light");
+  });
+});

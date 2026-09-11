@@ -15,7 +15,7 @@ export function Keytips(): JSXElement {
       >
         <div class="flex items-center gap-2">
           <QuickRestartHotkey />
-          <span>- restart test</span>
+          <span>- bài mới</span>
         </div>
       </div>
     </Show>
