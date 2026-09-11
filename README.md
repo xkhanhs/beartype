@@ -43,6 +43,9 @@ Tiếng Anh vẫn được chấm y hệt monkeytype, vì mỗi chữ cái Latin
 Mọi thứ nằm trong `localStorage` của trình duyệt: cấu hình, kết quả, sổ từ hay
 sai. Không có gì được gửi đi. Xoá dữ liệu trang web là mất hết.
 
+Thống kê tốc độ, kỷ lục và sổ từ hay sai chỉ tách tiếng Việt với tiếng Anh. Bài
+theo thời gian hay theo số từ, dài hay ngắn, đều gộp chung vào ngôn ngữ của nó.
+
 ## Phát triển
 
 Xem [CLAUDE.md](CLAUDE.md) để biết cách chạy, và [docs/upstream.md](docs/upstream.md)
