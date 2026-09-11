@@ -12,9 +12,10 @@ import {
   SupportedOscillatorTypes,
 } from "../constants/sounds";
 import { getModifierState } from "../states/modifiers";
+import { lastTelexKey } from "../beartype/telex-keys";
 
-// Nothing here loads until a sound is switched on: howler itself, then only
-// the files of the set that was picked.
+// Nothing here loads until a sound is switched on: howler itself (its own
+// chunk, see vite.config.ts), then only the files of the set that was picked.
 let howlerModulePromise: Promise<typeof import("howler")> | null = null;
 async function getHowlerModule(): Promise<typeof import("howler")> {
   howlerModulePromise ??= (async () => {
@@ -25,26 +26,59 @@ async function getHowlerModule(): Promise<typeof import("howler")> {
   return howlerModulePromise;
 }
 
-const howlers: Record<string, Promise<Howl>> = {};
+const howlers = new Map<string, Promise<Howl>>();
+/** The sounds whose file has arrived, by path. */
+const loaded = new Map<string, Howl>();
 
+async function loadHowl(src: string): Promise<Howl> {
+  const { Howl } = await getHowlerModule();
+  return new Promise<Howl>((resolve, reject) => {
+    const howl: Howl = new Howl({
+      src,
+      onload: () => {
+        loaded.set(src, howl);
+        resolve(howl);
+      },
+      onloaderror: (_id, error) => {
+        // forget it, so the next key tries the file again
+        howlers.delete(src);
+        reject(new Error(`could not load ${src}: ${String(error)}`));
+      },
+    });
+  });
+}
+
+/** A sound, once its file has loaded. */
 async function getHowl(src: string): Promise<Howl> {
-  howlers[src] ??= (async () => {
-    const { Howl } = await getHowlerModule();
-    return new Howl({ src });
-  })();
-
-  return howlers[src];
+  let howl = howlers.get(src);
+  if (howl === undefined) {
+    howl = loadHowl(src);
+    howlers.set(src, howl);
+  }
+  return howl;
 }
 
-async function loadClickSounds(clickId: PlaySoundOnClick): Promise<Howl[]> {
-  if (clickId === "off") return [];
-  return Promise.all(clickSoundFiles(clickId).map(getHowl));
+function loadClickSounds(clickId: PlaySoundOnClick): void {
+  if (clickId === "off") return;
+  for (const src of clickSoundFiles(clickId)) {
+    getHowl(src).catch(console.error);
+  }
 }
 
-function playHowl(howl: Howl | undefined): void {
-  if (howl === undefined) return;
+function playHowl(howl: Howl): void {
   howl.seek(0);
   howl.play();
+}
+
+// A key pressed before its file has arrived plays nothing: waiting for the
+// file would queue every such key and play them in one burst when it lands.
+function playLoaded(src: string): void {
+  const howl = loaded.get(src);
+  if (howl === undefined) {
+    getHowl(src).catch(console.error);
+    return;
+  }
+  playHowl(howl);
 }
 
 export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
@@ -56,8 +90,9 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
     return;
   }
 
-  const [first] = await loadClickSounds(clickId);
-  playHowl(first);
+  loadClickSounds(clickId);
+  const [first] = clickSoundFiles(clickId);
+  if (first !== undefined) playHowl(await getHowl(first));
 }
 
 export async function previewError(): Promise<void> {
@@ -66,8 +101,14 @@ export async function previewError(): Promise<void> {
 
 let currentCode = "KeyA";
 
+// beartype: the note follows the letter typed, not the physical key. An
+// input method that types for the user (VTX in tap mode) posts every key with
+// virtual keycode 0, which the browser reads as `KeyA`, a key with no note.
 document.addEventListener("keydown", (event) => {
-  currentCode = event.code || "KeyA";
+  const key = [...event.key].length === 1 ? lastTelexKey(event.key) : "";
+  currentCode = /^[a-z]$/.test(key)
+    ? `Key${key.toUpperCase()}`
+    : event.code || "KeyQ";
 });
 
 type ValidNotes =
@@ -181,8 +222,9 @@ function playNote(options: {
   if (!audioCtx) return;
 
   currentCode = options.codeOverride ?? currentCode;
+  // keys without a note of their own (a, f, k, space) play the first one
   if (!(currentCode in codeToNote)) {
-    return;
+    currentCode = "KeyQ";
   }
 
   const baseOctave = 3;
@@ -215,13 +257,13 @@ export async function playClick(codeOverride?: string): Promise<void> {
     return;
   }
 
-  const sounds = await loadClickSounds(val);
-  playHowl(randomElementFromArray(sounds));
+  const src = randomElementFromArray(clickSoundFiles(val));
+  if (src !== undefined) playLoaded(src);
 }
 
 export async function playError(): Promise<void> {
   if (Config.playSoundOnError === "off") return;
-  playHowl(await getHowl(errorSoundFile));
+  playLoaded(errorSoundFile);
 }
 
 async function setVolume(val: number): Promise<void> {
@@ -233,9 +275,9 @@ async function setVolume(val: number): Promise<void> {
 // Load a set when it is picked (or when the stored config switches it on), so
 // the first key of a test does not wait on the network.
 configEvent.subscribe(({ key, newValue }) => {
-  if (key === "playSoundOnClick") void loadClickSounds(newValue);
+  if (key === "playSoundOnClick") loadClickSounds(newValue);
   if (key === "playSoundOnError" && newValue !== "off") {
-    void getHowl(errorSoundFile);
+    getHowl(errorSoundFile).catch(console.error);
   }
   if (key === "soundVolume") {
     void setVolume(newValue);
