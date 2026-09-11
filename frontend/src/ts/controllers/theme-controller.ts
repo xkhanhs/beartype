@@ -5,17 +5,12 @@ import { setConfig } from "../config/setters";
 import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
-import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes } from "../constants/themes";
 import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../states/core";
 import { setTheme, ThemeIdentifier } from "../states/theme";
 
 let isPreviewingTheme = false;
-
-export function applyPreset(name: ThemeName): void {
-  void apply(name);
-}
 
 async function apply(themeName: ThemeIdentifier): Promise<void> {
   console.debug(`Theme controller applying theme ${themeName}`);

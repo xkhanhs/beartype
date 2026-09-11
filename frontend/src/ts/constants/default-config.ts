@@ -1,9 +1,9 @@
 import { Config } from "@monkeytype/schemas/configs";
 
 const obj: Config = {
-  theme: "serika_dark",
-  themeLight: "serika",
-  themeDark: "serika_dark",
+  theme: "keybear_light",
+  themeLight: "keybear_light",
+  themeDark: "keybear_dark",
   autoSwitchTheme: false,
   smoothCaret: "medium",
   words: 50,

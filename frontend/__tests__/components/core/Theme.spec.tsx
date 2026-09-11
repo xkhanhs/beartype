@@ -3,7 +3,6 @@ import { createSignal } from "solid-js";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Theme } from "../../../src/ts/components/core/Theme";
-import { ThemeWithName } from "../../../src/ts/constants/themes";
 import * as Loader from "../../../src/ts/states/loader-bar";
 import * as Notifications from "../../../src/ts/states/notifications";
 import * as ThemeSignal from "../../../src/ts/states/theme";
@@ -19,8 +18,14 @@ vi.mock("./FavIcon", () => ({
   FavIcon: () => <div id="favicon" />,
 }));
 
+// the mocked ../../../src/ts/constants/themes module below uses fake theme
+// names ("dark", "light", "custom") outside the real ThemeName enum
+type FakeThemeWithName = { name: string } & Record<string, unknown>;
+
 describe("Theme component", () => {
-  const [themeSignal, setThemeSignal] = createSignal<ThemeWithName>({} as any);
+  const [themeSignal, setThemeSignal] = createSignal<FakeThemeWithName>(
+    {} as FakeThemeWithName,
+  );
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
@@ -32,7 +37,8 @@ describe("Theme component", () => {
     loaderShowMock.mockClear();
     loaderHideMock.mockClear();
     notificationAddMock.mockClear();
-    themeSignalMock.mockImplementation(() => themeSignal());
+    // oxlint-disable-next-line typescript/no-unsafe-return
+    themeSignalMock.mockImplementation(() => themeSignal() as any);
     setThemeSignal({
       name: "dark",
       bg: "#000",

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Config } from "@monkeytype/schemas/configs";
 import {
   getBeartypeDefaults,
   lockConfig,
@@ -85,7 +86,11 @@ describe("themes", () => {
       }).theme,
     ).toBe("keybear_ocean");
     expect(
-      lockConfig({ ...getBeartypeDefaults(), theme: "serika_dark" }).theme,
+      lockConfig({
+        ...getBeartypeDefaults(),
+        // an upstream theme name that no longer exists
+        theme: "serika_dark" as Config["theme"],
+      }).theme,
     ).toBe("keybear_light");
   });
 });

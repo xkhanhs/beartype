@@ -28,14 +28,14 @@ describe("config.ts", () => {
     it("should correctly merge properties of various types", () => {
       const partialConfig = {
         mode: "time",
-        theme: "8008",
+        theme: "keybear_ocean",
         time: 120,
         capsLockWarning: false,
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
       expect(result.mode).toEqual("time");
-      expect(result.theme).toEqual("8008");
+      expect(result.theme).toEqual("keybear_ocean");
       expect(result.time).toEqual(120);
       expect(result.capsLockWarning).toEqual(false);
     });

@@ -4,17 +4,17 @@ import { ThemeName } from "@monkeytype/schemas/configs";
 
 export type ThemeIdentifier = ThemeName;
 const defaultTheme: Theme & { name: ThemeIdentifier } = {
-  name: "serika_dark",
-  bg: "#323437",
-  main: "#e2b714",
-  caret: "#e2b714",
-  sub: "#646669",
-  subAlt: "#2c2e31",
-  text: "#d1d0c5",
-  error: "#ca4754",
-  errorExtra: "#7e2a33",
-  colorfulError: "#ca4754",
-  colorfulErrorExtra: "#7e2a33",
+  name: "keybear_light",
+  bg: "#f4f0f0",
+  caret: "#3d475c",
+  main: "#3d475c",
+  sub: "#7a7786",
+  subAlt: "#e9e1e1",
+  text: "#282640",
+  error: "#ff3333",
+  errorExtra: "#ff0000",
+  colorfulError: "#ff3333",
+  colorfulErrorExtra: "#ff0000",
 };
 
 export const [getTheme, setTheme] = createSignal(defaultTheme);
