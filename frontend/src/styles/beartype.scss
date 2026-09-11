@@ -576,6 +576,11 @@ button.bt-settings-choice {
     gap: 0.6rem;
     align-items: stretch;
     justify-content: center;
+
+    // upstream pads every button here `1em 2em` from an id selector
+    button.bt-action {
+      padding: 0.55rem 1.3rem;
+    }
   }
 }
 
