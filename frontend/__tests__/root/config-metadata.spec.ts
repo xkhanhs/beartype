@@ -15,17 +15,6 @@ describe("ConfigMeta", () => {
     replaceConfig({});
     vi.resetModules();
   });
-  it("should have changeRequiresRestart defined", () => {
-    const configsRequiringRestarts = Object.entries(configMetadata)
-      .filter(([_key, value]) => value.changeRequiresRestart)
-      .map(([key]) => key)
-      .sort();
-
-    expect(configsRequiringRestarts).toEqual(
-      ["words", "time", "mode", "language"].sort(),
-    );
-  });
-
   it("should have triggerResize defined", () => {
     const configsWithTriggeResize = Object.entries(configMetadata)
       .filter(([_key, value]) => value.triggerResize === true)

@@ -1,9 +1,4 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import {
-  showSuccessNotification,
-  showErrorNotification,
-} from "../states/notifications";
 import {
   configLS,
   saveToLocalStorage,
@@ -17,29 +12,6 @@ import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { typedKeys } from "@monkeytype/util/objects";
 import { lockConfig } from "../beartype/config-lock";
-
-export async function applyConfigFromJson(json: string): Promise<void> {
-  try {
-    const parsedConfig = parseJsonWithSchema(
-      json,
-      ConfigSchemas.PartialConfigSchema.strip(),
-      {
-        migrate: (value) => {
-          if (Array.isArray(value)) {
-            throw new Error("Invalid config");
-          }
-          return migrateConfig(value);
-        },
-      },
-    );
-    await applyConfig(parsedConfig);
-    saveFullConfigToLocalStorage();
-    showSuccessNotification("Done");
-  } catch (e) {
-    console.error(e);
-    showErrorNotification("Failed to import settings", { error: e });
-  }
-}
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
@@ -100,11 +72,6 @@ export async function applyConfig(
 
   configEvent.dispatch({ key: "fullConfigChangeFinished" });
   setFullConfigStore(fullConfig);
-}
-
-export async function resetConfig(): Promise<void> {
-  await applyConfig(lockConfig(undefined));
-  saveFullConfigToLocalStorage();
 }
 
 const { promise: configLoadPromise, resolve: loadDone } =

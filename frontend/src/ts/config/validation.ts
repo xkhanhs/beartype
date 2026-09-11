@@ -1,11 +1,5 @@
 import { showErrorNotification } from "../states/notifications";
-import { ZodSchema, z } from "zod";
-
-// function isConfigKeyValid(name: string): boolean {
-//   if (name === null || name === undefined || name === "") return false;
-//   if (name.length > 30) return false;
-//   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
-// }
+import { ZodSchema } from "zod";
 
 export function invalid(
   key: string,
@@ -31,8 +25,4 @@ export function isConfigValueValid<T>(
   if (!isValid) invalid(key, val, undefined);
 
   return isValid;
-}
-
-export function isConfigValueValidBoolean(key: string, val: boolean): boolean {
-  return isConfigValueValid(key, val, z.boolean());
 }
