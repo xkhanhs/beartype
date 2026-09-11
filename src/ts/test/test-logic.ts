@@ -699,8 +699,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // beartype: the words this round missed go into the book behind the drill
   // button; see beartype/miss-book.ts. A wrong key counts even when it was
   // rubbed out before the space; `correct` is judged by keybear's key rule,
-  // so a mark still on its way is not one.
+  // so a mark still on its way is not one. Only a round that is kept -- or a
+  // drill that passes the same checks -- writes to it: a test left idle or
+  // typed twice says little about which words the hands miss.
   const history = getInputHistory(eventLog);
+  learnToneStyle(history);
+  if (dontSave) return;
   const stumbledAt = new Set<number>();
   for (const event of eventLog.events) {
     if (
@@ -717,7 +721,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     stumbledAt,
   );
   recordMisses(Config.language, round.words, round.typed, round.stumbled);
-  learnToneStyle(history);
 }
 
 function fail(reason: string): void {
