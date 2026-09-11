@@ -31,7 +31,7 @@
     "@vitest/coverage-v8": "4.1.5",
     "caniuse-lite": "1.0.30001778",
     "husky": "8.0.1",
-    "knip": "2.19.2",
+    "knip": "6.35.1",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "oxfmt": "0.62.0",
