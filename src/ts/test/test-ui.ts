@@ -23,7 +23,6 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as Joining from "./break-joining";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -125,9 +124,6 @@ function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Joining.set(previousActiveWord, true);
-        } else if (direction === "back") {
-          //
         }
         previousActiveWord.removeClass("active");
         previousActiveWordTop = previousActiveWord.getOffsetTop();
@@ -142,7 +138,6 @@ function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -950,8 +945,5 @@ configEvent.subscribe(({ key }) => {
   }
   if (key === "indicateTypos" || key === "fontSize") {
     updateWordWrapperClasses();
-    if (key === "fontSize") {
-      Joining.update(key, wordsEl);
-    }
   }
 });
