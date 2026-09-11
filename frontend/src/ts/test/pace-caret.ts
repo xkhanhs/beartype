@@ -2,6 +2,7 @@ import * as TestWords from "./test-words";
 import { Config } from "../config/store";
 // beartype: results live in this browser, not in an account snapshot
 import * as DB from "../beartype/local-results";
+import { keyCost } from "../beartype/scoring";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
@@ -147,7 +148,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     currentSettings.timeout = setTimeout(
       () => {
         if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
+        update(expectedStepEnd + stepSeconds(currentSettings) * 1000).catch(
           () => {
             if (settings === currentSettings) settings = null;
           },
@@ -247,7 +248,20 @@ export function handleSpace(correct: boolean, currentWord: string): void {
 export function start(): void {
   const now = performance.now();
   startTimestamp = now;
-  void update((settings?.spc ?? 0) * 1000);
+  void update(settings === null ? 0 : stepSeconds(settings) * 1000);
+}
+
+/**
+ * beartype: how long the pace caret takes to cross the next letter. The speed
+ * is counted in keys (beartype/scoring.ts), so `ế` -- three keys in Telex --
+ * takes three times as long as `e`; upstream gives every character the same
+ * time, which runs ahead of a typist exactly as fast as it claims to be.
+ * English letters and spaces are one key each, so nothing changes there.
+ */
+function stepSeconds(current: Settings): number {
+  const word = TestWords.words.get(current.currentWordIndex)?.text;
+  const char = word?.[current.currentLetterIndex];
+  return current.spc * (char === undefined ? 1 : keyCost(char));
 }
 
 configEvent.subscribe(({ key }) => {

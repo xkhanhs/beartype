@@ -899,15 +899,48 @@ describe("stats.ts", () => {
   });
 
   describe("getAccuracy", () => {
+    // beartype: the percentage is keybear's, read off what each word holds
+    // (keys typed toward the target over keys owed); `correct` and
+    // `incorrect` still tally the keypress flags.
     it("calculates correct/incorrect/percentage", () => {
-      logTestEvent("input", 1100, input());
-      logTestEvent("input", 1200, input({ charIndex: 1 }));
-      logTestEvent("input", 1300, input({ charIndex: 2, correct: false }));
+      pushWords("abc");
+      logTestEvent("input", 1100, input({ data: "a" }));
+      logTestEvent("input", 1200, input({ charIndex: 1, data: "b" }));
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 2, data: "x", correct: false }),
+      );
 
       const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(2);
       expect(acc.incorrect).toBe(1);
       expect(acc.percentage).toBeCloseTo(66.67, 1);
+    });
+
+    it("does not charge a mistake that was fixed", () => {
+      pushWords("ab");
+      logTestEvent("input", 1100, input({ data: "a" }));
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 1, data: "x", correct: false }),
+      );
+      logTestEvent("input", 1300, {
+        charIndex: 1,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+        inputValue: "a",
+      });
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 1, data: "b", inputValue: "ab" }),
+      );
+
+      const acc = getAccuracy(buildEventLog());
+      expect(acc.incorrect).toBe(1);
+      expect(acc.percentage).toBe(100);
     });
 
     it("returns 0% for no events", () => {
@@ -921,7 +954,8 @@ describe("stats.ts", () => {
         charIndex: 0,
         wordIndex: 0,
         inputType: "deleteContentBackward",
-      } as InputEventData);
+        inputValue: "",
+      });
 
       const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(1);
@@ -939,7 +973,9 @@ describe("stats.ts", () => {
       const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(1);
       expect(acc.incorrect).toBe(1);
-      expect(acc.percentage).toBe(50);
+      // beartype: the stopped key never reached the word, and the percentage
+      // reads the word. (Stop on error is pinned off here anyway.)
+      expect(acc.percentage).toBe(100);
     });
   });
 
@@ -1298,8 +1334,10 @@ describe("stats.ts", () => {
       );
 
       const chars = getChars(buildEventLog());
-      // word 0 "しり " is fully correct (2 chars + separator)
-      expect(chars.correctWord).toBe(3);
+      // word 0 "しり " is fully correct (2 chars + separator); beartype also
+      // credits the "か" already typed toward the unfinished word 1, the way
+      // keybear counts a word in progress
+      expect(chars.correctWord).toBe(4);
       expect(chars.incorrect).toBe(0);
       expect(chars.extra).toBe(0);
     });

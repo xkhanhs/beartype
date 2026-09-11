@@ -14,6 +14,7 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
+import { learnToneStyle } from "../beartype/tone-style";
 import * as Replay from "./replay-ui";
 import * as TodayTracker from "./today-tracker";
 import * as Result from "./result";
@@ -994,6 +995,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!dontSave) {
     LocalResults.saveResult(completedEvent);
   }
+  learnToneStyle(getInputHistory(eventLog));
 }
 
 export function fail(reason: string): void {

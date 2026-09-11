@@ -9,6 +9,8 @@ import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
+import * as TestWords from "./test-words";
+import { caretIndex, inTargetStyle } from "../beartype/scoring";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -35,9 +37,17 @@ export function resetPosition(): void {
 }
 
 export function updatePosition(noAnim = false): void {
+  // beartype: the caret stands after the last letter a key reached, the way
+  // the word is drawn (beartype/word-html.ts). Counting typed characters sends
+  // it forward and back while an input method rewrites a letter: `thaa` is
+  // four characters for the three letters of `thầ`.
+  const target = TestWords.words.getCurrent()?.display ?? "";
+  const input = getCurrentInput();
   caret.goTo({
     wordIndex: getActiveWordIndex(),
-    letterIndex: getCurrentInput().length + CompositionState.getData().length,
+    letterIndex:
+      caretIndex(target, inTargetStyle(target, input)) +
+      CompositionState.getData().length,
     isLanguageRightToLeft: isLanguageRightToLeft(),
     isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,

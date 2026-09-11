@@ -10,6 +10,7 @@ import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
+import { wordHtml } from "../beartype/word-html";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
@@ -788,6 +789,13 @@ export async function updateWordLetters({
         for (const char of compositionData) {
           ret += `<letter class="dead">${char}</letter>`;
         }
+      } else if (
+        // beartype: lay the word out by keys, not by character index -- see
+        // beartype/word-html.ts. Upstream's drawing below still serves the
+        // funboxes that draw their own letters.
+        findSingleActiveFunboxWithFunction("getWordHtml") === undefined
+      ) {
+        ret = wordHtml(currentWord ?? "", input, compositionData);
       } else {
         const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
 

@@ -34,6 +34,8 @@ import {
   setCurrentQuote,
 } from "../states/test";
 import * as TestWords from "./test-words";
+import { withToneStyle } from "../beartype/vietnamese";
+import { getToneStyle } from "../beartype/tone-style";
 
 //pin implementation
 const random = Math.random;
@@ -971,6 +973,10 @@ export async function getNextWord(
   }
 
   randomWord = applyFunboxesToWord(randomWord, wordIndex, wordsBound);
+
+  // beartype: draw the tone the way this computer's input method writes it
+  // (`hoà` or `hòa`); see beartype/tone-style.ts
+  randomWord = withToneStyle(randomWord, getToneStyle());
 
   console.debug("Word:", randomWord);
 
