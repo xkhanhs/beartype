@@ -26,6 +26,17 @@ function wpm(value: number): string {
   return Format.typingSpeed(value);
 }
 
+/**
+ * A bar is a few pixels wide and its balloon many times that, so centred on
+ * the bars at either end it hangs off the edge of a narrow screen. Those open
+ * inwards instead, as keybear's `Tooltip` does with `atStart` and `atEnd`.
+ */
+function balloonPos(index: number, count: number): string {
+  if (index < 2) return "up-left";
+  if (index >= count - 2) return "up-right";
+  return "up";
+}
+
 export function ResultHistory(): JSXElement {
   return (
     <Show when={summary()}>
@@ -107,7 +118,7 @@ function SpeedChart(props: {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}`}
-                data-balloon-pos="up"
+                data-balloon-pos={balloonPos(index(), props.recent.length)}
                 data-balloon-break=""
               >
                 <Show when={index() === props.recent.length - 1}>
@@ -117,13 +128,6 @@ function SpeedChart(props: {
             </div>
           )}
         </For>
-      </div>
-      <div class="bt-chart-foot">
-        <span>{props.recent.length} bài gần nhất</span>
-        <span class="bt-chart-key">
-          <span class="bt-chart-key-line" aria-hidden="true"></span>
-          thường {wpm(props.usual)}
-        </span>
       </div>
     </div>
   );
