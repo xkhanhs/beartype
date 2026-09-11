@@ -36,7 +36,8 @@ monkeytype, tìm ở đây trước.
 | `test/caret.ts` | `updatePosition`: chỉ số chữ lấy từ `caretIndex` | con trỏ không nhảy tới rồi lùi khi bộ gõ viết lại chữ |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
-| `test/test-logic.ts` | cuối `finish`: ghi các từ đã chốt vào sổ từ hay sai (`beartype/miss-book.ts`), kể cả từ có phím sai đã xoá trước dấu cách | nút luyện từ hay sai |
+| `test/test-logic.ts` | cuối `finish`: ghi các từ đã chốt vào sổ từ hay sai (`beartype/miss-book.ts`), kể cả từ có phím sai đã xoá trước dấu cách; chỉ ghi khi bài hợp lệ | nút luyện từ hay sai |
+| `test/test-logic.ts` | `finish`: thêm một chốt không hợp lệ `beartype/idle.ts`: ngừng gõ liền 5 giây ở bất kỳ đâu, hoặc ngừng gõ quá 20% thời lượng bài | upstream chỉ bắt 5 giây cuối không gõ; bài treo giữa chừng vẫn được lưu và kéo tốc độ xuống |
 | `test/test-logic.ts` | `restart`: tuỳ chọn `leaveDrill`; bài mới trong lúc luyện từ hay sai là lượt luyện kế (`PractiseWords.continueDrill`) | chế độ luyện giữ tới khi người gõ tự tắt |
 | `test/test-logic.ts` | kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với kỷ lục cũ | không có tài khoản; mọi thứ nằm trên máy |
 | `test/test-logic.ts` | hai chốt chống gian lận (cửa sổ lấy lại focus, tab hiện lại) khởi động lại với `withSameWordset: isRepeated()` | bài gõ lại giữ nguyên từ |

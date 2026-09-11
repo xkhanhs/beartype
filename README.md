@@ -45,6 +45,9 @@ sai. Không có gì được gửi đi. Xoá dữ liệu trang web là mất h�
 
 Thống kê tốc độ, kỷ lục và sổ từ hay sai chỉ tách tiếng Việt với tiếng Anh. Bài
 theo thời gian hay theo số từ, dài hay ngắn, đều gộp chung vào ngôn ngữ của nó.
+Bài không hợp lệ thì không được ghi vào đâu cả, kể cả bài có lúc ngừng gõ liền
+5 giây hoặc tổng thời gian ngừng gõ quá 20% bài. Đồng hồ vẫn chạy khi ô gõ mất
+focus hay khi chuyển tab, nên bỏ đi giữa bài cũng tính là ngừng gõ.
 
 ## Phát triển
 
