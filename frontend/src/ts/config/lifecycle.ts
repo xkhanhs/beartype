@@ -57,7 +57,6 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "minWpm",
   "minAcc",
   "minBurst",
-  "paceCaret",
   "quoteLength", //quote length sets mode,
   "words",
   "time",

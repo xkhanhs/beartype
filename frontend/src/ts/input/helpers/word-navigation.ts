@@ -1,6 +1,5 @@
 import { Config } from "../../config/store";
 import * as TestUI from "../../test/test-ui";
-import * as PaceCaret from "../../test/pace-caret";
 import {
   decreaseActiveWordIndex,
   getActiveWordIndex,
@@ -40,11 +39,6 @@ export async function goToNextWord({
     const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
     ret.lastBurst = burst;
   }
-
-  PaceCaret.handleSpace(
-    correctInsert,
-    TestWords.words.getCurrent()?.textWithCommit ?? "",
-  );
 
   const lastWord = getActiveWordIndex() >= TestWords.words.length - 1;
   if (lastWord) {

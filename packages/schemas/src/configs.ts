@@ -173,17 +173,6 @@ export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 export const SoundVolumeSchema = z.number().min(0).max(1);
 export type SoundVolume = z.infer<typeof SoundVolumeSchema>;
 
-export const PaceCaretSchema = z.enum([
-  "off",
-  "average",
-  "pb",
-  "tagPb",
-  "last",
-  "custom",
-  "daily",
-]);
-export type PaceCaret = z.infer<typeof PaceCaretSchema>;
-
 export const AccountChartSchema = z.tuple([
   z.enum(["on", "off"]),
   z.enum(["on", "off"]),
@@ -286,9 +275,6 @@ export type ThemeName = z.infer<typeof ThemeNameSchema>;
 export const FavThemesSchema = z.array(ThemeNameSchema);
 export type FavThemes = z.infer<typeof FavThemesSchema>;
 
-export const PaceCaretCustomSpeedSchema = z.number().nonnegative();
-export type PaceCaretCustomSpeed = z.infer<typeof PaceCaretCustomSpeedSchema>;
-
 export const MinWpmCustomSpeedSchema = z.number().nonnegative();
 export type MinWpmCustomSpeed = z.infer<typeof MinWpmCustomSpeedSchema>;
 
@@ -389,10 +375,6 @@ export const ConfigSchema = z
     // caret
     smoothCaret: SmoothCaretSchema,
     caretStyle: CaretStyleSchema,
-    paceCaret: PaceCaretSchema,
-    paceCaretCustomSpeed: PaceCaretCustomSpeedSchema,
-    paceCaretStyle: CaretStyleSchema,
-    repeatedPace: z.boolean(),
 
     // appearance
     timerStyle: TimerStyleSchema,

@@ -11,7 +11,6 @@ import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import { getActivePage } from "../states/core";
 import { convertRemToPixels } from "../utils/numbers";
-import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
   requestDebouncedAnimationFrame,
@@ -434,7 +433,7 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("colorfulMode");
   }
 
-  qsa("#caret, #paceCaret, #typingTest, #wordsInput").setStyle({
+  qsa("#caret, #typingTest, #wordsInput").setStyle({
     fontSize: `${Config.fontSize}rem`,
   });
 
@@ -495,7 +494,6 @@ function showWords(): void {
     initial: true,
   });
   updateWordWrapperClasses();
-  PaceCaret.resetCaretPosition();
 }
 
 export function appendEmptyWordElement(index: number): void {
@@ -958,7 +956,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const currentWordsMargin = parseFloat(wordsEl.native.style.marginLeft) || 0;
     wordsEl.setStyle({ marginLeft: `${currentWordsMargin + widthRemoved}px` });
     Caret.caret.handleTapeWordsRemoved(widthRemoved);
-    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1004,7 +1001,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   };
 
   Caret.caret.handleTapeScroll(caretScrollOptions);
-  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     wordsEl.animate({
@@ -1091,7 +1087,6 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
       duration: Config.smoothLineScroll ? duration : 0,
     };
     Caret.caret.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;

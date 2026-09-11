@@ -6,12 +6,11 @@ import {
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
 describe("lockConfig", () => {
-  it("starts in Vietnamese with the slow caret, Roboto Mono and no pace caret", () => {
+  it("starts in Vietnamese with the slow caret and Roboto Mono", () => {
     const config = lockConfig(undefined);
     expect(config.language).toBe("vietnamese");
     expect(config.smoothCaret).toBe("slow");
     expect(config.fontFamily).toBe("Roboto_Mono");
-    expect(config.paceCaret).toBe("off");
   });
 
   it("keeps what the user chose", () => {
@@ -36,12 +35,10 @@ describe("lockConfig", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
       stopOnError: "letter",
-      paceCaret: "average",
       punctuation: true,
       keymapMode: "react",
     });
     expect(config.stopOnError).toBe("off");
-    expect(config.paceCaret).toBe("off");
     expect(config.punctuation).toBe(false);
     expect(config.keymapMode).toBe("off");
   });

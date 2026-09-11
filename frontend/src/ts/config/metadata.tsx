@@ -222,11 +222,6 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
-    afterSet: ({ currentConfig }) => {
-      if (currentConfig.mode === "zen" && currentConfig.paceCaret !== "off") {
-        showNoticeNotification(`Pace caret will not work with zen mode.`);
-      }
-    },
   },
   quoteLength: {
     key: "quoteLength",
@@ -654,70 +649,6 @@ export const configMetadata: ConfigMetadataObject = {
     description: "Change the style of the caret during the test.",
     optionsMetadata: caretOptionsMetadata,
   },
-  paceCaret: {
-    key: "paceCaret",
-    fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret",
-    changeRequiresRestart: false,
-    group: "caret",
-    description:
-      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
-    optionsMetadata: {
-      tagPb: {
-        displayString: "tag pb",
-      },
-      average: {},
-      custom: {},
-      daily: {},
-      last: {},
-      off: {},
-      pb: {},
-    },
-    isBlocked: ({ value }) => {
-      if (document.readyState === "complete") {
-        // beartype: "pb" is read from this browser's results; tags are gone
-        if (value === "tagPb") {
-          showNoticeNotification(`Pace caret "tag pb" is unavailable`);
-          return true;
-        }
-      }
-      return false;
-    },
-  },
-  paceCaretCustomSpeed: {
-    key: "paceCaretCustomSpeed",
-    fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret custom speed",
-    changeRequiresRestart: false,
-    group: "caret",
-    overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.paceCaret !== "custom") {
-        return {
-          paceCaret: "custom",
-        };
-      }
-      return {};
-    },
-  },
-  paceCaretStyle: {
-    key: "paceCaretStyle",
-    fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret style",
-    changeRequiresRestart: false,
-    group: "caret",
-    description: "Change the style of the pace caret during the test.",
-    optionsMetadata: caretOptionsMetadata,
-  },
-  repeatedPace: {
-    key: "repeatedPace",
-    fa: { icon: "fa-i-cursor" },
-    displayString: "repeated pace",
-    changeRequiresRestart: false,
-    group: "caret",
-    description:
-      "When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.",
-  },
-
   // appearance
   timerStyle: {
     key: "timerStyle",

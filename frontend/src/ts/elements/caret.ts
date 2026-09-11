@@ -410,17 +410,7 @@ export class Caret {
       );
     }
 
-    if (caretDebug) {
-      if (this.id === "paceCaret") {
-        for (const l of document.querySelectorAll(".word letter")) {
-          l.classList.remove("debugCaretTarget");
-          l.classList.remove("debugCaretTarget2");
-          l.classList.add("debugCaret");
-        }
-        letter?.addClass("debugCaretTarget");
-        this.element.addClass("debug");
-      }
-    } else {
+    if (!caretDebug) {
       this.element.removeClass("debug");
     }
 

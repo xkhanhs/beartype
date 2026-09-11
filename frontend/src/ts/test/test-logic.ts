@@ -10,7 +10,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
-import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
@@ -33,12 +32,10 @@ import {
   getIncompleteSeconds,
   getIncompleteTests,
   getRestartCount,
-  isPaceRepeat,
   isRepeated,
   isTestActive,
   pushIncompleteTest,
   resetIncompleteTests,
-  setIsPaceRepeat,
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
@@ -119,11 +116,6 @@ export function startTest(now: number): boolean {
   setTestActive(true);
   TestTimer.clear();
 
-  try {
-    if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat())) {
-      PaceCaret.start();
-    }
-  } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   void TestTimer.start(now);
   TestUI.onTestStart();
@@ -251,7 +243,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   resetModifierState();
   setTestActive(false);
   setBailedOut(false);
-  PaceCaret.reset();
   setKoreanStatus(false);
   CompositionState.setComposing(false);
   CompositionState.setData("");
@@ -259,10 +250,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   testReinitCount = 0;
   failReason = "";
 
-  const repeatWithPace =
-    (Config.repeatedPace && options.withSameWordset) ?? false;
   setIsRepeated(options.withSameWordset ?? false);
-  setIsPaceRepeat(repeatWithPace);
 
   // restart
 
@@ -284,8 +272,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     setIsTestRestarting(false);
     return;
   }
-
-  await PaceCaret.init();
 
   TestUI.onTestRestart(source);
 
@@ -664,7 +650,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const eventLog = buildEventLog();
   const ce = buildCompletedEvent(eventLog);
-  PaceCaret.setLastTestWpm(ce.wpm);
 
   console.debug("Completed event object", ce);
 

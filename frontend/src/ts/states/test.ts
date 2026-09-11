@@ -80,10 +80,6 @@ export const getIncompleteSeconds = createMemo(() =>
 );
 
 export const [isRepeated, setIsRepeated] = createSignal(false);
-export const [isPaceRepeat, setIsPaceRepeat] = createSignal(false);
-export const [getPaceCaretWpm, setPaceCaretWpm] = createSignal<
-  number | undefined
->(undefined);
 export const [getCurrentQuote, setCurrentQuote] =
   createSignal<QuoteWithTextSplit | null>(null);
 

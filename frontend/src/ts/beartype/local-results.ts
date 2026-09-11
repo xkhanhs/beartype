@@ -8,9 +8,9 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
  * The result history, kept in this browser and nowhere else.
  *
  * Upstream keeps it on its server and reads it back as the account's
- * snapshot; the personal best, the pace caret's "average" and "pb", and the
- * "today" counter all come from there. beartype has no accounts, so this is
- * the one place those questions are answered.
+ * snapshot; the personal best and the "today" counter come from there.
+ * beartype has no accounts, so this is the one place those questions are
+ * answered.
  *
  * Only what those questions need is stored -- the whole `CompletedEvent`
  * carries per-second chart data and every key timing, and a few hundred of
@@ -121,38 +121,6 @@ export function getLocalPB<M extends Mode>(
     }
   }
   return best === undefined ? undefined : { wpm: best.wpm, acc: best.acc };
-}
-
-function average(results: LocalResult[]): { wpm: number; acc: number } {
-  if (results.length === 0) return { wpm: 0, acc: 0 };
-  const sum = results.reduce(
-    (acc, r) => ({ wpm: acc.wpm + r.wpm, acc: acc.acc + r.acc }),
-    { wpm: 0, acc: 0 },
-  );
-  return { wpm: sum.wpm / results.length, acc: sum.acc / results.length };
-}
-
-/** Same contract as upstream's `getUserAverage10Once`. */
-export async function getUserAverage10Once(
-  filter: SettingsFilter,
-): Promise<{ wpm: number; acc: number }> {
-  return average(matching(filter).slice(-10));
-}
-
-/** Same contract as upstream's `getUserDailyBestOnce`. */
-export async function getUserDailyBestOnce(
-  filter: SettingsFilter,
-): Promise<{ wpm: number; acc: number }> {
-  const since = Date.now() - 24 * 60 * 60 * 1000;
-  let best: LocalResult | undefined;
-  for (const r of matching(filter)) {
-    if (r.timestamp >= since && (best === undefined || r.wpm > best.wpm)) {
-      best = r;
-    }
-  }
-  return best === undefined
-    ? { wpm: 0, acc: 0 }
-    : { wpm: best.wpm, acc: best.acc };
 }
 
 /** How many recent tests the result screen compares against. */

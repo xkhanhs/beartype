@@ -29,8 +29,7 @@ type UserKey = (typeof USER_KEYS)[number];
  *
  * The caret is the setting this app was measured against on monkeytype.com;
  * the rest turn off features that no longer exist here, so that nothing waits
- * on them. The pace caret is one of those: a second caret racing ahead pulls
- * the eye off the words, and keybear's test has none.
+ * on them.
  */
 const BEARTYPE_DEFAULTS: Partial<Config> = {
   language: "vietnamese",
@@ -41,9 +40,6 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   themeDark: "keybear_dark",
   smoothCaret: "slow",
   fontFamily: "Roboto_Mono",
-  paceCaret: "off",
-  // upstream races a repeated test against its first run with the same caret
-  repeatedPace: false,
   ads: "off",
   punctuation: false,
   numbers: false,
