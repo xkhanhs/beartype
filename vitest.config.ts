@@ -24,7 +24,7 @@ export const projects: UserWorkspaceConfig[] = [
     test: {
       name: { label: "unit", color: "blue" },
       include: ["__tests__/**/*.spec.ts"],
-      exclude: ["__tests__/**/*.jsdom-spec.ts"],
+      exclude: ["__tests__/**/*.dom-spec.ts"],
       environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
@@ -38,9 +38,9 @@ export const projects: UserWorkspaceConfig[] = [
   {
     ssr,
     test: {
-      name: { label: "jsdom", color: "yellow" },
-      include: ["__tests__/**/*.jsdom-spec.ts"],
-      environment: "jsdom",
+      name: { label: "dom", color: "yellow" },
+      include: ["__tests__/**/*.dom-spec.ts"],
+      environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [jestDom],
     },
@@ -51,7 +51,7 @@ export const projects: UserWorkspaceConfig[] = [
     test: {
       name: { label: "jsx", color: "green" },
       include: ["__tests__/**/*.spec.tsx"],
-      environment: "jsdom",
+      environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
         jestDom,
