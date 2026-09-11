@@ -4,6 +4,7 @@ import { createSignal } from "solid-js";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { compareWord, inTargetStyle } from "./scoring";
+import { statsLanguage } from "./stats-language";
 
 /**
  * The book of **words** this pair of hands keeps missing, to type them again
@@ -13,7 +14,9 @@ import { compareWord, inTargetStyle } from "./scoring";
  * `nghiêng` is only hard where `iê` meets `ng`, and drilling `ê` alone never
  * touches that. A word committed without its marks counts as missed: the mark
  * really was dropped. Kept per language, since a drill that jumps between
- * Vietnamese and English jumps between two input methods.
+ * Vietnamese and English jumps between two input methods -- and only per
+ * language: a word missed in a time test is drilled with those from a words
+ * test.
  */
 const MissWordSchema = z.object({
   /** Right-typed rounds still owed before the word leaves the book. */
@@ -47,9 +50,27 @@ const storage = new LocalStorageWithSchema<MissBook>({
 
 const [book, setBook] = createSignal<MissBook>(storage.get());
 
+/**
+ * The page for `language`'s pool (see `statsLanguage`): one for Vietnamese
+ * and one for English, merged from any page a browser still keeps under an
+ * old list's name. A word on two of them keeps the larger debt.
+ */
+function pageOf(current: MissBook, language: string): MissPage {
+  const pool = statsLanguage(language);
+  const page: MissPage = {};
+  for (const [name, words] of Object.entries(current)) {
+    if (statsLanguage(name) !== pool) continue;
+    for (const [word, entry] of Object.entries(words)) {
+      const kept = page[word];
+      if (kept === undefined || entry.n > kept.n) page[word] = entry;
+    }
+  }
+  return page;
+}
+
 /** The book's words for a language, the ones owing most first. */
 export function missWords(language: string): string[] {
-  return Object.entries(book()[language] ?? {})
+  return Object.entries(pageOf(book(), language))
     .sort((a, b) => b[1].n - a[1].n || b[1].at - a[1].at)
     .map(([word]) => word);
 }
@@ -123,14 +144,19 @@ export function recordMisses(
   stumbled: readonly boolean[],
 ): void {
   const current = book();
+  const pool = statsLanguage(language);
   const page = applyMisses(
-    current[language] ?? {},
+    pageOf(current, pool),
     words,
     typed,
     Date.now(),
     stumbled,
   );
-  const next = { ...current, [language]: page };
+  // the merged page replaces every page it was merged from
+  const next: MissBook = { [pool]: page };
+  for (const [name, other] of Object.entries(current)) {
+    if (statsLanguage(name) !== pool) next[name] = other;
+  }
   storage.set(next);
   setBook(next);
 }

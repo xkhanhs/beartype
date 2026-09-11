@@ -6,8 +6,8 @@ import Format from "../../singletons/format";
 
 /**
  * The foot of the result screen, after keybear's `TypeTestStats`: how many
- * tests with these settings, the best, the usual, and a bar for each of the
- * last few. It answers the question that comes after the number just typed:
+ * tests in this language (time and words alike), the best, the usual, and a
+ * bar for each of the last few. It answers the question that comes after the number just typed:
  * is that good, for me?
  *
  * `result.ts` sets the summary when it draws the result.
