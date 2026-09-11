@@ -264,7 +264,7 @@ describe("notifications store", () => {
       expect(history).toHaveLength(1);
       expect(history[0]?.message).toBe("msg");
       expect(history[0]?.level).toBe("success");
-      expect(history[0]?.title).toBe("Success");
+      expect(history[0]?.title).toBe("xong");
     });
 
     it("uses correct default titles", () => {
@@ -273,9 +273,9 @@ describe("notifications store", () => {
       addNotificationWithLevel("c", "notice");
 
       const history = getNotificationHistory();
-      expect(history[0]?.title).toBe("Success");
-      expect(history[1]?.title).toBe("Error");
-      expect(history[2]?.title).toBe("Notice");
+      expect(history[0]?.title).toBe("xong");
+      expect(history[1]?.title).toBe("lỗi");
+      expect(history[2]?.title).toBe("thông báo");
     });
 
     it("uses customTitle in history when provided", () => {

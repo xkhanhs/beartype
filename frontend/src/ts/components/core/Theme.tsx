@@ -33,7 +33,7 @@ export function Theme(): JSXElement {
     const name = target.dataset["name"];
     console.debug("Theme component failed to load style", name, e);
     console.error(`Failed to load theme ${name}`, e);
-    showNoticeNotification("Failed to load theme");
+    showNoticeNotification("Không tải được bộ màu");
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {

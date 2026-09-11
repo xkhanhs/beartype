@@ -902,22 +902,23 @@ export async function update(
   if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
     const roundedTime = Math.round(res.testDuration);
 
+    // beartype: upstream's jokes, in Vietnamese
     const messages = [
-      `Congratulations. You just wasted ${roundedTime} seconds of your life by typing nothing. Be proud of yourself.`,
-      `Bravo! You've managed to waste ${roundedTime} seconds and accomplish exactly zero. A true productivity icon.`,
-      `That was ${roundedTime} seconds of absolutely legendary idleness. History will remember this moment.`,
-      `Wow, ${roundedTime} seconds of typing... nothing. Bold. Mysterious. Completely useless.`,
-      `Thank you for those ${roundedTime} seconds of utter nothingness. The keyboard needed the break.`,
-      `A breathtaking display of inactivity. ${roundedTime} seconds of absolutely nothing. Powerful.`,
-      `You just gave ${roundedTime} seconds of your life to the void. And the void says thanks.`,
-      `Stunning. ${roundedTime} seconds of intense... whatever that wasn't. Keep it up, champ.`,
-      `Is it performance art? A protest? Or just ${roundedTime} seconds of glorious nothing? We may never know.`,
-      `You typed nothing for ${roundedTime} seconds. And in that moment, you became legend.`,
+      `Chúc mừng. Bạn vừa tiêu ${roundedTime} giây cuộc đời để gõ… không chữ nào. Tự hào đi.`,
+      `Tuyệt vời! ${roundedTime} giây trôi qua và thành quả đúng bằng không. Một biểu tượng năng suất.`,
+      `${roundedTime} giây ngồi không đầy huyền thoại. Lịch sử sẽ ghi nhớ khoảnh khắc này.`,
+      `Chà, ${roundedTime} giây gõ… không gì cả. Táo bạo. Bí ẩn. Vô dụng hoàn toàn.`,
+      `Cảm ơn ${roundedTime} giây trống rỗng ấy. Bàn phím cũng cần được nghỉ.`,
+      `Một màn trình diễn sự im lặng ngoạn mục: ${roundedTime} giây không gì cả. Mạnh mẽ.`,
+      `Bạn vừa tặng ${roundedTime} giây cuộc đời cho hư vô. Và hư vô xin cảm ơn.`,
+      `Ấn tượng. ${roundedTime} giây của… một thứ gì đó không phải là gõ. Cứ thế phát huy nhé.`,
+      `Nghệ thuật trình diễn? Một cuộc biểu tình? Hay chỉ là ${roundedTime} giây trống không? Không ai biết.`,
+      `Bạn không gõ gì suốt ${roundedTime} giây. Và ngay lúc ấy, bạn đã thành huyền thoại.`,
     ];
 
     showConfetti();
     showNoticeNotification(Arrays.randomElementFromArray(messages), {
-      customTitle: "Nice",
+      customTitle: "chà",
       durationMs: 15000,
       important: true,
     });
