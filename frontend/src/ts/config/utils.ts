@@ -1,6 +1,5 @@
 import type {
   Config as ConfigSchema,
-  FunboxName,
   PartialConfig,
 } from "@monkeytype/schemas/configs";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
@@ -121,22 +120,6 @@ function replaceLegacyValues(
 
   if (typeof configObj.soundVolume === "string") {
     configObj.soundVolume = parseFloat(configObj.soundVolume);
-  }
-
-  if (typeof configObj.funbox === "string") {
-    if (configObj.funbox === "none") {
-      configObj.funbox = [];
-    } else {
-      configObj.funbox = (configObj.funbox as string).split(
-        "#",
-      ) as FunboxName[];
-    }
-  }
-
-  if (typeof configObj.customLayoutfluid === "string") {
-    configObj.customLayoutfluid = (configObj.customLayoutfluid as string).split(
-      "#",
-    ) as ConfigSchemas.CustomLayoutFluid;
   }
 
   if (typeof configObj.indicateTypos === "boolean") {

@@ -248,15 +248,6 @@ export type CustomBackgroundFilter = z.infer<
   typeof CustomBackgroundFilterSchema
 >;
 
-export const CustomLayoutFluidSchema = z
-  .array(Layouts.LayoutNameSchema)
-  .min(2)
-  .max(15);
-export type CustomLayoutFluid = z.infer<typeof CustomLayoutFluidSchema>;
-
-export const CustomPolyglotSchema = z.array(LanguageSchema).min(2);
-export type CustomPolyglot = z.infer<typeof CustomPolyglotSchema>;
-
 export const MonkeyPowerLevelSchema = z.enum(["off", "1", "2", "3", "4"]);
 export type MonkeyPowerLevel = z.infer<typeof MonkeyPowerLevelSchema>;
 
@@ -294,61 +285,6 @@ export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
 export const FavThemesSchema = z.array(ThemeNameSchema);
 export type FavThemes = z.infer<typeof FavThemesSchema>;
-
-export const FunboxNameSchema = z.enum([
-  "58008",
-  "mirror",
-  "upside_down",
-  "nausea",
-  "round_round_baby",
-  "simon_says",
-  "tts",
-  "choo_choo",
-  "arrows",
-  "rAnDoMcAsE",
-  "sPoNgEcAsE",
-  "capitals",
-  "layout_mirror",
-  "layoutfluid",
-  "earthquake",
-  "space_balls",
-  "gibberish",
-  "ascii",
-  "specials",
-  "plus_zero",
-  "plus_one",
-  "plus_two",
-  "plus_three",
-  "read_ahead_easy",
-  "read_ahead",
-  "read_ahead_hard",
-  "memory",
-  "nospace",
-  "poetry",
-  "wikipedia",
-  "weakspot",
-  "pseudolang",
-  "IPv4",
-  "IPv6",
-  "binary",
-  "hexadecimal",
-  "zipf",
-  "morse",
-  "crt",
-  "backwards",
-  "ddoouubblleedd",
-  "instant_messaging",
-  "underscore_spaces",
-  "ALL_CAPS",
-  "polyglot",
-  "asl",
-  "rot13",
-  "no_quit",
-]);
-export type FunboxName = z.infer<typeof FunboxNameSchema>;
-
-export const FunboxSchema = z.array(FunboxNameSchema).max(15);
-export type Funbox = z.infer<typeof FunboxSchema>;
 
 export const PaceCaretCustomSpeedSchema = z.number().nonnegative();
 export type PaceCaretCustomSpeed = z.infer<typeof PaceCaretCustomSpeedSchema>;
@@ -428,9 +364,6 @@ export const ConfigSchema = z
     minBurst: MinimumBurstSchema,
     minBurstCustomSpeed: MinimumBurstCustomSpeedSchema,
     britishEnglish: z.boolean(),
-    funbox: FunboxSchema,
-    customLayoutfluid: CustomLayoutFluidSchema,
-    customPolyglot: CustomPolyglotSchema,
 
     // input
     freedomMode: z.boolean(),

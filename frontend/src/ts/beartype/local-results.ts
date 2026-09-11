@@ -2,7 +2,6 @@ import { z } from "zod";
 import { DifficultySchema, ModeSchema } from "@monkeytype/schemas/shared";
 import type { CompletedEvent } from "@monkeytype/schemas/results";
 import type { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
-import type { FunboxMetadata } from "@monkeytype/funbox";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 /**
@@ -106,11 +105,7 @@ export function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funboxes: FunboxMetadata[],
 ): { wpm: number; acc: number } | undefined {
-  if (!funboxes.every((f) => f.canGetPb)) {
-    return undefined;
-  }
   let best: LocalResult | undefined;
   for (const r of matching({
     mode,

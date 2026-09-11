@@ -47,7 +47,6 @@ const BEARTYPE_DEFAULTS: Partial<Config> = {
   ads: "off",
   punctuation: false,
   numbers: false,
-  funbox: [],
   keymapMode: "off",
   playSoundOnClick: "off",
   playSoundOnError: "off",

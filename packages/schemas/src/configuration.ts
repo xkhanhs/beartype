@@ -66,7 +66,6 @@ export const ConfigurationSchema = z.object({
     }),
     xp: z.object({
       enabled: z.boolean(),
-      funboxBonus: z.number(),
       gainMultiplier: z.number(),
       maxDailyBonus: z.number(),
       minDailyBonus: z.number(),

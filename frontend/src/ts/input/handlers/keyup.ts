@@ -1,4 +1,3 @@
-import { Config } from "../../config/store";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
@@ -12,14 +11,12 @@ export async function onKeyup(event: KeyboardEvent): Promise<void> {
     meta: event.metaKey ? true : undefined,
   });
 
-  // allow arrows in arrows funbox
-  const arrowsActive = Config.funbox.includes("arrows");
   if (
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
     event.key === "PageDown" ||
-    (event.key.startsWith("Arrow") && !arrowsActive)
+    event.key.startsWith("Arrow")
   ) {
     event.preventDefault();
     return;

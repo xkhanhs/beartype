@@ -14,12 +14,9 @@ import * as Arrays from "../utils/arrays";
 import * as PbCrown from "./pb-crown";
 import * as TodayTracker from "./today-tracker";
 import * as Focus from "./focus";
-import * as Funbox from "./funbox/funbox";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
 import { CompletedEvent } from "@monkeytype/schemas/results";
-import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
-import { getFunbox } from "@monkeytype/funbox";
 import { blurInputElement } from "../input/input-element";
 import { qs, qsa } from "../utils/dom";
 import {
@@ -264,7 +261,6 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      getActiveFunboxes(),
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -291,7 +287,6 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      [],
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -333,27 +328,16 @@ type CanGetPbObject = {
 };
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
-  const funboxes = result.funbox;
-  const funboxObjects = getFunbox(result.funbox);
-  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
-
-  const funboxesOk = funboxes.length === 0 || allFunboxesCanGetPb;
   // allow stopOnError:letter to be PB only if 100% accuracy, since it doesn't affect gameplay
   const stopOnLetterTriggered =
     Config.stopOnError === "letter" && result.acc < 100;
   const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && !stopOnLetterTriggered && notBailedOut) {
+  if (!stopOnLetterTriggered && notBailedOut) {
     return {
       value: true,
     };
   } else {
-    if (!funboxesOk) {
-      return {
-        value: false,
-        reason: "funbox",
-      };
-    }
     if (stopOnLetterTriggered) {
       return {
         value: false,
@@ -419,8 +403,7 @@ function updateTestType(randomQuote: Quote | null): void {
       testType += ` ${["short", "medium", "long", "thicc"][randomQuote.group]}`;
     }
   }
-  const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
-  if (Config.mode !== "custom" && !ignoresLanguage) {
+  if (Config.mode !== "custom") {
     testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
   }
   if (Config.punctuation) {
@@ -434,9 +417,6 @@ function updateTestType(randomQuote: Quote | null): void {
   }
   if (Config.lazyMode) {
     testType += "<br>lazy";
-  }
-  if (Config.funbox.length > 0) {
-    testType += `<br>${Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ")}`;
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
@@ -624,8 +604,6 @@ export async function update(
   }
 
   Focus.set(false);
-
-  void Funbox.clear();
 
   qs(".pageTest .loading")?.hide();
   qs("#result")?.show();

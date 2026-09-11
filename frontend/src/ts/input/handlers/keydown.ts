@@ -15,7 +15,6 @@ import {
   setCorrectShiftUsed,
   setLastBailoutAttempt,
 } from "../state";
-import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
 import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
@@ -96,24 +95,6 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   }
 }
 
-async function handleFunboxes(
-  event: KeyboardEvent,
-  now: number,
-): Promise<boolean> {
-  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
-  }
-
-  for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
-    const emulatedChar = fb.functions.getEmulatedChar(event);
-    if (emulatedChar !== null) {
-      await emulateInsertText({ data: emulatedChar, now });
-      return true;
-    }
-  }
-  return false;
-}
-
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
   if (event.repeat) {
     // just ignore all repeats
@@ -130,14 +111,12 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     meta: event.metaKey ? true : undefined,
   });
 
-  // allow arrows in arrows funbox
-  const arrowsActive = Config.funbox.includes("arrows");
   if (
     event.key === "Home" ||
     event.key === "End" ||
     event.key === "PageUp" ||
     event.key === "PageDown" ||
-    (event.key.startsWith("Arrow") && !arrowsActive)
+    event.key.startsWith("Arrow")
   ) {
     event.preventDefault();
     return;
@@ -145,12 +124,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (Config.oppositeShiftMode !== "off") {
     await handleOppositeShift(event);
-  }
-
-  const prevent = await handleFunboxes(event, now);
-  if (prevent) {
-    event.preventDefault();
-    return;
   }
 
   if (Config.layout !== "default") {

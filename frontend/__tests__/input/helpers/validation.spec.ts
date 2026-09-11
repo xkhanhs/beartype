@@ -4,16 +4,11 @@ import {
   shouldGoToNextWord,
 } from "../../../src/ts/input/helpers/validation";
 import { __testing } from "../../../src/ts/config/testing";
-import * as FunboxList from "../../../src/ts/test/funbox/list";
 import * as Strings from "../../../src/ts/utils/strings";
 
 const { replaceConfig } = __testing;
 
 // Mock dependencies
-vi.mock("../../../src/ts/test/funbox/list", () => ({
-  findSingleActiveFunboxWithFunction: vi.fn(),
-}));
-
 vi.mock("../../../src/ts/utils/strings", async () => {
   const actual = await vi.importActual<typeof Strings>(
     "../../../src/ts/utils/strings",
@@ -35,10 +30,6 @@ describe("isCharCorrect", () => {
       difficulty: "normal",
       strictSpace: false,
     });
-    // oxlint-disable-next-line typescript/no-unsafe-call
-    (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
-      null,
-    );
     // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
   });

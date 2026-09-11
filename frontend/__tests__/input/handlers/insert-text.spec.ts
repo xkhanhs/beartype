@@ -108,7 +108,6 @@ vi.mock("../../../src/ts/test/test-logic", () => ({
   finish: vi.fn(),
   addWord: vi.fn(),
 }));
-vi.mock("../../../src/ts/test/weak-spot", () => ({ updateScore: vi.fn() }));
 vi.mock("../../../src/ts/events/keymap", () => ({ flash: vi.fn() }));
 vi.mock("../../../src/ts/states/notifications", () => ({
   showNoticeNotification: vi.fn(),

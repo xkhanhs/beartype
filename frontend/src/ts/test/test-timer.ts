@@ -2,9 +2,7 @@
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
 import { Config } from "../config/store";
-import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
-import * as TestWords from "./test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -13,13 +11,10 @@ import {
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import { timerEvent } from "../events/timer";
-import { highlight } from "../events/keymap";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
-import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
+import { buildEventLog, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import {
   getLiveCachedAccuracy,
@@ -143,52 +138,6 @@ export function clear(logEnd = false, now = performance.now()): void {
   }
 }
 
-function layoutfluid(time: number): void {
-  if (timerDebug) console.time("layoutfluid");
-
-  if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
-    const layouts = Config.customLayoutfluid;
-    const switchTime = Config.time / layouts.length;
-    const index = Math.floor(time / switchTime);
-    const layout = layouts[index];
-    const flooredSwitchTimes = [];
-
-    for (let i = 1; i < layouts.length; i++) {
-      flooredSwitchTimes.push(Math.floor(switchTime * i));
-    }
-
-    if (flooredSwitchTimes.includes(time + 3)) {
-      LayoutfluidFunboxTimer.show();
-      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 2)) {
-      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 1)) {
-      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1] as string);
-    }
-
-    if (Config.layout !== layout && layout !== undefined) {
-      LayoutfluidFunboxTimer.hide();
-      setConfig("layout", layout as Layout, {
-        nosave: true,
-      });
-      setConfig("keymapLayout", layout as KeymapLayout, {
-        nosave: true,
-      });
-
-      if (Config.keymapMode === "next") {
-        setTimeout(() => {
-          highlight(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
-          );
-        }, 1);
-      }
-    }
-  }
-  if (timerDebug) console.timeEnd("layoutfluid");
-}
-
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
   acc: number,
@@ -277,7 +226,6 @@ function timerStep(now: number, catchingUp: boolean): void {
     // cheap per-tick side effects — must run for every missed tick during catch-up
     // so warnings/layout switches still fire on the correct seconds
     if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
-    layoutfluid(testTime);
     checkIfTimeIsUp(testTime);
   } else {
     //calc — only the final, real-time tick pays for these
@@ -308,7 +256,6 @@ function timerStep(now: number, catchingUp: boolean): void {
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
-    layoutfluid(testTime);
     const failed = checkIfFailed(wpmAndRaw, acc);
     if (!failed) checkIfTimeIsUp(testTime);
   }

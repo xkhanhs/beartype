@@ -5,7 +5,6 @@ import * as DB from "../beartype/local-results";
 import { keyCost } from "../beartype/scoring";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
-import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
 import {
@@ -79,7 +78,6 @@ export async function init(): Promise<void> {
         Config.language,
         Config.difficulty,
         Config.lazyMode,
-        getActiveFunboxes(),
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
     // beartype: no tags, so there is no tag pb to pace against

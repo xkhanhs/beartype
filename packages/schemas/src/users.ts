@@ -11,7 +11,7 @@ import {
   DifficultySchema,
   PersonalBestSchema,
 } from "./shared";
-import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
+import { CustomThemeColorsSchema } from "./configs";
 import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
 
@@ -55,7 +55,6 @@ export const ResultFiltersSchema = z.object({
     .strict(),
   tags: z.record(IdSchema.or(NoneFilterSchema), z.boolean()),
   language: z.record(LanguageSchema, z.boolean()),
-  funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
 export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;

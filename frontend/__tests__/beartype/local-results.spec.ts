@@ -43,7 +43,7 @@ describe("local results", () => {
     save(62);
     save(90, "english");
     expect(
-      getLocalPB("time", "30", false, false, "vietnamese", "normal", false, []),
+      getLocalPB("time", "30", false, false, "vietnamese", "normal", false),
     ).toEqual({
       wpm: 62,
       acc: 98,

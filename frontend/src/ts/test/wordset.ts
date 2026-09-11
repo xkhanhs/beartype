@@ -1,7 +1,4 @@
-import { zipfyRandomArrayIndex } from "../utils/misc";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
-
-export type FunboxWordsFrequency = "normal" | "zipf";
 
 let currentWordset: Wordset | null = null;
 
@@ -23,12 +20,8 @@ export class Wordset {
     this.shuffledIndexes = [];
   }
 
-  randomWord(mode: FunboxWordsFrequency): string {
-    if (mode === "zipf") {
-      return this.words[zipfyRandomArrayIndex(this.words.length)] as string;
-    } else {
-      return randomElementFromArray(this.words);
-    }
+  randomWord(): string {
+    return randomElementFromArray(this.words);
   }
 
   shuffledWord(): string {

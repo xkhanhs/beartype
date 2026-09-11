@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@leonabcd123/modern-caps-lock": "3.1.3",
-    "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",
     "@monkeytype/util": "workspace:*",
     "@solid-primitives/refs": "1.1.3",

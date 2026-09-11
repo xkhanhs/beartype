@@ -10,7 +10,6 @@ import {
   Config as ConfigType,
   CaretStyleSchema,
 } from "@monkeytype/schemas/configs";
-import * as FunboxValidation from "../../src/ts/config/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import { configLS } from "../../src/ts/config/persistence";
@@ -27,10 +26,6 @@ describe("Config", () => {
   });
 
   describe("test with mocks", () => {
-    const canSetConfigWithCurrentFunboxesMock = vi.spyOn(
-      FunboxValidation,
-      "canSetConfigWithCurrentFunboxes",
-    );
     const isConfigValueValidMock = vi.spyOn(
       ConfigValidation,
       "isConfigValueValid",
@@ -46,7 +41,6 @@ describe("Config", () => {
     const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
 
     const mocks = [
-      canSetConfigWithCurrentFunboxesMock,
       isConfigValueValidMock,
       dispatchConfigEventMock,
       saveConfigMock,
@@ -61,7 +55,6 @@ describe("Config", () => {
       mocks.forEach((it) => it.mockClear());
 
       isConfigValueValidMock.mockReturnValue(true);
-      canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       saveConfigMock.mockReturnValue(true);
       stateIsTestActiveMock.mockReturnValue(true);
 
@@ -79,26 +72,6 @@ describe("Config", () => {
       expect(() => {
         Config.setConfig("nonExistentKey" as ConfigKey, true);
       }).toThrow(`Config metadata for key "nonExistentKey" is not defined.`);
-    });
-
-    it("fails if test is active and funbox no_quit", () => {
-      //GIVEN
-      replaceConfig({ funbox: ["no_quit"], numbers: false });
-
-      //WHEN
-      expect(
-        Config.setConfig("numbers", true, {
-          nosave: true,
-        }),
-      ).toBe(false);
-
-      //THEN
-      expect(notificationAddMock).toHaveBeenCalledWith(
-        "No quit funbox is active. Please finish the test.",
-        {
-          important: true,
-        },
-      );
     });
 
     //TODO isBlocked
@@ -154,14 +127,6 @@ describe("Config", () => {
       expect(notificationAddMock).not.toHaveBeenCalled();
     });
 
-    it("should use overrideValue", () => {
-      //WHEN
-      Config.setConfig("customLayoutfluid", ["3l", "ABNT2", "3l"]);
-
-      //THEN
-      expect(getConfig().customLayoutfluid).toEqual(["3l", "ABNT2"]);
-    });
-
     it("fails if config is invalid", () => {
       //GIVEN
       isConfigValueValidMock.mockReturnValue(false);
@@ -173,14 +138,6 @@ describe("Config", () => {
         "banana",
         CaretStyleSchema,
       );
-    });
-
-    it("cannot set if funbox disallows", () => {
-      //GIVEN
-      canSetConfigWithCurrentFunboxesMock.mockReturnValue(false);
-
-      //WHEN / THEN
-      expect(Config.setConfig("numbers", true)).toBe(false);
     });
 
     it("sets overrideConfigs", () => {
@@ -349,22 +306,6 @@ describe("Config", () => {
         value: Partial<ConfigType>;
         expected: Partial<ConfigType>;
       }[] = [
-        {
-          // invalid funbox
-          display: "invalid funbox",
-          value: { funbox: ["invalid_funbox"] as any },
-          expected: { funbox: [] },
-        },
-        {
-          display: "mode incompatible with funbox",
-          value: { mode: "quote", funbox: ["58008"] },
-          expected: { funbox: [] },
-        },
-        {
-          display: "invalid combination of funboxes",
-          value: { funbox: ["58008", "gibberish"] },
-          expected: { funbox: [] },
-        },
         {
           display: "sanitizes config, remove extra keys",
           value: { mode: "zen", unknownKey: true, unknownArray: [1, 2] } as any,

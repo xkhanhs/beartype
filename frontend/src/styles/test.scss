@@ -974,27 +974,3 @@ main.focus .pageTest {
     }
   }
 }
-
-/* funbox nospace */
-body.fb-nospace {
-  #words .word {
-    margin: 0.5em 0;
-  }
-}
-
-/* funbox underscore_spaces */
-body.fb-underscore-spaces {
-  #words .word {
-    margin: 0.5em 0;
-  }
-}
-
-/* funbox arrows */
-body.fb-arrows {
-  #words .word {
-    margin: 0.5em 0;
-    letter {
-      margin: 0 0.25em;
-    }
-  }
-}

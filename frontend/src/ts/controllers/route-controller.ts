@@ -1,13 +1,7 @@
 import * as PageController from "./page-controller";
 import * as PageTransition from "../legacy-states/page-transition";
-import { isFunboxActive } from "../test/funbox/list";
-import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
-import {
-  isTestRestarting,
-  isResultCalculating,
-  isTestActive,
-} from "../states/test";
+import { isTestRestarting, isResultCalculating } from "../states/test";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -60,19 +54,6 @@ export async function navigate(
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
     );
-    return;
-  }
-
-  const noQuit = isFunboxActive("no_quit");
-  if (isTestActive() && noQuit) {
-    showNoticeNotification(
-      "No quit funbox is active. Please finish the test.",
-      {
-        important: true,
-      },
-    );
-    //todo: figure out if this was ever used
-    // event?.preventDefault();
     return;
   }
 

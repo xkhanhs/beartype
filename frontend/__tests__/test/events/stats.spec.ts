@@ -7,7 +7,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
+  Config: { mode: "words", words: 25, time: 0 },
   getConfig: {},
 }));
 
@@ -95,17 +95,14 @@ import type {
 import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import { words as TestWords } from "../../../src/ts/test/test-words";
-import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
 
 // mirror the generator: each word carries a trailing space separator unless it
-// already ends with a newline, the nospace funbox is active, or it's the last
-// word (the final separator is stripped once all words are generated)
+// already ends with a newline or it's the last word (the final separator is
+// stripped once all words are generated)
 function pushWords(...words: string[]): void {
-  const nospace = isFunboxActiveWithProperty("nospace");
   words.forEach((word, i) => {
     const isLast = i === words.length - 1;
-    const withSeparator =
-      isLast || nospace || word.endsWith("\n") ? word : `${word} `;
+    const withSeparator = isLast || word.endsWith("\n") ? word : `${word} `;
     TestWords.push(withSeparator, i);
   });
 }
@@ -197,7 +194,6 @@ describe("stats.ts", () => {
     resetTestEvents();
     __testing.resetPressedKeys();
     (Config as { mode: string }).mode = "words";
-    (Config as { funbox: string[] }).funbox = [];
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     mockState.activeWordIndex = 0;
@@ -1409,9 +1405,9 @@ describe("stats.ts", () => {
       expect(wpm[1]).toBe(30);
     });
 
-    it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
-      (Config as { funbox: string[] }).funbox = ["nospace"];
-      pushWords("ab", "cd");
+    it("counts non-last word as correct without trailing space", () => {
+      TestWords.push("ab", 0);
+      TestWords.push("cd", 1);
       mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));

@@ -120,39 +120,6 @@ export async function getLanguage(lang: Language): Promise<LanguageObject> {
   return currentLanguage;
 }
 
-export async function checkIfLanguageSupportsZipf(
-  language: Language,
-): Promise<"yes" | "no" | "unknown"> {
-  const lang = await getLanguage(language);
-  if (lang.orderedByFrequency === true) return "yes";
-  if (lang.orderedByFrequency === false) return "no";
-  return "unknown";
-}
-
-/**
- * Fetches the current language object.
- * @param languageName The name of the language.
- * @returns A promise that resolves to the current language object.
- */
-export async function getCurrentLanguage(
-  languageName: Language,
-): Promise<LanguageObject> {
-  return await getLanguage(languageName);
-}
-
-export class Section {
-  public title: string;
-  public author: string;
-  public words: string[];
-  constructor(title: string, author: string, words: string[]) {
-    this.title = title;
-    this.author = author;
-    this.words = words;
-  }
-}
-
-export type FunboxWordOrder = "normal" | "reverse";
-
 /**
  * Fetches the list of supporters from the server.
  * @returns A promise that resolves to the list of supporters.

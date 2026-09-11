@@ -424,11 +424,8 @@ export class Caret {
       this.element.removeClass("debug");
     }
 
-    // in zen, custom or polyglot mode we need to check per-letter
-    const checkRtlByLetter =
-      Config.mode === "zen" ||
-      Config.mode === "custom" ||
-      Config.funbox.includes("polyglot");
+    // in zen or custom mode we need to check per-letter
+    const checkRtlByLetter = Config.mode === "zen" || Config.mode === "custom";
     const [isWordRTL, isFullMatch] = isWordRightToLeft(
       checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
       options.isLanguageRightToLeft,

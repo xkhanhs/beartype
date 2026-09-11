@@ -31,7 +31,6 @@ import {
   getBailedOut,
   isResultCalculating,
 } from "../../states/test";
-import { isFunboxActiveWithProperty } from "../funbox/active";
 
 export function buildEventLog(): EventLog {
   const context = {
@@ -43,9 +42,6 @@ export function buildEventLog(): EventLog {
     ...(Config.mode === "custom" && {
       customTextLimitMode: CustomText.getLimit().mode,
       customTextLimitValue: CustomText.getLimit().value,
-    }),
-    ...(Config.funbox.length !== 0 && {
-      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
     }),
   };
 

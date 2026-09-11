@@ -37,13 +37,11 @@ describe("lockConfig", () => {
       ...getDefaultConfig(),
       stopOnError: "letter",
       paceCaret: "average",
-      funbox: ["nospace"],
       punctuation: true,
       keymapMode: "react",
     });
     expect(config.stopOnError).toBe("off");
     expect(config.paceCaret).toBe("off");
-    expect(config.funbox).toEqual([]);
     expect(config.punctuation).toBe(false);
     expect(config.keymapMode).toBe("off");
   });

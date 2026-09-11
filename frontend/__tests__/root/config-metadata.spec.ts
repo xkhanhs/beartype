@@ -38,8 +38,6 @@ describe("ConfigMeta", () => {
         "minBurst",
         "minBurstCustomSpeed",
         "britishEnglish",
-        "funbox",
-        "customLayoutfluid",
         "strictSpace",
         "stopOnError",
         "lazyMode",
@@ -84,18 +82,6 @@ describe("ConfigMeta", () => {
           value: true,
           given: { mode: "quote" },
           expected: { numbers: false },
-        },
-      ],
-      customLayoutfluid: [
-        {
-          value: ["qwerty", "qwerty", "qwertz"],
-          expected: { customLayoutfluid: ["qwerty", "qwertz"] },
-        },
-      ],
-      customPolyglot: [
-        {
-          value: ["english", "polish", "english"],
-          expected: { customPolyglot: ["english", "polish"] },
         },
       ],
       keymapSize: [
@@ -151,13 +137,6 @@ describe("ConfigMeta", () => {
       given?: Partial<ConfigType>;
       fail?: true;
     }> = {
-      funbox: [
-        {
-          value: ["gibberish"],
-          given: { mode: "quote" },
-          fail: true,
-        },
-      ],
       showAllLines: [
         { value: true, given: { tapeMode: "off" } },
         { value: false, given: { tapeMode: "word" } },

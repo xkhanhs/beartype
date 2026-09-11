@@ -1,4 +1,3 @@
-import { checkCompatibility } from "@monkeytype/funbox";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { JSXElement } from "solid-js";
@@ -8,9 +7,7 @@ import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
-import { capitalizeFirstLetter } from "../utils/strings";
 import { getOptions } from "../utils/zod";
-import { canSetFunboxWithConfig } from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -405,60 +402,6 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "When enabled, the website will use the British spelling instead of American. Note that this might not replace all words correctly. If you find any issues, please let us know.",
   },
-  funbox: {
-    key: "funbox",
-    fa: { icon: "fa-gamepad" },
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "These are special modes that change the website in some special way (by altering the word generation, behavior of the website or the looks). Give each one of them a try!",
-    isBlocked: ({ value, currentConfig }) => {
-      if (!checkCompatibility(value)) {
-        showNoticeNotification(
-          `${capitalizeFirstLetter(
-            value.join(", "),
-          )} is an invalid combination of funboxes`,
-        );
-        return true;
-      }
-
-      for (const funbox of value) {
-        const check = canSetFunboxWithConfig(funbox, currentConfig);
-        if (!check.ok) {
-          showNoticeNotification(
-            `"${funbox}" cannot be enabled with the current config`,
-          );
-          return true;
-        }
-      }
-
-      return false;
-    },
-  },
-  customLayoutfluid: {
-    key: "customLayoutfluid",
-    fa: { icon: "fa-tint" },
-    displayString: "custom layoutfluid",
-    changeRequiresRestart: true,
-    group: "behavior",
-    description:
-      "Select which layouts you want the layoutfluid funbox to cycle through.",
-    overrideValue: ({ value }) => {
-      return Array.from(new Set(value));
-    },
-  },
-  customPolyglot: {
-    key: "customPolyglot",
-    fa: { icon: "fa-language" },
-    displayString: "polyglot languages",
-    changeRequiresRestart: false,
-    group: "behavior",
-    description: "Select which languages you want the polyglot funbox to use.",
-    overrideValue: ({ value }) => {
-      return Array.from(new Set(value));
-    },
-  },
-
   // input
   freedomMode: {
     key: "freedomMode",

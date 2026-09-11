@@ -15,7 +15,6 @@ import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
-import * as WeakSpot from "../../test/weak-spot";
 import * as CompositionState from "../../legacy-states/composition";
 import {
   isCorrectShiftUsed,
@@ -294,9 +293,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     commitsWord: goingToNextWord ? true : undefined,
     lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
-
-  // this needs to be called after event logging
-  WeakSpot.updateScore(data, correct);
 
   // delete on error
   // skipped when the input was stopped - nothing was inserted to delete

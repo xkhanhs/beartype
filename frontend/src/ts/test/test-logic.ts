@@ -10,7 +10,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
-import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
 import * as LocalResults from "../beartype/local-results";
@@ -68,14 +67,6 @@ import {
   CompletedEvent,
   CompletedEventCustomText,
 } from "@monkeytype/schemas/results";
-import {
-  findSingleActiveFunboxWithFunction,
-  getActiveFunboxes,
-  getActiveFunboxesWithFunction,
-  getActiveFunboxNames,
-  isFunboxActive,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
 import * as CompositionState from "../legacy-states/composition";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
@@ -83,10 +74,9 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import { setInputElementValue } from "../input/input-element";
-import { debounce } from "throttle-debounce";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
-import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
+import { setQuoteLengthAll, setConfig } from "../config/setters";
 import {
   resetTestEvents,
   cleanupData,
@@ -129,10 +119,6 @@ export function startTest(now: number): boolean {
   setTestActive(true);
   TestTimer.clear();
 
-  for (const fb of getActiveFunboxesWithFunction("start")) {
-    fb.functions.start();
-  }
-
   try {
     if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat())) {
       PaceCaret.start();
@@ -165,18 +151,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   options = { ...defaultOptions, ...options };
 
   // guards
-
-  const noQuit = isFunboxActive("no_quit");
-  if (isTestActive() && noQuit) {
-    showNoticeNotification(
-      "No quit funbox is active. Please finish the test.",
-      {
-        important: true,
-      },
-    );
-    options.event?.preventDefault();
-    return;
-  }
 
   if (isTestRestarting() || isResultCalculating()) {
     options.event?.preventDefault();
@@ -304,8 +278,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   setResultVisible(false);
   setInputElementValue("");
 
-  await Funbox.rememberSettings();
-
   const initResult = await init();
 
   if (!initResult) {
@@ -314,10 +286,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   }
 
   await PaceCaret.init();
-
-  for (const fb of getActiveFunboxesWithFunction("restart")) {
-    fb.functions.restart();
-  }
 
   TestUI.onTestRestart(source);
 
@@ -361,10 +329,6 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
-    await Funbox.activate();
-  }
-
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
       setQuoteLengthAll();
@@ -373,58 +337,19 @@ async function init(): Promise<boolean> {
 
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
 
-  // polyglot mode, check to enable lazy mode if any support it
-  if (getActiveFunboxNames().includes("polyglot")) {
-    const polyglotLanguages = Config.customPolyglot;
-    const languagePromises = polyglotLanguages.map(async (langName) => {
-      const { data: lang, error } = await tryCatch(
-        JSONData.getLanguage(langName),
-      );
-      if (error) {
-        showErrorNotification(`Failed to load language: ${langName}`, {
-          error,
-        });
-      }
-      return lang;
-    });
-
-    const anySupportsLazyMode = (await Promise.all(languagePromises))
-      .filter((lang) => lang !== null)
-      .some((lang) => !lang.noLazyMode);
-
-    if (Config.lazyMode && !anySupportsLazyMode) {
-      LazyModeState.setRemember(true);
-      if (!showedLazyModeNotification) {
-        showNoticeNotification(
-          "None of the selected polyglot languages support lazy mode.",
-          {
-            important: true,
-          },
-        );
-        showedLazyModeNotification = true;
-      }
-      setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && anySupportsLazyMode) {
-      setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
-      showedLazyModeNotification = false;
+  if (Config.lazyMode && !allowLazyMode) {
+    LazyModeState.setRemember(true);
+    if (!showedLazyModeNotification) {
+      showNoticeNotification("This language does not support lazy mode.", {
+        important: true,
+      });
+      showedLazyModeNotification = true;
     }
-  } else {
-    // normal mode
-    if (Config.lazyMode && !allowLazyMode) {
-      LazyModeState.setRemember(true);
-      if (!showedLazyModeNotification) {
-        showNoticeNotification("This language does not support lazy mode.", {
-          important: true,
-        });
-        showedLazyModeNotification = true;
-      }
-      setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && allowLazyMode) {
-      setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
-      showedLazyModeNotification = false;
-    }
+    setConfig("lazyMode", false);
+  } else if (LazyModeState.getRemember() && allowLazyMode) {
+    setConfig("lazyMode", true);
+    LazyModeState.setRemember(false);
+    showedLazyModeNotification = false;
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
@@ -446,7 +371,6 @@ async function init(): Promise<boolean> {
     },
     mode: Config.mode,
     mode2: Misc.getMode2(Config, null),
-    funbox: Config.funbox,
     currentQuote: getCurrentQuote(),
   });
 
@@ -530,12 +454,11 @@ async function init(): Promise<boolean> {
     );
   }
 
-  Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
   setIsLanguageRightToLeft(isLanguageRTL);
-  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
+  setIsDirectionReversed(false);
 
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
@@ -552,15 +475,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  let bound = 100; // how many extra words to aim for AFTER the current word
-
-  const funboxToPush =
-    getActiveFunboxes()
-      .flatMap((fb) => fb.properties ?? [])
-      .find((prop) => prop.startsWith("toPush:")) ?? "";
-
-  const toPushCount = funboxToPush?.split(":")[1];
-  if (toPushCount !== undefined) bound = +toPushCount - 1;
+  const bound = 100; // how many extra words to aim for AFTER the current word
 
   if (TestWords.words.length - (getActiveWordIndex() + 1) > bound) {
     console.debug("Not adding word, enough words already");
@@ -569,39 +484,6 @@ export async function addWord(): Promise<void> {
   if (WordsGenerator.areAllWordsGenerated()) {
     console.debug("Not adding word, all words generated");
     return;
-  }
-  const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
-  if (sectionFunbox) {
-    if (TestWords.words.length - getActiveWordIndex() < 20) {
-      const section = await sectionFunbox.functions.pullSection(
-        Config.language,
-      );
-
-      if (section === false) {
-        showErrorNotification(
-          "Error while getting section. Please try again later",
-        );
-        toggleFunbox(sectionFunbox.name);
-        void restart();
-        return;
-      }
-
-      if (section === undefined) return;
-
-      let wordCount = 0;
-      for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i] as string;
-        if (wordCount >= Config.words && Config.mode === "words") {
-          break;
-        }
-        wordCount++;
-        const newWord = TestWords.words.push(
-          WordsGenerator.appendCommitCharacter(word),
-          i,
-        );
-        TestUI.addWord(newWord.display);
-      }
-    }
   }
 
   try {
@@ -722,7 +604,6 @@ function buildCompletedEvent(
     mode: Config.mode,
     mode2: Misc.getMode2(Config, currentQuote),
     bailedOut: getBailedOut(),
-    funbox: Config.funbox,
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     stopOnLetter: Config.stopOnError === "letter",
@@ -1017,30 +898,6 @@ export function fail(reason: string): void {
   void finish(true);
 }
 
-const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
-  if (supports === "no") {
-    showNoticeNotification(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-      {
-        durationMs: 7000,
-      },
-    );
-  }
-  if (supports === "unknown") {
-    showNoticeNotification(
-      `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
-      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-      {
-        durationMs: 7000,
-      },
-    );
-  }
-});
-
 qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   void restart();
 });
@@ -1120,9 +977,6 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
       void restart();
     }
     if (key === "difficulty" && !nosave) void restart();
-    if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      void restart();
-    }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
@@ -1135,12 +989,6 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           ) as string,
         );
       }, 0);
-    }
-    if (
-      (key === "language" || key === "funbox") &&
-      Config.funbox.includes("zipf")
-    ) {
-      debouncedZipfCheck();
     }
   }
   if (key === "lazyMode" && !nosave) {

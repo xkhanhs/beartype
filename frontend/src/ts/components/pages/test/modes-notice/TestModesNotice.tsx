@@ -4,7 +4,7 @@ import { cn } from "../../../../utils/cn";
 import { Notice } from "./Notice";
 
 // beartype keeps only the notice that can still be true: every other one
-// describes a setting, a funbox or an account this app no longer has, and the
+// describes a setting or an account this app no longer has, and the
 // language already shows in the options bar, as in keybear. The pace caret
 // is gone.
 export function TestModesNotice() {

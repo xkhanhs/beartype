@@ -143,7 +143,6 @@ export type EventLogContext = {
   mode2: ReturnType<typeof getMode2>;
   customTextLimitMode?: CustomTextLimitMode;
   customTextLimitValue?: number;
-  isFunboxWithNospacePropertyActive?: boolean;
   bailedOut: boolean;
   koreanStatus: boolean;
 };

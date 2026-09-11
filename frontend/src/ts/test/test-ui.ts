@@ -11,7 +11,6 @@ import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import { getActivePage } from "../states/core";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
@@ -30,9 +29,7 @@ import {
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as Joining from "./break-joining";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ThemeController from "../controllers/theme-controller";
-import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -370,12 +367,9 @@ function buildWordHTML(word: string, wordIndex: number): string {
   let newlineafter = false;
   let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
 
-  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox) {
-      retval += funbox.functions.getWordHtml(char, true);
-    } else if (char === "\t") {
+    if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (char === "\n") {
       newlineafter = true;
@@ -710,17 +704,6 @@ export function addWord(
 // make sure the currently typed word will not overflow to the next line
 export let pendingWordData: Map<number, string> = new Map();
 
-const TAB_ICON = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
-const NEWLINE_ICON = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
-
-// visible form of a typed character: space -> "_", tab/newline -> their icons
-function displayTypedChar(char: string | undefined): string {
-  if (char === " ") return "_";
-  if (char === "\t") return TAB_ICON;
-  if (char === "\n") return NEWLINE_ICON;
-  return char ?? "";
-}
-
 export async function updateWordLetters({
   wordIndex,
   input,
@@ -762,100 +745,10 @@ export async function updateWordLetters({
         for (const char of compositionData) {
           ret += `<letter class="dead">${char}</letter>`;
         }
-      } else if (
-        // beartype: lay the word out by keys, not by character index -- see
-        // beartype/word-html.ts. Upstream's drawing below still serves the
-        // funboxes that draw their own letters.
-        findSingleActiveFunboxWithFunction("getWordHtml") === undefined
-      ) {
-        ret = wordHtml(currentWord ?? "", input, compositionData);
       } else {
-        const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-
-        const inputChars = Strings.splitIntoCharacters(input);
-        const currentWordChars = Strings.splitIntoCharacters(currentWord ?? "");
-        for (let i = 0; i < inputChars.length; i++) {
-          const charCorrect = currentWordChars[i] === inputChars[i];
-
-          let currentLetter = currentWordChars[i] as string;
-          let tabChar = "";
-          let nlChar = "";
-          if (funbox) {
-            const cl = funbox.functions.getWordHtml(currentLetter);
-            if (cl !== "") {
-              currentLetter = cl;
-            }
-          } else if (currentLetter === "\t") {
-            tabChar = "tabChar";
-            currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
-          } else if (currentLetter === "\n") {
-            nlChar = "nlChar";
-            currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
-          }
-
-          if (charCorrect) {
-            ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-          } else if (currentLetter === undefined) {
-            const letter = displayTypedChar(inputChars[i]);
-            ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
-          } else {
-            let charString = currentLetter;
-
-            if (
-              Config.indicateTypos === "replace" ||
-              Config.indicateTypos === "both"
-            ) {
-              charString = displayTypedChar(inputChars[i] ?? currentLetter);
-            }
-
-            ret += `<letter class="incorrect ${tabChar}${nlChar}">${charString}</letter>`;
-            if (
-              Config.indicateTypos === "below" ||
-              Config.indicateTypos === "both"
-            ) {
-              const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock?.[lastBlock.length - 1] === i - 1) {
-                lastBlock.push(i);
-              } else {
-                hintIndices.push([i]);
-              }
-            }
-          }
-        }
-
-        for (let i = 0; i < compositionData.length; i++) {
-          const compositionChar = compositionData[i];
-          let charToShow =
-            currentWordChars[input.length + i] ?? compositionChar;
-
-          if (Config.compositionDisplay === "replace") {
-            charToShow = compositionChar === " " ? "_" : compositionChar;
-          }
-
-          let correctClass = "";
-          if (compositionChar === currentWordChars[input.length + i]) {
-            correctClass = "correct";
-          }
-
-          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
-        }
-
-        for (
-          let i = inputChars.length + compositionData.length;
-          i < currentWordChars.length;
-          i++
-        ) {
-          const currentLetter = currentWordChars[i];
-          if (funbox?.functions?.getWordHtml) {
-            ret += funbox.functions.getWordHtml(currentLetter as string, true);
-          } else if (currentLetter === "\t") {
-            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-          } else if (currentLetter === "\n") {
-            ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-          } else {
-            ret += `<letter>${currentLetter}</letter>`;
-          }
-        }
+        // beartype: lay the word out by keys, not by character index -- see
+        // beartype/word-html.ts.
+        ret = wordHtml(currentWord ?? "", input, compositionData);
       }
 
       wordAtIndex.setHtml(ret);
@@ -1513,10 +1406,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     burst: undefined,
     seconds: undefined,
   });
-  LayoutfluidFunboxTimer.instantHide();
   focusWords(true);
   MonkeyPower.reset();
-  MemoryFunboxTimer.reset();
   Caret.resetPosition();
   TestInitFailed.hide();
 

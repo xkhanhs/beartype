@@ -142,7 +142,7 @@ export const getKeymapLayout = createMemo<{
 
   const layout = raw === "default" ? "qwerty" : raw;
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
-  const isMirrored = getConfig.funbox.includes("layout_mirror");
+  const isMirrored = false;
 
   return { layout: layout, layoutNameDisplayString, isMirrored };
 });
@@ -180,7 +180,7 @@ const getInputLayout = createMemo<{
 }>(() => {
   return {
     layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
-    isMirrored: getConfig.funbox.includes("layout_mirror"),
+    isMirrored: false,
   };
 });
 

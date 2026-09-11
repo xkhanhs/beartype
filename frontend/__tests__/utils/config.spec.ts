@@ -172,15 +172,6 @@ describe("config.ts", () => {
           expected: { liveAccStyle: "mini" },
         },
         { given: { soundVolume: "0.5" }, expected: { soundVolume: 0.5 } },
-        { given: { funbox: "none" }, expected: { funbox: [] } },
-        {
-          given: { funbox: "58008#read_ahead" },
-          expected: { funbox: ["58008", "read_ahead"] },
-        },
-        {
-          given: { customLayoutfluid: "qwerty#qwertz" },
-          expected: { customLayoutfluid: ["qwerty", "qwertz"] },
-        },
         { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
         {
           given: { indicateTypos: true },

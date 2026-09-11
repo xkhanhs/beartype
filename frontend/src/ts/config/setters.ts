@@ -2,19 +2,11 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
 import { configEvent } from "../events/config";
-import { showNoticeNotification } from "../states/notifications";
-import {
-  canSetConfigWithCurrentFunboxes,
-  canSetFunboxWithConfig,
-} from "./funbox-validation";
-import { triggerResize, escapeHTML } from "../utils/misc";
-import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
+import { triggerResize } from "../utils/misc";
 import { configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
-import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { isTestActive } from "../states/test";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -39,25 +31,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   const previousValue = Config[key];
 
-  if (
-    metadata.changeRequiresRestart &&
-    isTestActive() &&
-    Config.funbox.includes("no_quit")
-  ) {
-    showNoticeNotification(
-      "No quit funbox is active. Please finish the test.",
-      {
-        important: true,
-      },
-    );
-    console.warn(
-      `Could not set config key "${key}" with value "${JSON.stringify(
-        value,
-      )}" - no quit funbox active.`,
-    );
-    return false;
-  }
-
   if (metadata.isBlocked?.({ value, currentConfig: Config })) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
@@ -74,25 +47,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
       )}" - invalid value.`,
-    );
-    return false;
-  }
-
-  if (!canSetConfigWithCurrentFunboxes(key, value, Config.funbox)) {
-    if (key === "words" || key === "time") {
-      showNoticeNotification("Active funboxes do not support infinite tests");
-    } else {
-      showNoticeNotification(
-        `You can't set ${camelCaseToWords(
-          key,
-        )} to ${String(value)} with currently active funboxes.`,
-        { durationMs: 5000 },
-      );
-    }
-    console.warn(
-      `Could not set config key "${key}" with value "${JSON.stringify(
-        value,
-      )}" - funbox conflict.`,
     );
     return false;
   }
@@ -151,58 +105,4 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
   return setConfig("quoteLength", [0, 1, 2, 3], {
     nosave,
   });
-}
-
-export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (isTestActive() && Config.funbox.includes("no_quit")) {
-    showNoticeNotification(
-      "No quit funbox is active. Please finish the test.",
-      {
-        important: true,
-      },
-    );
-    return false;
-  }
-
-  const funboxCheck = canSetFunboxWithConfig(funbox, Config);
-  if (!funboxCheck.ok) {
-    const errorStrings = funboxCheck.errors.map(
-      (e) =>
-        `${capitalizeFirstLetter(
-          camelCaseToWords(e.key),
-        )} cannot be set to ${String(e.value)}.`,
-    );
-    showNoticeNotification(
-      `You can't enable ${escapeHTML(funbox.replace(/_/g, " "))}:<br />${errorStrings.map((s) => escapeHTML(s)).join("<br />")}`,
-      { durationMs: 5000, useInnerHtml: true },
-    );
-    return false;
-  }
-
-  const previousValue = Config.funbox;
-
-  let newConfig: FunboxName[] = Config.funbox;
-
-  if (newConfig.includes(funbox)) {
-    newConfig = newConfig.filter((it) => it !== funbox);
-  } else {
-    newConfig = [...newConfig, funbox].sort();
-  }
-
-  if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
-    return false;
-  }
-
-  Config.funbox = newConfig;
-  saveToLocalStorage("funbox", nosave);
-  configEvent.dispatch({
-    key: "funbox",
-    newValue: Config.funbox,
-    nosave,
-    previousValue,
-  });
-
-  setConfigStore("funbox", newConfig);
-
-  return true;
 }

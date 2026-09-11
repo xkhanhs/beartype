@@ -1,7 +1,6 @@
 import { Config } from "../../config/store";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
-import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
@@ -36,11 +35,6 @@ export function onBeforeInsertText(data: string): boolean {
 
   //only allow newlines if the test has newlines or in zen mode
   if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
-    return true;
-  }
-
-  //prevent space in nospace funbox
-  if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
     return true;
   }
 
