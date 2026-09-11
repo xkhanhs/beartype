@@ -19,6 +19,7 @@ export const USER_KEYS = [
   "autoSwitchTheme",
   "smoothCaret",
   "fontFamily",
+  "fontSize",
 ] as const satisfies readonly (keyof Config)[];
 
 type UserKey = (typeof USER_KEYS)[number];
@@ -77,6 +78,11 @@ export const FONTS = [
   "Open_Sans",
   "Quicksand",
 ] as const;
+/**
+ * keybear's four text sizes, 80% to 150% (`page-practice/lib/display/zoom.ts`),
+ * in rem around upstream's 2rem.
+ */
+export const FONT_SIZES = [1.6, 2, 2.5, 3] as const;
 export const THEMES = [
   "keybear_light",
   "keybear_dark",
@@ -101,6 +107,7 @@ function allowed(key: UserKey, value: unknown): boolean {
     language: LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
     fontFamily: FONTS,
+    fontSize: FONT_SIZES,
     theme: THEMES,
   };
   const list = lists[key];

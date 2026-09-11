@@ -41,7 +41,7 @@ test và build rồi mới cho push; đừng lách bằng `--no-verify`.
   (`word-html.ts`), khoá cấu hình (`config-lock.ts`), kết quả lưu trên máy
   (`local-results.ts`), sổ từ hay sai (`miss-book.ts`).
 - `frontend/src/ts/components/beartype/`: thẻ cài đặt (con trỏ mượt, phông
-  chữ), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
+  chữ, cỡ chữ), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
   luyện từ hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
 - `frontend/static/fonts-ui/`: Quicksand của giao diện và các phông bài gõ
   của keybear, mỗi phông có bộ `vietnamese` riêng.

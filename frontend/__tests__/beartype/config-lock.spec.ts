@@ -22,12 +22,14 @@ describe("lockConfig", () => {
       language: "english",
       smoothCaret: "fast",
       fontFamily: "Be_Vietnam_Pro",
+      fontSize: 2.5,
     });
     expect(config.mode).toBe("words");
     expect(config.words).toBe(25);
     expect(config.language).toBe("english");
     expect(config.smoothCaret).toBe("fast");
     expect(config.fontFamily).toBe("Be_Vietnam_Pro");
+    expect(config.fontSize).toBe(2.5);
   });
 
   it("pins every setting the user cannot reach", () => {
@@ -54,12 +56,14 @@ describe("lockConfig", () => {
       words: 500,
       language: "spanish",
       fontFamily: "Comic_Sans_MS",
+      fontSize: 7,
     });
     expect(config.mode).toBe("time");
     expect(config.time).toBe(30);
     expect(config.words).toBe(50);
     expect(config.language).toBe("vietnamese");
     expect(config.fontFamily).toBe("Roboto_Mono");
+    expect(config.fontSize).toBe(2);
   });
 });
 
