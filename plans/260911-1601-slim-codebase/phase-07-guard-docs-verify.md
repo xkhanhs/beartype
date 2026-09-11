@@ -1,7 +1,7 @@
 ---
 phase: 7
 title: "knip, tài liệu, nghiệm thu"
-status: pending
+status: in-progress
 priority: P2
 effort: "2h"
 dependencies: [6]

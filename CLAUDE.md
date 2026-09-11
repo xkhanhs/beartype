@@ -32,7 +32,9 @@ worker của app khác trả lời từ cache. Keybear giữ 3100.
 **Một push lên `main` là một lần deploy.** Cloudflare Pages build thẳng từ
 nhánh này (`pnpm build-fe`, bí danh của `pnpm build`; output `dist`,
 `NODE_VERSION=24`, `PNPM_VERSION=11.21.0`), không qua staging. `.husky/pre-push`
-chạy ts-check, test và build rồi mới cho push; đừng lách bằng `--no-verify`.
+chạy ts-check, knip, test và build rồi mới cho push; đừng lách bằng
+`--no-verify`. knip báo export không ai import, file và package không ai dùng:
+xoá chúng, đừng thêm `ignore` vào `knip.ts`.
 
 ## Code nằm ở đâu
 
@@ -44,9 +46,21 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   cấu hình (`config-lock.ts`: những khoá người dùng được đổi và giá trị cho
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
   (`miss-book.ts`).
-- `src/ts/components/beartype/`: thẻ cài đặt (con trỏ mượt, phông chữ, cỡ chữ),
-  viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút luyện từ
-  hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
+- `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
+  phông chữ, cỡ chữ, tiếng gõ, tiếng báo gõ sai, âm lượng, hiện phím gõ sai, bàn
+  phím ảo), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
+  luyện từ hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
+- Âm thanh: `src/ts/controllers/sound-controller.ts` và
+  `src/ts/constants/sounds.ts`, file ở `static/sounds/` (năm bộ của upstream
+  và `error1`, giữ tên thư mục của upstream). Mặc định tắt; chưa bật thì không
+  tải gì, bật thì chỉ tải howler và bộ đang chọn.
+- Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
+  (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
+  `src/ts/states/test.ts`. Phím sáng theo `event.code`, nên gõ Telex vẫn sáng
+  đúng phím vật lý. `static/layouts/qwerty.json` chỉ tải khi bật.
+- Phím gõ sai dưới chữ (`indicateTypos: "below"`): `test-ui.ts` treo các
+  `hint` lấy từ `typoHints` trong `beartype/word-html.ts`; chữ đang dựng dấu
+  không bao giờ có hint.
 - `src/ts/test/`, `src/ts/input/`, `src/ts/elements/`: lõi gõ của monkeytype.
 - `src/ts/schemas/`: schema zod của cấu hình và kết quả (trước là package
   `@monkeytype/schemas`).

@@ -31,6 +31,8 @@ monkeytype, tìm ở đây trước.
 | `input/helpers/validation.ts` | `isCharCorrect`: phím chữ sai khi nó **tạo thêm một lỗi** trong từ (`isWrongKey`) | `e` dưới `ế` là chưa xong, không phải sai; phím cách giữ luật cũ |
 | `test/events/stats.ts` | `countCharsForWordIndex` đếm theo phím (`countKeysAsChars`); phần trăm của `getAccuracy` theo keybear | WPM và độ chính xác theo phím đáng tốn, xem `beartype/scoring.ts` |
 | `test/test-ui.ts` | `updateWordLetters` vẽ từ đang gõ bằng `beartype/word-html.ts` | mỗi chữ đích một ô, chữ đang dựng dấu là `partial` |
+| `test/test-ui.ts` | phím gõ sai dưới chữ (`indicateTypos: "below"`) lấy từ `typoHints` của `beartype/word-html.ts` | cùng phép so với cách vẽ từ, nên chữ đang dựng dấu không bao giờ bị treo phím sai |
+| `states/test.ts` | bàn phím ảo sáng theo `event.code` của `keydown`; ký tự sai (từ `insert-text.ts`) chỉ tô đỏ phím vừa bấm | bộ gõ không chèn ký tự nào cho phím dấu của Telex, nên sáng theo ký tự như upstream thì phím không sáng |
 | `test/caret.ts` | `updatePosition`: chỉ số chữ lấy từ `caretIndex` | con trỏ không nhảy tới rồi lùi khi bộ gõ viết lại chữ |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |

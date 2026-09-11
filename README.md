@@ -16,6 +16,10 @@ không quote, không funbox. Chỉ còn một màn:
   200%), và con trỏ mượt tuỳ chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
+- **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: tiếng gõ phím (năm bộ tiếng của
+  monkeytype và một nốt sine), tiếng báo gõ sai, âm lượng; phím đã gõ nhầm hiện
+  nhỏ dưới chữ; và bàn phím QWERTY dưới bài gõ, phím sáng lên khi gõ, kể cả khi
+  gõ Telex.
 
 ## Chấm tiếng Việt theo phím
 

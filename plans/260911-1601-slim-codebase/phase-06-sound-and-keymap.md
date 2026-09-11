@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Âm thanh và bàn phím ảo"
-status: pending
+status: completed
 priority: P2
 effort: "5h"
 dependencies: [5]
@@ -57,9 +57,22 @@ file `.wav` đã bị xoá lúc fork. Bàn phím ảo đã bị gỡ hẳn, ché
 - Test: `__tests__/beartype/config-lock.spec.ts` (khoá mới, giá trị lạ bị bỏ)
 
 ## Success Criteria
-- [ ] Bật tiếng gõ: mỗi phím một tiếng, gõ nhanh không trễ hay nghẹt; tắt thì không tải file âm thanh nào (Network).
-- [ ] Bàn phím ảo sáng đúng phím khi gõ Telex tiếng Việt và khi gõ tiếng Anh.
-- [ ] Lựa chọn giữ qua lần tải lại; test config-lock phủ khoá mới.
+- [x] Tắt thì không tải howler hay file âm thanh nào; bật một bộ thì chỉ tải bộ đó (đo trong Network).
+      Tiếng phát bất đồng bộ, không chặn keydown. Nghe thử gõ nhanh: còn chờ người dùng.
+- [x] Bàn phím ảo sáng theo `event.code` (thử với `keydown` `key: "Process"` như Telex), phím
+      gõ sai đỏ. Gõ Telex thật trên máy: còn chờ người dùng.
+- [x] Lựa chọn giữ qua lần tải lại; test config-lock phủ khoá mới.
+
+## Đã làm (khác bản kế hoạch)
+- Bàn phím ảo sáng theo **phím vật lý** (`event.code` của `keydown`), không theo ký tự
+  chèn vào như upstream: Telex không chèn ký tự nào cho phím dấu, nên cách của upstream
+  không sáng. Cờ gõ sai từ `insert-text.ts` chỉ tô đỏ phím vừa bấm. Ghi trong `docs/upstream.md`.
+- Phím gõ sai dưới chữ lấy từ `typoHints` (`beartype/word-html.ts`), cùng phép so với cách
+  vẽ từ. Như keybear, một chữ có dấu gõ nhầm (`ố` thay cho `ế`) có thể làm hỏng vài ô và
+  treo cùng một chữ dưới mỗi ô.
+- Ba file keymap của upstream gộp thành `Keymap.tsx` + `keymapLayouts.ts` (bỏ bộ chuyển đổi
+  chung). `qwerty.json` chỉ tải khi bật bàn phím; `useResourceWithPromise` không còn ai dùng, đã xoá.
+- Thẻ cài đặt cuộn bên trong khi cao quá màn hình.
 
 ## Risk Assessment
 - Âm thanh phát trong đường xử lý phím (`test-ui.ts` gọi `playClick`). Phải giữ nó
