@@ -132,7 +132,9 @@ body,
   gap: 0.4rem;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.8rem;
+  // the same on every side, so a filled pill at either end sits as far from
+  // the rim across as it does above and below
+  padding: 0.35rem;
   border: 2px solid var(--kb-border);
   border-radius: 99px;
   background-color: var(--kb-card);
