@@ -1,7 +1,7 @@
 ---
 title: "Dọn beartype về đúng những gì nó làm"
-status: pending
-branch: chore/slim-codebase
+status: in-progress
+branch: feat/sound-keymap
 created: 2026-09-11
 blockedBy: []
 blocks: []
@@ -72,15 +72,15 @@ người dùng muốn giữ: âm thanh khi gõ và bàn phím ảo.
 
 ## Phase
 
-| # | Phase | Phụ thuộc | PR |
-|---|-------|-----------|----|
-| 1 | [Asset và tooling thừa](phase-01-assets-and-tooling.md) | — | A |
-| 2 | [Màn kết quả: biểu đồ, replay, lịch sử gõ](phase-02-result-leftovers.md) | 1 | A |
-| 3 | [Gỡ tính năng khỏi lõi, từng cụm](phase-03-core-features.md) | 2 | B |
-| 4 | [Config, theme, util, component](phase-04-config-and-shell.md) | 3 | C |
-| 5 | [Một package ở gốc repo](phase-05-flatten-repo.md) | 4 | C |
-| 6 | [Âm thanh và bàn phím ảo](phase-06-sound-and-keymap.md) | 5 | D |
-| 7 | [knip, tài liệu, nghiệm thu](phase-07-guard-docs-verify.md) | 6 | D |
+| # | Phase | Phụ thuộc | PR | Trạng thái |
+|---|-------|-----------|----|------------|
+| 1 | [Asset và tooling thừa](phase-01-assets-and-tooling.md) | — | A | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
+| 2 | [Màn kết quả: biểu đồ, replay, lịch sử gõ](phase-02-result-leftovers.md) | 1 | A | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
+| 3 | [Gỡ tính năng khỏi lõi, từng cụm](phase-03-core-features.md) | 2 | B | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
+| 4 | [Config, theme, util, component](phase-04-config-and-shell.md) | 3 | C | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
+| 5 | [Một package ở gốc repo](phase-05-flatten-repo.md) | 4 | C | Xong ([#23](https://github.com/xkhanhs/beartype/pull/23)) |
+| 6 | [Âm thanh và bàn phím ảo](phase-06-sound-and-keymap.md) | 5 | D | Đang làm |
+| 7 | [knip, tài liệu, nghiệm thu](phase-07-guard-docs-verify.md) | 6 | D | Đang làm |
 
 PR A và B chưa đổi cấu trúc thư mục, deploy như cũ. PR C dời repo lên gốc, nên
 phải đổi cài đặt Cloudflare cùng lúc merge. PR D thêm tính năng.

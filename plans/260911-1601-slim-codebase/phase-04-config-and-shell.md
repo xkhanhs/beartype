@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Config, theme, util, component"
-status: pending
+status: completed
 priority: P2
 effort: "5h"
 dependencies: [3]

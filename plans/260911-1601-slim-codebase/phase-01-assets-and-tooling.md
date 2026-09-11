@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Asset và tooling thừa"
-status: pending
+status: completed
 priority: P1
 effort: "2h"
 dependencies: []
