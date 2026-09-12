@@ -19,6 +19,8 @@ import {
   setResultCalculating,
 } from "../states/test";
 import { getAccuracy, getInputHistory } from "./events/stats";
+import type { IdleReason } from "../beartype/idle";
+import { locale, t } from "../beartype/strings";
 import { setResultHistory } from "../components/beartype/ResultHistory";
 
 let result: CompletedEvent;
@@ -62,7 +64,7 @@ function updateWpmAndAcc(): void {
         result.acc === 100
           ? "100%"
           : Format.percentage(result.acc, { showDecimalPlaces: true })
-      } · ${acc.correct} đúng · ${acc.incorrect} sai`,
+      } · ${t("accuracyHover", acc.correct, acc.incorrect)}`,
     );
   }
 }
@@ -74,12 +76,12 @@ function updateTime(): void {
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
     qs("#result .stats .time .bottom .afk")?.setText(
-      `${afkSecondsPercent}% ngừng gõ`,
+      t("afkShare", afkSecondsPercent),
     );
   }
   qs("#result .stats .time .bottom")?.setAttribute(
     "aria-label",
-    `ngừng gõ ${result.afkDuration}s (${afkSecondsPercent}%)`,
+    t("afkHover", result.afkDuration, afkSecondsPercent),
   );
 
   // beartype: up to one decimal, as in keybear: half a second is a real
@@ -91,15 +93,19 @@ function updateTime(): void {
   qs("#result .stats .time .bottom .text")?.setText(time);
   qs("#result .stats .time .bottom")?.setAttribute(
     "aria-label",
-    `${Numbers.roundTo2(result.testDuration)}s (${
-      result.afkDuration
-    }s ngừng gõ, ${afkSecondsPercent}%)`,
+    t(
+      "timeHover",
+      `${Numbers.roundTo2(result.testDuration)}`,
+      result.afkDuration,
+      afkSecondsPercent,
+    ),
   );
 }
 
-// beartype: at most one decimal, written the Vietnamese way (96,5)
+// beartype: at most one decimal, with the decimal mark of the language the
+// page is in -- 96,5 reading Vietnamese and 96.5 reading English
 function oneDecimal(value: number, round: (n: number) => number): string {
-  return (round(value * 10) / 10).toLocaleString("vi-VN", {
+  return (round(value * 10) / 10).toLocaleString(locale(), {
     maximumFractionDigits: 1,
   });
 }
@@ -158,7 +164,7 @@ function updateCrown(dontSave: boolean): void {
   // this browser keeps the only record, so a new best is final
   PbCrown.show();
   updateCrownText(
-    `kỷ lục mới +${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
+    t("newBest", Format.typingSpeed(pbDiff, { showDecimalPlaces: true })),
   );
   if (localPb !== undefined) showConfetti();
 }
@@ -206,7 +212,7 @@ function updateOther(
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  idle: string | null,
+  idle: IdleReason | null,
 ): void {
   // beartype: a test that is not kept says so in one quiet word under the
   // figures; the balloon on it gives the reasons, with the bar each missed.
@@ -216,36 +222,40 @@ function updateOther(
   if (difficultyFailed) {
     reasons.push(
       failReason === "slow timer"
-        ? "máy chạy chậm, đồng hồ trễ nên bài bị dừng"
-        : `không đạt (${failReason})`,
+        ? t("failedSlowTimer")
+        : t("failed", failReason),
     );
   }
   // the lengths on offer here are all long enough; only a test over in under
   // a second is too short
   if (tooShort) {
-    reasons.push("bài xong trong chưa tới 1 giây");
+    reasons.push(t("tooShort"));
   }
   if (afkDetected) {
-    reasons.push("5 giây cuối không gõ phím nào");
+    reasons.push(t("afkDetected"));
   }
   if (idle !== null) {
-    reasons.push(idle);
+    reasons.push(
+      idle.kind === "pause"
+        ? t("idlePause", idle.seconds)
+        : t("idleShare", idle.percent),
+    );
   }
   if (isRepeated) {
-    reasons.push("gõ lại đúng bài vừa rồi");
+    reasons.push(t("sameTestAgain"));
   }
   if (result.wpm < 0 || result.wpm > fast) {
-    reasons.push(`tốc độ trên ${fast} wpm`);
+    reasons.push(t("tooFast", fast));
   }
   if (result.rawWpm < 0 || result.rawWpm > fast) {
-    reasons.push(`tốc độ thô trên ${fast} wpm`);
+    reasons.push(t("rawTooFast", fast));
   }
   if (result.acc < 75 || result.acc > 100) {
-    reasons.push("độ chính xác dưới 75%");
+    reasons.push(t("accTooLow"));
   }
   // the one check left: a timed test whose clock disagrees with the date
   if (isTestInvalid() && reasons.length === 0) {
-    reasons.push("thời gian đo lệch với đồng hồ của máy");
+    reasons.push(t("clockDisagrees"));
   }
 
   const info = qs("#result .stats .info");
@@ -256,11 +266,11 @@ function updateOther(
   info?.show();
   qs("#result .stats .info .bottom")
     ?.setHtml(
-      `không hợp lệ <svg class="bt-icon" aria-hidden="true"><use href="#i-info"></use></svg>`,
+      `${t("invalid")} <svg class="bt-icon" aria-hidden="true"><use href="#i-info"></use></svg>`,
     )
     ?.setAttribute(
       "aria-label",
-      `không lưu vào sổ vì:\n${reasons.map((r) => `· ${r}`).join("\n")}`,
+      `${t("notSavedBecause")}\n${reasons.map((r) => `· ${r}`).join("\n")}`,
     )
     ?.setAttribute("data-balloon-pos", "up")
     ?.setAttribute("data-balloon-break", "");
@@ -274,7 +284,7 @@ export async function update(
   isRepeated: boolean,
   tooShort: boolean,
   dontSave: boolean,
-  idle: string | null,
+  idle: IdleReason | null,
 ): Promise<void> {
   result = structuredClone(res);
   hideCrown();

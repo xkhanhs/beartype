@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 
+import { t } from "../../../beartype/strings";
 import {
   outOfFocusMaxHeight,
   showOutOfFocusWarning,
@@ -10,8 +11,8 @@ import { Icon } from "../../beartype/Icon";
 export function OutOfFocusWarning() {
   const message = () =>
     testFocusState() === "unfocusedWindow"
-      ? "bấm vào đâu đó để quay lại cửa sổ"
-      : "bấm vào đây hoặc gõ một phím để tiếp tục";
+      ? t("unfocusedWindow")
+      : t("unfocusedWords");
 
   return (
     <Show when={showOutOfFocusWarning()}>

@@ -6,6 +6,7 @@ import {
   TIMES,
   WORD_COUNTS,
 } from "../../../beartype/config-lock";
+import { t } from "../../../beartype/strings";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
@@ -20,14 +21,14 @@ import { cn } from "../../../utils/cn";
 // options bar: one rounded strip, the groups split by a thin rule, the
 // choice in use filled with the accent.
 
-const MODE_LABELS: Record<(typeof MODES)[number], string> = {
-  time: "thời gian",
-  words: "số từ",
+const MODE_LABELS: Record<(typeof MODES)[number], () => string> = {
+  time: () => t("modeTime"),
+  words: () => t("modeWords"),
 };
 
-const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], string> = {
-  vietnamese: "tiếng việt",
-  english: "english",
+const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], () => string> = {
+  vietnamese: () => t("languageVietnamese"),
+  english: () => t("languageEnglish"),
 };
 
 export function TestConfig(): JSXElement {
@@ -52,7 +53,7 @@ export function TestConfig(): JSXElement {
       <For each={LANGUAGES}>
         {(language) => (
           <Pill
-            text={LANGUAGE_LABELS[language]}
+            text={LANGUAGE_LABELS[language]()}
             active={getConfig.language === language}
             onClick={() => {
               setConfig("language", language);
@@ -65,7 +66,7 @@ export function TestConfig(): JSXElement {
       <For each={MODES}>
         {(option) => (
           <Pill
-            text={MODE_LABELS[option]}
+            text={MODE_LABELS[option]()}
             active={mode() === option}
             onClick={() => {
               setConfig("mode", option);

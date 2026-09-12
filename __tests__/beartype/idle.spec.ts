@@ -38,15 +38,17 @@ describe("idleReason", () => {
 
   it("drops a test with a single stop of five seconds", () => {
     const keys = [...steady.slice(0, 50), ...steady.slice(75)];
-    expect(idleReason(log(keys, 30000), 4, 30)).toBe(
-      "có lúc ngừng gõ liền 5 giây",
-    );
+    expect(idleReason(log(keys, 30000), 4, 30)).toEqual({
+      kind: "pause",
+      seconds: 5,
+    });
   });
 
   it("drops a test idle for more than a fifth of it in short stops", () => {
-    expect(idleReason(log(steady, 30000), 7, 30)).toBe(
-      "ngừng gõ 23% thời gian bài",
-    );
+    expect(idleReason(log(steady, 30000), 7, 30)).toEqual({
+      kind: "share",
+      percent: 23,
+    });
   });
 
   it("keeps a test idle for exactly a fifth of it", () => {

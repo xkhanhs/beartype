@@ -34,21 +34,36 @@ export function longestPauseMs(eventLog: EventLog): number {
 }
 
 /**
- * Why a test sat idle too long to be kept, in the words the result screen
- * shows, or `null` when it did not. `afkSeconds` counts the seconds of the
- * test without a key, as upstream's `afkDuration` does.
+ * Why a test sat idle too long to be kept, or `null` when it did not.
+ *
+ * It names the reason and its number rather than writing the sentence: the
+ * result screen says it in whichever language the page is in, and this stays
+ * a measurement, the same in both.
+ */
+export type IdleReason =
+  /** One stop, this many whole seconds long. */
+  | { kind: "pause"; seconds: number }
+  /** No key for this share of the test, as a whole percent. */
+  | { kind: "share"; percent: number };
+
+/**
+ * `afkSeconds` counts the seconds of the test without a key, as upstream's
+ * `afkDuration` does.
  */
 export function idleReason(
   eventLog: EventLog,
   afkSeconds: number,
   testSeconds: number,
-): string | null {
+): IdleReason | null {
   const pause = longestPauseMs(eventLog);
   if (pause >= MAX_PAUSE_MS) {
-    return `có lúc ngừng gõ liền ${Math.floor(pause / 1000)} giây`;
+    return { kind: "pause", seconds: Math.floor(pause / 1000) };
   }
   if (testSeconds > 0 && afkSeconds / testSeconds > MAX_IDLE_SHARE) {
-    return `ngừng gõ ${Math.round((100 * afkSeconds) / testSeconds)}% thời gian bài`;
+    return {
+      kind: "share",
+      percent: Math.round((100 * afkSeconds) / testSeconds),
+    };
   }
   return null;
 }

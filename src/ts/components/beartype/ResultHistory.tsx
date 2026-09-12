@@ -2,6 +2,7 @@ import { createSignal, For, JSXElement, Show } from "solid-js";
 
 import type { RecentSummary, RecentTest } from "../../beartype/local-results";
 
+import { locale, t } from "../../beartype/strings";
 import Format from "../../singletons/format";
 
 /**
@@ -43,10 +44,13 @@ export function ResultHistory(): JSXElement {
       {(s) => (
         <div class="bt-history">
           <div class="bt-history-row">
-            <Figure value={wpm(s().best)} label="tốt nhất" />
-            <Figure value={wpm(s().usual)} label="thường" />
-            <Figure value={`${Math.round(s().usualAcc)}%`} label="chính xác" />
-            <Figure value={`${s().count}`} label="số bài" />
+            <Figure value={wpm(s().best)} label={t("historyBest")} />
+            <Figure value={wpm(s().usual)} label={t("historyUsual")} />
+            <Figure
+              value={`${Math.round(s().usualAcc)}%`}
+              label={t("accuracy")}
+            />
+            <Figure value={`${s().count}`} label={t("historyCount")} />
           </div>
           <Show when={s().recent.length >= MIN_BARS}>
             <SpeedChart recent={s().recent} usual={s().usual} />
@@ -106,14 +110,17 @@ function SpeedChart(props: {
                 "bt-chart-slot-last": index() === props.recent.length - 1,
               }}
               tabIndex={0}
-              aria-label={`${wpm(test.wpm)} wpm · ${Math.round(test.acc)}% chính xác\n${new Date(
-                test.timestamp,
-              ).toLocaleString("vi-VN", {
-                day: "numeric",
-                month: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}`}
+              aria-label={t(
+                "historyBar",
+                wpm(test.wpm),
+                Math.round(test.acc),
+                new Date(test.timestamp).toLocaleString(locale(), {
+                  day: "numeric",
+                  month: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              )}
               data-balloon-pos={balloonPos(index(), props.recent.length)}
               data-balloon-break=""
             >

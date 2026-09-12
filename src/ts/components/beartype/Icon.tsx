@@ -11,6 +11,7 @@ export type IconName =
   | "crown"
   | "github"
   | "info"
+  | "languages"
   | "loader-circle"
   | "lock"
   | "pause"

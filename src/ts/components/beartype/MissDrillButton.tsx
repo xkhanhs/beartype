@@ -1,6 +1,7 @@
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import { MIN_DRILL_WORDS, missWords } from "../../beartype/miss-book";
+import { t } from "../../beartype/strings";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../events/test";
 import { getFocus } from "../../states/test";
@@ -34,10 +35,10 @@ export function MissDrillButton(): JSXElement {
   // the button carries no label, so its balloon says both what it does and
   // how many words the book holds -- the count used to be on the button
   const hint = (): string => {
-    if (active()) return "đang luyện từ hay sai · quay về bài thường";
+    if (active()) return t("drillRunningHint");
     return ready()
-      ? `luyện ${words().length} từ hay sai`
-      : `cần ít nhất ${MIN_DRILL_WORDS} từ trong sổ`;
+      ? t("drillCount", words().length)
+      : t("drillNeedsWords", MIN_DRILL_WORDS);
   };
 
   return (

@@ -1,10 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Config } from "../../src/ts/schemas/configs";
 import { lockConfig } from "../../src/ts/beartype/config-lock";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("lockConfig", () => {
   it("starts in Vietnamese with the slow caret", () => {
+    // a first visit reads its language off the browser, which under the test
+    // runner asks for English; ui-language.spec.ts covers that on its own
+    vi.spyOn(navigator, "languages", "get").mockReturnValue(["vi-VN"]);
     const config = lockConfig(undefined);
     expect(config.language).toBe("vietnamese");
     expect(config.smoothCaret).toBe("slow");

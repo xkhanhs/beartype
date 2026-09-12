@@ -1,6 +1,7 @@
 import { createSignal, For, JSXElement, onCleanup, Show } from "solid-js";
 
 import { THEMES } from "../../beartype/config-lock";
+import { t } from "../../beartype/strings";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { themes } from "../../constants/themes";
@@ -30,7 +31,6 @@ type Option = (typeof OPTIONS)[number];
 // already holds solarized light, vesper light and repose light, those two say
 // nothing, so they are named for the hour they look like.
 const LABELS: Partial<Record<Option, string>> = {
-  system: "tự động",
   keybear_light: "daylight",
   keybear_dark: "nightfall",
   keybear_princess: "princess",
@@ -43,16 +43,17 @@ const LABELS: Partial<Record<Option, string>> = {
 };
 
 function label(option: Option): string {
+  if (option === "system") return t("themeSystem");
   return LABELS[option] ?? option.replace(/_/g, " ");
 }
 
 const LIGHT_THEMES = THEMES.filter((name) => !isColorDark(themes[name].bg));
 const DARK_THEMES = THEMES.filter((name) => isColorDark(themes[name].bg));
 
-const GROUPS: { title: string; options: readonly Option[] }[] = [
-  { title: "theo máy", options: ["system"] },
-  { title: "màu sáng", options: LIGHT_THEMES },
-  { title: "màu tối", options: DARK_THEMES },
+const GROUPS: { title: () => string; options: readonly Option[] }[] = [
+  { title: () => t("themeGroupSystem"), options: ["system"] },
+  { title: () => t("themeGroupLight"), options: LIGHT_THEMES },
+  { title: () => t("themeGroupDark"), options: DARK_THEMES },
 ];
 
 /** The two halves of a dot, read from the palettes themselves. */
@@ -138,7 +139,7 @@ export function ThemeMenu(): JSXElement {
         class="bt-footer-pill"
         aria-expanded={open()}
         aria-haspopup="menu"
-        aria-label="giao diện"
+        aria-label={t("themeButton")}
         data-balloon-pos="up"
         onClick={() => (open() ? close() : setOpen(true))}
       >
@@ -150,13 +151,17 @@ export function ThemeMenu(): JSXElement {
         <div
           class="bt-theme-menu"
           role="menu"
-          aria-label="màu"
+          aria-label={t("themeMenu")}
           onMouseLeave={() => void ThemeController.clearPreview()}
         >
           <For each={GROUPS}>
             {(group) => (
-              <div class="bt-theme-group" role="group" aria-label={group.title}>
-                <div class="bt-theme-group-title">{group.title}</div>
+              <div
+                class="bt-theme-group"
+                role="group"
+                aria-label={group.title()}
+              >
+                <div class="bt-theme-group-title">{group.title()}</div>
                 <For each={group.options}>
                   {(option) => (
                     <button
