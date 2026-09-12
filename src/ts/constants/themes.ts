@@ -465,7 +465,7 @@ export const themes: Record<ThemeName, Theme> = {
   modern_ink: {
     bg: "#ffffff",
     caret: "#ff0000",
-    main: "#ff360d",
+    main: "#de2f0b",
     sub: "#b7b7b7",
     subAlt: "#ececec",
     text: "#000000",
