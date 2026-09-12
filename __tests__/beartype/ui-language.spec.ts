@@ -42,14 +42,14 @@ describe("detectUiLanguage", () => {
     expect(detectUiLanguage()).toBe("en");
   });
 
-  it("stays Vietnamese when no entry names a language it speaks", () => {
+  it("falls back to English when no entry names a language it speaks", () => {
     browserAsks("ja", "ko");
-    expect(detectUiLanguage()).toBe("vi");
+    expect(detectUiLanguage()).toBe("en");
   });
 
-  it("stays Vietnamese when the browser says nothing", () => {
+  it("falls back to English when the browser says nothing", () => {
     browserAsks();
-    expect(detectUiLanguage()).toBe("vi");
+    expect(detectUiLanguage()).toBe("en");
   });
 });
 
@@ -74,11 +74,11 @@ describe("the language a first visit gets", () => {
     expect(vietnamese.language).toBe("vietnamese");
   });
 
-  it("stays Vietnamese for a browser asking for neither", () => {
+  it("opens in English for a browser asking for neither", () => {
     browserAsks("de-CH");
     const config = lockConfig(undefined);
-    expect(config.uiLanguage).toBe("vi");
-    expect(config.language).toBe("vietnamese");
+    expect(config.uiLanguage).toBe("en");
+    expect(config.language).toBe("english");
   });
 });
 
@@ -108,6 +108,29 @@ describe("a config stored before the page had a language of its own", () => {
     expect(config.uiLanguage).toBe("vi");
     // reading one language while typing the other is a choice, not a mistake
     expect(config.language).toBe("english");
+  });
+
+  it("never guesses again over a language the typist picked", () => {
+    // the browser asks for one language and the typist picked the other: on
+    // every load after the first the stored choice wins, so refreshing the
+    // page does not undo the press of the pill in the footer
+    for (const [asked, picked] of [
+      ["en-US", "vi"],
+      ["vi-VN", "en"],
+      ["ja-JP", "vi"],
+    ] as const) {
+      browserAsks(asked);
+      let config = lockConfig({
+        ...getDefaultConfig(),
+        uiLanguage: picked,
+        language: TYPING_LANGUAGE[picked],
+      });
+      // load it back as many times as the page is opened
+      config = lockConfig(config);
+      config = lockConfig(config);
+      expect(config.uiLanguage).toBe(picked);
+      expect(config.language).toBe(TYPING_LANGUAGE[picked]);
+    }
   });
 
   it("drops a language the page does not speak", () => {

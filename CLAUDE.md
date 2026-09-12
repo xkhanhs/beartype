@@ -99,9 +99,12 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   `setConfig` phát event trước khi ghi vào store, nên nghe event thì `t` còn
   trả về thứ tiếng vừa rời đi. Lần đầu vào trang thì đoán theo
   `navigator.languages` và lấy luôn bộ từ tương ứng (`lockConfig(undefined)`);
-  không tag nào là `vi` hay `en` thì trang là tiếng Việt. Cấu hình lưu từ
-  trước khi có khoá này lấy ngôn ngữ trang theo bộ từ đang gõ, không theo
-  trình duyệt.
+  không tag nào là `vi` hay `en` thì trang mở bằng tiếng Anh, vì người không
+  đọc được cả hai thứ tiếng này thì vẫn dễ với tiếng Anh hơn. Đoán chỉ xảy
+  ra ở lần đầu: `lockConfig` chỉ nhận `undefined` khi `localStorage` chưa có
+  khoá `config`, nên đã bấm viên ngôn ngữ một lần là F5 không đoán lại nữa.
+  Cấu hình lưu từ trước khi có khoá này lấy ngôn ngữ trang theo bộ từ đang
+  gõ, không theo trình duyệt.
 - Phông: giao diện là Quicksand; bài gõ dùng một phông theo ngôn ngữ, Be Vietnam
   Pro cho tiếng Việt và Roboto Mono cho tiếng Anh (`applyTypingFont` trong
   `ui.ts`, `@font-face` trong `beartype.scss`, preload trong
