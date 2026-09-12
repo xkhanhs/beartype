@@ -7,6 +7,12 @@ import {
 import { ThemeNameSchema } from "../schemas/themes";
 import { getDefaultConfig } from "../constants/default-config";
 import { typedKeys } from "../utils/objects";
+import {
+  detectUiLanguage,
+  TYPING_LANGUAGE,
+  UI_LANGUAGES,
+  uiLanguageOf,
+} from "./ui-language";
 
 /** Times and word counts on offer; anything else falls back to the default. */
 export const TIMES = [15, 30, 60, 120] as const;
@@ -32,6 +38,7 @@ function allowed(key: keyof Config, value: unknown): boolean {
     time: TIMES,
     words: WORD_COUNTS,
     language: LANGUAGES,
+    uiLanguage: UI_LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
     fontSize: FONT_SIZES,
     theme: THEMES,
@@ -50,7 +57,14 @@ function allowed(key: keyof Config, value: unknown): boolean {
  */
 export function lockConfig(stored: Config | undefined): Config {
   const config = getDefaultConfig();
-  if (stored === undefined) return config;
+  if (stored === undefined) {
+    // a first visit: the browser says which language it would rather read,
+    // and whoever reads the page in English came to type English words
+    const uiLanguage = detectUiLanguage();
+    config.uiLanguage = uiLanguage;
+    config.language = TYPING_LANGUAGE[uiLanguage];
+    return config;
+  }
   for (const key of typedKeys(config)) {
     if (allowed(key, stored[key])) {
       // @ts-expect-error the key indexes both objects with the same type
@@ -63,6 +77,13 @@ export function lockConfig(stored: Config | undefined): Config {
   // one, keeps the colour they picked rather than being painted over
   if (stored.randomTheme === undefined && !stored.autoSwitchTheme) {
     config.randomTheme = "off";
+  }
+  // a config stored before the page had a language of its own: the word list
+  // they were already typing says which page they had been reading, and that
+  // beats whatever their browser asks for -- a Vietnamese typist on an
+  // English browser must not find the page in English one morning
+  if (stored.uiLanguage === undefined) {
+    config.uiLanguage = uiLanguageOf(config.language);
   }
   return config;
 }

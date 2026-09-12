@@ -10,6 +10,12 @@ export const IndicateTyposSchema = z.enum(["off", "below"]);
 export const KeymapModeSchema = z.enum(["off", "react"]);
 
 /**
+ * Which language the page itself speaks, as opposed to the words being typed.
+ * See beartype/ui-language.ts.
+ */
+export const UiLanguageSchema = z.enum(["vi", "en"]);
+
+/**
  * Which palettes a new test may pick from, or "off" to keep the chosen one.
  * "auto" is the pale ones or the dark ones, whichever the computer is set to.
  */
@@ -37,6 +43,9 @@ export const ConfigSchema = z
     time: TimeConfigSchema,
     mode: Shared.ModeSchema,
     language: LanguageSchema,
+
+    // interface
+    uiLanguage: UiLanguageSchema,
 
     // input
     indicateTypos: IndicateTyposSchema,

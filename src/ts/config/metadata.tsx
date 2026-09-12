@@ -93,6 +93,15 @@ export const configMetadata: ConfigMetadataObject = {
     key: "language",
     displayString: "language",
   },
+  // interface
+  // beartype: picking a language for the page also picks the word list, but
+  // the button in the footer sets both keys itself rather than overriding
+  // from here. An override would fire again on every full config load, and
+  // reading the page in one language while typing the other is a real choice.
+  uiLanguage: {
+    key: "uiLanguage",
+    displayString: "interface language",
+  },
   // input
   indicateTypos: {
     key: "indicateTypos",

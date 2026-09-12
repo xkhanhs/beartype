@@ -9,6 +9,7 @@ import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
 import { idleReason } from "../beartype/idle";
+import { t } from "../beartype/strings";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
@@ -216,7 +217,7 @@ async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
-    return initFailed("Không dựng được bài gõ. Bấm gõ lại để thử lần nữa.");
+    return initFailed(t("buildFailedRetry"));
   }
 
   TestWords.words.reset();
@@ -229,10 +230,7 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    return initFailed(
-      "Không tải được danh sách từ. Kiểm tra mạng rồi bấm gõ lại.",
-      error,
-    );
+    return initFailed(t("wordsUnreachable"), error);
   }
 
   // the language was changed while it loaded
@@ -269,7 +267,7 @@ async function init(): Promise<boolean> {
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     hideLoaderBar();
-    return initFailed("Không tạo được bài gõ. Bấm gõ lại để thử lần nữa.", e);
+    return initFailed(t("makeFailedRetry"), e);
   }
 
   setWordsHaveTab(wordsHaveTab);

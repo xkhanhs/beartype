@@ -9,6 +9,8 @@ import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import { convertRemToPixels } from "./utils/numbers";
 import { getResultVisible } from "./states/test";
+import { translateDom } from "./beartype/dom-strings";
+import { updateTitle } from "./utils/misc";
 
 // One typing font per language, each falling back to a system font of the
 // same kind; see the @font-face rules in beartype.scss.
@@ -55,6 +57,19 @@ createEffect(() => {
   });
 });
 
+// beartype: the page's own language shows in two places outside the
+// components -- the tab and the `lang` attribute a screen reader reads the
+// page with. Both are set here, where the rest of the whole-page settings
+// are. The config values are the language tags themselves, so `lang` takes
+// one as it stands. `applyConfig` sets every key on load, so this runs then
+// too; `index.html` ships the attribute the page starts with.
+function applyUiLanguage(): void {
+  document.documentElement.lang = Config.uiLanguage;
+  updateTitle();
+  translateDom();
+}
+
 configEvent.subscribe(({ key }) => {
   if (key === "language") applyTypingFont();
+  if (key === "uiLanguage") applyUiLanguage();
 });

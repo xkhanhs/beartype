@@ -1,3 +1,4 @@
+import { t } from "../beartype/strings";
 import { Config } from "../schemas/configs";
 import { Mode, Mode2 } from "../schemas/shared";
 import { animate, AnimationParams } from "animejs";
@@ -98,7 +99,7 @@ export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
   if (title === undefined || title === "") {
-    document.title = `${local}beartype · đo tốc độ gõ tiếng Việt`;
+    document.title = `${local}${t("pageTitle")}`;
   } else {
     document.title = local + title;
   }

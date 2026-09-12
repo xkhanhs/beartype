@@ -13,6 +13,10 @@ const obj: Config = {
   time: 30,
   mode: "time",
   language: "vietnamese",
+  // what the page has always spoken; a first visit overrides both this and
+  // the word list above from the browser's own preference, in
+  // beartype/config-lock.ts
+  uiLanguage: "vi",
   fontSize: 2,
   indicateTypos: "off",
   keymapMode: "off",
