@@ -62,7 +62,13 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   nhóm đó: `randomizeTheme` trong `controllers/theme-controller.ts`, gọi từ
   `restart` của `test/test-logic.ts`, rút hết một cỗ đã xáo rồi mới xáo lại.
   Bảng đang xoay không ghi vào `Config.theme`, nên tắt xoay là về lại màu đã
-  chọn.
+  chọn. Mặc định là `auto`: xoay trong nhóm sáng hay tối tuỳ cài đặt của máy.
+  Cấu hình lưu từ trước khi có khoá này, của người đã tự chọn màu
+  (`autoSwitchTheme` tắt), được `lockConfig` để yên ở `off`.
+- Chữ đang dựng dấu lấy `--partial-letter-color`, mặc định là màu accent. Bảng
+  nào có accent lẫn với chữ đã gõ hoặc chữ chưa gõ thì đặt `partialLetter`
+  trong `constants/themes.ts` (midnight lấy màu hổ phách của keybear, như
+  racing và pixel đặt trong file css của chúng).
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
   `src/ts/states/test.ts`. Phím sáng theo ký tự hệ thống nhận (`event.key`), chữ

@@ -9,8 +9,17 @@ export const IndicateTyposSchema = z.enum(["off", "below"]);
 
 export const KeymapModeSchema = z.enum(["off", "react"]);
 
-/** Which palettes a new test may pick from, or "off" to keep the chosen one. */
-export const RandomThemeSchema = z.enum(["off", "light", "dark", "all"]);
+/**
+ * Which palettes a new test may pick from, or "off" to keep the chosen one.
+ * "auto" is the pale ones or the dark ones, whichever the computer is set to.
+ */
+export const RandomThemeSchema = z.enum([
+  "off",
+  "auto",
+  "light",
+  "dark",
+  "all",
+]);
 
 const ThemeNameSchema = Themes.ThemeNameSchema;
 export type ThemeName = z.infer<typeof ThemeNameSchema>;

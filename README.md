@@ -13,10 +13,11 @@ không quote, không funbox. Chỉ còn một màn:
   nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
 - **Giao diện của keybear**: ba mươi ba bảng màu — chín của keybear, mười tám
   bảng tối và sáu bảng sáng của monkeytype — chọn trong danh sách ở chân trang
-  (rê chuột để xem thử), hoặc để mỗi bài mới tự rút một bảng ngẫu nhiên trong
-  nhóm sáng, nhóm tối hay cả hai. Phông bài gõ theo ngôn ngữ (Be Vietnam Pro
-  cho tiếng Việt, Roboto Mono cho tiếng Anh), cỡ chữ theo các mức phóng của
-  Chrome (80% tới 200%), và con trỏ mượt tuỳ chỉnh được.
+  (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
+  tối tuỳ cài đặt của máy; đổi nhóm hoặc tắt hẳn trong thẻ cài đặt. Phông bài
+  gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh),
+  cỡ chữ theo các mức phóng của Chrome (80% tới 200%), và con trỏ mượt tuỳ
+  chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
 - **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: phím đã gõ nhầm hiện nhỏ dưới

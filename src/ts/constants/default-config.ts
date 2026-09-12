@@ -1,10 +1,12 @@
 import { Config } from "../schemas/configs";
 
 const obj: Config = {
-  // keybear's palettes, following the computer's light or dark setting
+  // a new palette every test, from the pale ones or the dark ones as the
+  // computer is set; whoever picks a colour by hand turns the rotation off and
+  // falls back to these two
+  randomTheme: "auto",
   theme: "keybear_light",
   autoSwitchTheme: true,
-  randomTheme: "off",
   // the caret this app was measured against on monkeytype.com
   smoothCaret: "slow",
   words: 50,

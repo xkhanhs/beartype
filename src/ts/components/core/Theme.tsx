@@ -48,7 +48,13 @@ export function Theme(): JSXElement {
     --error-extra-color: ${colors.errorExtra};
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
-    --kb-on-accent: ${textOnAccent(colors.main, colors.bg, colors.text)};
+    --kb-on-accent: ${textOnAccent(colors.main, colors.bg, colors.text)};${
+      // left out unless the palette sets one, so the stylesheet's fallback to
+      // the accent applies
+      colors.partialLetter === undefined
+        ? ""
+        : `\n    --partial-letter-color: ${colors.partialLetter};`
+    }
 }`);
   });
 
