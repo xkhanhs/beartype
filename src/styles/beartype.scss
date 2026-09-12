@@ -58,7 +58,8 @@ body.darkMode #words {
   --kb-text-f1: color-mix(in srgb, var(--text-color) 80%, var(--bg-color));
   // keybear picks this one by hand per palette; a sixth of the accent is close
   --kb-accent-xlt: color-mix(in srgb, var(--main-color) 16%, var(--bg-color));
-  // the text on an accent fill; racing and pixel set white in their own file
+  // the text on an accent fill, until the theme component measures one that
+  // can actually be read on this palette (`beartype/contrast.ts`)
   --kb-on-accent: var(--bg-color);
   --kb-shadow: color-mix(in srgb, var(--text-color) 22%, transparent);
   --kb-popup-shadow: 0 0.5rem 3rem var(--kb-shadow);
