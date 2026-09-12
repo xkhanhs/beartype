@@ -119,6 +119,12 @@ Test của beartype nằm ở `__tests__/beartype/`.
   button` (cần selector có `#result`) và media query
   `.pageTest #result .wrapper …` (cần tiền tố `.pageTest`). Nhớ thử ở khung
   hẹp, vì media query chỉ lộ ra ở đó.
+- Ba nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) và ba viên ở chân
+  trang không mang chữ: mỗi cái là một hình tròn 44px, chữ nằm trong bong
+  bóng `aria-label` + `data-balloon-pos`. Mô tả trong thẻ cài đặt cũng vậy:
+  một nút `i` nhỏ cạnh tên hàng (`bt-settings-info`), không còn dòng chữ mờ
+  bên dưới. Thêm hàng cài đặt mới thì `hint` là tuỳ chọn, hàng nào tên đã đủ
+  rõ thì bỏ hẳn.
 - Icon của các nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
   với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
@@ -134,4 +140,5 @@ Test của beartype nằm ở `__tests__/beartype/`.
   `git bisect` sẽ chỉ ra cụm nào gây ra.
 - Conventional commits, không ghi tên AI.
 - GPL-3.0: giữ `LICENSE`, repo public, chân trang có nút GitHub trỏ về mã
-  nguồn (bong bóng của nó ghi "fork của monkeytype · GPL-3.0").
+  nguồn (bong bóng của nó chỉ ghi "mã nguồn"; giấy phép và gốc monkeytype nằm
+  trong repo).

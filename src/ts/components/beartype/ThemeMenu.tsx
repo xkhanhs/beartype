@@ -135,7 +135,8 @@ export function ThemeMenu(): JSXElement {
         class="bt-footer-pill"
         aria-expanded={open()}
         aria-haspopup="menu"
-        title="đổi màu"
+        aria-label="giao diện"
+        data-balloon-pos="up"
         onClick={() => (open() ? close() : setOpen(true))}
       >
         <Dot option={worn()} />

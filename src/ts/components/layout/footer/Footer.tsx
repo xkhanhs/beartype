@@ -20,13 +20,13 @@ export function Footer(): JSXElement {
         {/* GPL-3.0: the source travels with every copy of this page. The
             repository says the rest -- a fork of monkeytype, its licence --
             so the footer keeps only a way there, as a round icon beside the
-            two pills. */}
+            two pills, and its balloon only names where it goes. */}
         <a
           class="bt-footer-pill bt-footer-icon"
           href="https://github.com/xkhanhs/beartype"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="mã nguồn · fork của monkeytype · GPL-3.0"
+          aria-label="mã nguồn"
           data-balloon-pos="up"
         >
           <Icon name="github" />
