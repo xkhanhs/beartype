@@ -666,6 +666,25 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
+// beartype: on the result "bài mới" is the one filled button, as keybear
+// draws it, so enter alone presses it -- nothing else on the result screen
+// wants the key. Tab still reaches the button first, so tab + enter is
+// unchanged.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || e.repeat) return;
+  if (!getResultVisible()) return;
+  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  // a button or a link under the focus answers enter itself, and that is
+  // how tab + enter reaches "gõ lại bài này" or the colours; everything else
+  // that holds the focus here -- the result box upstream focuses, the input
+  // the test typed into -- has nothing to do with the key
+  if ((document.activeElement?.closest("button, a[href]") ?? null) !== null) {
+    return;
+  }
+  e.preventDefault();
+  void restart();
+});
+
 // little roadblock for basic cheating
 window.addEventListener("focus", () => {
   if (

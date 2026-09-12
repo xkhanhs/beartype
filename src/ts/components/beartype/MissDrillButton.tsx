@@ -31,10 +31,12 @@ export function MissDrillButton(): JSXElement {
   const ready = (): boolean => words().length >= MIN_DRILL_WORDS;
   const active = (): boolean => getConfig.mode === "custom";
 
+  // the button carries no label, so its balloon says both what it does and
+  // how many words the book holds -- the count used to be on the button
   const hint = (): string => {
-    if (active()) return "quay về bài thường";
+    if (active()) return "đang luyện từ hay sai · quay về bài thường";
     return ready()
-      ? "gõ lại những từ hay gõ sai"
+      ? `luyện ${words().length} từ hay sai`
       : `cần ít nhất ${MIN_DRILL_WORDS} từ trong sổ`;
   };
 
@@ -42,7 +44,7 @@ export function MissDrillButton(): JSXElement {
     <Show when={active() || words().length > 0}>
       <button
         type="button"
-        class={cn("bt-action transition-opacity", {
+        class={cn("bt-action bt-action-bare transition-opacity", {
           "bt-action-on": active(),
           "pointer-events-none opacity-0": getFocus(),
         })}
@@ -64,9 +66,6 @@ export function MissDrillButton(): JSXElement {
         <svg class="bt-action-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d={active() ? CLOSE_ICON : TARGET_ICON}></path>
         </svg>
-        {active()
-          ? "đang luyện từ hay sai"
-          : `luyện ${words().length} từ hay sai`}
       </button>
     </Show>
   );

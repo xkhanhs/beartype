@@ -122,6 +122,12 @@ Test của beartype nằm ở `__tests__/beartype/`.
   button` (cần selector có `#result`) và media query
   `.pageTest #result .wrapper …` (cần tiền tố `.pageTest`). Nhớ thử ở khung
   hẹp, vì media query chỉ lộ ra ở đó.
+- Ba nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) và ba viên ở chân
+  trang không mang chữ: mỗi cái là một hình tròn 44px, chữ nằm trong bong
+  bóng `aria-label` + `data-balloon-pos`. Mô tả trong thẻ cài đặt cũng vậy:
+  một nút `i` nhỏ cạnh tên hàng (`bt-settings-info`), không còn dòng chữ mờ
+  bên dưới. Thêm hàng cài đặt mới thì `hint` là tuỳ chọn, hàng nào tên đã đủ
+  rõ thì bỏ hẳn.
 - Icon của các nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
   với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
@@ -130,6 +136,12 @@ Test của beartype nằm ở `__tests__/beartype/`.
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
 - Thanh tuỳ chọn không bao giờ xuống dòng; màn hẹp thì nó cuộn ngang.
+- Thẻ cài đặt chỉ là hộp cuộn khi cửa sổ thấp dưới 32rem. Hộp cuộn cắt mọi
+  thứ thò ra khỏi nó, trên cả hai chiều, mà bong bóng của các nút `i` thì thò
+  ra: đừng trả `overflow-y: auto` về cho `.bt-settings-card` ở mọi cỡ màn.
+- Màn kết quả: Enter một mình mở bài mới (`test-logic.ts`), trừ khi tiêu điểm
+  đang ở một nút hay một liên kết — nó tự trả lời Enter, và tab + enter đi
+  đường đó.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
@@ -137,4 +149,5 @@ Test của beartype nằm ở `__tests__/beartype/`.
   `git bisect` sẽ chỉ ra cụm nào gây ra.
 - Conventional commits, không ghi tên AI.
 - GPL-3.0: giữ `LICENSE`, repo public, chân trang có nút GitHub trỏ về mã
-  nguồn (bong bóng của nó ghi "fork của monkeytype · GPL-3.0").
+  nguồn (bong bóng của nó chỉ ghi "mã nguồn"; giấy phép và gốc monkeytype nằm
+  trong repo).

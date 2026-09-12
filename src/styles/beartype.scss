@@ -427,6 +427,17 @@ button.bt-options-pill {
     fill: currentColor;
   }
 
+  // beartype: the three buttons under the words carry no label -- their
+  // balloons say what they do -- so each is a circle 44px across, the height
+  // the labelled pills stood at. `#testInitFailed` keeps its label, and this
+  // class is what tells the two apart.
+  &.bt-action-bare {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    gap: 0;
+  }
+
   // keybear's `.action_on`: the drill running, which must be seen from
   // across the room -- it tells the typist why the words keep coming back
   &.bt-action-on,
@@ -438,7 +449,6 @@ button.bt-options-pill {
   // "next" is what comes after almost every test, and Enter presses it:
   // keybear makes it the wider pill in the row, the text the same size
   &.bt-action-primary {
-    padding-inline: 1.6rem;
     border-color: var(--main-color);
     color: var(--kb-on-accent);
     background-color: var(--main-color);
@@ -457,10 +467,10 @@ button.bt-options-pill {
 }
 
 // upstream's own rule places the restart button with margins and wide padding
-.pageTest #restartTestButton.bt-action {
+.pageTest #restartTestButton.bt-action-bare {
   display: inline-flex;
   margin: 0;
-  padding: 0.55rem 1.3rem;
+  padding: 0;
 }
 
 // upstream's `#testInitFailed button` pads its restart button wider still
@@ -535,8 +545,8 @@ a.bt-footer-pill {
   color: var(--kb-text-f1);
 }
 
-// the link to the source: a round button, the icon alone
-a.bt-footer-icon {
+// the gear and the link to the source: round buttons, the icon alone
+.bt-footer-pill.bt-footer-icon {
   justify-content: center;
   inline-size: 2.5rem;
   padding: 0;
@@ -669,11 +679,6 @@ footer {
   gap: 0.4rem;
   inline-size: max-content;
   max-inline-size: min(40rem, 94vw);
-  // on a short screen the rows scroll inside the card, which opens upward
-  // from the footer and would otherwise run off the top
-  max-block-size: calc(100dvh - 6rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
   padding: 1.3rem;
   border: 2px solid var(--kb-border);
   border-radius: 1.1rem;
@@ -682,6 +687,19 @@ footer {
   box-shadow: var(--kb-popup-shadow);
   font-size: 1rem;
   transform: translateX(-50%);
+}
+
+// A scrolling box clips what sticks out of it -- on both axes, not just the
+// one asked for -- and the hints hang off the rows as balloons. So the card
+// only becomes a scroller where it truly cannot fit: a window under 32rem
+// tall, where the card opening upward from the footer would run off the top
+// and be unreachable. Everywhere else the balloons are free.
+@media (max-height: 32rem) {
+  .bt-settings-card {
+    max-block-size: calc(100dvh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 .bt-settings-title {
@@ -700,18 +718,39 @@ footer {
   border-block-start: 1px solid var(--kb-border);
 }
 
-.bt-settings-row-text {
-  flex: 1 1 11rem;
-}
-
 .bt-settings-row-name {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.35rem;
+  align-items: center;
   font-weight: bold;
 }
 
-.bt-settings-row-hint {
+// the `i` that holds what the row used to say in full underneath it: the
+// size of the text beside it, and dimmed until pointed at, so the names read
+// as a list and not as a list with a mark against every line
+button.bt-settings-info {
+  display: inline-flex;
+  padding: 0;
+  border: none;
   color: var(--kb-text-f1);
-  font-size: 0.875rem;
-  line-height: 1.35;
+  background: transparent;
+  font-size: 0.9em;
+  opacity: 0.65;
+  cursor: help;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text-color);
+    background: transparent;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }
 
 .bt-settings-choices {
@@ -719,6 +758,10 @@ footer {
   flex: 0 1 auto;
   flex-wrap: wrap;
   gap: 0.35rem;
+  // hard against the card's right edge, wrapped lines included, so the
+  // choices read as one column however many a row has; only the names on the
+  // left are ragged
+  justify-content: flex-end;
   max-inline-size: 24rem;
 }
 
@@ -864,12 +907,8 @@ button.bt-settings-choice {
     margin-block-start: 3rem;
 
     // upstream pads every button here `1em 2em` from an id selector
-    button.bt-action {
-      padding: 0.55rem 1.3rem;
-    }
-
-    button.bt-action-primary {
-      padding-inline: 1.6rem;
+    button.bt-action-bare {
+      padding: 0;
     }
   }
 }

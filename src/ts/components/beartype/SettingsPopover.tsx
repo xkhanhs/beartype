@@ -19,7 +19,9 @@ import { SettingsRow } from "./SettingsRow";
  * page had a hundred rows; this has the ones that shape how typing feels and
  * that a person here actually changes: the caret, the size of the words, the
  * typos under them and the keyboard below. It is one of keybear's settings
- * cards; the colours have their own pill beside it, as in keybear.
+ * cards; the colours have their own pill beside it, as in keybear. The gear
+ * stands alone, without its name: the page stays quiet, and the balloon says
+ * what it opens.
  */
 
 const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
@@ -88,13 +90,14 @@ export function SettingsPopover(): JSXElement {
       {/* the same pill as the colours beside it, as keybear pairs them */}
       <button
         type="button"
-        class="bt-footer-pill"
+        class="bt-footer-pill bt-footer-icon"
+        aria-label="cài đặt"
+        data-balloon-pos="up"
         aria-expanded={open()}
         aria-haspopup="dialog"
         onClick={() => setOpen(!open())}
       >
         <Icon name="settings" />
-        <span>cài đặt</span>
       </button>
       <Show when={open()}>
         <div class="bt-settings-card" role="dialog" aria-label="cài đặt">
@@ -109,7 +112,6 @@ export function SettingsPopover(): JSXElement {
           />
           <SettingsRow
             label="cỡ chữ"
-            hint="cỡ chữ của bài gõ"
             options={FONT_SIZES}
             labels={FONT_SIZE_LABELS}
             value={getConfig.fontSize}
@@ -117,7 +119,7 @@ export function SettingsPopover(): JSXElement {
           />
           <SettingsRow
             label="hiện phím gõ sai"
-            hint="chữ đã gõ nhầm hiện nhỏ dưới chữ đích"
+            hint="chữ gõ nhầm hiện nhỏ dưới chữ đích"
             options={TYPO_INDICATORS}
             labels={TYPO_INDICATOR_LABELS}
             value={getConfig.indicateTypos}
@@ -125,7 +127,7 @@ export function SettingsPopover(): JSXElement {
           />
           <SettingsRow
             label="xoay màu"
-            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn; theo máy là sáng hay tối tuỳ cài đặt của máy"
+            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn"
             options={RANDOM_THEMES}
             labels={RANDOM_THEME_LABELS}
             value={getConfig.randomTheme}
@@ -133,7 +135,7 @@ export function SettingsPopover(): JSXElement {
           />
           <SettingsRow
             label="bàn phím ảo"
-            hint="bàn phím QWERTY dưới bài gõ; phím sáng lên khi gõ"
+            hint="bàn phím QWERTY dưới bài gõ, sáng lên theo phím"
             options={KEYMAP_MODES}
             labels={KEYMAP_MODE_LABELS}
             value={getConfig.keymapMode}
