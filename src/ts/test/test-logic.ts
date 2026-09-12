@@ -42,7 +42,6 @@ import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import { CompletedEvent, CompletedEventCustomText } from "../schemas/results";
 import * as CompositionState from "../legacy-states/composition";
-import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "../utils/trycatch";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as TestInitFailed from "../elements/test-init-failed";
@@ -194,22 +193,26 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   setIsTestRestarting(false);
 }
 
-let lastInitError: Error | null = null;
 let testReinitCount = 0;
+
+// beartype: a failure is written on the test screen and not retried on its
+// own -- an immediate retry only fails the same way, flickering the loader
+// bar. Restarting (the button, or tab + enter) tries again.
+function initFailed(text: string, error?: unknown): false {
+  if (error !== undefined) console.error(error);
+  TestInitFailed.show(
+    text,
+    error instanceof Error ? `${error.name}: ${error.message}` : undefined,
+  );
+  setIsTestRestarting(false);
+  return false;
+}
 
 async function init(): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
-    if (lastInitError) {
-      console.error(lastInitError);
-      TestInitFailed.showError(
-        `${lastInitError.name}: ${lastInitError.message}`,
-      );
-    }
-    TestInitFailed.show();
-    setIsTestRestarting(false);
-    return false;
+    return initFailed("Không dựng được bài gõ. Bấm gõ lại để thử lần nữa.");
   }
 
   TestWords.words.reset();
@@ -222,10 +225,14 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    console.error("Không tải được bộ từ", error);
+    return initFailed(
+      "Không tải được danh sách từ. Kiểm tra mạng rồi bấm gõ lại.",
+      error,
+    );
   }
 
-  if (!language || language.name !== Config.language) {
+  // the language was changed while it loaded
+  if (language.name !== Config.language) {
     return await init();
   }
 
@@ -258,12 +265,7 @@ async function init(): Promise<boolean> {
     wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     hideLoaderBar();
-    if (e instanceof WordGenError || e instanceof Error) {
-      lastInitError = e;
-    }
-    console.error(e);
-
-    return await init();
+    return initFailed("Không tạo được bài gõ. Bấm gõ lại để thử lần nữa.", e);
   }
 
   setWordsHaveTab(wordsHaveTab);

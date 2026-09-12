@@ -52,6 +52,9 @@ function memoizeAsync<P, Args extends unknown[], R>(
 
     const result = fn(...args);
     cache.set(key, result);
+    // beartype: a failed fetch is not kept, or restarting after the network
+    // comes back would get the same failure until the page is reloaded
+    result.catch(() => cache.delete(key));
     return result;
   };
 }

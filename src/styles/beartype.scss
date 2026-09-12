@@ -454,6 +454,11 @@ button.bt-options-pill {
   padding: 0.55rem 1.3rem;
 }
 
+// upstream's `#testInitFailed button` pads its restart button wider still
+.pageTest #testInitFailed button.bt-action {
+  padding: 0.55rem 1.6rem;
+}
+
 // beartype: the restart button shares its row with the miss-book drill.
 // Upstream centres it with auto margins, which in a row would push its
 // neighbour to the edge; the row does the centring instead. Tab still reaches

@@ -3,10 +3,10 @@ import { defineConfig, UserWorkspaceConfig } from "vitest/config";
 import { envConfig } from "./vite-plugins/env-config";
 import solidPlugin from "vite-plugin-solid";
 
-// vite-plugin-solid adds jest-dom to every project by its bare name, which
-// vitest looks up starting from the folder above the root. A worktree kept
-// inside another checkout then loads the outer checkout's copy, which vite
-// refuses to serve. Naming the file here makes the plugin leave it alone.
+// vite-plugin-solid adds jest-dom's setup file by its bare name, and vitest
+// resolves that from the directory above the root. In a worktree nested in
+// the main checkout that is the checkout's copy, which vite will not serve.
+// A resolved path here stops the plugin from adding its own.
 const jestDom = fileURLToPath(
   import.meta.resolve("@testing-library/jest-dom/vitest"),
 );
