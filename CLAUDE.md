@@ -50,7 +50,7 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   cỡ chữ, hiện phím gõ sai, xoay màu, bàn phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), nút luyện từ hay sai, sổ bài gần đây dưới
   màn kết quả (`ResultHistory`), icon (`Icon`).
-- Màu: chín bảng của keybear, mười tám bảng tối và sáu bảng sáng chép từ
+- Màu: chín bảng của keybear, hai mươi hai bảng tối và bảy bảng sáng chép từ
   monkeytype (`src/ts/constants/themes.ts`, tên trong
   `src/ts/schemas/themes.ts`). Chữ trên nền accent (`--kb-on-accent`) không
   còn mặc định là màu nền: `beartype/contrast.ts` đo và chọn màu đọc được, ưu

@@ -19,6 +19,7 @@ describe("themes", () => {
       "keybear_princess",
       "keybear_racing",
       "keybear_pixel",
+      "aurora",
     ]);
   });
 

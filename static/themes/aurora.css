@@ -1,0 +1,35 @@
+/* beartype: aurora is named after this drift -- the green it writes with runs
+   through cyan and back over five seconds. monkeytype puts the animation on
+   the caret, the nav bar and the logo as well; here it stays on the letters
+   already typed. The caret keeps beartype's own flash, which is the one piece
+   of the typing view no palette gets to redraw. */
+
+@keyframes aurora {
+  0% {
+    color: #009fb4;
+  }
+  25% {
+    color: #00e975;
+  }
+  50% {
+    color: #00ffea;
+  }
+  75% {
+    color: #00e975;
+  }
+  100% {
+    color: #009fb4;
+  }
+}
+
+#words {
+  --correct-letter-animation: aurora 5s linear infinite;
+}
+
+/* letters that drift colour on their own are the one thing this palette
+   cannot offer someone who asked the system for less motion */
+@media (prefers-reduced-motion: reduce) {
+  #words {
+    --correct-letter-animation: none;
+  }
+}
