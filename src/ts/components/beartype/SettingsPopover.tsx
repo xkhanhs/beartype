@@ -7,6 +7,7 @@ import {
   SMOOTH_CARETS,
   TYPO_INDICATORS,
 } from "../../beartype/config-lock";
+import { t } from "../../beartype/strings";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { getFocus } from "../../states/test";
@@ -24,12 +25,17 @@ import { SettingsRow } from "./SettingsRow";
  * what it opens.
  */
 
-const SMOOTH_CARET_LABELS: Record<(typeof SMOOTH_CARETS)[number], string> = {
-  off: "tắt",
-  slow: "chậm",
-  medium: "vừa",
-  fast: "nhanh",
-};
+// beartype: each of these is read again whenever the page changes language,
+// so they are functions of the moment rather than tables built at load
+const smoothCaretLabels = (): Record<
+  (typeof SMOOTH_CARETS)[number],
+  string
+> => ({
+  off: t("off"),
+  slow: t("slow"),
+  medium: t("medium"),
+  fast: t("fast"),
+});
 
 // as Chrome's zoom names them: a share of the usual size
 const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
@@ -43,24 +49,29 @@ const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
   4: "200%",
 };
 
-const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
-  off: "tắt",
-  react: "bật",
-};
+const keymapModeLabels = (): Record<(typeof KEYMAP_MODES)[number], string> => ({
+  off: t("off"),
+  react: t("on"),
+});
 
-const RANDOM_THEME_LABELS: Record<(typeof RANDOM_THEMES)[number], string> = {
-  off: "tắt",
-  auto: "theo máy",
-  light: "màu sáng",
-  dark: "màu tối",
-  all: "lẫn lộn",
-};
+const randomThemeLabels = (): Record<
+  (typeof RANDOM_THEMES)[number],
+  string
+> => ({
+  off: t("off"),
+  auto: t("rotateAuto"),
+  light: t("rotateLight"),
+  dark: t("rotateDark"),
+  all: t("rotateAll"),
+});
 
-const TYPO_INDICATOR_LABELS: Record<(typeof TYPO_INDICATORS)[number], string> =
-  {
-    off: "tắt",
-    below: "bật",
-  };
+const typoIndicatorLabels = (): Record<
+  (typeof TYPO_INDICATORS)[number],
+  string
+> => ({
+  off: t("off"),
+  below: t("on"),
+});
 
 export function SettingsPopover(): JSXElement {
   const [open, setOpen] = createSignal(false);
@@ -91,7 +102,7 @@ export function SettingsPopover(): JSXElement {
       <button
         type="button"
         class="bt-footer-pill bt-footer-icon"
-        aria-label="cài đặt"
+        aria-label={t("settings")}
         data-balloon-pos="up"
         aria-expanded={open()}
         aria-haspopup="dialog"
@@ -100,44 +111,44 @@ export function SettingsPopover(): JSXElement {
         <Icon name="settings" />
       </button>
       <Show when={open()}>
-        <div class="bt-settings-card" role="dialog" aria-label="cài đặt">
-          <div class="bt-settings-title">cài đặt</div>
+        <div class="bt-settings-card" role="dialog" aria-label={t("settings")}>
+          <div class="bt-settings-title">{t("settings")}</div>
           <SettingsRow
-            label="con trỏ mượt"
-            hint="con trỏ trượt sang chữ kế tiếp thay vì nhảy"
+            label={t("smoothCaret")}
+            hint={t("smoothCaretHint")}
             options={SMOOTH_CARETS}
-            labels={SMOOTH_CARET_LABELS}
+            labels={smoothCaretLabels()}
             value={getConfig.smoothCaret}
             onPick={(value) => setConfig("smoothCaret", value)}
           />
           <SettingsRow
-            label="cỡ chữ"
+            label={t("fontSize")}
             options={FONT_SIZES}
             labels={FONT_SIZE_LABELS}
             value={getConfig.fontSize}
             onPick={(value) => setConfig("fontSize", value)}
           />
           <SettingsRow
-            label="hiện phím gõ sai"
-            hint="chữ gõ nhầm hiện nhỏ dưới chữ đích"
+            label={t("indicateTypos")}
+            hint={t("indicateTyposHint")}
             options={TYPO_INDICATORS}
-            labels={TYPO_INDICATOR_LABELS}
+            labels={typoIndicatorLabels()}
             value={getConfig.indicateTypos}
             onPick={(value) => setConfig("indicateTypos", value)}
           />
           <SettingsRow
-            label="xoay màu"
-            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn"
+            label={t("randomTheme")}
+            hint={t("randomThemeHint")}
             options={RANDOM_THEMES}
-            labels={RANDOM_THEME_LABELS}
+            labels={randomThemeLabels()}
             value={getConfig.randomTheme}
             onPick={(value) => setConfig("randomTheme", value)}
           />
           <SettingsRow
-            label="bàn phím ảo"
-            hint="bàn phím QWERTY dưới bài gõ, sáng lên theo phím"
+            label={t("keymap")}
+            hint={t("keymapHint")}
             options={KEYMAP_MODES}
-            labels={KEYMAP_MODE_LABELS}
+            labels={keymapModeLabels()}
             value={getConfig.keymapMode}
             onPick={(value) => setConfig("keymapMode", value)}
           />

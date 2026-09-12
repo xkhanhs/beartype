@@ -1,8 +1,10 @@
 import { JSXElement } from "solid-js";
 
+import { t } from "../../../beartype/strings";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Icon } from "../../beartype/Icon";
+import { LanguageMenu } from "../../beartype/LanguageMenu";
 import { SettingsPopover } from "../../beartype/SettingsPopover";
 import { ThemeMenu } from "../../beartype/ThemeMenu";
 
@@ -17,6 +19,7 @@ export function Footer(): JSXElement {
       >
         <ThemeMenu />
         <SettingsPopover />
+        <LanguageMenu />
         {/* GPL-3.0: the source travels with every copy of this page. The
             repository says the rest -- a fork of monkeytype, its licence --
             so the footer keeps only a way there, as a round icon beside the
@@ -26,7 +29,7 @@ export function Footer(): JSXElement {
           href="https://github.com/xkhanhs/beartype"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="mã nguồn"
+          aria-label={t("sourceLink")}
           data-balloon-pos="up"
         >
           <Icon name="github" />

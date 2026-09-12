@@ -18,10 +18,7 @@ import { LOCALE_TAG, type UiLanguage } from "./ui-language";
  */
 const STRINGS = {
   // the footer
-  sourceLink: {
-    vi: "mã nguồn · fork của monkeytype · GPL-3.0",
-    en: "source · a fork of monkeytype · GPL-3.0",
-  },
+  sourceLink: { vi: "mã nguồn", en: "source" },
   switchLanguage: {
     vi: "switch to English",
     en: "chuyển sang tiếng Việt",
@@ -43,20 +40,19 @@ const STRINGS = {
     en: "the caret slides to the next letter instead of jumping",
   },
   fontSize: { vi: "cỡ chữ", en: "text size" },
-  fontSizeHint: { vi: "cỡ chữ của bài gõ", en: "how big the words are" },
   indicateTypos: { vi: "hiện phím gõ sai", en: "show typos" },
   indicateTyposHint: {
-    vi: "chữ đã gõ nhầm hiện nhỏ dưới chữ đích",
+    vi: "chữ gõ nhầm hiện nhỏ dưới chữ đích",
     en: "the letter typed by mistake shows small under the right one",
   },
   randomTheme: { vi: "xoay màu", en: "rotate colours" },
   randomThemeHint: {
-    vi: "mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn; theo máy là sáng hay tối tuỳ cài đặt của máy",
-    en: "every new test draws a palette from the chosen group; by computer means light or dark as the computer is set",
+    vi: "mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn",
+    en: "every new test draws a palette from the chosen group",
   },
   keymap: { vi: "bàn phím ảo", en: "on-screen keyboard" },
   keymapHint: {
-    vi: "bàn phím QWERTY dưới bài gõ; phím sáng lên khi gõ",
+    vi: "bàn phím QWERTY dưới bài gõ, sáng lên theo phím",
     en: "a QWERTY keyboard under the words, lighting up as you type",
   },
 
@@ -79,22 +75,22 @@ const STRINGS = {
   languageEnglish: { vi: "english", en: "english" },
 
   // the buttons under the words, and on the result
-  newTest: { vi: "bài mới", en: "new test" },
+  newTestHint: {
+    vi: "bài mới · tab + enter",
+    en: "new test · tab + enter",
+  },
   restart: { vi: "gõ lại", en: "restart" },
   repeatTest: { vi: "gõ lại bài này", en: "repeat this test" },
-  tabEnterHint: { vi: "phím tắt: tab + enter", en: "shortcut: tab + enter" },
 
   // the miss book drill
-  drillLeave: { vi: "quay về bài thường", en: "back to the normal test" },
-  drillStart: {
-    vi: "gõ lại những từ hay gõ sai",
-    en: "drill the words you keep missing",
+  drillRunningHint: {
+    vi: "đang luyện từ hay sai · quay về bài thường",
+    en: "drilling missed words · back to the normal test",
   },
   drillNeedsWords: {
     vi: (words: number) => `cần ít nhất ${words} từ trong sổ`,
     en: (words: number) => `needs at least ${words} words in the book`,
   },
-  drillRunning: { vi: "đang luyện từ hay sai", en: "drilling missed words" },
   drillCount: {
     vi: (words: number) => `luyện ${words} từ hay sai`,
     en: (words: number) => `drill ${words} missed words`,

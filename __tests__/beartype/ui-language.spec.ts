@@ -155,9 +155,9 @@ describe("the strings", () => {
 
   it("speaks the language the config is in", async () => {
     await applyConfig({ ...getDefaultConfig(), uiLanguage: "vi" });
-    expect(t("newTest")).toBe("bài mới");
+    expect(t("settings")).toBe("cài đặt");
     await applyConfig({ ...getDefaultConfig(), uiLanguage: "en" });
-    expect(t("newTest")).toBe("new test");
+    expect(t("settings")).toBe("settings");
   });
 
   it("puts a count where each language wants it", async () => {

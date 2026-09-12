@@ -1,4 +1,4 @@
-import { Config } from "./config/store";
+import { Config, getConfig } from "./config/store";
 import * as Caret from "./test/caret";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
@@ -57,19 +57,21 @@ createEffect(() => {
   });
 });
 
-// beartype: the page's own language shows in two places outside the
-// components -- the tab and the `lang` attribute a screen reader reads the
-// page with. Both are set here, where the rest of the whole-page settings
-// are. The config values are the language tags themselves, so `lang` takes
-// one as it stands. `applyConfig` sets every key on load, so this runs then
-// too; `index.html` ships the attribute the page starts with.
-function applyUiLanguage(): void {
-  document.documentElement.lang = Config.uiLanguage;
+// beartype: what the page says outside the components -- the tab, the `lang`
+// a screen reader reads it with, and the pages under src/html, which have no
+// component around them to redraw.
+//
+// An effect rather than a config event, because `setConfig` dispatches its
+// event *before* it writes the store, and `t` reads the store: on the event
+// every one of these would still be written in the language just left. The
+// effect runs once at startup too, so the pages start in the right language.
+// The config value is the language tag itself, so `lang` takes it as it is.
+createEffect(() => {
+  document.documentElement.lang = getConfig.uiLanguage;
   updateTitle();
   translateDom();
-}
+});
 
 configEvent.subscribe(({ key }) => {
   if (key === "language") applyTypingFont();
-  if (key === "uiLanguage") applyUiLanguage();
 });
