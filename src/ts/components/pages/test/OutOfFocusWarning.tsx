@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 
 import { t } from "../../../beartype/strings";
 import {
@@ -9,10 +9,12 @@ import {
 import { Icon } from "../../beartype/Icon";
 
 export function OutOfFocusWarning() {
-  const message = () =>
+  // beartype: the halves of the sentence, each kept whole: a narrow screen
+  // breaks between them, never inside one
+  const message = (): string[] =>
     testFocusState() === "unfocusedWindow"
-      ? t("unfocusedWindow")
-      : t("unfocusedWords");
+      ? [t("unfocusedWindow")]
+      : [t("unfocusedWordsTap"), t("unfocusedWordsType")];
 
   return (
     <Show when={showOutOfFocusWarning()}>
@@ -31,7 +33,9 @@ export function OutOfFocusWarning() {
           <span class="bt-pause-icon">
             <Icon name="pause" />
           </span>
-          <span>{message()}</span>
+          <span class="bt-pause-text">
+            <For each={message()}>{(clause) => <span>{clause}</span>}</For>
+          </span>
         </div>
       </div>
     </Show>

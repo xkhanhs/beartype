@@ -275,6 +275,14 @@ body,
   font-weight: bold;
 }
 
+// the sentence in halves: the line breaks between them, never inside one
+.bt-pause-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.35em;
+  justify-content: center;
+}
+
 .bt-pause-icon {
   display: flex;
   flex: none;
@@ -354,6 +362,100 @@ button.bt-options-pill {
     outline: var(--kb-focus);
     outline-offset: 2px;
     box-shadow: none;
+  }
+}
+
+// ----- the same bar on a narrow screen -----
+
+// One pill standing for the whole strip: the language, then the length
+// filled with the accent, a clock or a hash beside it for which of the two
+// it counts. It wears the strip's own rim and ground, so folding the bar
+// does not change what the page is made of.
+button.bt-options-summary {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  // as tall as the strip it stands for, with the same 6px of ground around
+  // the filled pill inside it
+  block-size: 2.75rem;
+  padding: 0 0.375rem 0 0.9rem;
+  border: 2px solid var(--kb-strip-rim);
+  border-radius: 99px;
+  color: var(--kb-text-f1);
+  background-color: var(--kb-border);
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text-color);
+    background-color: var(--kb-border);
+  }
+
+  // open, it is rimmed in the accent, so the card below belongs to it
+  &[aria-expanded="true"] {
+    border-color: var(--main-color);
+  }
+
+  // the bar is faded out while typing; the button in it only stops working
+  &[disabled] {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+.bt-options-summary-dot {
+  color: color-mix(in srgb, var(--kb-text-f1) 45%, var(--kb-border));
+}
+
+.bt-options-summary-length {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  block-size: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 99px;
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+}
+
+// the language by name, until even that is too wide -- then by its two-letter
+// tag, which says as much to anyone who picked it
+.bt-options-summary-tag {
+  display: none;
+}
+
+@media (width < 20rem) {
+  .bt-options-summary-name {
+    display: none;
+  }
+
+  .bt-options-summary-tag {
+    display: inline;
+  }
+}
+
+// the card the pill opens: keybear's settings card, hung under the pill
+// rather than over the footer. Its look lives with that card, below.
+.bt-options-card {
+  position: absolute;
+  inset-block-start: calc(100% + 0.4rem);
+  inset-inline-start: 50%;
+  // over upstream's "click here to focus" hint, which sits at 999
+  z-index: 1000;
+  inline-size: max-content;
+  max-inline-size: min(24rem, calc(100vw - 2rem));
+  transform: translateX(-50%);
+
+  // no title above the first row, so it needs no rule over it either
+  .bt-settings-row:first-child {
+    padding-block-start: 0;
+    border-block-start: none;
   }
 }
 
@@ -666,19 +768,14 @@ footer {
 // ----- the settings card -----
 
 // beartype: keybear's settings card: name and hint on the left of each row,
-// the choices on the right, a rule between rows.
-// it opens upward from the gear, the same gap above it as the colour list
-.bt-settings-card {
+// the choices on the right, a rule between rows. The options bar on a narrow
+// screen opens a card of the same make, downward instead of up, so the two
+// share everything but where they hang.
+.bt-settings-card,
+.bt-options-card {
   display: flex;
-  position: absolute;
-  inset-block-end: calc(100% + 0.4rem);
-  inset-inline-start: 50%;
-  // over upstream's "click here to focus" hint, which sits at 999
-  z-index: 1000;
   flex-direction: column;
   gap: 0.4rem;
-  inline-size: max-content;
-  max-inline-size: min(40rem, 94vw);
   padding: 1.3rem;
   border: 2px solid var(--kb-border);
   border-radius: 1.1rem;
@@ -686,6 +783,17 @@ footer {
   background-color: var(--kb-card);
   box-shadow: var(--kb-popup-shadow);
   font-size: 1rem;
+}
+
+// it opens upward from the gear, the same gap above it as the colour list
+.bt-settings-card {
+  position: absolute;
+  inset-block-end: calc(100% + 0.4rem);
+  inset-inline-start: 50%;
+  // over upstream's "click here to focus" hint, which sits at 999
+  z-index: 1000;
+  inline-size: max-content;
+  max-inline-size: min(40rem, 94vw);
   transform: translateX(-50%);
 }
 

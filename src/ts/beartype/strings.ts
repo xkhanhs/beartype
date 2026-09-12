@@ -74,6 +74,13 @@ const STRINGS = {
   languageVietnamese: { vi: "tiếng việt", en: "vietnamese" },
   languageEnglish: { vi: "english", en: "english" },
 
+  // the same bar on a narrow screen: one pill saying what is set, and the
+  // card it opens, whose rows need the names the bar itself never showed
+  testOptions: { vi: "tuỳ chọn bài gõ", en: "test options" },
+  optionsLanguage: { vi: "ngôn ngữ", en: "language" },
+  optionsMode: { vi: "kiểu", en: "mode" },
+  optionsLength: { vi: "độ dài", en: "length" },
+
   // the buttons under the words, and on the result
   newTestHint: {
     vi: "bài mới · tab + enter",
@@ -102,9 +109,12 @@ const STRINGS = {
     vi: "bấm vào đâu đó để quay lại cửa sổ",
     en: "click anywhere to come back to the window",
   },
-  unfocusedWords: {
-    vi: "bấm vào đây hoặc gõ một phím để tiếp tục",
-    en: "click here or press a key to carry on",
+  // one sentence in two halves, so a narrow screen breaks it between them
+  // rather than wherever the words happen to run out
+  unfocusedWordsTap: { vi: "bấm vào đây hoặc", en: "click here or" },
+  unfocusedWordsType: {
+    vi: "gõ một phím để tiếp tục",
+    en: "press a key to carry on",
   },
 
   // the result screen

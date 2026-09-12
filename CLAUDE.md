@@ -156,7 +156,17 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đặt mọi `svg` là `display: block`, nên icon nằm trong một nút `block`
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
-- Thanh tuỳ chọn không bao giờ xuống dòng; màn hẹp thì nó cuộn ngang.
+- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 40rem nó thu thành một viên
+  ghi cái đang chọn (ngôn ngữ, rồi độ dài trên nền accent kèm icon đồng hồ
+  hay `#`); bấm vào mở một thẻ cùng kiểu với thẻ cài đặt, ba hàng
+  `SettingsRow`, đóng bằng bấm ra ngoài hoặc Escape — chọn xong thẻ vẫn mở,
+  vì người ta hay đổi mấy thứ một lúc. Dưới 20rem thì tên ngôn ngữ rút thành
+  `vi`/`en`. Đổi số lựa chọn trong thanh thì đo lại bề rộng và sửa mốc 40rem
+  (`NARROW_SCREEN` trong `TestConfig.tsx`).
+- Cỡ chữ bài gõ đặt bằng `min(<cỡ đã chọn>rem, calc((100vw - 2rem) / 4.8))`:
+  từ dài nhất của hai bộ từ là tám chữ và mỗi chữ rộng chừng 0.6em, nên màn
+  hẹp tự hạ cỡ thay vì để chữ tràn ra. Chỗ nào cần chiều cao một chữ thì đọc
+  `getComputedStyle` của `#words`, đừng quy đổi `Config.fontSize`.
 - Thẻ cài đặt chỉ là hộp cuộn khi cửa sổ thấp dưới 32rem. Hộp cuộn cắt mọi
   thứ thò ra khỏi nó, trên cả hai chiều, mà bong bóng của các nút `i` thì thò
   ra: đừng trả `overflow-y: auto` về cho `.bt-settings-card` ở mọi cỡ màn.
