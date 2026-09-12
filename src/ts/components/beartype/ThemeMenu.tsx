@@ -24,19 +24,22 @@ import { Icon } from "./Icon";
 const OPTIONS = ["system", ...THEMES] as const;
 type Option = (typeof OPTIONS)[number];
 
-// keybear's names for its palettes, so the two apps call them the same; the
-// palettes taken from monkeytype keep the names monkeytype gave them
+// keybear's own names for its palettes, so the two apps call them the same;
+// the palettes taken from monkeytype keep the names monkeytype gave them.
+// keybear's Light and Dark are the two exceptions: alone in a list that
+// already holds solarized light, vesper light and repose light, those two say
+// nothing, so they are named for the hour they look like.
 const LABELS: Partial<Record<Option, string>> = {
   system: "tự động",
-  keybear_light: "ban ngày",
-  keybear_dark: "ban đêm",
-  keybear_princess: "hồng phấn",
-  keybear_ocean: "biển xanh",
-  keybear_forest: "rừng cây",
-  keybear_racing: "đua xe",
-  keybear_dracula: "ma cà rồng",
+  keybear_light: "daylight",
+  keybear_dark: "nightfall",
+  keybear_princess: "princess",
+  keybear_ocean: "ocean",
+  keybear_forest: "forest",
+  keybear_racing: "racing",
+  keybear_dracula: "dracula",
   keybear_pixel: "pixel",
-  keybear_hero: "siêu nhân",
+  keybear_hero: "hero",
 };
 
 function label(option: Option): string {
