@@ -1,6 +1,7 @@
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
 import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
+import { textOnAccent } from "../../beartype/contrast";
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
@@ -47,6 +48,7 @@ export function Theme(): JSXElement {
     --error-extra-color: ${colors.errorExtra};
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
+    --kb-on-accent: ${textOnAccent(colors.main, colors.bg, colors.text)};
 }`);
   });
 

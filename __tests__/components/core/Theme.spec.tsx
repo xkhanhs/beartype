@@ -66,11 +66,17 @@ describe("Theme component", () => {
     --error-extra-color: #c00;
     --colorful-error-color: #f55;
     --colorful-error-extra-color: #c55;
+    --kb-on-accent: #000;
 }`);
   });
 
   it("updates CSS variables based on signal", () => {
-    setThemeSignal({ name: "light", bg: "#f00" } as any);
+    setThemeSignal({
+      name: "light",
+      bg: "#f00",
+      main: "#fff",
+      text: "#000",
+    } as any);
     const { style } = renderComponent();
 
     expect(style.innerHTML).toContain("--bg-color: #f00;");
@@ -86,15 +92,17 @@ describe("Theme component", () => {
   });
 
   it("removes CSS when theme has no CSS", async () => {
+    const theme = { name: "light", bg: "#fff", main: "#000", text: "#111" };
     // oxlint-disable-next-line typescript/no-unsafe-return
-    themeSignalMock.mockImplementation(() => ({ name: "light" }) as any);
+    themeSignalMock.mockImplementation(() => theme as any);
     const { css } = renderComponent();
     expect(css).not.toBeInTheDocument();
   });
 
   it("removes CSS when theme is custom", async () => {
+    const theme = { name: "custom", bg: "#fff", main: "#000", text: "#111" };
     // oxlint-disable-next-line typescript/no-unsafe-return
-    themeSignalMock.mockImplementation(() => ({ name: "custom" }) as any);
+    themeSignalMock.mockImplementation(() => theme as any);
     const { css } = renderComponent();
     expect(css).not.toBeInTheDocument();
   });
