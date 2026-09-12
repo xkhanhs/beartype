@@ -679,11 +679,6 @@ footer {
   gap: 0.4rem;
   inline-size: max-content;
   max-inline-size: min(40rem, 94vw);
-  // on a short screen the rows scroll inside the card, which opens upward
-  // from the footer and would otherwise run off the top
-  max-block-size: calc(100dvh - 6rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
   padding: 1.3rem;
   border: 2px solid var(--kb-border);
   border-radius: 1.1rem;
@@ -692,6 +687,19 @@ footer {
   box-shadow: var(--kb-popup-shadow);
   font-size: 1rem;
   transform: translateX(-50%);
+}
+
+// A scrolling box clips what sticks out of it -- on both axes, not just the
+// one asked for -- and the hints hang off the rows as balloons. So the card
+// only becomes a scroller where it truly cannot fit: a window under 32rem
+// tall, where the card opening upward from the footer would run off the top
+// and be unreachable. Everywhere else the balloons are free.
+@media (max-height: 32rem) {
+  .bt-settings-card {
+    max-block-size: calc(100dvh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 .bt-settings-title {
@@ -750,6 +758,10 @@ button.bt-settings-info {
   flex: 0 1 auto;
   flex-wrap: wrap;
   gap: 0.35rem;
+  // hard against the card's right edge, wrapped lines included, so the
+  // choices read as one column however many a row has; only the names on the
+  // left are ragged
+  justify-content: flex-end;
   max-inline-size: 24rem;
 }
 

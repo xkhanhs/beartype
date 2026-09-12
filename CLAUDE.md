@@ -133,6 +133,12 @@ Test của beartype nằm ở `__tests__/beartype/`.
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
 - Thanh tuỳ chọn không bao giờ xuống dòng; màn hẹp thì nó cuộn ngang.
+- Thẻ cài đặt chỉ là hộp cuộn khi cửa sổ thấp dưới 32rem. Hộp cuộn cắt mọi
+  thứ thò ra khỏi nó, trên cả hai chiều, mà bong bóng của các nút `i` thì thò
+  ra: đừng trả `overflow-y: auto` về cho `.bt-settings-card` ở mọi cỡ màn.
+- Màn kết quả: Enter một mình mở bài mới (`test-logic.ts`), trừ khi tiêu điểm
+  đang ở một nút hay một liên kết — nó tự trả lời Enter, và tab + enter đi
+  đường đó.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
