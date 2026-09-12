@@ -10,6 +10,13 @@ const hexColorSchema = z
 
 const ThemeSchema = z.object({
   hasCss: z.boolean().optional(),
+  /**
+   * beartype: the colour of a letter the input method is still building -- `o`
+   * typed toward `ơ`. It falls back to the accent; a palette sets one here
+   * when its accent cannot be told from the letters on either side of it, as
+   * keybear does with the amber in its racing and pixel files.
+   */
+  partialLetter: hexColorSchema.optional(),
   bg: hexColorSchema,
   main: hexColorSchema,
   caret: hexColorSchema,
@@ -225,10 +232,14 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#a61717",
     colorfulErrorExtra: "#731010",
   },
+  // beartype: monkeytype writes this accent as pure neon (#15ff00). On the
+  // filled pills and the caret it glares against the black page, so the green
+  // is taken down to hsl(115 85% 42%) -- the same hue, a little over half the
+  // light -- and the rest of the palette is monkeytype's
   matrix: {
     bg: "#000000",
-    caret: "#15ff00",
-    main: "#15ff00",
+    caret: "#1fc610",
+    main: "#1fc610",
     sub: "#006500",
     subAlt: "#032000",
     text: "#d1ffcd",
@@ -297,13 +308,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#fc5d7c",
     colorfulErrorExtra: "#ecac6a",
   },
+  // beartype: monkeytype's blue-greys sit within a step of each other, so a
+  // letter typed, one being built and one still to come all read alike. The
+  // typed letters are lifted (8.5:1 to 12.2:1 against the page) and the letter
+  // being built takes keybear's amber, as pixel does
   midnight: {
     bg: "#0b0e13",
     caret: "#60759f",
     main: "#60759f",
+    partialLetter: "#e8c34a",
     sub: "#394760",
     subAlt: "#141a24",
-    text: "#9fadc6",
+    text: "#c3cee2",
     error: "#c27070",
     errorExtra: "#c28b70",
     colorfulError: "#c27070",
