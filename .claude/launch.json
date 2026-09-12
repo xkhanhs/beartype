@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "beartype dev",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=/opt/homebrew/opt/node@24/bin:$PATH && exec pnpm dev"
+      ],
+      "port": 3200
+    }
+  ]
+}
