@@ -10,18 +10,6 @@ type OnValue<T> = T extends readonly Accessor[]
     ? ReturnType<T>
     : never;
 
-export function createEffectOn<
-  T extends Accessor | readonly Accessor[],
-  U = void,
->(
-  deps: T,
-  fn: (value: OnValue<T>, prev: OnValue<T> | undefined, prevValue?: U) => U,
-  options: { defer?: boolean } = {},
-): void {
-  //@ts-expect-error huh?
-  createEffect(on(deps as unknown, fn as unknown, options));
-}
-
 export function createDebouncedEffectOn<
   T extends Accessor | readonly Accessor[],
   U = void,

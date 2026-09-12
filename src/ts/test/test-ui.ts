@@ -14,7 +14,6 @@ import {
   cancelPendingAnimationFramesStartingWith,
   requestDebouncedAnimationFrame,
 } from "../utils/debounced-animation-frame";
-import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "../utils/numbers";
 import * as Focus from "../test/focus";
 import {
@@ -24,7 +23,6 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as Joining from "./break-joining";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -33,8 +31,6 @@ import {
   qsr,
 } from "../utils/dom";
 import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
@@ -126,9 +122,6 @@ function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Joining.set(previousActiveWord, true);
-        } else if (direction === "back") {
-          //
         }
         previousActiveWord.removeClass("active");
         previousActiveWordTop = previousActiveWord.getOffsetTop();
@@ -143,7 +136,6 @@ function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -198,12 +190,6 @@ async function joinOverlappingHints(
   const currentWord = TestWords.words.getCurrent();
   if (currentWord === undefined) return;
 
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    currentWord.text,
-    isLanguageRightToLeft(),
-    isDirectionReversed(),
-  );
-
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
   let HintBlocksCount = hintElements.length;
@@ -239,12 +225,9 @@ async function joinOverlappingHints(
     const sameTop =
       block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
 
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
-
     // block edge is offset half its width because of transform: translate(-50%)
-    const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
-    const rightBlockStarts = rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
+    const leftBlockEnds = hintBlock1.offsetLeft + hintBlock1.offsetWidth / 2;
+    const rightBlockStarts = hintBlock2.offsetLeft - hintBlock2.offsetWidth / 2;
 
     if (sameTop && leftBlockEnds > rightBlockStarts) {
       // join hint blocks
@@ -253,9 +236,7 @@ async function joinOverlappingHints(
         ...block2Indices,
       ].join(",");
 
-      const block1Letter1Pos =
-        block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
+      const block1Letter1Pos = block1Letter1.getOffsetLeft();
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
@@ -348,10 +329,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (char === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
+      retval += `<letter class='tabChar'><svg class="bt-icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg></letter>`;
     } else if (char === "\n") {
       newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
+      retval += `<letter class='nlChar'><svg class="bt-icon" aria-hidden="true"><use href="#i-corner-down-left"></use></svg></letter>`;
     } else {
       retval += `<letter>${char}</letter>`;
     }
@@ -368,12 +349,6 @@ function updateWordWrapperClasses(): void {
   // outoffocus applies transition, need to remove it
   setTestFocusState("focused");
 
-  wordsEl.removeClass("tape");
-  wordsWrapperEl.removeClass("tape");
-
-  wordsEl.removeClass("blind");
-  wordsWrapperEl.removeClass("blind");
-
   if (Config.indicateTypos === "below") {
     wordsEl.addClass("indicateTyposBelow");
     wordsWrapperEl.addClass("indicateTyposBelow");
@@ -382,21 +357,9 @@ function updateWordWrapperClasses(): void {
     wordsWrapperEl.removeClass("indicateTyposBelow");
   }
 
-  wordsEl.removeClass("hideExtraLetters");
-  wordsWrapperEl.removeClass("hideExtraLetters");
-
-  wordsEl.removeClass("flipped");
-  wordsEl.removeClass("colorfulMode");
-
   qsa("#caret, #typingTest, #wordsInput").setStyle({
     fontSize: `${Config.fontSize}rem`,
   });
-
-  if (isLanguageRightToLeft()) {
-    wordsEl.addClass("rightToLeftTest");
-  } else {
-    wordsEl.removeClass("rightToLeftTest");
-  }
 
   const existing =
     wordsEl.native.className
@@ -442,9 +405,6 @@ function showWords(): void {
 
 export function updateWordsInputPosition(): void {
   if (getActivePage() !== "test") return;
-  const isTestRightToLeft = isDirectionReversed()
-    ? !isLanguageRightToLeft()
-    : isLanguageRightToLeft();
 
   const el = getInputElement();
 
@@ -470,12 +430,7 @@ export function updateWordsInputPosition(): void {
   }
 
   el.style.top = `${targetTop}px`;
-
-  if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
-    el.style.left = `${activeWord.getOffsetLeft() - letterHeight}px`;
-  } else {
-    el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
-  }
+  el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
 
   keepWordsInputInTheCenter();
 }
@@ -727,8 +682,10 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
   return;
 }
 
-export function setJoiningClass(isEnabled: boolean): void {
-  if (isEnabled || Config.mode === "custom") {
+// A drill (custom mode) keeps upstream's layout for custom text, which it
+// shared with joining scripts: letters inline, long words free to break.
+export function updateDrillLayout(): void {
+  if (Config.mode === "custom") {
     wordsEl.addClass("joiningScript");
   } else {
     wordsEl.removeClass("joiningScript");
@@ -777,20 +734,7 @@ export function getActiveWordTopAndHeightWithDifferentData(data: string): {
 }
 
 // this means input, delete or composition
-function afterAnyTestInput(
-  type: "textInput" | "delete" | "compositionUpdate",
-  correctInput: boolean | null,
-): void {
-  if (type === "textInput" || type === "compositionUpdate") {
-    if (correctInput === true || Config.playSoundOnError === "off") {
-      void SoundController.playClick();
-    } else {
-      void SoundController.playError();
-    }
-  } else if (type === "delete") {
-    void SoundController.playClick();
-  }
-
+function afterAnyTestInput(): void {
   const acc = Numbers.roundTo2(getLiveCachedAccuracy());
   if (!isNaN(acc)) {
     setCurrentLiveStats({ acc });
@@ -802,7 +746,6 @@ function afterAnyTestInput(
 }
 
 export function afterTestTextInput(
-  correct: boolean,
   inputOverride?: string,
   goingToNextWord = false,
 ): void {
@@ -817,7 +760,7 @@ export function afterTestTextInput(
     compositionData: CompositionState.getData(),
   });
 
-  afterAnyTestInput("textInput", correct);
+  afterAnyTestInput();
 }
 
 export function afterTestCompositionUpdate(): void {
@@ -826,8 +769,7 @@ export function afterTestCompositionUpdate(): void {
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
-  // correct needs to be true to get the normal click sound
-  afterAnyTestInput("compositionUpdate", true);
+  afterAnyTestInput();
 }
 
 export function afterTestDelete(): void {
@@ -836,7 +778,7 @@ export function afterTestDelete(): void {
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
-  afterAnyTestInput("delete", null);
+  afterAnyTestInput();
 }
 
 export function beforeTestWordChange(
@@ -934,7 +876,6 @@ export function onTestRestart(_source: "testPage" | "resultPage"): void {
   TestInitFailed.hide();
 
   currentTestLine = 0;
-  void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
 }
@@ -946,7 +887,7 @@ export function onTestFinish(): void {
 
 qs("#wordsInput")?.on("focus", (e) => {
   if (!isInputElementFocused()) return;
-  if (!getResultVisible() && Config.showOutOfFocusWarning) {
+  if (!getResultVisible()) {
     setTestFocusState("focused");
   }
   Caret.show(true);
@@ -973,17 +914,11 @@ document.addEventListener("visibilitychange", () => {
   setTestFocusState("unfocusedWindow");
 });
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "showOutOfFocusWarning" && !newValue) {
-    setTestFocusState("focused");
-  }
-  if (["fontSize", "fontFamily"].includes(key ?? "")) {
+configEvent.subscribe(({ key }) => {
+  if (key === "fontSize") {
     void updateHintsPositionDebounced();
   }
-  if (["indicateTypos", "fontSize", "fontFamily"].includes(key)) {
-    if (key !== "fontFamily") updateWordWrapperClasses();
-    if (["fontFamily", "fontSize"].includes(key)) {
-      Joining.update(key, wordsEl);
-    }
+  if (key === "indicateTypos" || key === "fontSize") {
+    updateWordWrapperClasses();
   }
 });

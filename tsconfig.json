@@ -37,9 +37,6 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "paths": {
-      "virtual:language-hashes": [
-        "./src/ts/types/virtual-language-hashes.d.ts"
-      ],
       "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
     }
   },

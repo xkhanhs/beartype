@@ -4,7 +4,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Theme } from "../../../src/ts/components/core/Theme";
 import * as Loader from "../../../src/ts/states/loader-bar";
-import * as Notifications from "../../../src/ts/states/notifications";
 import * as ThemeSignal from "../../../src/ts/states/theme";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
@@ -29,14 +28,12 @@ describe("Theme component", () => {
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
-  const notificationAddMock = vi.spyOn(Notifications, "showNoticeNotification");
 
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
     loaderShowMock.mockClear();
     loaderHideMock.mockClear();
-    notificationAddMock.mockClear();
     // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => themeSignal() as any);
     setThemeSignal({
@@ -107,7 +104,6 @@ describe("Theme component", () => {
     expect(loaderShowMock).toHaveBeenCalledOnce();
     fireEvent.error(css);
     expect(loaderHideMock).toHaveBeenCalledOnce();
-    expect(notificationAddMock).toHaveBeenCalledWith("Không tải được bộ màu");
   });
 
   it("renders favicon", () => {

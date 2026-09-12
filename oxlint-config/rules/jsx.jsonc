@@ -13,10 +13,7 @@
       ],
       "files": ["src/**/*.tsx"],
       "rules": {
-        "react/react-in-jsx-scope": "off",
         "react/button-has-type": "error",
-        "react/jsx-no-duplicate-props": "error",
-        "react/jsx-no-undef": "error",
         "react/jsx-props-no-spread-multi": "error",
         "react/void-dom-elements-no-children": "error",
         "react/no-unknown-property": [
@@ -35,8 +32,6 @@
           },
         ],
         "react/jsx-no-comment-textnodes": "error",
-        "react/style-prop-object": "error",
-        "react/checked-requires-onchange-or-readonly": "error",
         "react/jsx-no-useless-fragment": "error",
         "react/no-unescaped-entities": "error",
         "react/jsx-pascal-case": "error",

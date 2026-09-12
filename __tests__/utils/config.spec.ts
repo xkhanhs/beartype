@@ -30,14 +30,14 @@ describe("config.ts", () => {
         mode: "time",
         theme: "keybear_ocean",
         time: 120,
-        capsLockWarning: false,
+        autoSwitchTheme: true,
       } as PartialConfig;
 
       const result = migrateConfig(partialConfig);
       expect(result.mode).toEqual("time");
       expect(result.theme).toEqual("keybear_ocean");
       expect(result.time).toEqual(120);
-      expect(result.capsLockWarning).toEqual(false);
+      expect(result.autoSwitchTheme).toEqual(true);
     });
     describe("should replace value with default config if invalid", () => {
       it.for([
@@ -61,15 +61,6 @@ describe("config.ts", () => {
       it.for([
         { given: { smoothCaret: true }, expected: { smoothCaret: "medium" } },
         { given: { smoothCaret: false }, expected: { smoothCaret: "off" } },
-        {
-          given: { playSoundOnError: true },
-          expected: { playSoundOnError: "1" },
-        },
-        {
-          given: { playSoundOnError: false },
-          expected: { playSoundOnError: "off" },
-        },
-        { given: { soundVolume: "0.5" }, expected: { soundVolume: 0.5 } },
         { given: { indicateTypos: false }, expected: { indicateTypos: "off" } },
         {
           given: { indicateTypos: true },

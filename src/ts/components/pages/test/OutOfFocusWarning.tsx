@@ -5,7 +5,7 @@ import {
   showOutOfFocusWarning,
   testFocusState,
 } from "../../../states/test";
-import { Fa } from "../../common/Fa";
+import { Icon } from "../../beartype/Icon";
 
 export function OutOfFocusWarning() {
   const message = () =>
@@ -28,7 +28,7 @@ export function OutOfFocusWarning() {
             through to the words under it, which is what takes the focus. */}
         <div class="bt-pause-notice">
           <span class="bt-pause-icon">
-            <Fa icon="fa-pause" />
+            <Icon name="pause" />
           </span>
           <span>{message()}</span>
         </div>

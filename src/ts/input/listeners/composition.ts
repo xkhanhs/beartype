@@ -9,7 +9,6 @@ import {
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,
-  setCompositionText,
 } from "../../states/test";
 
 const inputEl = getInputElement();
@@ -44,7 +43,6 @@ inputEl.addEventListener("compositionupdate", (event) => {
 
   if (isTestRestarting() || isResultCalculating()) return;
   CompositionState.setData(event.data);
-  setCompositionText(event.data);
 
   const now = performance.now();
 
@@ -61,7 +59,6 @@ inputEl.addEventListener("compositionend", async (event) => {
   if (isTestRestarting() || isResultCalculating()) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  setCompositionText("");
   setLastInsertCompositionTextData("");
 
   const now = performance.now();

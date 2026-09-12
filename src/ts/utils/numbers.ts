@@ -8,38 +8,6 @@ export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-/**
- * Abbreviates a large number with a suffix (k, m, b, etc.) representing its order of magnitude.
- * @param num The number to abbreviate.
- * @param decimalPoints The number of decimal points to include in the result. Default is 1.
- * @returns The abbreviated number as a string with the appropriate suffix.
- */
-export function abbreviateNumber(num: number, decimalPoints = 1): string {
-  if (num < 1000) {
-    return num.toFixed(decimalPoints);
-  }
-
-  const exp = Math.floor(Math.log(num) / Math.log(1000));
-  const pre = "kmbtqQsSond".charAt(exp - 1);
-  return (num / Math.pow(1000, exp)).toFixed(decimalPoints) + pre;
-}
-
-/**
- * Parses a string into an integer if it is not null or undefined, otherwise returns undefined.
- *
- * @param  The string to parse or null or undefined.
- * @param radix A value between 2 and 36 that specifies the base of the number in `string`.
- * @returns  A number if a string is provided, otherwise undefined.
- */
-export function parseIntOptional<T extends string | null | undefined>(
-  value: T,
-  radix: number = 10,
-): T extends string ? number : undefined {
-  return (
-    value !== null && value !== undefined ? parseInt(value, radix) : undefined
-  ) as T extends string ? number : undefined;
-}
-
 export function calculateWpm(
   charCount: number,
   durationSeconds: number,
@@ -52,15 +20,6 @@ export function calculateWpm(
 const random = Math.random;
 const ceil = Math.ceil;
 const floor = Math.floor;
-
-/**
- * Rounds a number to one decimal places.
- * @param num The number to round.
- * @returns The input number rounded to one decimal places.
- */
-export function roundTo1(num: number): number {
-  return Math.round((num + Number.EPSILON) * 10) / 10;
-}
 
 /**
  * Rounds a number to two decimal places.
@@ -128,42 +87,6 @@ export function randomIntFromRange(min: number, max: number): number {
 }
 
 /**
- * Maps a value from one range to another.
- * @param value The value to map.
- * @param inMin Input range minimum.
- * @param inMax Input range maximum.
- * @param outMin Output range minimum.
- * @param outMax Output range maximum.
- * @param clamp If true, the result is clamped to the output range. Default true.
- * @returns The mapped value.
- */
-export function mapRange(
-  value: number,
-  inMin: number,
-  inMax: number,
-  outMin: number,
-  outMax: number,
-  clamp = true,
-): number {
-  if (inMin === inMax) {
-    return outMin;
-  }
-
-  const result =
-    ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-
-  if (clamp) {
-    if (outMin < outMax) {
-      return Math.min(Math.max(result, outMin), outMax);
-    } else {
-      return Math.max(Math.min(result, outMin), outMax);
-    }
-  }
-
-  return result;
-}
-
-/**
  * Checks if a value is a safe number. Safe numbers are finite and not NaN.
  * @param value The value to check.
  * @returns True if the value is a safe number, false otherwise.
@@ -173,18 +96,4 @@ export function isSafeNumber(value: unknown): value is number {
     return !isNaN(value) && isFinite(value);
   }
   return false;
-}
-
-/**
- * Converts a number to a safe number or undefined. NaN, Infinity, and -Infinity are converted to undefined.
- * @param value The value to convert.
- * @returns The input number if it is safe, undefined otherwise.
- */
-export function safeNumber(
-  value: number | undefined | null,
-): number | undefined {
-  if (isSafeNumber(value)) {
-    return value;
-  }
-  return undefined;
 }

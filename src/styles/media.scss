@@ -5,7 +5,6 @@ $breakpoints: (
   blue: calc(768px + 5rem),
   purple: calc(640px + 5rem),
   brown: 425px,
-  gray: 330px,
 );
 
 @mixin media-query($size) {

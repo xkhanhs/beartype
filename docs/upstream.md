@@ -32,7 +32,8 @@ monkeytype, tìm ở đây trước.
 | `test/events/stats.ts` | `countCharsForWordIndex` đếm theo phím (`countKeysAsChars`); phần trăm của `getAccuracy` theo keybear | WPM và độ chính xác theo phím đáng tốn, xem `beartype/scoring.ts` |
 | `test/test-ui.ts` | `updateWordLetters` vẽ từ đang gõ bằng `beartype/word-html.ts` | mỗi chữ đích một ô, chữ đang dựng dấu là `partial` |
 | `test/test-ui.ts` | phím gõ sai dưới chữ (`indicateTypos: "below"`) lấy từ `typoHints` của `beartype/word-html.ts` | cùng phép so với cách vẽ từ, nên chữ đang dựng dấu không bao giờ bị treo phím sai |
-| `components/pages/test/Keymap.tsx` | bàn phím ảo sáng theo **ký tự của `keydown`** (`event.key`), chữ có dấu sáng phím Telex cuối của nó (`ơ` sáng `w`, `ế` sáng `s`); `event.code` chỉ dùng khi không có ký tự; ký tự sai (từ `insert-text.ts`) tô đỏ phím của chính ký tự ấy; tiếng sine cũng lấy nốt theo ký tự | upstream sáng theo ký tự chèn vào ô nhập, mà `ế` không phải phím nào; còn `event.code` thì sai với bố cục không phải QWERTY (Colemak), và VTX gõ bằng phím giả mã 0 nên mọi phím thành `KeyA` |
+| `components/pages/test/Keymap.tsx` | bàn phím ảo sáng theo **ký tự của `keydown`** (`event.key`), chữ có dấu sáng phím Telex cuối của nó (`ơ` sáng `w`, `ế` sáng `s`); `event.code` chỉ dùng khi không có ký tự; ký tự sai (từ `insert-text.ts`) tô đỏ phím của chính ký tự ấy | upstream sáng theo ký tự chèn vào ô nhập, mà `ế` không phải phím nào; còn `event.code` thì sai với bố cục không phải QWERTY (Colemak), và VTX gõ bằng phím giả mã 0 nên mọi phím thành `KeyA` |
+| `ui.ts` | `applyTypingFont`: phông bài gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh), không có bộ chọn phông; hai phông preload và `font-display: block` | con trỏ và chỗ xuống dòng đo theo phông của chữ, nên phông không được đổi giữa lúc vẽ |
 | `test/caret.ts` | `updatePosition`: chỉ số chữ lấy từ `caretIndex` | con trỏ không nhảy tới rồi lùi khi bộ gõ viết lại chữ |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
@@ -46,5 +47,6 @@ monkeytype, tìm ở đây trước.
 
 Đường vận chuyển phím (`input/handlers`, `input/listeners`, `input-element.ts`),
 gom khung hình (`utils/debounced-animation-frame.ts`), cuộn dòng và
-`elements/caret.ts` chỉ bị bỏ những nhánh của tính năng đã xoá; không có dòng
-nào đổi cách chạy.
+`elements/caret.ts` chỉ bị bỏ những nhánh của tính năng đã xoá (âm thanh, bỏ
+ngang bằng Shift+Enter, chữ viết phải sang trái và chữ nối, các kiểu con trỏ
+khác con trỏ dọc); không có dòng nào đổi cách chạy.

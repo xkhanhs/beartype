@@ -8,8 +8,6 @@ export function SettingsRow<T extends string | number>(props: {
   hint: string;
   options: readonly T[];
   labels: Record<T, string>;
-  /** Draws each choice in its own font, for a row that picks one. */
-  fontOf?: (option: T) => string;
   /** The current setting, which may hold values this row does not offer. */
   value: string | number;
   onPick: (value: T) => void;
@@ -24,7 +22,6 @@ export function SettingsRow<T extends string | number>(props: {
               type="button"
               class="bt-settings-choice"
               aria-pressed={props.value === option}
-              style={{ "font-family": props.fontOf?.(option) }}
               onClick={() => props.onPick(option)}
             >
               {props.labels[option]}

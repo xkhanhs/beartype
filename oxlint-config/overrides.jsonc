@@ -66,11 +66,5 @@
         "typescript/no-unsafe-argument": "off", //96
       },
     },
-    {
-      "files": ["private/script.js"],
-      "rules": {
-        "no-shadow": "off",
-      },
-    },
   ],
 }

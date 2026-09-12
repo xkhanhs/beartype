@@ -28,6 +28,16 @@ const PRODUCTION_CONFIG = {
   quickRestart: "esc",
   difficulty: "normal",
   layout: "default",
+  // fixed at one value in beartype, then taken out of the config
+  resultSaving: true,
+  themeLight: "keybear_light",
+  themeDark: "keybear_dark",
+  showOutOfFocusWarning: true,
+  capsLockWarning: true,
+  // the sounds, since taken out
+  playSoundOnClick: "keybear",
+  playSoundOnError: "1",
+  soundVolume: 0.8,
   mode: "words",
   time: 60,
   words: 25,
@@ -56,6 +66,15 @@ describe("a production localStorage config", () => {
       "quickRestart",
       "difficulty",
       "layout",
+      "resultSaving",
+      "themeLight",
+      "themeDark",
+      "showOutOfFocusWarning",
+      "capsLockWarning",
+      "playSoundOnClick",
+      "playSoundOnError",
+      "soundVolume",
+      "fontFamily",
     ]) {
       expect(stored).not.toHaveProperty(upstreamOnlyKey);
     }
@@ -71,7 +90,6 @@ describe("a production localStorage config", () => {
     expect(locked.words).toBe(25);
     expect(locked.language).toBe("english");
     expect(locked.theme).toBe("keybear_ocean");
-    expect(locked.fontFamily).toBe("Be_Vietnam_Pro");
     expect(locked.fontSize).toBe(2.5);
     expect(locked.smoothCaret).toBe("fast");
   });

@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { ColorName, Theme } from "../constants/themes";
+import { Theme } from "../constants/themes";
 import { ThemeName } from "../schemas/configs";
 
 export type ThemeIdentifier = ThemeName;
@@ -18,10 +18,3 @@ const defaultTheme: Theme & { name: ThemeIdentifier } = {
 };
 
 export const [getTheme, setTheme] = createSignal(defaultTheme);
-
-export function updateThemeColor(key: ColorName, color: string): void {
-  setTheme((prev) => ({
-    ...prev,
-    [key]: color,
-  }));
-}

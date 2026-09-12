@@ -1,5 +1,4 @@
 allowBuilds:
-  "@fortawesome/fontawesome-free": true
   "@parcel/watcher": true
   core-js: true
   esbuild: true

@@ -1,6 +1,5 @@
 import { ZodIssue } from "zod";
 import { isZodError } from "./zod";
-import { showErrorNotification } from "../states/notifications";
 import { tryCatchSync } from "./trycatch";
 import { parseWithSchema as parseJsonWithSchema } from "./json";
 
@@ -116,7 +115,6 @@ export class LocalStorageWithSchema<T> {
 
       const msg = `Failed to set ${this.key} in localStorage: ${message}`;
       console.error(msg);
-      showErrorNotification(msg);
 
       return false;
     }

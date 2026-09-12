@@ -1,34 +1,23 @@
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-} from "solid-js";
+import { createMemo, createResource, createSignal } from "solid-js";
 import { getConfig } from "../config/store";
 import { EventLog } from "../test/events/types";
 
-import { CompletedEvent, IncompleteTest } from "../schemas/results";
+import { IncompleteTest } from "../schemas/results";
 import { createStore } from "solid-js/store";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import * as CustomText from "../test/custom-text";
 import { getLayout } from "../utils/json-data";
-import { canQuickRestart } from "../utils/quick-restart";
-import { getActivePage } from "./core";
 import { clearTimeouts } from "../utils/misc";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
-export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getResultVisible, setResultVisible] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
 // it covers the words fade-out that getResultVisible() is still false during.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
-// Set when the user bails out of a test early; reset by TestLogic.restart().
-export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 // #words is still vanilla so it's blurred imperatively (see test/test-ui);
-// the Solid-owned composition display + OutOfFocusWarning read this signal.
+// OutOfFocusWarning reads this signal.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
@@ -48,7 +37,7 @@ export const [testFocusState, { setTestFocusState }] =
   });
 
 export const showOutOfFocusWarning = createMemo(
-  () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
+  () => testFocusState() !== "focused",
 );
 
 // max-height of the warning, kept in sync with the words wrapper by test-ui.
@@ -56,14 +45,7 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
-export const [isLongTest, setIsLongTest] = createSignal(false);
-export const [getLastResult, setLastResult] = createSignal<Omit<
-  CompletedEvent,
-  "hash" | "uid"
-> | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
@@ -77,9 +59,6 @@ export const getIncompleteSeconds = createMemo(() =>
 );
 
 export const [isRepeated, setIsRepeated] = createSignal(false);
-
-export const [getLastSignedOutResult, setLastSignedOutResult] =
-  createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
 
@@ -110,18 +89,6 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   seconds?: number;
 }>({});
 
-createEffect(() => {
-  getActivePage(); // depend on active page
-  setIsLongTest(
-    !canQuickRestart(
-      getConfig.mode,
-      getConfig.words,
-      getConfig.time,
-      CustomText.getData(),
-    ),
-  );
-});
-
 /**
  * The keymap's layout, fetched only once the keymap is switched on. beartype
  * draws QWERTY alone, whatever the typist's own layout.
@@ -141,12 +108,7 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
-  createSignal(false);
-export const [isDirectionReversed, setIsDirectionReversed] =
-  createSignal(false);
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
-export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
   null,
 );

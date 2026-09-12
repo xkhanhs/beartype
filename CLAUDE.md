@@ -4,7 +4,7 @@
 [docs/upstream.md](docs/upstream.md)), giờ chỉ còn một màn: bài đo, phân tích
 cuối bài và luyện từ hay sai. Giao diện theo keybear
 (`~/Documents/GitHub/keybear`), độ chính xác chấm theo keybear. Kế hoạch gần
-nhất: [plans/260911-1601-slim-codebase/plan.md](plans/260911-1601-slim-codebase/plan.md).
+nhất: [plans/260911-2258-slim-further/plan.md](plans/260911-2258-slim-further/plan.md).
 
 **Lý do repo này tồn tại:** keybear dựng lại màn đo tốc độ theo monkeytype
 nhiều lần mà cảm giác gõ vẫn khác. beartype giữ nguyên lõi gõ của monkeytype
@@ -47,14 +47,9 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
   (`miss-book.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
-  phông chữ, cỡ chữ, tiếng gõ, tiếng báo gõ sai, âm lượng, hiện phím gõ sai, bàn
-  phím ảo), viên chọn màu ở chân trang (`ThemeMenu`, rê chuột là xem thử), nút
-  luyện từ hay sai, sổ bài gần đây dưới màn kết quả (`ResultHistory`).
-- Âm thanh: `src/ts/controllers/sound-controller.ts` và
-  `src/ts/constants/sounds.ts`, file ở `static/sounds/`: tiếng phím và tiếng
-  báo sai của keybear (`keybear/`, gốc từ keybr, AGPL-3.0), năm bộ của upstream
-  và `error1` (giữ tên thư mục của upstream). Mặc định tắt; chưa bật thì không
-  tải gì, bật thì chỉ tải howler và bộ đang chọn.
+  cỡ chữ, hiện phím gõ sai, bàn phím ảo), viên chọn màu ở chân trang
+  (`ThemeMenu`, rê chuột là xem thử), nút luyện từ hay sai, sổ bài gần đây dưới
+  màn kết quả (`ResultHistory`), icon (`Icon`).
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
   `src/ts/states/test.ts`. Phím sáng theo ký tự hệ thống nhận (`event.key`), chữ
@@ -67,9 +62,15 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
 - `src/ts/test/`, `src/ts/input/`, `src/ts/elements/`: lõi gõ của monkeytype.
 - `src/ts/schemas/`: schema zod của cấu hình và kết quả (trước là package
   `@monkeytype/schemas`).
-- `static/fonts-ui/`: Quicksand của giao diện và các phông bài gõ của keybear,
-  mỗi phông có bộ `vietnamese` riêng. `static/webfonts/`: phần latin của Roboto
-  Mono và IBM Plex Mono.
+- Phông: giao diện là Quicksand; bài gõ dùng một phông theo ngôn ngữ, Be Vietnam
+  Pro cho tiếng Việt và Roboto Mono cho tiếng Anh (`applyTypingFont` trong
+  `ui.ts`, `@font-face` trong `beartype.scss`, preload trong
+  `src/html/head.html`). File ở `static/fonts-ui/` (mỗi phông một bộ `latin` và
+  một bộ `vietnamese`) và `static/webfonts/` (phần latin của Roboto Mono).
+- Icon: một sprite SVG ở `src/html/icons.html` (Lucide, và dấu GitHub của
+  Simple Icons), dùng qua `<svg class="bt-icon"><use href="#i-TÊN"></use></svg>`
+  hoặc component `Icon`. Icon mới thì chép path của Lucide vào sprite và thêm
+  tên vào `IconName`; không cài package icon.
 - `src/styles/beartype.scss`: mọi style riêng của beartype.
 - `scripts/build-vietnamese.ts`: dựng `static/languages/vietnamese.json` từ danh
   sách từ của keybear.
@@ -83,10 +84,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
 - Chạy một file test: `pnpm vitest run path/to/test.ts`.
 - Kiểm kiểu: `pnpm oxlint --type-aware --type-check --format agent`.
 - Style: Tailwind, thuộc tính `class` và `cn`, chỉ dùng màu trong config
-  Tailwind. Code cũ dùng thẻ `i` FontAwesome, code mới dùng component `Fa`.
-  Icon FontAwesome chỉ được đóng gói nếu tên `fa-…` của nó xuất hiện trong
-  `src/` (plugin `vite-plugins/fontawesome-subset.ts` quét chuỗi); icon mới thì
-  thêm vào `src/ts/types/font-awesome.d.ts`.
+  Tailwind.
 
 ## Quy ước của beartype
 
@@ -104,15 +102,15 @@ Test của beartype nằm ở `__tests__/beartype/`.
   hẹp, vì media query chỉ lộ ra ở đó.
 - Icon của các nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
-  với path chép từ `@mdi/js` của keybear, không dùng FontAwesome. Trong `.tsx`
-  thì `<path>` phải có thẻ đóng, vì oxlint chặn thẻ tự đóng. Preflight của
-  Tailwind đặt mọi `svg` là `display: block`, nên icon nằm trong một nút
-  `block` (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên
-  chữ, trừ khi được đặt lại thành `inline-block`.
+  với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
+  `<path>` phải có thẻ đóng, vì oxlint chặn thẻ tự đóng. Preflight của Tailwind
+  đặt mọi `svg` là `display: block`, nên icon nằm trong một nút `block`
+  (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
+  khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
 - Thanh tuỳ chọn không bao giờ xuống dòng; màn hẹp thì nó cuộn ngang.
-- Không có thông báo nổi: danh sách thông báo không được gắn vào trang
-  (`components/layout/overlays/Overlays.tsx`). Cần báo gì cho người gõ thì
-  viết thẳng lên màn, như lý do không lưu ở màn kết quả.
+- Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
+  gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
+  cho người sửa code thì `console.error`.
 - Sửa hay xoá code theo từng cụm, mỗi cụm một commit. Nếu cảm giác gõ lệch,
   `git bisect` sẽ chỉ ra cụm nào gây ra.
 - Conventional commits, không ghi tên AI.

@@ -6,13 +6,6 @@ export function hide(): void {
   qs("#result .stats .wpm .crown")?.setStyle({ opacity: "0" })?.hide();
 }
 
-export type CrownType =
-  | "normal"
-  | "ineligible"
-  | "pending"
-  | "error"
-  | "warning";
-
 let visible = false;
 
 export function show(): void {
@@ -27,13 +20,4 @@ export function show(): void {
       el?.show();
     },
   });
-}
-
-export function update(type: CrownType): void {
-  qs("#result .stats .wpm .crown")
-    ?.removeClass("ineligible")
-    ?.removeClass("pending")
-    ?.removeClass("error")
-    ?.removeClass("warning")
-    ?.addClass(type);
 }

@@ -149,20 +149,8 @@ const target = path.join(
   import.meta.dirname,
   "../static/languages/vietnamese.json",
 );
-const current = JSON.parse(fs.readFileSync(target, "utf8")) as {
-  additionalAccents: unknown;
-};
-
 fs.writeFileSync(
   target,
-  `${JSON.stringify(
-    {
-      name: "vietnamese",
-      additionalAccents: current.additionalAccents,
-      words,
-    },
-    null,
-    2,
-  )}\n`,
+  `${JSON.stringify({ name: "vietnamese", words }, null, 2)}\n`,
 );
 console.log(`wrote ${words.length} words to ${target}`);

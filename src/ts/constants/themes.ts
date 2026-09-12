@@ -22,7 +22,6 @@ const ThemeSchema = z.object({
   colorfulErrorExtra: hexColorSchema,
 });
 export type Theme = z.infer<typeof ThemeSchema>;
-export type ColorName = keyof Omit<Theme, "hasCss">;
 export const themes: Record<ThemeName, Theme> = {
   // beartype: keybear's palettes (packages/keybr-themes/lib/themes in
   // keybear), mapped onto upstream's ten colours: bg = primary, text =

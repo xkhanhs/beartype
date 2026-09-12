@@ -1,5 +1,4 @@
 let awaitingNextWord = false;
-let lastBailoutAttempt = -1;
 let lastInsertCompositionTextData = "";
 
 export function isAwaitingNextWord(): boolean {
@@ -8,14 +7,6 @@ export function isAwaitingNextWord(): boolean {
 
 export function setAwaitingNextWord(value: boolean): void {
   awaitingNextWord = value;
-}
-
-export function getLastBailoutAttempt(): number {
-  return lastBailoutAttempt;
-}
-
-export function setLastBailoutAttempt(value: number): void {
-  lastBailoutAttempt = value;
 }
 
 export function getLastInsertCompositionTextData(): string {

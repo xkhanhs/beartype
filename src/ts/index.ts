@@ -44,7 +44,6 @@ Focus.set(true, true);
 addToGlobal({
   config: Config,
   enableTimerDebug: TestTimer.enableTimerDebug,
-  getTimerStats: TestTimer.getTimerStats,
   toggleDebugLogs: Logger.toggleDebugLogs,
   qs: qs,
   qsa: qsa,

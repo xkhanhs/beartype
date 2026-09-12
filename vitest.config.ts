@@ -1,8 +1,7 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig, UserWorkspaceConfig } from "vitest/config";
-import { languageHashes } from "./vite-plugins/language-hashes";
 import { envConfig } from "./vite-plugins/env-config";
 import solidPlugin from "vite-plugin-solid";
-import { fileURLToPath } from "node:url";
 
 // vite-plugin-solid adds jest-dom's setup file by its bare name, and vitest
 // resolves that from the directory above the root. In a worktree nested in
@@ -13,57 +12,46 @@ const jestDom = fileURLToPath(
 );
 
 const plugins = [
-  languageHashes({ skip: true }),
-  envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
+  envConfig({ isDevelopment: true, clientVersion: "TESTING" }),
   solidPlugin({ hot: false }),
 ];
 
-const tanstackSolidNoExternal: (string | RegExp)[] = [
-  "@solidjs/meta",
-  /@tanstack\/solid-.*/,
-];
+const ssr = { noExternal: ["@solidjs/meta"] };
 
 export const projects: UserWorkspaceConfig[] = [
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr,
     test: {
       name: { label: "unit", color: "blue" },
       include: ["__tests__/**/*.spec.ts"],
-      exclude: ["__tests__/**/*.jsdom-spec.ts"],
+      exclude: ["__tests__/**/*.dom-spec.ts"],
       environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
         jestDom,
         "__tests__/__harness__/mock-dom.ts",
-        "__tests__/__harness__/mock-env-config.ts",
         "__tests__/__harness__/mock-static.ts",
       ],
     },
     plugins,
   },
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr,
     test: {
-      name: { label: "jsdom", color: "yellow" },
-      include: ["__tests__/**/*.jsdom-spec.ts"],
-      environment: "jsdom",
+      name: { label: "dom", color: "yellow" },
+      include: ["__tests__/**/*.dom-spec.ts"],
+      environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [jestDom],
     },
     plugins,
   },
   {
-    ssr: {
-      noExternal: tanstackSolidNoExternal,
-    },
+    ssr,
     test: {
       name: { label: "jsx", color: "green" },
       include: ["__tests__/**/*.spec.tsx"],
-      environment: "jsdom",
+      environment: "happy-dom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
         jestDom,

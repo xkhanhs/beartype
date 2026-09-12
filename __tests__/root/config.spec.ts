@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
-import * as ConfigUtils from "../../src/ts/config/utils";
 import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
 import * as Env from "../../src/ts/utils/env";
@@ -13,7 +12,6 @@ import {
 import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import { configLS } from "../../src/ts/config/persistence";
-import * as Notifications from "../../src/ts/states/notifications";
 import * as TestState from "../../src/ts/states/test";
 
 const { replaceConfig, getConfig } = __testing;
@@ -32,10 +30,6 @@ describe("Config", () => {
     );
     const dispatchConfigEventMock = vi.spyOn(configEvent, "dispatch");
     const saveConfigMock = vi.spyOn(configLS, "set");
-    const notificationAddMock = vi.spyOn(
-      Notifications,
-      "showNoticeNotification",
-    );
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
     const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
 
@@ -43,7 +37,6 @@ describe("Config", () => {
       isConfigValueValidMock,
       dispatchConfigEventMock,
       saveConfigMock,
-      notificationAddMock,
       miscTriggerResizeMock,
       stateIsTestActiveMock,
     ];
@@ -110,10 +103,10 @@ describe("Config", () => {
 
     it("saves to localstorage if nosave=false", async () => {
       //GIVEN
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true);
+      Config.setConfig("autoSwitchTheme", true);
 
       //THEN
       //wait for debounce
@@ -121,7 +114,7 @@ describe("Config", () => {
 
       //save
       expect(saveConfigMock).toHaveBeenCalledWith(
-        expect.objectContaining({ resultSaving: true }),
+        expect.objectContaining({ autoSwitchTheme: true }),
       );
     });
 
@@ -148,10 +141,10 @@ describe("Config", () => {
     it("does not save to localstorage if nosave=true", async () => {
       //GIVEN
 
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true, {
+      Config.setConfig("autoSwitchTheme", true, {
         nosave: true,
       });
 
@@ -164,17 +157,17 @@ describe("Config", () => {
 
     it("dispatches event on set", () => {
       //GIVEN
-      replaceConfig({ resultSaving: false });
+      replaceConfig({ autoSwitchTheme: false });
 
       //WHEN
-      Config.setConfig("resultSaving", true, {
+      Config.setConfig("autoSwitchTheme", true, {
         nosave: true,
       });
 
       //THEN
 
       expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "resultSaving",
+        key: "autoSwitchTheme",
         newValue: true,
         nosave: true,
         previousValue: false,
@@ -190,7 +183,7 @@ describe("Config", () => {
 
     it("does not triggers resize if property is not set", () => {
       ///WHEN
-      Config.setConfig("resultSaving", true);
+      Config.setConfig("autoSwitchTheme", true);
 
       expect(miscTriggerResizeMock).not.toHaveBeenCalled();
     });
@@ -210,13 +203,13 @@ describe("Config", () => {
         mode: "words",
       });
       await Lifecycle.applyConfig({
-        resultSaving: false,
-        capsLockWarning: false,
+        autoSwitchTheme: true,
+        keymapMode: "react",
       });
       const config = getConfig();
       expect(config.mode).toBe("time");
-      expect(config.resultSaving).toBe(false);
-      expect(config.capsLockWarning).toBe(false);
+      expect(config.autoSwitchTheme).toBe(true);
+      expect(config.keymapMode).toBe("react");
     });
 
     describe("should reset to default if setting failed", () => {
@@ -256,14 +249,14 @@ describe("Config", () => {
 
     it("should apply a partial config but keep the rest unchanged", async () => {
       replaceConfig({
-        resultSaving: false,
+        autoSwitchTheme: true,
       });
       await Lifecycle.applyConfig({
-        ...ConfigUtils.getConfigChanges(),
-        capsLockWarning: false,
+        autoSwitchTheme: true,
+        keymapMode: "react",
       });
       const config = getConfig();
-      expect(config.resultSaving).toBe(false);
+      expect(config.autoSwitchTheme).toBe(true);
     });
   });
 });

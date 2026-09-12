@@ -1,9 +1,8 @@
-import { CharCounts, countChars, isSpace } from "../../utils/strings";
+import { CharCounts, isSpace } from "../../utils/strings";
 import { countKeysAsChars } from "../../beartype/scoring";
 import { getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm, roundTo2 } from "../../utils/numbers";
 import { EventLog, TestEventNoMs } from "./types";
-import Hangul from "hangul-js";
 
 // Produces chart x-axis labels for an array of timer boundaries (the perfect
 // grid version). Each bucket is labeled by its index ("1", "2", ...). A
@@ -66,15 +65,6 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   }
   if (endMs === undefined) return [];
 
-  // bailout: trim trailing afk and cap tickCount to fit the adjusted end
-  if (eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      endMs -= lkte;
-      tickCount = Math.min(tickCount, Math.floor(endMs / 1000));
-    }
-  }
-
   const boundaries: number[] = [];
   for (let i = 1; i <= tickCount; i++) boundaries.push(i * 1000);
 
@@ -99,20 +89,6 @@ function getLaggedTimerBoundaries(eventLog: EventLog): number[] {
       boundaries.push(event.testMs);
     } else if (event.data.event === "end") {
       endMs = event.testMs;
-    }
-  }
-
-  // in bailout, cap to adjusted end to remove trailing afk seconds
-  if (endMs !== undefined && eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      endMs -= lkte;
-      while (
-        boundaries.length > 0 &&
-        (boundaries[boundaries.length - 1] as number) > endMs
-      ) {
-        boundaries.pop();
-      }
     }
   }
 
@@ -170,9 +146,7 @@ export function getStartToFirstKeypressMs(eventLog: EventLog): number {
   return calc < 0 ? 0 : roundTo2(calc);
 }
 
-// raw version is needed internally by getTestDurationMs to adjust
-// duration in a bailout
-function getRawLastKeypressToEndMs(eventLog: EventLog): number {
+export function getLastKeypressToEndMs(eventLog: EventLog): number {
   const { events } = eventLog;
 
   let lastKeypress: number | undefined;
@@ -209,10 +183,6 @@ function getRawLastKeypressToEndMs(eventLog: EventLog): number {
 
   const calc = end - lastKeypress;
   return calc < 0 ? 0 : roundTo2(calc);
-}
-
-export function getLastKeypressToEndMs(eventLog: EventLog): number {
-  return getRawLastKeypressToEndMs(eventLog);
 }
 
 function countPerInterval(
@@ -297,13 +267,6 @@ export function getTestDurationMs(eventLog: EventLog): number {
     return 0;
   }
 
-  if (eventLog.context.bailedOut) {
-    const lkte = getRawLastKeypressToEndMs(eventLog);
-    if (lkte < 7000) {
-      end -= lkte;
-    }
-  }
-
   if (eventLog.context.mode !== "custom") {
     end = roundTo2(end / 1000) * 1000;
   }
@@ -360,25 +323,12 @@ function countCharsForWordIndex(
   simulatedInput = [...simulatedInput]
     .map((c) => (isSpace(c) ? " " : c))
     .join("");
-  if (eventLog.context.koreanStatus) {
-    simulatedInput = Hangul.disassemble(simulatedInput).join("");
-  }
 
-  let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
-  if (eventLog.context.koreanStatus) {
-    targetWord = Hangul.disassemble(targetWord).join("");
-  }
+  const targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
 
   // beartype: count keys, the way keybear scores Vietnamese. Characters make
   // `ế` worth as much as `e`, and call the `e` typed on the way to it wrong.
-  if (!eventLog.context.koreanStatus) {
-    return countKeysAsChars(
-      simulatedInput,
-      targetWord,
-      lastWord && countPartial,
-    );
-  }
-  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+  return countKeysAsChars(simulatedInput, targetWord, lastWord && countPartial);
 }
 
 function inferActiveWordIndex(
@@ -411,15 +361,14 @@ export function getChars(
   countPartialLastWord = false,
   testMs?: number,
 ): CharCounts {
-  const { events, context } = eventLog;
-  const { bailedOut } = context;
+  const { events } = eventLog;
 
   const isTimed = isTimedTest(eventLog);
 
   const eventsPerWord = getEventsPerWord(events, testMs);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimed || bailedOut || countPartialLastWord;
+  const countPartial = isTimed || countPartialLastWord;
 
   const acc: CharCounts = {
     allCorrect: 0,
@@ -702,74 +651,6 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
   }
 
   return durations;
-}
-
-export function getMissedWords(eventLog: EventLog): Record<string, number> {
-  const missedWords: Record<string, number> = Object.create(null) as Record<
-    string,
-    number
-  >;
-
-  for (const event of eventLog.events) {
-    if (
-      event.type === "input" &&
-      event.data.inputType === "insertText" &&
-      !event.data.correct
-    ) {
-      const word = eventLog.context.targetWords[event.data.wordIndex];
-      if (word === undefined) continue;
-      // targetWords store the trailing separator (commit char); strip exactly
-      // that one separator (space/newline) to key by the bare word — not
-      // trimEnd(), which would also eat a meaningful trailing tab (code mode)
-      const bareWord = word.replace(/[ \n]$/, "");
-      missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
-    }
-  }
-
-  return missedWords;
-}
-
-export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
-  const ev = getEventsPerWord(eventLog.events);
-  const correctedWords: string[] = [];
-
-  for (const [, events] of ev.entries()) {
-    const correctedChars: string[] = [];
-    const currentChars: string[] = [];
-    let cursorPos = 0;
-
-    for (const event of events) {
-      if (event.type !== "input") continue;
-      if (
-        event.data.inputType === "insertText" ||
-        event.data.inputType === "insertCompositionText"
-      ) {
-        if (event.data.inputStopped) {
-          continue;
-        }
-        currentChars[cursorPos] = event.data.data;
-        cursorPos++;
-      } else if (event.data.inputType === "deleteContentBackward") {
-        if (cursorPos > 0) {
-          cursorPos--;
-          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
-        }
-      } else if (event.data.inputType === "deleteWordBackward") {
-        while (cursorPos > 0) {
-          cursorPos--;
-          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
-        }
-      }
-    }
-
-    const result: string[] = [];
-    for (let i = 0; i < currentChars.length; i++) {
-      result.push(correctedChars[i] ?? currentChars[i] ?? "");
-    }
-    correctedWords.push(result.join(""));
-  }
-
-  return correctedWords;
 }
 
 export const __testing = {

@@ -93,28 +93,10 @@ export const configMetadata: ConfigMetadataObject = {
     key: "language",
     displayString: "language",
   },
-  // behavior
-  resultSaving: {
-    key: "resultSaving",
-    displayString: "result saving",
-  },
   // input
   indicateTypos: {
     key: "indicateTypos",
     displayString: "indicate typos",
-  },
-  // sound
-  soundVolume: {
-    key: "soundVolume",
-    displayString: "sound volume",
-  },
-  playSoundOnClick: {
-    key: "playSoundOnClick",
-    displayString: "play sound on click",
-  },
-  playSoundOnError: {
-    key: "playSoundOnError",
-    displayString: "play sound on error",
   },
   // caret
   smoothCaret: {
@@ -127,10 +109,6 @@ export const configMetadata: ConfigMetadataObject = {
     triggerResize: true,
     displayString: "font size",
   },
-  fontFamily: {
-    key: "fontFamily",
-    displayString: "font family",
-  },
   keymapMode: {
     key: "keymapMode",
     displayString: "keymap mode",
@@ -140,24 +118,7 @@ export const configMetadata: ConfigMetadataObject = {
     key: "autoSwitchTheme",
     displayString: "auto switch theme",
   },
-  themeLight: {
-    key: "themeLight",
-    displayString: "theme light",
-  },
-  themeDark: {
-    key: "themeDark",
-    displayString: "theme dark",
-  },
   theme: {
     key: "theme",
-  },
-  // hide elements
-  showOutOfFocusWarning: {
-    key: "showOutOfFocusWarning",
-    displayString: "show out of focus warning",
-  },
-  capsLockWarning: {
-    key: "capsLockWarning",
-    displayString: "caps lock warning",
   },
 };

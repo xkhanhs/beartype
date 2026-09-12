@@ -7,7 +7,7 @@ import { themes } from "../../constants/themes";
 import * as ThemeController from "../../controllers/theme-controller";
 import { getFocus } from "../../states/test";
 import { cn } from "../../utils/cn";
-import { Fa } from "../common/Fa";
+import { Icon } from "./Icon";
 
 /**
  * keybear's colour pill, at the foot of the page next to the gear: one pill
@@ -111,7 +111,7 @@ export function ThemeMenu(): JSXElement {
       >
         <Dot option={current()} />
         <span class="bt-theme-pill-name">{LABELS[current()]}</span>
-        <Fa icon="fa-chevron-down" class="bt-theme-chevron" />
+        <Icon name="chevron-down" class="bt-theme-chevron" />
       </button>
       <Show when={open()}>
         <div
@@ -139,7 +139,7 @@ export function ThemeMenu(): JSXElement {
                 <Dot option={option} />
                 <span class="bt-theme-item-name">{LABELS[option]}</span>
                 <Show when={option === current()}>
-                  <Fa icon="fa-check" class="bt-theme-check" />
+                  <Icon name="check" class="bt-theme-check" />
                 </Show>
               </button>
             )}

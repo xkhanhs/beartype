@@ -70,7 +70,6 @@ const ResultBaseSchema = z.object({
   incompleteTestSeconds: z.number().nonnegative().optional(),
   afkDuration: z.number().nonnegative().optional(),
   tags: z.array(IdSchema).optional(),
-  bailedOut: z.boolean().optional(),
   language: LanguageSchema.optional(),
 });
 
@@ -79,7 +78,6 @@ const CompletedEventSchema = ResultBaseSchema.required({
   incompleteTestSeconds: true,
   afkDuration: true,
   tags: true,
-  bailedOut: true,
   language: true,
 })
   .extend({

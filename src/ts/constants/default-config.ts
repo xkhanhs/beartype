@@ -1,25 +1,18 @@
 import { Config } from "../schemas/configs";
 
 const obj: Config = {
+  // keybear's palettes, following the computer's light or dark setting
   theme: "keybear_light",
-  themeLight: "keybear_light",
-  themeDark: "keybear_dark",
-  autoSwitchTheme: false,
-  smoothCaret: "medium",
+  autoSwitchTheme: true,
+  // the caret this app was measured against on monkeytype.com
+  smoothCaret: "slow",
   words: 50,
   time: 30,
   mode: "time",
-  language: "english",
+  language: "vietnamese",
   fontSize: 2,
   indicateTypos: "off",
   keymapMode: "off",
-  fontFamily: "Roboto_Mono",
-  capsLockWarning: true,
-  playSoundOnError: "off",
-  playSoundOnClick: "off",
-  soundVolume: 0.5,
-  showOutOfFocusWarning: true,
-  resultSaving: true,
 };
 
 export function getDefaultConfig(): Config {

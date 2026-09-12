@@ -1,12 +1,7 @@
 import * as TestUI from "./test-ui";
-import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as TestTimer from "./test-timer";
@@ -17,9 +12,6 @@ import { idleReason } from "../beartype/idle";
 import * as Result from "./result";
 import { getActivePage } from "../states/core";
 import {
-  setIsDirectionReversed,
-  setIsLanguageRightToLeft,
-  setKoreanStatus,
   setLastEventLog,
   setIsTestRestarting,
   isTestRestarting,
@@ -32,17 +24,13 @@ import {
   resetIncompleteTests,
   setIsRepeated,
   setIsTestInvalid,
-  setLastResult,
   getActiveWordIndex,
   resetActiveWordIndex,
-  getBailedOut,
   isResultCalculating,
-  setBailedOut,
   setResultCalculating,
   setResultVisible,
   setTestActive,
   setWordsHaveNewline,
-  setWordsHaveNumbers,
   setWordsHaveTab,
   getResultVisible,
 } from "../states/test";
@@ -90,7 +78,6 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
-import { resetModifierState } from "../states/modifiers";
 
 let failReason = "";
 
@@ -141,17 +128,15 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
-      // Finalize the abandoned test before measuring it: logging the timer
-      // "end" event gives getAfkDuration its interval boundaries, so idle time
-      // is actually subtracted. Without it AFK is always 0 and the full
-      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
-      TestTimer.clear(true);
-      const liveEventLog = buildEventLog();
-      const tt = getIncompleteTestSeconds(liveEventLog);
-      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
-      pushIncompleteTest({ acc, seconds: tt });
-    }
+    // Finalize the abandoned test before measuring it: logging the timer
+    // "end" event gives getAfkDuration its interval boundaries, so idle time
+    // is actually subtracted. Without it AFK is always 0 and the full
+    // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+    TestTimer.clear(true);
+    const liveEventLog = buildEventLog();
+    const tt = getIncompleteTestSeconds(liveEventLog);
+    const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+    pushIncompleteTest({ acc, seconds: tt });
   }
 
   // beartype: a new test during a drill is the drill's next round, built
@@ -164,7 +149,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     !options.practiseMissed &&
     (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
-    showNoticeNotification("Thôi luyện từ hay sai, quay về bài thường.");
     setConfig("mode", PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -174,13 +158,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  resetModifierState();
   setTestActive(false);
-  setBailedOut(false);
-  setKoreanStatus(false);
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
 
@@ -275,8 +255,6 @@ async function init(): Promise<boolean> {
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
-  let allRightToLeft: boolean | undefined = undefined;
-  let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
@@ -285,34 +263,13 @@ async function init(): Promise<boolean> {
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
-    ({ allRightToLeft, allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     return initFailed("Không tạo được bài gõ. Bấm gõ lại để thử lần nữa.", e);
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
-
-  if (
-    generatedWords
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    setKoreanStatus(true);
-  }
 
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(
@@ -325,11 +282,7 @@ async function init(): Promise<boolean> {
     TestWords.words.removeCommitCharacterFromLastWord();
   }
 
-  TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
-
-  const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  setIsLanguageRightToLeft(isLanguageRTL);
-  setIsDirectionReversed(false);
+  TestUI.updateDrillLayout();
 
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
@@ -367,13 +320,7 @@ export async function addWord(): Promise<void> {
     TestUI.addWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
-    showErrorNotification(
-      "Error while getting next word. Please try again later",
-      {
-        error: e,
-        important: true,
-      },
-    );
+    console.error(e);
   }
 
   // strip the trailing commit separator once the final word has been generated
@@ -461,7 +408,6 @@ function buildCompletedEvent(
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config),
-    bailedOut: getBailedOut(),
     restartCount: getRestartCount(),
     incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
@@ -535,9 +481,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let dontSave = false;
 
   if (countUndefined(ce) > 0) {
-    console.log(ce);
-    showErrorNotification(
+    console.error(
       "Failed to build result object: One of the fields is undefined or NaN",
+      ce,
     );
     dontSave = true;
   }
@@ -545,15 +491,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   setLastEventLog(eventLog);
-  setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready
 
   //afk check
-  let afkDetected = getKeypressesPerSecond(eventLog)
+  const afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (getBailedOut()) afkDetected = false;
   // beartype: a long stop anywhere in the test, not only at its end
   const idle = idleReason(
     eventLog,
@@ -563,29 +507,20 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const mode2Number = parseInt(completedEvent.mode2);
 
-  // beartype: the result screen says what was wrong with a test, in
-  // Vietnamese, under the figures (`updateOther` in result.ts); upstream's
-  // English pop-up said it a second time. The checks below are upstream's,
-  // untouched -- only their pop-up is silenced, for this function alone.
-  const showNoticeNotification = (..._args: unknown[]): void => undefined;
-
+  // the result screen says what was wrong with a test, under the figures
+  // (`updateOther` in result.ts)
   let tooShort = false;
   //fail checks
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !getBailedOut() &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
-    showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     setIsTestInvalid(true);
     dontSave = true;
   } else if (difficultyFailed) {
-    showNoticeNotification(`Test failed - ${failReason}`, {
-      durationMs: 1000,
-    });
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
@@ -605,19 +540,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitMode() === "time" &&
       CustomText.getLimitValue() < 15)
   ) {
-    showNoticeNotification("Test invalid - too short");
     setIsTestInvalid(true);
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
-    showNoticeNotification("Test invalid - AFK detected");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (idle !== null) {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (isRepeated()) {
-    showNoticeNotification("Test invalid - repeated");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -629,7 +561,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - wpm");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -641,11 +572,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - raw");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
-    showNoticeNotification("Test invalid - accuracy");
     setIsTestInvalid(true);
     dontSave = true;
   }
@@ -653,12 +582,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // test is valid
 
   if (isRepeated() || difficultyFailed) {
-    if (Config.resultSaving) {
-      pushIncompleteTest({
-        acc: completedEvent.acc,
-        seconds: getIncompleteTestSeconds(eventLog),
-      });
-    }
+    pushIncompleteTest({
+      acc: completedEvent.acc,
+      seconds: getIncompleteTestSeconds(eventLog),
+    });
   }
 
   // beartype: there is no account to save to. A valid result is kept in this
