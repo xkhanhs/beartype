@@ -57,5 +57,12 @@ export function lockConfig(stored: Config | undefined): Config {
       config[key] = stored[key];
     }
   }
+  // the rotation is the default, but it was added after people had already
+  // been picking colours by hand: a config stored before it existed, by
+  // someone who had turned the computer's light and dark setting off to pick
+  // one, keeps the colour they picked rather than being painted over
+  if (stored.randomTheme === undefined && !stored.autoSwitchTheme) {
+    config.randomTheme = "off";
+  }
   return config;
 }

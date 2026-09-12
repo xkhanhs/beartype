@@ -48,6 +48,7 @@ const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
 
 const RANDOM_THEME_LABELS: Record<(typeof RANDOM_THEMES)[number], string> = {
   off: "tắt",
+  auto: "theo máy",
   light: "màu sáng",
   dark: "màu tối",
   all: "lẫn lộn",
@@ -124,7 +125,7 @@ export function SettingsPopover(): JSXElement {
           />
           <SettingsRow
             label="xoay màu"
-            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn"
+            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn; theo máy là sáng hay tối tuỳ cài đặt của máy"
             options={RANDOM_THEMES}
             labels={RANDOM_THEME_LABELS}
             value={getConfig.randomTheme}

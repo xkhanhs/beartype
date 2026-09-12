@@ -37,7 +37,10 @@ let randomBag: ThemeIdentifier[] = [];
 
 function randomPool(): ThemeIdentifier[] {
   if (Config.randomTheme === "all") return [...THEMES];
-  const wantDark = Config.randomTheme === "dark";
+  const wantDark =
+    Config.randomTheme === "auto"
+      ? prefersDark()
+      : Config.randomTheme === "dark";
   return THEMES.filter((name) => isColorDark(themes[name].bg) === wantDark);
 }
 
@@ -124,6 +127,13 @@ export async function clearPreview(applyTheme = true): Promise<void> {
 window
   .matchMedia?.("(prefers-color-scheme: dark)")
   ?.addEventListener?.("change", () => {
+    if (Config.randomTheme === "auto") {
+      // the rotation follows the computer: deal again from the other group,
+      // so the switch is seen at once rather than a test later
+      randomBag = [];
+      void randomizeTheme();
+      return;
+    }
     // a rotating test wears its own palette, whatever the computer switches to
     if (!Config.autoSwitchTheme || randomTheme !== null) return;
     void set(autoTheme(), true);
@@ -177,8 +187,10 @@ configEvent.subscribe(async ({ key, newValue }) => {
   }
 });
 
+function prefersDark(): boolean {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+}
+
 function autoTheme(): ThemeIdentifier {
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
-    ? "keybear_dark"
-    : "keybear_light";
+  return prefersDark() ? "keybear_dark" : "keybear_light";
 }

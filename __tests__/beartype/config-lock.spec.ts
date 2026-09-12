@@ -119,15 +119,37 @@ describe("themes", () => {
     ).toBe("keybear_light");
   });
 
+  it("leaves a colour picked before the rotation existed alone", () => {
+    const stored = { ...getDefaultConfig(), theme: "keybear_ocean" as const };
+    // @ts-expect-error a config written before the key existed
+    delete stored.randomTheme;
+    stored.autoSwitchTheme = false;
+    const config = lockConfig(stored);
+    expect(config.randomTheme).toBe("off");
+    expect(config.theme).toBe("keybear_ocean");
+  });
+
+  it("rotates for a config stored before the rotation that followed the computer", () => {
+    const stored = { ...getDefaultConfig() };
+    // @ts-expect-error a config written before the key existed
+    delete stored.randomTheme;
+    stored.autoSwitchTheme = true;
+    expect(lockConfig(stored).randomTheme).toBe("auto");
+  });
+
   it("keeps a rotation setting and drops an unknown one", () => {
     expect(
       lockConfig({ ...getDefaultConfig(), randomTheme: "dark" }).randomTheme,
     ).toBe("dark");
     expect(
+      lockConfig({ ...getDefaultConfig(), randomTheme: "off" }).randomTheme,
+    ).toBe("off");
+    // an unknown one falls back to rotating with the computer, the default
+    expect(
       lockConfig({
         ...getDefaultConfig(),
         randomTheme: "fav" as Config["randomTheme"],
       }).randomTheme,
-    ).toBe("off");
+    ).toBe("auto");
   });
 });
