@@ -11,9 +11,9 @@ không quote, không funbox. Chỉ còn một màn:
   bằng tiếng Việt hoặc tiếng Anh.
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, rồi mức tốt
   nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
-- **Giao diện của keybear**: ba mươi ba bảng màu — chín của keybear, mười tám
-  bảng tối và sáu bảng sáng của monkeytype — chọn trong danh sách ở chân trang
-  (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
+- **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
+  hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
+  trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
   tối tuỳ cài đặt của máy; đổi nhóm hoặc tắt hẳn trong thẻ cài đặt. Phông bài
   gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh),
   cỡ chữ theo các mức phóng của Chrome (80% tới 200%), và con trỏ mượt tuỳ

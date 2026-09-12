@@ -41,6 +41,13 @@ export const ThemeNameSchema = z.enum(
     "repose_light",
     "slambook",
     "soaring_skies",
+    // beartype: added by request; the menu sorts them into pale and dark by
+    // what their pages measure, not by these lines
+    "superuser",
+    "modern_ink",
+    "8008",
+    "aurora",
+    "bushido",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),

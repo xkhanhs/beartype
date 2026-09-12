@@ -114,7 +114,7 @@ describe("themes", () => {
       lockConfig({
         ...getDefaultConfig(),
         // an upstream theme beartype did not take
-        theme: "8008" as Config["theme"],
+        theme: "9009" as Config["theme"],
       }).theme,
     ).toBe("keybear_light");
   });
