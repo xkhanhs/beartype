@@ -39,6 +39,16 @@ const STRINGS = {
     vi: "con trỏ trượt sang chữ kế tiếp thay vì nhảy",
     en: "the caret slides to the next letter instead of jumping",
   },
+  paceCaret: { vi: "con trỏ dẫn tốc", en: "pace caret" },
+  paceCaretHint: {
+    vi: "một con trỏ mờ chạy trước theo phần trăm tốc độ thường của bạn: 80% để tập cho thật chuẩn, 120% để ép nhanh hơn. Cần vài bài đã gõ mới biết tốc độ thường.",
+    en: "a faint caret runs ahead at a share of your usual speed: 80% to drill accuracy, 120% to push. It needs a few tests before there is a usual speed to take.",
+  },
+  strictAccuracy: { vi: "chuẩn tuyệt đối", en: "strict" },
+  strictAccuracyHint: {
+    vi: "gõ sai một phím là bài dừng ngay: bài tập ép chính xác tuyệt đối, không phải cách gõ hằng ngày",
+    en: "one wrong key ends the test: a drill for perfect accuracy, not a way to type every day",
+  },
   fontSize: { vi: "cỡ chữ", en: "text size" },
   indicateTypos: { vi: "hiện phím gõ sai", en: "show typos" },
   indicateTyposHint: {
@@ -121,6 +131,11 @@ const STRINGS = {
   accuracy: { vi: "chính xác", en: "accuracy" },
   words: { vi: "số từ", en: "words" },
   time: { vi: "thời gian", en: "time" },
+  consistency: { vi: "đều tay", en: "consistency" },
+  consistencyHover: {
+    vi: "gõ càng đều nhịp càng cao; gõ giật từng đợt thì thấp, dù tốc độ có nhanh",
+    en: "the steadier the rhythm the higher it is; bursts and pauses read low, however fast",
+  },
   accuracyHover: {
     vi: (correct: number, incorrect: number) =>
       `${correct} đúng · ${incorrect} sai`,
@@ -164,6 +179,10 @@ const STRINGS = {
   failedSlowTimer: {
     vi: "máy chạy chậm, đồng hồ trễ nên bài bị dừng",
     en: "the computer is slow, the clock lagged and the test was stopped",
+  },
+  failedStrict: {
+    vi: "gõ sai một phím, bài dừng vì đang bật chuẩn tuyệt đối",
+    en: "a wrong key, and the strict setting stopped the test",
   },
   failed: {
     vi: (reason: string) => `không đạt (${reason})`,

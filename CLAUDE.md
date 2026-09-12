@@ -46,9 +46,10 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   cấu hình (`config-lock.ts`: những khoá người dùng được đổi và giá trị cho
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
   (`miss-book.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
-  `dom-strings.ts`).
+  `dom-strings.ts`), tốc độ để chạy theo (`pace.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
-  cỡ chữ, hiện phím gõ sai, xoay màu, bàn phím ảo), viên chọn màu ở chân trang
+  con trỏ dẫn tốc, chuẩn tuyệt đối, cỡ chữ, hiện phím gõ sai, xoay màu, bàn
+  phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
   (`LanguageMenu`), nút luyện từ hay sai, sổ bài gần đây dưới
   màn kết quả (`ResultHistory`), icon (`Icon`).
@@ -172,7 +173,18 @@ Test của beartype nằm ở `__tests__/beartype/`.
   ra: đừng trả `overflow-y: auto` về cho `.bt-settings-card` ở mọi cỡ màn.
 - Màn kết quả: Enter một mình mở bài mới (`test-logic.ts`), trừ khi tiêu điểm
   đang ở một nút hay một liên kết — nó tự trả lời Enter, và tab + enter đi
-  đường đó.
+  đường đó. Hai ô lớn (wpm, chính xác) trên ba ô nhỏ (số từ, thời gian, đều
+  tay); mọi ô rộng như nhau nên hai hàng cùng cân giữa, và hàng nhỏ xuống dòng
+  ở màn hẹp.
+- Hai bài tập phá plateau, đều tắt sẵn: **con trỏ dẫn tốc**
+  (`test/pace-caret.ts`, tính trong `beartype/pace.ts`) chạy trước theo 80 /
+  100 / 120% tốc độ thường của máy này trong ngôn ngữ đang gõ — không có bài
+  nào trong sổ thì không có gì để chạy theo và nó im lặng không hiện; và
+  **chuẩn tuyệt đối** (`input/handlers/insert-text.ts`), gõ sai một phím là
+  `TestLogic.fail("strict")`. Con trỏ dẫn tốc đi **theo phím chứ không theo
+  chữ**, vì tốc độ của app đếm phím: `ế` là một chữ và ba phím. Nó không đụng
+  vào đường xử lý phím — chỉ đọc danh sách từ, xem đồng hồ và dời một thẻ
+  riêng — nên bài gõ khi bật vẫn chấm y hệt khi tắt.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.

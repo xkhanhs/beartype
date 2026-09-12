@@ -9,6 +9,10 @@ const obj: Config = {
   autoSwitchTheme: true,
   // the caret this app was measured against on monkeytype.com
   smoothCaret: "slow",
+  // the pace caret and the strict test are drills, not the way the app types:
+  // both are off until someone reaches for them
+  paceCaret: "off",
+  strictAccuracy: "off",
   words: 50,
   time: 30,
   mode: "time",

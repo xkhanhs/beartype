@@ -200,6 +200,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       void TestLogic.finish();
     }
   }
+
+  // beartype: the strict drill, one wrong key and the test is over. It stands
+  // at the end, after the key has been logged and the word moved on, so the
+  // key that ended the test is counted in the result like any other; and it
+  // reads `correct`, which knows that the `e` on the way to `ế` is unfinished
+  // rather than wrong.
+  if (!correct && Config.strictAccuracy === "on") {
+    TestLogic.fail("strict");
+  }
 }
 
 function normalizeDataAndUpdateInputIfNeeded(

@@ -459,6 +459,24 @@ button.bt-options-summary {
   }
 }
 
+// ----- the pace caret -----
+
+// The pace to type against (test/pace-caret.ts). It is shaped exactly like
+// the caret in caret.scss, so the gap between the two reads as distance
+// rather than as two different things, but it is dim and never blinks: two
+// blinking bars on one line would both claim to be where the hands are.
+#paceCaret {
+  position: absolute;
+  height: 1.2em;
+  border-radius: var(--roundness);
+  background: var(--sub-color);
+  transform-origin: top left;
+
+  &.default {
+    width: 0.1em;
+  }
+}
+
 // ----- the keyboard under the words -----
 
 // upstream's zoom steps at its default `keymapSize` of 1: half size on a
@@ -935,15 +953,19 @@ button.bt-settings-choice {
     // upstream lays this row out as a grid, at this same specificity
     &.morestats {
       display: flex;
+      // three small figures under two big ones: both rows are centred, so
+      // the block still reads as one object, but three columns of 9rem no
+      // longer fit a narrow window and have to be allowed to wrap
+      flex-wrap: wrap;
       gap: 1.5rem;
       align-items: baseline;
       justify-content: center;
       margin-block-start: 1rem;
     }
 
-    // Two columns of one width, so "số từ" stands under "wpm" and "thời gian"
-    // under "chính xác". Each row sized to its own figures put the small ones
-    // off the big ones' centres, and the block read as two staggered rows.
+    // Columns of one width, so the small figures sit on the big ones' centres
+    // rather than on their own. Each row sized to its own figures put the
+    // small ones off those centres, and the block read as two staggered rows.
     // A minimum, so a figure wider than its column pushes it out rather than
     // spilling off one side.
     &:not(.notes) .group {

@@ -5,6 +5,7 @@ import * as Numbers from "../utils/numbers";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as TestTimer from "./test-timer";
+import * as PaceCaret from "./pace-caret";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
@@ -94,6 +95,10 @@ export function startTest(now: number): boolean {
   //use a recursive self-adjusting timer to avoid time drift
   void TestTimer.start(now);
   TestUI.onTestStart();
+  // beartype: the pace to type against starts with the first key, not with
+  // the words appearing -- it would otherwise be halfway down the line before
+  // the hands had begun
+  PaceCaret.start();
   return true;
 }
 
@@ -159,6 +164,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   resetTestEvents();
   TestTimer.clear();
+  PaceCaret.reset();
   setIsTestInvalid(false);
   setTestActive(false);
   CompositionState.setComposing(false);
@@ -435,6 +441,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
+  PaceCaret.reset();
 
   // fade out the test and show loading
   // because the css animation has a delay,
@@ -640,7 +647,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   recordMisses(Config.language, round.words, round.typed, round.stumbled);
 }
 
-function fail(reason: string): void {
+export function fail(reason: string): void {
   failReason = reason;
   void finish(true);
 }

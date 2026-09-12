@@ -56,7 +56,6 @@ describe("a production localStorage config", () => {
 
     for (const upstreamOnlyKey of [
       "funbox",
-      "paceCaret",
       "paceCaretCustomSpeed",
       "punctuation",
       "numbers",
@@ -92,6 +91,10 @@ describe("a production localStorage config", () => {
     expect(locked.theme).toBe("keybear_ocean");
     expect(locked.fontSize).toBe(2.5);
     expect(locked.smoothCaret).toBe("fast");
+    // beartype's pace caret shares upstream's key and not its values: a
+    // config stored with upstream's "average" cannot bring a setting back
+    // that means nothing here
+    expect(locked.paceCaret).toBe("off");
   });
 
   it("can be saved back without failing schema validation", () => {

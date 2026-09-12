@@ -4,6 +4,7 @@ import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import { typoHints, wordHtml } from "../beartype/word-html";
 import * as Caret from "./caret";
+import * as PaceCaret from "./pace-caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
@@ -680,6 +681,9 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
       duration: 0,
     };
     Caret.caret.handleLineJump(caretLineJumpOptions);
+    // beartype: the pace caret rides the same lines, so it takes the same
+    // jump; left behind it would sit a line above the words it points at
+    PaceCaret.paceCaret.handleLineJump(caretLineJumpOptions);
 
     currentLinesJumping = 0;
     removeTestElements(lastElementIndexToRemove);
