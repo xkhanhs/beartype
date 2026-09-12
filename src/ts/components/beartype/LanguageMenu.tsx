@@ -49,8 +49,7 @@ export function LanguageMenu(): JSXElement {
       onClick={() => pick()}
     >
       <Icon name="languages" />
-      {/* both names are two letters wide, so the pill does not change size */}
-      <span>{uiLanguage()}</span>
+      <span class="bt-language-pill-name">{uiLanguage()}</span>
     </button>
   );
 }

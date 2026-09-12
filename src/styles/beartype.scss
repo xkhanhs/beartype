@@ -541,6 +541,16 @@ a.bt-footer-pill {
   white-space: nowrap;
 }
 
+// one width for both names, so the pill does not change size when the
+// language does: two letters are not two widths in Quicksand -- "en" is
+// 17.4px against 11.3px for "vi" at this size -- and the pill sits between
+// the gear and the link to the source, both of which would shift with it.
+// In em, so it holds if the footer's text size ever changes.
+.bt-language-pill-name {
+  inline-size: 1.25em;
+  text-align: center;
+}
+
 .bt-footer-pill .bt-icon {
   color: var(--kb-text-f1);
 }
