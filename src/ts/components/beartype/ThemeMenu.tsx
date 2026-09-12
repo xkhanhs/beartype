@@ -6,7 +6,9 @@ import { getConfig } from "../../config/store";
 import { themes } from "../../constants/themes";
 import * as ThemeController from "../../controllers/theme-controller";
 import { getFocus } from "../../states/test";
+import { getTheme } from "../../states/theme";
 import { cn } from "../../utils/cn";
+import { isColorDark } from "../../utils/colors";
 import { Icon } from "./Icon";
 
 /**
@@ -14,14 +16,17 @@ import { Icon } from "./Icon";
  * shows the palette in use, and opens upward into the list. Every name
  * carries a dot split between that palette's background and its accent, so
  * the list shows what each one looks like before it is picked; resting the
- * pointer on a name also dresses the whole page in it for a look.
+ * pointer on a name also dresses the whole page in it for a look. The list is
+ * long enough to scroll, so it is cut into the pale palettes and the dark
+ * ones, the same two groups the rotation draws from.
  */
 
 const OPTIONS = ["system", ...THEMES] as const;
 type Option = (typeof OPTIONS)[number];
 
-// keybear's names for its palettes, so the two apps call them the same
-const LABELS: Record<Option, string> = {
+// keybear's names for its palettes, so the two apps call them the same; the
+// palettes taken from monkeytype keep the names monkeytype gave them
+const LABELS: Partial<Record<Option, string>> = {
   system: "tự động",
   keybear_light: "ban ngày",
   keybear_dark: "ban đêm",
@@ -33,6 +38,19 @@ const LABELS: Record<Option, string> = {
   keybear_pixel: "pixel",
   keybear_hero: "siêu nhân",
 };
+
+function label(option: Option): string {
+  return LABELS[option] ?? option.replace(/_/g, " ");
+}
+
+const LIGHT_THEMES = THEMES.filter((name) => !isColorDark(themes[name].bg));
+const DARK_THEMES = THEMES.filter((name) => isColorDark(themes[name].bg));
+
+const GROUPS: { title: string; options: readonly Option[] }[] = [
+  { title: "theo máy", options: ["system"] },
+  { title: "màu sáng", options: LIGHT_THEMES },
+  { title: "màu tối", options: DARK_THEMES },
+];
 
 /** The two halves of a dot, read from the palettes themselves. */
 function dotColors(option: Option): [string, string] {
@@ -56,10 +74,18 @@ export function ThemeMenu(): JSXElement {
   const [open, setOpen] = createSignal(false);
   const [root, setRoot] = createSignal<HTMLDivElement>();
 
+  /** The option the list ticks: what was chosen, rotation or not. */
   const current = (): Option =>
     getConfig.autoSwitchTheme
       ? "system"
       : (OPTIONS.find((o) => o === getConfig.theme) ?? "keybear_light");
+
+  /**
+   * What the pill shows: under a rotation the palette actually on screen,
+   * which changes with every test, otherwise the chosen one.
+   */
+  const worn = (): Option =>
+    getConfig.randomTheme === "off" ? current() : getTheme().name;
 
   const close = (): void => {
     if (!open()) return;
@@ -68,6 +94,9 @@ export function ThemeMenu(): JSXElement {
   };
 
   const pick = (option: Option): void => {
+    // picking a colour by hand is the end of the rotation, otherwise the next
+    // test would paint over the choice
+    setConfig("randomTheme", "off");
     if (option === "system") {
       setConfig("autoSwitchTheme", true);
     } else {
@@ -109,8 +138,8 @@ export function ThemeMenu(): JSXElement {
         title="đổi màu"
         onClick={() => (open() ? close() : setOpen(true))}
       >
-        <Dot option={current()} />
-        <span class="bt-theme-pill-name">{LABELS[current()]}</span>
+        <Dot option={worn()} />
+        <span class="bt-theme-pill-name">{label(worn())}</span>
         <Icon name="chevron-down" class="bt-theme-chevron" />
       </button>
       <Show when={open()}>
@@ -120,28 +149,35 @@ export function ThemeMenu(): JSXElement {
           aria-label="màu"
           onMouseLeave={() => void ThemeController.clearPreview()}
         >
-          <For each={OPTIONS}>
-            {(option) => (
-              <button
-                type="button"
-                role="menuitemradio"
-                aria-checked={option === current()}
-                class="bt-theme-item"
-                onMouseEnter={() => {
-                  if (option === "system") {
-                    void ThemeController.clearPreview();
-                  } else {
-                    ThemeController.preview(option);
-                  }
-                }}
-                onClick={() => pick(option)}
-              >
-                <Dot option={option} />
-                <span class="bt-theme-item-name">{LABELS[option]}</span>
-                <Show when={option === current()}>
-                  <Icon name="check" class="bt-theme-check" />
-                </Show>
-              </button>
+          <For each={GROUPS}>
+            {(group) => (
+              <div class="bt-theme-group" role="group" aria-label={group.title}>
+                <div class="bt-theme-group-title">{group.title}</div>
+                <For each={group.options}>
+                  {(option) => (
+                    <button
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={option === current()}
+                      class="bt-theme-item"
+                      onMouseEnter={() => {
+                        if (option === "system") {
+                          void ThemeController.clearPreview();
+                        } else {
+                          ThemeController.preview(option);
+                        }
+                      }}
+                      onClick={() => pick(option)}
+                    >
+                      <Dot option={option} />
+                      <span class="bt-theme-item-name">{label(option)}</span>
+                      <Show when={option === current()}>
+                        <Icon name="check" class="bt-theme-check" />
+                      </Show>
+                    </button>
+                  )}
+                </For>
+              </div>
             )}
           </For>
         </div>

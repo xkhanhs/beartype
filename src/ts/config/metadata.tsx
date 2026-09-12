@@ -121,4 +121,8 @@ export const configMetadata: ConfigMetadataObject = {
   theme: {
     key: "theme",
   },
+  randomTheme: {
+    key: "randomTheme",
+    displayString: "random theme",
+  },
 };

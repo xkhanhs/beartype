@@ -562,6 +562,26 @@ a.bt-footer-icon {
   background-color: var(--kb-card);
   box-shadow: var(--kb-popup-shadow);
   transform: translateX(-50%);
+  // there are more palettes than fit above the footer, so the list scrolls
+  // rather than running off the top of the window
+  max-block-size: min(60vh, 26rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.bt-theme-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+// the headings that cut the list into the pale palettes and the dark ones
+.bt-theme-group-title {
+  padding: 0.35rem 0.7rem 0.15rem;
+  color: var(--kb-text-f1);
+  font-size: 0.8rem;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 button.bt-theme-item {

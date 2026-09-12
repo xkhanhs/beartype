@@ -3,6 +3,7 @@ import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 import {
   FONT_SIZES,
   KEYMAP_MODES,
+  RANDOM_THEMES,
   SMOOTH_CARETS,
   TYPO_INDICATORS,
 } from "../../beartype/config-lock";
@@ -43,6 +44,13 @@ const FONT_SIZE_LABELS: Record<(typeof FONT_SIZES)[number], string> = {
 const KEYMAP_MODE_LABELS: Record<(typeof KEYMAP_MODES)[number], string> = {
   off: "tắt",
   react: "bật",
+};
+
+const RANDOM_THEME_LABELS: Record<(typeof RANDOM_THEMES)[number], string> = {
+  off: "tắt",
+  light: "màu sáng",
+  dark: "màu tối",
+  all: "lẫn lộn",
 };
 
 const TYPO_INDICATOR_LABELS: Record<(typeof TYPO_INDICATORS)[number], string> =
@@ -113,6 +121,14 @@ export function SettingsPopover(): JSXElement {
             labels={TYPO_INDICATOR_LABELS}
             value={getConfig.indicateTypos}
             onPick={(value) => setConfig("indicateTypos", value)}
+          />
+          <SettingsRow
+            label="xoay màu"
+            hint="mỗi bài mới lấy ngẫu nhiên một màu trong nhóm đã chọn"
+            options={RANDOM_THEMES}
+            labels={RANDOM_THEME_LABELS}
+            value={getConfig.randomTheme}
+            onPick={(value) => setConfig("randomTheme", value)}
           />
           <SettingsRow
             label="bàn phím ảo"

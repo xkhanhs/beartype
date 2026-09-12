@@ -78,6 +78,7 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import * as ThemeController from "../controllers/theme-controller";
 
 let failReason = "";
 
@@ -174,6 +175,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   const noAnim = options.noAnim ?? false;
 
   setIsTestRestarting(true);
+
+  // beartype: a new test is where the colours rotate, if they are set to
+  await ThemeController.randomizeTheme();
 
   await TestUI.fadeOutForRestart(source, noAnim);
 

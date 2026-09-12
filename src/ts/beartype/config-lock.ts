@@ -2,7 +2,9 @@ import {
   type Config,
   IndicateTyposSchema,
   KeymapModeSchema,
+  RandomThemeSchema,
 } from "../schemas/configs";
+import { ThemeNameSchema } from "../schemas/themes";
 import { getDefaultConfig } from "../constants/default-config";
 import { typedKeys } from "../utils/objects";
 
@@ -20,17 +22,9 @@ export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
 export const KEYMAP_MODES = KeymapModeSchema.options;
 export const TYPO_INDICATORS = IndicateTyposSchema.options;
-export const THEMES = [
-  "keybear_light",
-  "keybear_dark",
-  "keybear_princess",
-  "keybear_ocean",
-  "keybear_forest",
-  "keybear_racing",
-  "keybear_dracula",
-  "keybear_pixel",
-  "keybear_hero",
-] as const;
+/** Every palette on offer, in the order the colour list shows them. */
+export const THEMES = ThemeNameSchema.options;
+export const RANDOM_THEMES = RandomThemeSchema.options;
 
 function allowed(key: keyof Config, value: unknown): boolean {
   const lists: Partial<Record<keyof Config, readonly unknown[]>> = {
@@ -43,6 +37,7 @@ function allowed(key: keyof Config, value: unknown): boolean {
     theme: THEMES,
     keymapMode: KEYMAP_MODES,
     indicateTypos: TYPO_INDICATORS,
+    randomTheme: RANDOM_THEMES,
   };
   const list = lists[key];
   return list === undefined || list.includes(value);
