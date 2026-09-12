@@ -9,7 +9,6 @@ import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import { getActivePage } from "../states/core";
-import { convertRemToPixels } from "../utils/numbers";
 import {
   cancelPendingAnimationFramesStartingWith,
   requestDebouncedAnimationFrame,
@@ -358,7 +357,13 @@ function updateWordWrapperClasses(): void {
   }
 
   qsa("#caret, #typingTest, #wordsInput").setStyle({
-    fontSize: `${Config.fontSize}rem`,
+    // beartype: the longest word in either list is eight letters and a letter
+    // of the typing font is about 0.6em wide, so a word takes 4.8 times the
+    // size of the text. On a screen too narrow to hold that, the size steps
+    // down to what the line can take rather than the word running off it --
+    // `min` in the style itself, so the browser follows a turning phone
+    // without anyone measuring.
+    fontSize: `min(${Config.fontSize}rem, calc((100vw - 2rem) / 4.8))`,
   });
 
   const existing =
@@ -418,7 +423,9 @@ export function updateWordsInputPosition(): void {
     return;
   }
 
-  const letterHeight = convertRemToPixels(Config.fontSize);
+  // the size on screen, not the one in the config: a narrow screen steps it
+  // down (see the `min` where it is set)
+  const letterHeight = parseFloat(getComputedStyle(wordsEl.native).fontSize);
   const targetTop =
     activeWord.getOffsetTop() + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
