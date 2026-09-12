@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { THEMES } from "../../src/ts/beartype/config-lock";
-import { contrastRatio } from "../../src/ts/beartype/contrast";
+import { MIN_READABILITY, readability } from "../../src/ts/beartype/contrast";
 import { themes } from "../../src/ts/constants/themes";
 import { isColorDark } from "../../src/ts/utils/colors";
 
@@ -25,16 +25,16 @@ describe("themes", () => {
 
   // A palette sets this when its accent cannot say which letter is still being
   // built. What tells that letter apart is its hue -- keybear's amber against
-  // pale letters -- which no contrast figure measures, so what is checked here
-  // is the one thing a figure does say: the colour must read on the page.
+  // pale letters -- which no readability figure measures, so what is checked
+  // here is the one thing such a figure does say: it must read on the page.
   it("keeps an unfinished letter readable where a palette colours it", () => {
     for (const name of THEMES) {
       const partial = themes[name].partialLetter;
       if (partial === undefined) continue;
       expect(
-        contrastRatio(partial, themes[name].bg),
+        readability(partial, themes[name].bg),
         `${name} draws an unfinished letter too close to the page`,
-      ).toBeGreaterThan(4.5);
+      ).toBeGreaterThan(MIN_READABILITY);
     }
   });
 
