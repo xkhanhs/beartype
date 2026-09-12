@@ -35,8 +35,13 @@ export const LOCALE_TAG: Record<UiLanguage, string> = {
  * The language of the page on a first visit, read from the browser's own
  * list of preferred languages. The first entry that names a language this
  * page speaks wins, so a browser asking for French then English gets
- * English. When no entry names either -- and when the browser says nothing
- * at all -- the page stays Vietnamese, which is what it has always been.
+ * English.
+ *
+ * When no entry names either -- and when the browser says nothing at all --
+ * the page opens in English. Whoever reads neither of these two languages
+ * stands a far better chance with English than with Vietnamese, and this is
+ * a guess for a first visit only: one press of the pill in the footer is
+ * stored, and a stored language is never guessed over again.
  */
 export function detectUiLanguage(): UiLanguage {
   const preferred =
@@ -51,7 +56,7 @@ export function detectUiLanguage(): UiLanguage {
     if (match !== undefined) return match;
   }
 
-  return "vi";
+  return "en";
 }
 
 /**
