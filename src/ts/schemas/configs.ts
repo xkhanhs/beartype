@@ -10,6 +10,15 @@ export const IndicateTyposSchema = z.enum(["off", "below"]);
 export const KeymapModeSchema = z.enum(["off", "react"]);
 
 /**
+ * A second caret running at a share of the usual speed on this browser, to
+ * type against. "80" is the accuracy drill, "120" the overtraining one.
+ */
+export const PaceCaretSchema = z.enum(["off", "80", "100", "120"]);
+
+/** Whether one wrong key ends the test. */
+export const StrictAccuracySchema = z.enum(["off", "on"]);
+
+/**
  * Which language the page itself speaks, as opposed to the words being typed.
  * See beartype/ui-language.ts.
  */
@@ -52,6 +61,10 @@ export const ConfigSchema = z
 
     // caret
     smoothCaret: SmoothCaretSchema,
+    paceCaret: PaceCaretSchema,
+
+    // difficulty
+    strictAccuracy: StrictAccuracySchema,
 
     // appearance
     fontSize: FontSizeSchema,

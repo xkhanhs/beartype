@@ -9,8 +9,8 @@ không quote, không funbox. Chỉ còn một màn:
 
 - **Bài đo** theo thời gian (15/30/60/120 giây) hoặc theo số từ (10/25/50/100),
   bằng tiếng Việt hoặc tiếng Anh.
-- **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, rồi mức tốt
-  nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
+- **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, độ đều tay,
+  rồi mức tốt nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
 - **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
   hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
   trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
@@ -20,6 +20,9 @@ không quote, không funbox. Chỉ còn một màn:
   chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
+- **Hai bài tập đẩy tốc độ**: một **con trỏ dẫn tốc** chạy trước theo 80, 100
+  hay 120% tốc độ thường của máy này — 80% để tập cho thật chuẩn, 120% để ép
+  nhanh hơn — và chế độ **chuẩn tuyệt đối**, gõ sai một phím là bài dừng.
 - **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: phím đã gõ nhầm hiện nhỏ dưới
   chữ, và bàn phím QWERTY dưới bài gõ, phím sáng lên khi gõ, kể cả khi gõ Telex.
 

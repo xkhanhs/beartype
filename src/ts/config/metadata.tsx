@@ -112,6 +112,15 @@ export const configMetadata: ConfigMetadataObject = {
     key: "smoothCaret",
     displayString: "smooth caret",
   },
+  paceCaret: {
+    key: "paceCaret",
+    displayString: "pace caret",
+  },
+  // difficulty
+  strictAccuracy: {
+    key: "strictAccuracy",
+    displayString: "strict accuracy",
+  },
   // appearance
   fontSize: {
     key: "fontSize",

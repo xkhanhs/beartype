@@ -110,6 +110,22 @@ function oneDecimal(value: number, round: (n: number) => number): string {
   });
 }
 
+/**
+ * beartype: how even the rhythm was. Upstream computes it for every test and
+ * this app already stored it; it was the one figure nothing ever drew. Two
+ * hands at the same speed are not the same pair of hands, one steady and one
+ * fast between stumbles, and the second is what a plateau is made of.
+ */
+function updateConsistency(): void {
+  qs("#result .stats .consistency .bottom")
+    ?.setText(
+      result.consistency === 100
+        ? "100%"
+        : `${oneDecimal(result.consistency, Math.floor)}%`,
+    )
+    ?.setAttribute("aria-label", t("consistencyHover"));
+}
+
 // beartype: the words typed, the second of keybear's two small figures
 function updateWords(): void {
   const eventLog = getLastEventLog();
@@ -220,11 +236,13 @@ function updateOther(
   const fast = result.mode === "words" && result.mode2 === "10" ? 420 : 350;
   const reasons: string[] = [];
   if (difficultyFailed) {
-    reasons.push(
-      failReason === "slow timer"
-        ? t("failedSlowTimer")
-        : t("failed", failReason),
-    );
+    if (failReason === "slow timer") {
+      reasons.push(t("failedSlowTimer"));
+    } else if (failReason === "strict") {
+      reasons.push(t("failedStrict"));
+    } else {
+      reasons.push(t("failed", failReason));
+    }
   }
   // the lengths on offer here are all long enough; only a test over in under
   // a second is too short
@@ -296,6 +314,7 @@ export async function update(
   updateTime();
   updateRecent(dontSave);
   updateWords();
+  updateConsistency();
   updateCrown(dontSave);
   updateOther(
     difficultyFailed,

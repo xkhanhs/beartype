@@ -3,8 +3,10 @@ import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 import {
   FONT_SIZES,
   KEYMAP_MODES,
+  PACE_CARETS,
   RANDOM_THEMES,
   SMOOTH_CARETS,
+  STRICT_ACCURACIES,
   TYPO_INDICATORS,
 } from "../../beartype/config-lock";
 import { t } from "../../beartype/strings";
@@ -35,6 +37,27 @@ const smoothCaretLabels = (): Record<
   slow: t("slow"),
   medium: t("medium"),
   fast: t("fast"),
+});
+
+// a share of the usual speed, and the same three figures in both languages
+const PACE_CARET_LABELS: Record<(typeof PACE_CARETS)[number], string> = {
+  off: "",
+  80: "80%",
+  100: "100%",
+  120: "120%",
+};
+
+const paceCaretLabels = (): Record<(typeof PACE_CARETS)[number], string> => ({
+  ...PACE_CARET_LABELS,
+  off: t("off"),
+});
+
+const strictAccuracyLabels = (): Record<
+  (typeof STRICT_ACCURACIES)[number],
+  string
+> => ({
+  off: t("off"),
+  on: t("on"),
 });
 
 // as Chrome's zoom names them: a share of the usual size
@@ -120,6 +143,22 @@ export function SettingsPopover(): JSXElement {
             labels={smoothCaretLabels()}
             value={getConfig.smoothCaret}
             onPick={(value) => setConfig("smoothCaret", value)}
+          />
+          <SettingsRow
+            label={t("paceCaret")}
+            hint={t("paceCaretHint")}
+            options={PACE_CARETS}
+            labels={paceCaretLabels()}
+            value={getConfig.paceCaret}
+            onPick={(value) => setConfig("paceCaret", value)}
+          />
+          <SettingsRow
+            label={t("strictAccuracy")}
+            hint={t("strictAccuracyHint")}
+            options={STRICT_ACCURACIES}
+            labels={strictAccuracyLabels()}
+            value={getConfig.strictAccuracy}
+            onPick={(value) => setConfig("strictAccuracy", value)}
           />
           <SettingsRow
             label={t("fontSize")}
