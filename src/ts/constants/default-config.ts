@@ -4,6 +4,7 @@ const obj: Config = {
   // keybear's palettes, following the computer's light or dark setting
   theme: "keybear_light",
   autoSwitchTheme: true,
+  randomTheme: "off",
   // the caret this app was measured against on monkeytype.com
   smoothCaret: "slow",
   words: 50,

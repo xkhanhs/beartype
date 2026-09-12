@@ -95,7 +95,7 @@ describe("themes", () => {
     expect(config.autoSwitchTheme).toBe(true);
   });
 
-  it("keeps a keybear theme and drops an upstream one", () => {
+  it("keeps the themes on offer and drops an upstream one", () => {
     expect(
       lockConfig({
         ...getDefaultConfig(),
@@ -106,9 +106,28 @@ describe("themes", () => {
     expect(
       lockConfig({
         ...getDefaultConfig(),
-        // an upstream theme name that no longer exists
-        theme: "serika_dark" as Config["theme"],
+        theme: "serika_dark",
+        autoSwitchTheme: false,
+      }).theme,
+    ).toBe("serika_dark");
+    expect(
+      lockConfig({
+        ...getDefaultConfig(),
+        // an upstream theme beartype did not take
+        theme: "8008" as Config["theme"],
       }).theme,
     ).toBe("keybear_light");
+  });
+
+  it("keeps a rotation setting and drops an unknown one", () => {
+    expect(
+      lockConfig({ ...getDefaultConfig(), randomTheme: "dark" }).randomTheme,
+    ).toBe("dark");
+    expect(
+      lockConfig({
+        ...getDefaultConfig(),
+        randomTheme: "fav" as Config["randomTheme"],
+      }).randomTheme,
+    ).toBe("off");
   });
 });

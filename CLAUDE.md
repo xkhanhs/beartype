@@ -47,9 +47,17 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
   (`miss-book.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
-  cỡ chữ, hiện phím gõ sai, bàn phím ảo), viên chọn màu ở chân trang
+  cỡ chữ, hiện phím gõ sai, xoay màu, bàn phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), nút luyện từ hay sai, sổ bài gần đây dưới
   màn kết quả (`ResultHistory`), icon (`Icon`).
+- Màu: chín bảng của keybear cộng mười tám bảng tối chép từ monkeytype
+  (`src/ts/constants/themes.ts`, tên trong `src/ts/schemas/themes.ts`). Danh
+  sách ở chân trang cắt theo sáng/tối và cuộn được. `randomTheme`
+  (`tắt`/`sáng`/`tối`/`lẫn lộn`) cho mỗi bài mới một bảng rút ngẫu nhiên trong
+  nhóm đó: `randomizeTheme` trong `controllers/theme-controller.ts`, gọi từ
+  `restart` của `test/test-logic.ts`, rút hết một cỗ đã xáo rồi mới xáo lại.
+  Bảng đang xoay không ghi vào `Config.theme`, nên tắt xoay là về lại màu đã
+  chọn.
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
   `src/ts/states/test.ts`. Phím sáng theo ký tự hệ thống nhận (`event.key`), chữ
