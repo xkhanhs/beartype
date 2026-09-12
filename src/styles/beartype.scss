@@ -64,11 +64,19 @@ body.darkMode #words {
   --kb-shadow: color-mix(in srgb, var(--text-color) 22%, transparent);
   --kb-popup-shadow: 0 0.5rem 3rem var(--kb-shadow);
   --kb-focus: 3px solid var(--main-color);
-  // the rim of a strip sunk below the page, and keybear's `--separator-color`
-  // for rules drawn on the page: 12% of the text in the page colour, so it
-  // reads darker than the page on a light palette and lighter on a dark one,
-  // as keybear's `primary-d1` does
+  // keybear's `--separator-color` for rules drawn on the page: 12% of the
+  // text in the page colour, so it reads darker than the page on a light
+  // palette and lighter on a dark one, as keybear's `primary-d1` does
   --kb-sunk-rim: color-mix(in srgb, var(--text-color) 12%, var(--bg-color));
+  // the rim of a strip sunk below the page. The same 12%, but mixed into the
+  // strip's own fill rather than the page, so it reads as that strip's edge:
+  // monkeytype's slambook fills the strip pale blue on a pale yellow page,
+  // where a rim mixed into the page showed as a grey ring between the two
+  --kb-strip-rim: color-mix(
+    in srgb,
+    var(--text-color) 12%,
+    var(--sub-alt-color)
+  );
 }
 
 body.darkMode {
@@ -256,7 +264,7 @@ body,
   align-items: center;
   max-inline-size: 100%;
   padding: 0.6rem 1.4rem 0.6rem 0.6rem;
-  border: 2px solid var(--kb-sunk-rim);
+  border: 2px solid var(--kb-strip-rim);
   border-radius: 99px;
   color: var(--text-color);
   background-color: var(--kb-border);
@@ -301,7 +309,7 @@ body,
   padding: 0.375rem;
   overflow-x: auto;
   scrollbar-width: none;
-  border: 2px solid var(--kb-sunk-rim);
+  border: 2px solid var(--kb-strip-rim);
   border-radius: 99px;
   background-color: var(--kb-border);
 }
@@ -514,7 +522,10 @@ a.bt-footer-pill {
 }
 
 .bt-theme-pill-name {
-  max-inline-size: 9rem;
+  // one width for every palette name, so a long one neither widens the pill
+  // nor pushes the gear beside it sideways; "modern dolch" is the widest at
+  // 98px, and anything longer is cut with an ellipsis
+  inline-size: 6.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
