@@ -33,6 +33,14 @@ export const ThemeNameSchema = z.enum(
     "modern_dolch",
     "nautilus",
     "alduin",
+    // beartype: monkeytype pale palettes, the ones whose buttons and cards
+    // hold up at WCAG AA (__tests__/beartype/contrast.spec.ts)
+    "serika",
+    "solarized_light",
+    "vesper_light",
+    "repose_light",
+    "slambook",
+    "soaring_skies",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),

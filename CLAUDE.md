@@ -50,8 +50,13 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   cỡ chữ, hiện phím gõ sai, xoay màu, bàn phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), nút luyện từ hay sai, sổ bài gần đây dưới
   màn kết quả (`ResultHistory`), icon (`Icon`).
-- Màu: chín bảng của keybear cộng mười tám bảng tối chép từ monkeytype
-  (`src/ts/constants/themes.ts`, tên trong `src/ts/schemas/themes.ts`). Danh
+- Màu: chín bảng của keybear, mười tám bảng tối và sáu bảng sáng chép từ
+  monkeytype (`src/ts/constants/themes.ts`, tên trong
+  `src/ts/schemas/themes.ts`). Chữ trên nền accent (`--kb-on-accent`) không
+  còn mặc định là màu nền: `beartype/contrast.ts` đo và chọn màu đọc được, ưu
+  tiên màu nền rồi màu chữ của bảng, cùng lắm mới tới trắng/đen theo hướng
+  sáng-tối của bảng. Thêm bảng mới thì `__tests__/beartype/contrast.spec.ts`
+  kiểm cho, đừng viết `--kb-on-accent` tay vào file css của bảng. Danh
   sách ở chân trang cắt theo sáng/tối và cuộn được. `randomTheme`
   (`tắt`/`sáng`/`tối`/`lẫn lộn`) cho mỗi bài mới một bảng rút ngẫu nhiên trong
   nhóm đó: `randomizeTheme` trong `controllers/theme-controller.ts`, gọi từ
