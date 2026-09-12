@@ -45,10 +45,12 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   bỏ dấu (`vietnamese.ts`, `tone-style.ts`), vẽ từ đang gõ (`word-html.ts`), khoá
   cấu hình (`config-lock.ts`: những khoá người dùng được đổi và giá trị cho
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
-  (`miss-book.ts`).
+  (`miss-book.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
+  `dom-strings.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
   cỡ chữ, hiện phím gõ sai, xoay màu, bàn phím ảo), viên chọn màu ở chân trang
-  (`ThemeMenu`, rê chuột là xem thử), nút luyện từ hay sai, sổ bài gần đây dưới
+  (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
+  (`LanguageMenu`), nút luyện từ hay sai, sổ bài gần đây dưới
   màn kết quả (`ResultHistory`), icon (`Icon`).
 - Màu: chín bảng của keybear, hai mươi hai bảng tối và bảy bảng sáng chép từ
   monkeytype (`src/ts/constants/themes.ts`, tên trong
@@ -84,6 +86,22 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
 - `src/ts/test/`, `src/ts/input/`, `src/ts/elements/`: lõi gõ của monkeytype.
 - `src/ts/schemas/`: schema zod của cấu hình và kết quả (trước là package
   `@monkeytype/schemas`).
+- Chữ của giao diện có hai thứ tiếng, khoá `uiLanguage` (`vi`/`en`), tách khỏi
+  ngôn ngữ bài gõ: đọc trang tiếng Việt mà gõ tiếng Anh là được. Mọi chuỗi nằm
+  cùng một bảng ở `beartype/strings.ts`, hai thứ tiếng trên cùng một dòng, lấy
+  ra bằng `t("khoá")`; chuỗi có số thì là hàm ở cả hai bên. Trong `.tsx` thì
+  `t` đọc store nên tự vẽ lại, nhưng nhãn nào dựng thành bảng ở đầu file phải
+  đổi thành hàm, không thì nó đứng lại ở thứ tiếng lúc nạp module. Hai file
+  html của màn gõ ghi khoá vào `data-i18n` / `data-i18n-label`,
+  `beartype/dom-strings.ts` viết lại; chữ trong html là bản tiếng Việt trang
+  bày ra lúc chưa có javascript. Tiêu đề tab, `lang` của trang và các chuỗi
+  html nằm trong một `createEffect` ở `ui.ts`, **không** nghe `configEvent`:
+  `setConfig` phát event trước khi ghi vào store, nên nghe event thì `t` còn
+  trả về thứ tiếng vừa rời đi. Lần đầu vào trang thì đoán theo
+  `navigator.languages` và lấy luôn bộ từ tương ứng (`lockConfig(undefined)`);
+  không tag nào là `vi` hay `en` thì trang là tiếng Việt. Cấu hình lưu từ
+  trước khi có khoá này lấy ngôn ngữ trang theo bộ từ đang gõ, không theo
+  trình duyệt.
 - Phông: giao diện là Quicksand; bài gõ dùng một phông theo ngôn ngữ, Be Vietnam
   Pro cho tiếng Việt và Roboto Mono cho tiếng Anh (`applyTypingFont` trong
   `ui.ts`, `@font-face` trong `beartype.scss`, preload trong
