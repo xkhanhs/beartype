@@ -70,14 +70,29 @@ function matching(language: string): LocalResult[] {
 }
 
 /**
- * Upstream's `DB.getLocalPB`, but one best per language: the crown agrees
- * with the best figure the result screen prints under it.
+ * A test long enough for its speed to stand as a best: 60 seconds or more,
+ * or 50 words or more. A 10-word sprint runs a good deal faster than the
+ * hands can hold, and a best set there says nothing a longer test can reach.
+ * Time and words both count, so neither mode is left without a best.
+ */
+export function isStandard(test: { mode: string; mode2: string }): boolean {
+  const length = parseInt(test.mode2);
+  return (
+    (test.mode === "time" && length >= 60) ||
+    (test.mode === "words" && length >= 50)
+  );
+}
+
+/**
+ * Upstream's `DB.getLocalPB`, but one best per language and over standard
+ * tests only: the crown agrees with the best figure the result screen prints
+ * under it.
  */
 export function getLocalPB(
   language: string,
 ): { wpm: number; acc: number } | undefined {
   let best: LocalResult | undefined;
-  for (const r of matching(language)) {
+  for (const r of matching(language).filter(isStandard)) {
     if (best === undefined || r.wpm > best.wpm) {
       best = r;
     }
@@ -93,15 +108,23 @@ export type RecentTest = {
   acc: number;
   consistency: number;
   timestamp: number;
+  mode: string;
+  mode2: string;
+  testDuration: number;
 };
 
 export type RecentSummary = {
-  best: number;
+  /** Over standard tests only; `null` before the first of them. */
+  best: number | null;
   usual: number;
   usualAcc: number;
   usualConsistency: number;
-  /** Every test in this language, not only the ones drawn. */
-  count: number;
+  /**
+   * Seconds typed over every test in this language, not only the ones drawn.
+   * Tests run from ten words to two minutes, so a count of them says little
+   * about how much practice went in; the time does.
+   */
+  practiceSeconds: number;
   /** The last `RECENT` tests, oldest first, the one just typed last. */
   recent: RecentTest[];
 };
@@ -115,9 +138,10 @@ function median(values: number[]): number {
 }
 
 /**
- * The count and the best over every test in the same language, whatever its
- * mode and length (see `statsLanguage`), and the last `RECENT` of them for the
- * chart, as keybear's `testStats` does. The usual figures come from those
+ * The practice time over every test in the same language, whatever its mode
+ * and length (see `statsLanguage`), the best over the standard ones (see
+ * `isStandard`), and the last `RECENT` of them all for the chart, as keybear's
+ * `testStats` does. The usual figures come from those
  * last `RECENT` only: over hundreds of tests a median no longer moves, and it
  * should say how fast you type now, not since the first day. `current` is
  * included -- it is not saved until the result screen has been drawn; `null`
@@ -130,22 +154,27 @@ export function recentSummary(
   current: RecentTest | null,
 ): RecentSummary | null {
   const tests: RecentTest[] = matching(language).map(
-    ({ wpm, acc, consistency, timestamp }) => ({
+    ({ wpm, acc, consistency, timestamp, mode, mode2, testDuration }) => ({
       wpm,
       acc,
       consistency,
       timestamp,
+      mode,
+      mode2,
+      testDuration,
     }),
   );
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
   const recent = tests.slice(-RECENT);
+  const standard = tests.filter(isStandard);
   return {
-    best: Math.max(...tests.map((t) => t.wpm)),
+    best:
+      standard.length === 0 ? null : Math.max(...standard.map((t) => t.wpm)),
     usual: median(recent.map((t) => t.wpm)),
     usualAcc: median(recent.map((t) => t.acc)),
     usualConsistency: median(recent.map((t) => t.consistency)),
-    count: tests.length,
+    practiceSeconds: tests.reduce((sum, t) => sum + t.testDuration, 0),
     recent,
   };
 }

@@ -165,7 +165,19 @@ const STRINGS = {
   // the book of recent tests under the result
   historyBest: { vi: "tốt nhất", en: "best" },
   historyUsual: { vi: "trung bình", en: "average" },
-  historyCount: { vi: "số bài", en: "tests" },
+  historyPractice: { vi: "giờ luyện", en: "practice" },
+  historyBestHint: {
+    vi: "chỉ tính bài 60 giây hoặc 50 từ trở lên",
+    en: "only tests of 60 seconds or 50 words and up",
+  },
+  practiceTime: {
+    vi: (hours: number, minutes: number) =>
+      hours === 0
+        ? `${minutes} phút`
+        : `${hours}h${`${minutes}`.padStart(2, "0")}`,
+    en: (hours: number, minutes: number) =>
+      hours === 0 ? `${minutes}m` : `${hours}h ${minutes}m`,
+  },
   historyBar: {
     vi: (speed: string, acc: number, when: string) =>
       `${speed} wpm · ${acc}% chính xác\n${when}`,
