@@ -445,6 +445,20 @@ export function keyCounts(
   };
 }
 
+/**
+ * Keys a word still owed when it was committed: marks left off letters that
+ * were started, and every key of letters never reached. Letters a wrong key
+ * landed on are left out -- that key was already counted wrong as it was
+ * typed, and charging the letter again would count one mistake twice.
+ */
+export function unpaidKeys(target: string, typed: string): number {
+  const { slots } = align(target, inTargetStyle(target, typed));
+  return slots.reduce(
+    (sum, slot) => (slot.missed ? sum : sum + slot.owed.length),
+    0,
+  );
+}
+
 /** Letters of the target a wrong key landed on, plus keys no letter took. */
 function mistakes(target: string, typed: string): number {
   const { slots, extra } = align(target, inTargetStyle(target, typed));

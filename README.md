@@ -39,7 +39,8 @@ chấm theo cách của [keybear](https://keybear.pages.dev):
   tới khi đủ dấu.
 - **Bỏ dấu thì chỉ mất đúng phím của dấu đó**, không mất cả chữ.
 - **Độ chính xác tính trên từng phím lúc gõ**: gõ sai rồi xoá đi gõ lại vẫn là
-  một lần sai, chỉ bài không sai phím nào mới được 100%.
+  một lần sai, chỉ bài không sai phím nào mới được 100%. Bấm cách khi từ còn
+  thiếu thì mỗi phím còn thiếu (chữ chưa gõ, dấu chưa bỏ) tính là một lần sai.
 - **Dấu thanh vẽ theo kiểu bộ gõ của máy đang viết ra**, `hoà` hoặc `hòa`, và gõ
   kiểu nào cũng được chấm như nhau.
 

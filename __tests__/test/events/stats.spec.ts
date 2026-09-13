@@ -888,6 +888,42 @@ describe("stats.ts", () => {
       expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
+    it("charges the keys a word still owed when a space commits it short", () => {
+      pushWords("nhanh", "a");
+      logTestEvent("input", 1100, input({ data: "n" }));
+      logTestEvent("input", 1200, input({ charIndex: 1, data: "h" }));
+      logTestEvent("input", 1300, input({ charIndex: 2, data: "a" }));
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 3, data: " ", correct: false, commitsWord: true }),
+      );
+
+      const acc = getAccuracy(buildEventLog());
+      // n h a and the space, then the n and h never typed
+      expect(acc.correct).toBe(4);
+      expect(acc.incorrect).toBe(2);
+      expect(acc.percentage).toBeCloseTo(66.67, 1);
+    });
+
+    it("charges the marks left off a word of the right length", () => {
+      pushWords("thần", "a");
+      logTestEvent("input", 1100, input({ data: "t" }));
+      logTestEvent("input", 1200, input({ charIndex: 1, data: "h" }));
+      logTestEvent("input", 1300, input({ charIndex: 2, data: "a" }));
+      logTestEvent("input", 1400, input({ charIndex: 3, data: "n" }));
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 4, data: " ", commitsWord: true }),
+      );
+
+      const acc = getAccuracy(buildEventLog());
+      // the circumflex and the grave accent
+      expect(acc.incorrect).toBe(2);
+      expect(acc.percentage).toBeCloseTo(71.43, 1);
+    });
+
     it("returns 0% for no events", () => {
       const acc = getAccuracy(buildEventLog());
       expect(acc.percentage).toBe(0);

@@ -1,5 +1,5 @@
 import { CharCounts, isSpace } from "../../utils/strings";
-import { countKeysAsChars } from "../../beartype/scoring";
+import { countKeysAsChars, unpaidKeys } from "../../beartype/scoring";
 import { getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm, roundTo2 } from "../../utils/numbers";
 import { EventLog, TestEventNoMs } from "./types";
@@ -450,7 +450,24 @@ export function getAccuracy(
     if (!("correct" in event.data)) {
       continue;
     }
-    if (event.data.correct) {
+    const { data } = event;
+    // beartype: a space that commits a word short charges the keys the word
+    // still owed, and the space itself is not a second mistake. Upstream only
+    // flags the space, and by character count: `than` committed for `thần`
+    // has the right length, so every mark left off went uncharged.
+    const target =
+      data.commitsWord === true
+        ? getTargetWord(eventLog, data.wordIndex)
+        : undefined;
+    if (target !== undefined) {
+      correct++;
+      incorrect += unpaidKeys(
+        target.replace(/[ \n]$/, ""),
+        data.inputValue.replace(/[ \n]$/, ""),
+      );
+      continue;
+    }
+    if (data.correct) {
       correct++;
     } else {
       incorrect++;
