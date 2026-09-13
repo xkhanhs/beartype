@@ -6,9 +6,9 @@ import { locale, t } from "../../beartype/strings";
 import Format from "../../singletons/format";
 
 /**
- * The foot of the result screen, after keybear's `TypeTestStats`: how many
- * tests in this language (time and words alike), the best, the usual speed,
- * accuracy and consistency, and a
+ * The foot of the result screen, after keybear's `TypeTestStats`: how long
+ * this language has been practised (time and words alike), the best on a
+ * standard test, the usual speed, accuracy and consistency, and a
  * bar for each of the last few. It answers the question that comes after the number just typed:
  * is that good, for me?
  *
@@ -45,13 +45,20 @@ export function ResultHistory(): JSXElement {
       {(s) => (
         <div class="bt-history">
           <div class="bt-history-row">
-            <Figure value={wpm(s().best)} label={t("historyBest")} />
+            <Figure
+              value={s().best === null ? "-" : wpm(s().best as number)}
+              label={t("historyBest")}
+              hint={t("historyBestHint")}
+            />
             <Figure value={wpm(s().usual)} label={t("historyUsual")} />
             <Figure
               value={`${Math.round(s().usualAcc)}%`}
               label={t("accuracy")}
             />
-            <Figure value={`${s().count}`} label={t("historyCount")} />
+            <Figure
+              value={practiceTime(s().practiceSeconds)}
+              label={t("historyPractice")}
+            />
             <Figure
               value={`${Math.round(s().usualConsistency)}%`}
               label={t("consistency")}
@@ -66,9 +73,22 @@ export function ResultHistory(): JSXElement {
   );
 }
 
-function Figure(props: { value: string; label: string }): JSXElement {
+function practiceTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  return t("practiceTime", Math.floor(minutes / 60), minutes % 60);
+}
+
+function Figure(props: {
+  value: string;
+  label: string;
+  hint?: string;
+}): JSXElement {
   return (
-    <div class="bt-history-figure">
+    <div
+      class="bt-history-figure"
+      aria-label={props.hint}
+      data-balloon-pos={props.hint === undefined ? undefined : "down"}
+    >
       <div class="bt-history-value">{props.value}</div>
       <div class="bt-history-label">{props.label}</div>
     </div>
