@@ -104,12 +104,13 @@ describe("local results", () => {
   it("sums up the recent tests with the one just typed", () => {
     save(40);
     save(60);
-    const current = { wpm: 80, acc: 96, timestamp: 3 };
+    const current = { wpm: 80, acc: 96, consistency: 70, timestamp: 3 };
     const summary = recentSummary("vietnamese", current);
     expect(summary).toMatchObject({
       best: 80,
       usual: 60,
       usualAcc: 98,
+      usualConsistency: 80,
       count: 3,
     });
     expect(summary?.recent.map((t) => t.wpm)).toEqual([40, 60, 80]);
@@ -131,7 +132,8 @@ describe("local results", () => {
   it("counts every test but draws only the last twenty", () => {
     for (let wpm = 1; wpm <= 25; wpm++) save(wpm);
     const summary = recentSummary("vietnamese", null);
-    expect(summary).toMatchObject({ count: 25, best: 25, usual: 13 });
+    // the usual speed is the median of the twenty drawn, 6 to 25
+    expect(summary).toMatchObject({ count: 25, best: 25, usual: 15.5 });
     expect(summary?.recent.map((t) => t.wpm)).toEqual(
       Array.from({ length: 20 }, (_, i) => i + 6),
     );

@@ -10,7 +10,8 @@ không quote, không funbox. Chỉ còn một màn:
 - **Bài đo** theo thời gian (15/30/60/120 giây) hoặc theo số từ (10/25/50/100),
   bằng tiếng Việt hoặc tiếng Anh.
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, độ đều tay,
-  rồi mức tốt nhất, mức thường và biểu đồ cột của những bài gần nhất cùng kiểu.
+  rồi mức tốt nhất và số bài từ trước tới nay, mức trung bình, độ chính xác,
+  độ đều tay và biểu đồ cột của 20 bài gần nhất cùng ngôn ngữ.
 - **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
   hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
   trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay

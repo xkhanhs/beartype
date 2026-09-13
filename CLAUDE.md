@@ -178,7 +178,8 @@ Test của beartype nằm ở `__tests__/beartype/`.
   ở màn hẹp.
 - Hai bài tập phá plateau, đều tắt sẵn: **con trỏ dẫn tốc**
   (`test/pace-caret.ts`, tính trong `beartype/pace.ts`) chạy trước theo 80 /
-  100 / 120% tốc độ thường của máy này trong ngôn ngữ đang gõ — không có bài
+  100 / 120% tốc độ trung bình (trung vị 20 bài gần nhất, như ô trung bình ở
+  màn kết quả) của máy này trong ngôn ngữ đang gõ — không có bài
   nào trong sổ thì không có gì để chạy theo và nó im lặng không hiện; và
   **chuẩn tuyệt đối** (`input/handlers/insert-text.ts`), gõ sai một phím là
   `TestLogic.fail("strict")`. Con trỏ dẫn tốc đi **theo phím chứ không theo

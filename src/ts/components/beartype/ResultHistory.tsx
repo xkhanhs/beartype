@@ -7,7 +7,8 @@ import Format from "../../singletons/format";
 
 /**
  * The foot of the result screen, after keybear's `TypeTestStats`: how many
- * tests in this language (time and words alike), the best, the usual, and a
+ * tests in this language (time and words alike), the best, the usual speed,
+ * accuracy and consistency, and a
  * bar for each of the last few. It answers the question that comes after the number just typed:
  * is that good, for me?
  *
@@ -51,6 +52,10 @@ export function ResultHistory(): JSXElement {
               label={t("accuracy")}
             />
             <Figure value={`${s().count}`} label={t("historyCount")} />
+            <Figure
+              value={`${Math.round(s().usualConsistency)}%`}
+              label={t("consistency")}
+            />
           </div>
           <Show when={s().recent.length >= MIN_BARS}>
             <SpeedChart recent={s().recent} usual={s().usual} />
