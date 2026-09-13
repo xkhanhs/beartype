@@ -5,6 +5,7 @@ import {
   inTargetStyle,
   keyCounts,
   partialScore,
+  unpaidKeys,
 } from "../../src/ts/beartype/scoring";
 
 const CASES: [string, string][] = [
@@ -21,6 +22,24 @@ const CASES: [string, string][] = [
   ["hello", "hellooo"],
   ["hello", ""],
 ];
+
+describe("unpaidKeys", () => {
+  it.each([
+    // letters never reached
+    ["nhanh", "nha", 2],
+    // marks left off a word of the right length: circumflex and grave
+    ["thần", "than", 2],
+    // an unfinished mark and a letter never reached
+    ["thần", "thâ", 2],
+    // the wrong key on `a` was already counted, the n and h were not
+    ["nhanh", "nhx", 2],
+    ["tiếng", "tiếng", 0],
+    // the other tone style is the same word
+    ["hòa", "hoà", 0],
+  ] as [string, string, number][])("%s ← %s owes %i", (target, typed, keys) => {
+    expect(unpaidKeys(target, typed)).toBe(keys);
+  });
+});
 
 function total(c: ReturnType<typeof keyCounts>): number {
   return c.correct + c.incorrect + c.extra + c.missed;
