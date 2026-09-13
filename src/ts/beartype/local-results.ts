@@ -88,12 +88,18 @@ export function getLocalPB(
 /** How many recent tests the result screen draws a bar for. */
 const RECENT = 20;
 
-export type RecentTest = { wpm: number; acc: number; timestamp: number };
+export type RecentTest = {
+  wpm: number;
+  acc: number;
+  consistency: number;
+  timestamp: number;
+};
 
 export type RecentSummary = {
   best: number;
   usual: number;
   usualAcc: number;
+  usualConsistency: number;
   /** Every test in this language, not only the ones drawn. */
   count: number;
   /** The last `RECENT` tests, oldest first, the one just typed last. */
@@ -109,9 +115,11 @@ function median(values: number[]): number {
 }
 
 /**
- * The count, the best and the usual speed over every test in the same
- * language, whatever its mode and length (see `statsLanguage`), and the last
- * `RECENT` of them for the chart, as keybear's `testStats` does. `current` is
+ * The count and the best over every test in the same language, whatever its
+ * mode and length (see `statsLanguage`), and the last `RECENT` of them for the
+ * chart, as keybear's `testStats` does. The usual figures come from those
+ * last `RECENT` only: over hundreds of tests a median no longer moves, and it
+ * should say how fast you type now, not since the first day. `current` is
  * included -- it is not saved until the result screen has been drawn; `null`
  * when it will not be saved at all.
  * "Usual" is the median: one interrupted test should not drag it down the way
@@ -122,17 +130,23 @@ export function recentSummary(
   current: RecentTest | null,
 ): RecentSummary | null {
   const tests: RecentTest[] = matching(language).map(
-    ({ wpm, acc, timestamp }) => ({ wpm, acc, timestamp }),
+    ({ wpm, acc, consistency, timestamp }) => ({
+      wpm,
+      acc,
+      consistency,
+      timestamp,
+    }),
   );
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
-  const speeds = tests.map((t) => t.wpm);
+  const recent = tests.slice(-RECENT);
   return {
-    best: Math.max(...speeds),
-    usual: median(speeds),
-    usualAcc: median(tests.map((t) => t.acc)),
+    best: Math.max(...tests.map((t) => t.wpm)),
+    usual: median(recent.map((t) => t.wpm)),
+    usualAcc: median(recent.map((t) => t.acc)),
+    usualConsistency: median(recent.map((t) => t.consistency)),
     count: tests.length,
-    recent: tests.slice(-RECENT),
+    recent,
   };
 }
 

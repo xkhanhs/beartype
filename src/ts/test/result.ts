@@ -152,7 +152,12 @@ function updateRecent(dontSave: boolean): void {
       // an invalid test is not kept, so it does not count here either
       dontSave
         ? null
-        : { wpm: result.wpm, acc: result.acc, timestamp: result.timestamp },
+        : {
+            wpm: result.wpm,
+            acc: result.acc,
+            consistency: result.consistency,
+            timestamp: result.timestamp,
+          },
     ),
   );
 }

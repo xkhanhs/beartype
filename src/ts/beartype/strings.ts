@@ -164,7 +164,7 @@ const STRINGS = {
 
   // the book of recent tests under the result
   historyBest: { vi: "tốt nhất", en: "best" },
-  historyUsual: { vi: "thường", en: "usual" },
+  historyUsual: { vi: "trung bình", en: "average" },
   historyCount: { vi: "số bài", en: "tests" },
   historyBar: {
     vi: (speed: string, acc: number, when: string) =>
