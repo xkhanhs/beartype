@@ -844,9 +844,8 @@ describe("stats.ts", () => {
   });
 
   describe("getAccuracy", () => {
-    // beartype: the percentage is keybear's, read off what each word holds
-    // (keys typed toward the target over keys owed); `correct` and
-    // `incorrect` still tally the keypress flags.
+    // beartype: the percentage is read off every key as it was typed, so a
+    // mistake that was fixed still counts.
     it("calculates correct/incorrect/percentage", () => {
       pushWords("abc");
       logTestEvent("input", 1100, input({ data: "a" }));
@@ -863,7 +862,7 @@ describe("stats.ts", () => {
       expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
-    it("does not charge a mistake that was fixed", () => {
+    it("still charges a mistake that was fixed", () => {
       pushWords("ab");
       logTestEvent("input", 1100, input({ data: "a" }));
       logTestEvent(
@@ -884,8 +883,9 @@ describe("stats.ts", () => {
       );
 
       const acc = getAccuracy(buildEventLog());
+      expect(acc.correct).toBe(2);
       expect(acc.incorrect).toBe(1);
-      expect(acc.percentage).toBe(100);
+      expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
     it("returns 0% for no events", () => {
@@ -918,9 +918,8 @@ describe("stats.ts", () => {
       const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(1);
       expect(acc.incorrect).toBe(1);
-      // beartype: the stopped key never reached the word, and the percentage
-      // reads the word. (Stop on error is pinned off here anyway.)
-      expect(acc.percentage).toBe(100);
+      // a stopped key was still typed wrong
+      expect(acc.percentage).toBe(50);
     });
   });
 

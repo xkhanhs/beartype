@@ -3,7 +3,8 @@
 Đo tốc độ gõ tiếng Việt và tiếng Anh. Khởi đầu là bản fork của monkeytype (xem
 [docs/upstream.md](docs/upstream.md)), giờ chỉ còn một màn: bài đo, phân tích
 cuối bài và luyện từ hay sai. Giao diện theo keybear
-(`~/Documents/GitHub/keybear`), độ chính xác chấm theo keybear. Kế hoạch gần
+(`~/Documents/GitHub/keybear`). Độ chính xác đếm trên từng phím lúc gõ (lỗi
+đã sửa vẫn bị trừ), phím nào đúng thì chấm theo keybear. Kế hoạch gần
 nhất: [plans/260911-2258-slim-further/plan.md](plans/260911-2258-slim-further/plan.md).
 
 **Lý do repo này tồn tại:** keybear dựng lại màn đo tốc độ theo monkeytype
