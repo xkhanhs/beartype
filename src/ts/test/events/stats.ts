@@ -456,13 +456,13 @@ export function getAccuracy(
       incorrect++;
     }
   }
-  // beartype: the percentage is keybear's -- keys typed toward the target
-  // over keys owed, read off what was left in each word. A mistake that was
-  // fixed costs nothing here; it is still counted in `incorrect`, which the
-  // result screen shows beside it.
-  const chars = getChars(eventLog, false, testMs);
-  const owed = chars.allCorrect + chars.incorrect + chars.extra + chars.missed;
-  const percentage = owed === 0 ? 0 : (chars.allCorrect / owed) * 100;
+  // beartype: the percentage is read off every key as it was typed, not off
+  // what was left in each word. A wrong key stays wrong after it is deleted
+  // and typed again, so only a round typed with no mistake at all reads 100%.
+  // Each key is still judged by `isCharCorrect`, so the `e` on the way to `ế`
+  // counts as right.
+  const typed = correct + incorrect;
+  const percentage = typed === 0 ? 0 : (correct / typed) * 100;
 
   return {
     correct: correct,
