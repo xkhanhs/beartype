@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Config } from "../../src/ts/schemas/configs";
-import { lockConfig } from "../../src/ts/beartype/config-lock";
+import {
+  languageFromHash,
+  lockConfig,
+} from "../../src/ts/beartype/config-lock";
+import { statsLanguage } from "../../src/ts/beartype/stats-language";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
 
 afterEach(() => {
@@ -56,6 +60,26 @@ describe("lockConfig", () => {
     expect(config.words).toBe(50);
     expect(config.language).toBe("vietnamese");
     expect(config.fontSize).toBe(2);
+  });
+});
+
+describe("hidden word lists", () => {
+  it("open from their hash, and nothing else does", () => {
+    expect(languageFromHash("#khanh")).toBe("vietnamese_khanh");
+    expect(languageFromHash("#KHANH")).toBe("vietnamese_khanh");
+    expect(languageFromHash("")).toBeUndefined();
+    expect(languageFromHash("#english")).toBeUndefined();
+  });
+
+  it("stay chosen once stored", () => {
+    expect(
+      lockConfig({ ...getDefaultConfig(), language: "vietnamese_khanh" })
+        .language,
+    ).toBe("vietnamese_khanh");
+  });
+
+  it("count with Vietnamese", () => {
+    expect(statsLanguage("vietnamese_khanh")).toBe("vietnamese");
   });
 });
 

@@ -7,6 +7,8 @@ export const LanguageSchema = z.enum(
     // static/languages
     "english",
     "vietnamese",
+    // a Vietnamese list no pill offers, opened from `#khanh`
+    "vietnamese_khanh",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),

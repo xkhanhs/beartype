@@ -6,6 +6,7 @@ import {
   RandomThemeSchema,
   StrictAccuracySchema,
 } from "../schemas/configs";
+import type { Language } from "../schemas/languages";
 import { ThemeNameSchema } from "../schemas/themes";
 import { getDefaultConfig } from "../constants/default-config";
 import { typedKeys } from "../utils/objects";
@@ -20,6 +21,20 @@ import {
 export const TIMES = [15, 30, 60, 120] as const;
 export const WORD_COUNTS = [10, 25, 50, 100] as const;
 export const LANGUAGES = ["vietnamese", "english"] as const;
+/**
+ * Word lists no pill offers, each opened from its hash in the address bar.
+ * One stays chosen like any other until a pill picks another language. Name
+ * a Vietnamese one `vietnamese_…`, so `statsLanguage` counts its results and
+ * misses with Vietnamese.
+ */
+const HASH_LANGUAGES: Record<string, Language> = {
+  "#khanh": "vietnamese_khanh",
+};
+
+/** The hidden word list `hash` opens, if it opens one. */
+export function languageFromHash(hash: string): Language | undefined {
+  return HASH_LANGUAGES[hash.toLowerCase()];
+}
 export const MODES = ["time", "words"] as const;
 export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 /**
@@ -41,7 +56,7 @@ function allowed(key: keyof Config, value: unknown): boolean {
     mode: MODES,
     time: TIMES,
     words: WORD_COUNTS,
-    language: LANGUAGES,
+    language: [...LANGUAGES, ...Object.values(HASH_LANGUAGES)],
     uiLanguage: UI_LANGUAGES,
     smoothCaret: SMOOTH_CARETS,
     fontSize: FONT_SIZES,
