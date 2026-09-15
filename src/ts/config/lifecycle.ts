@@ -11,7 +11,7 @@ import { migrateConfig } from "./utils";
 import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { typedKeys } from "../utils/objects";
-import { lockConfig } from "../beartype/config-lock";
+import { languageFromHash, lockConfig } from "../beartype/config-lock";
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
@@ -19,7 +19,10 @@ export async function loadFromLocalStorage(): Promise<void> {
   // With nothing stored yet, configLS hands back upstream's defaults, which
   // must not pass for a choice the user made.
   const firstRun = window.localStorage.getItem("config") === null;
-  await applyConfig(lockConfig(firstRun ? undefined : configLS.get()));
+  const config = lockConfig(firstRun ? undefined : configLS.get());
+  // beartype: a bookmark to a hidden word list opens on that list
+  config.language = languageFromHash(window.location.hash) ?? config.language;
+  await applyConfig(config);
   saveFullConfigToLocalStorage();
   loadDone();
 }

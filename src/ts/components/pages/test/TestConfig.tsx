@@ -7,7 +7,10 @@ import {
   type Accessor,
 } from "solid-js";
 
+import type { Language } from "../../../schemas/languages";
+
 import {
+  languageFromHash,
   LANGUAGES,
   MODES,
   TIMES,
@@ -36,23 +39,36 @@ import { SettingsRow } from "../../beartype/SettingsRow";
 // would hide the choices at its end with nothing to say they are there.
 
 const NARROW_SCREEN = "(width < 40rem)";
+/** The strip with a hidden list's pill in it is some 42.5rem wide. */
+const NARROW_SCREEN_HIDDEN_LIST = "(width < 45rem)";
 
 const MODE_LABELS: Record<(typeof MODES)[number], () => string> = {
   time: () => t("modeTime"),
   words: () => t("modeWords"),
 };
 
-const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], () => string> = {
+// a hidden list is named by the hash that opens it, in either language
+const LANGUAGE_LABELS: Record<Language, () => string> = {
   vietnamese: () => t("languageVietnamese"),
   english: () => t("languageEnglish"),
+  vietnamese_khanh: () => "#khanh",
 };
 
 /** The language in the two letters of its tag, for a screen too narrow even
  * for its name. The same in both languages of the page, so not in `strings`. */
-const LANGUAGE_TAGS: Record<(typeof LANGUAGES)[number], string> = {
+const LANGUAGE_TAGS: Record<Language, string> = {
   vietnamese: "vi",
   english: "en",
+  vietnamese_khanh: "#k",
 };
+
+// a hidden word list gets a pill only while it is the one in use, so the
+// typist sees which list this is, and the two beside it lead back out
+function barLanguages(): Language[] {
+  return LANGUAGES.some((language) => language === getConfig.language)
+    ? [...LANGUAGES]
+    : [...LANGUAGES, getConfig.language];
+}
 
 // a miss-book drill runs as upstream's custom mode, but as long as the test
 // it stands in for; the bar lights that one, time or words, so the typist
@@ -75,10 +91,22 @@ function length(): number {
 
 // every choice in here changes what the words are, so each one starts a new
 // test the moment it is made
-const pickLanguage = (value: (typeof LANGUAGES)[number]): void => {
+const pickLanguage = (value: Language): void => {
+  // leaving a hidden list drops its hash too, or the next reload reopens it
+  if (languageFromHash(window.location.hash) !== value) {
+    history.replaceState(null, "", window.location.pathname);
+  }
   setConfig("language", value);
   restartTestEvent.dispatch();
 };
+
+// typing the hash into the address bar of an open page
+window.addEventListener("hashchange", () => {
+  const language = languageFromHash(window.location.hash);
+  if (language !== undefined && language !== getConfig.language) {
+    pickLanguage(language);
+  }
+});
 const pickMode = (value: (typeof MODES)[number]): void => {
   setConfig("mode", value);
   restartTestEvent.dispatch();
@@ -102,8 +130,8 @@ function numberLabels<T extends number>(
   >;
 }
 
-function createNarrow(): Accessor<boolean> {
-  const query = window.matchMedia(NARROW_SCREEN);
+function createNarrow(media: string): Accessor<boolean> {
+  const query = window.matchMedia(media);
   const [narrow, setNarrow] = createSignal(query.matches);
   const onChange = (e: MediaQueryListEvent): void => {
     setNarrow(e.matches);
@@ -114,7 +142,12 @@ function createNarrow(): Accessor<boolean> {
 }
 
 export function TestConfig(): JSXElement {
-  const narrow = createNarrow();
+  const narrowForBar = createNarrow(NARROW_SCREEN);
+  const narrowForHiddenList = createNarrow(NARROW_SCREEN_HIDDEN_LIST);
+  const narrow = (): boolean =>
+    barLanguages().length > LANGUAGES.length
+      ? narrowForHiddenList()
+      : narrowForBar();
 
   return (
     <div
@@ -137,7 +170,7 @@ export function TestConfig(): JSXElement {
 function Strip(): JSXElement {
   return (
     <div class="bt-options">
-      <For each={LANGUAGES}>
+      <For each={barLanguages()}>
         {(language) => (
           <Pill
             text={LANGUAGE_LABELS[language]()}
@@ -262,10 +295,11 @@ function Summary(): JSXElement {
         >
           <SettingsRow
             label={t("optionsLanguage")}
-            options={LANGUAGES}
+            options={barLanguages()}
             labels={{
               vietnamese: LANGUAGE_LABELS.vietnamese(),
               english: LANGUAGE_LABELS.english(),
+              vietnamese_khanh: LANGUAGE_LABELS.vietnamese_khanh(),
             }}
             value={getConfig.language}
             onPick={pickLanguage}
