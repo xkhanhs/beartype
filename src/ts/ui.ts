@@ -15,9 +15,10 @@ import { updateTitle } from "./utils/misc";
 // One typing font per language, each falling back to a system font of the
 // same kind; see the @font-face rules in beartype.scss.
 function applyTypingFont(): void {
-  const font = Config.language.startsWith("vietnamese")
-    ? '"Be Vietnam Pro", system-ui, sans-serif'
-    : '"Roboto Mono", ui-monospace, monospace';
+  const font =
+    Config.language === "vietnamese"
+      ? '"Be Vietnam Pro", system-ui, sans-serif'
+      : '"Roboto Mono", ui-monospace, monospace';
   document.documentElement.style.setProperty("--font", font);
 }
 

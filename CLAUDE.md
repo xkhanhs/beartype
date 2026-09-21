@@ -2,10 +2,10 @@
 
 Đo tốc độ gõ tiếng Việt và tiếng Anh. Khởi đầu là bản fork của monkeytype (xem
 [docs/upstream.md](docs/upstream.md)), giờ chỉ còn một màn: bài đo, phân tích
-cuối bài và luyện từ hay sai. Giao diện theo keybear
+cuối bài, luyện từ hay sai và luyện từ chậm. Giao diện theo keybear
 (`~/Documents/GitHub/keybear`). Độ chính xác đếm trên từng phím lúc gõ (lỗi
 đã sửa vẫn bị trừ), phím nào đúng thì chấm theo keybear. Kế hoạch gần
-nhất: [plans/260911-2258-slim-further/plan.md](plans/260911-2258-slim-further/plan.md).
+nhất: [plans/260921-2030-slow-words/plan.md](plans/260921-2030-slow-words/plan.md).
 
 **Lý do repo này tồn tại:** keybear dựng lại màn đo tốc độ theo monkeytype
 nhiều lần mà cảm giác gõ vẫn khác. beartype giữ nguyên lõi gõ của monkeytype
@@ -46,14 +46,15 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   bỏ dấu (`vietnamese.ts`, `tone-style.ts`), vẽ từ đang gõ (`word-html.ts`), khoá
   cấu hình (`config-lock.ts`: những khoá người dùng được đổi và giá trị cho
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
-  (`miss-book.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
+  (`miss-book.ts`), sổ từ gõ đúng mà chậm (`slow-words.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
   `dom-strings.ts`), tốc độ để chạy theo (`pace.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
   con trỏ dẫn tốc, chuẩn tuyệt đối, cỡ chữ, hiện phím gõ sai, xoay màu, bàn
   phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
-  (`LanguageMenu`), nút luyện từ hay sai, sổ bài gần đây dưới
-  màn kết quả (`ResultHistory`), icon (`Icon`).
+  (`LanguageMenu`), hai nút luyện (`DrillButton`, một cho từ hay sai, một
+  cho từ chậm), sổ bài gần đây và thanh từ chậm dưới màn kết quả
+  (`ResultHistory`), icon (`Icon`).
 - Màu: chín bảng của keybear, hai mươi hai bảng tối và bảy bảng sáng chép từ
   monkeytype (`src/ts/constants/themes.ts`, tên trong
   `src/ts/schemas/themes.ts`). Chữ trên nền accent (`--kb-on-accent`) không
@@ -119,13 +120,6 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
 - `src/styles/beartype.scss`: mọi style riêng của beartype.
 - `scripts/build-vietnamese.ts`: dựng `static/languages/vietnamese.json` từ danh
   sách từ của keybear.
-- Bộ từ ẩn: không có viên nào trên thanh tuỳ chọn, mở bằng hash trên thanh địa
-  chỉ (`HASH_LANGUAGES` trong `beartype/config-lock.ts`). Hiện có `#khanh` →
-  `static/languages/vietnamese_khanh.json`, từ hay dùng của chủ repo, xếp theo
-  số lần xuất hiện; bổ sung thì sửa thẳng file đó. Tên bắt đầu bằng
-  `vietnamese` nên kết quả, kỷ lục và sổ từ hay sai tính chung với tiếng Việt.
-  Đang gõ bộ ẩn thì thanh hiện thêm một viên cho nó; bấm viên ngôn ngữ khác là
-  rời bộ đó và xoá hash.
 
 Test của beartype nằm ở `__tests__/beartype/`.
 
@@ -152,13 +146,13 @@ Test của beartype nằm ở `__tests__/beartype/`.
   button` (cần selector có `#result`) và media query
   `.pageTest #result .wrapper …` (cần tiền tố `.pageTest`). Nhớ thử ở khung
   hẹp, vì media query chỉ lộ ra ở đó.
-- Ba nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) và ba viên ở chân
+- Bốn nút `bt-action` (bài mới, gõ lại, luyện từ hay sai, luyện từ chậm) và ba viên ở chân
   trang không mang chữ: mỗi cái là một hình tròn 44px, chữ nằm trong bong
   bóng `aria-label` + `data-balloon-pos`. Mô tả trong thẻ cài đặt cũng vậy:
   một nút `i` nhỏ cạnh tên hàng (`bt-settings-info`), không còn dòng chữ mờ
   bên dưới. Thêm hàng cài đặt mới thì `hint` là tuỳ chọn, hàng nào tên đã đủ
   rõ thì bỏ hẳn.
-- Icon của các nút `bt-action` (bài mới, gõ lại, luyện từ hay sai) là icon
+- Icon của các nút `bt-action` (bài mới, gõ lại, hai nút luyện) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
   với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
   `<path>` phải có thẻ đóng, vì oxlint chặn thẻ tự đóng. Preflight của Tailwind
@@ -194,6 +188,20 @@ Test của beartype nằm ở `__tests__/beartype/`.
   chữ**, vì tốc độ của app đếm phím: `ế` là một chữ và ba phím. Nó không đụng
   vào đường xử lý phím — chỉ đọc danh sách từ, xem đồng hồ và dời một thẻ
   riêng — nên bài gõ khi bật vẫn chấm y hệt khi tắt.
+- **Từ chậm** (`beartype/slow-words.ts`) là sổ thứ hai bên cạnh sổ từ hay
+  sai, và hai sổ không giẫm lên nhau: từ gõ sai, kể cả sai rồi sửa, không
+  bao giờ được đo tốc độ. Mỗi bài được lưu (không tính bài luyện) ghi tốc độ
+  từng từ gõ sạch, đọc từ event log sau khi bài xong, không đụng đường xử lý
+  phím. Tốc độ tính theo phím Telex, từ lúc chốt từ trước đến lúc chốt từ
+  này. Một từ là chậm khi trung vị năm lần gõ gần nhất của nó dưới 0.85 lần
+  mốc, và mốc là trung vị của những từ **cùng số phím** trong 500 từ gần
+  nhất: quãng đổi từ gần như cố định, nên một mốc chung sẽ luôn xếp `à`,
+  `có` vào sổ. Gõ nhanh lên thì từ tự rời sổ, không cần luật riêng. Không
+  dùng lịch ôn FSRS như màn Colemak của keybear: bộ từ chỉ vài trăm từ, rút
+  ngẫu nhiên đã gặp mỗi từ nhiều lần, nên lịch không còn gì để sắp. Màn kết
+  quả vẽ sổ thành một thanh ngang theo kiểu dải nhớ của keybear: theo kịp,
+  chậm, chưa đo, cộng lại đủ cả bộ từ. Số trong mỗi đoạn được đo xem có vừa
+  không rồi mới hiện, không đoán theo phần trăm.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.

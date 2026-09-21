@@ -21,6 +21,10 @@ không quote, không funbox. Chỉ còn một màn:
   chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
+- **Luyện từ chậm**: mỗi bài đo tốc độ từng từ gõ đúng, so với những từ cùng số
+  phím mà chính bạn gõ gần đây. Từ nào chậm hẳn thì vào một sổ riêng, có nút
+  luyện riêng, và màn kết quả vẽ cả bộ từ thành một thanh: theo kịp, chậm, chưa
+  đo.
 - **Hai bài tập đẩy tốc độ**: một **con trỏ dẫn tốc** chạy trước theo 80, 100
   hay 120% tốc độ thường của máy này — 80% để tập cho thật chuẩn, 120% để ép
   nhanh hơn — và chế độ **chuẩn tuyệt đối**, gõ sai một phím là bài dừng.
@@ -49,9 +53,9 @@ Tiếng Anh vẫn được chấm y hệt monkeytype, vì mỗi chữ cái Latin
 ## Dữ liệu
 
 Mọi thứ nằm trong `localStorage` của trình duyệt: cấu hình, kết quả, sổ từ hay
-sai. Không có gì được gửi đi. Xoá dữ liệu trang web là mất hết.
+sai, sổ từ chậm. Không có gì được gửi đi. Xoá dữ liệu trang web là mất hết.
 
-Thống kê tốc độ, kỷ lục và sổ từ hay sai chỉ tách tiếng Việt với tiếng Anh. Bài
+Thống kê tốc độ, kỷ lục, sổ từ hay sai và sổ từ chậm chỉ tách tiếng Việt với tiếng Anh. Bài
 theo thời gian hay theo số từ, dài hay ngắn, đều gộp chung vào ngôn ngữ của nó.
 Riêng kỷ lục chỉ tính bài chuẩn, 60 giây hoặc 50 từ trở lên: bài 10 từ chạy
 nhanh hơn sức tay giữ được lâu, nên không đứng làm kỷ lục.

@@ -9,6 +9,7 @@ import * as PaceCaret from "./pace-caret";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
+import { recordSpeeds, wordSpeeds } from "../beartype/slow-words";
 import { idleReason } from "../beartype/idle";
 import { t } from "../beartype/strings";
 import * as Result from "./result";
@@ -106,7 +107,7 @@ type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
   event?: KeyboardEvent;
-  practiseMissed?: boolean;
+  practise?: boolean;
   // beartype: the drill button turning a drill off
   leaveDrill?: boolean;
   noAnim?: boolean;
@@ -115,7 +116,7 @@ type RestartOptions = {
 export async function restart(options = {} as RestartOptions): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
-    practiseMissed: false,
+    practise: false,
     noAnim: false,
     nosave: false,
   };
@@ -153,7 +154,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   if (
     PractiseWords.before.mode !== null &&
     !options.withSameWordset &&
-    !options.practiseMissed &&
+    !options.practise &&
     (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
     setConfig("mode", PractiseWords.before.mode);
@@ -645,6 +646,20 @@ export async function finish(difficultyFailed = false): Promise<void> {
     stumbledAt,
   );
   recordMisses(Config.language, round.words, round.typed, round.stumbled);
+  // beartype: how fast each word went in, for the book of words typed right
+  // but slowly; see beartype/slow-words.ts. Not from a drill: the same few
+  // words over and over run faster than they do among the rest.
+  if (Config.mode !== "custom") {
+    recordSpeeds(
+      Config.language,
+      wordSpeeds(
+        TestWords.words.get().map((word) => word.text),
+        history,
+        eventLog.events,
+        stumbledAt,
+      ),
+    );
+  }
 }
 
 export function fail(reason: string): void {

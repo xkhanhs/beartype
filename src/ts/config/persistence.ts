@@ -17,6 +17,11 @@ export const configLS = new LocalStorageWithSchema({
     if (!isObject(value)) {
       return getDefaultConfig();
     }
+    // beartype: the hidden word list `#khanh` opened is gone; a browser that
+    // last typed it goes on typing Vietnamese, not the default
+    if (value["language"] === "vietnamese_khanh") {
+      return migrateConfig({ ...value, language: "vietnamese" });
+    }
     return migrateConfig(value);
   },
 });

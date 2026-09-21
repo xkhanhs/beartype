@@ -113,6 +113,27 @@ const STRINGS = {
     en: (words: number) => `drill ${words} missed words`,
   },
 
+  // the slow word book, on the result screen
+  slowCaughtUp: { vi: "theo kịp", en: "at pace" },
+  slowSlow: { vi: "chậm", en: "slow" },
+  slowUnmeasured: { vi: "chưa đo", en: "not measured" },
+  slowPart: {
+    vi: (part: string, words: number, share: number) =>
+      `${part} · ${words} từ · ${share}% bộ từ`,
+    en: (part: string, words: number, share: number) =>
+      `${part} · ${words} words · ${share}% of the list`,
+  },
+
+  // the slow word drill
+  slowDrillRunningHint: {
+    vi: "đang luyện từ chậm · quay về bài thường",
+    en: "drilling slow words · back to the normal test",
+  },
+  slowDrillCount: {
+    vi: (words: number) => `luyện ${words} từ gõ đúng mà chậm`,
+    en: (words: number) => `drill ${words} words typed right but slowly`,
+  },
+
   // while typing
   repeatedTest: { vi: "bài gõ lại", en: "repeated test" },
   unfocusedWindow: {

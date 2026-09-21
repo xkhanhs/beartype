@@ -6,6 +6,15 @@ import * as CustomText from "./custom-text";
 import { configEvent } from "../events/config";
 import { Mode } from "../schemas/shared";
 import { MIN_DRILL_WORDS, missWords } from "../beartype/miss-book";
+import { slowWords } from "../beartype/slow-words";
+
+/** Which book a drill is built from: words typed wrong, or right but slow. */
+export type DrillKind = "miss" | "slow";
+
+/** The words of `kind`'s book for a language, as a drill takes them. */
+export function drillWords(kind: DrillKind, language: string): string[] {
+  return kind === "slow" ? slowWords(language) : missWords(language);
+}
 
 type Before = {
   mode: Mode | null;
@@ -21,13 +30,22 @@ export const before: Before = {
 const [drillBaseMode, setDrillBaseMode] = createSignal<Mode | null>(null);
 export { drillBaseMode };
 
+// beartype: the book the drill that is on was built from, so each drill
+// button lights only for its own drill, and the next round is built again
+// from the same book
+const [drillKind, setDrillKind] = createSignal<DrillKind | null>(null);
+export { drillKind };
+
 /**
- * beartype: a drill built from a given list of words -- the miss book's.
+ * beartype: a drill built from a given list of words -- one book's.
  * Runs the words as a custom test that `restart` reverts from afterwards, as
  * long as the test it replaces, shuffled on every pass so the hands learn the
  * words, not the order.
  */
-export function initFromWords(words: readonly string[]): boolean {
+export function initFromWords(
+  words: readonly string[],
+  kind: DrillKind,
+): boolean {
   if (words.length === 0) return false;
 
   const mode = before.mode ?? Config.mode;
@@ -45,6 +63,7 @@ export function initFromWords(words: readonly string[]): boolean {
 
   before.mode = mode;
   setDrillBaseMode(mode);
+  setDrillKind(kind);
 
   return true;
 }
@@ -58,13 +77,15 @@ export function initFromWords(words: readonly string[]): boolean {
  * settings from before.
  */
 export function continueDrill(): boolean {
-  const words = missWords(Config.language);
-  return words.length >= MIN_DRILL_WORDS && initFromWords(words);
+  const kind = drillKind() ?? "miss";
+  const words = drillWords(kind, Config.language);
+  return words.length >= MIN_DRILL_WORDS && initFromWords(words, kind);
 }
 
 export function resetBefore(): void {
   before.mode = null;
   setDrillBaseMode(null);
+  setDrillKind(null);
 }
 
 configEvent.subscribe(({ key }) => {

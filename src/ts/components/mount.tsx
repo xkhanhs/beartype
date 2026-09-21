@@ -2,7 +2,7 @@ import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
 import { qsa } from "../utils/dom";
-import { MissDrillButton } from "./beartype/MissDrillButton";
+import { DrillButton } from "./beartype/DrillButton";
 import { ResultHistory } from "./beartype/ResultHistory";
 import { Theme } from "./core/Theme";
 import { Footer } from "./layout/footer/Footer";
@@ -26,7 +26,8 @@ const components: Record<string, () => JSXElement> = {
   outoffocuswarning: () => <OutOfFocusWarning />,
   livestatsmini: () => <LiveStatsMini />,
   keymap: () => <Keymap />,
-  missdrill: () => <MissDrillButton />,
+  missdrill: () => <DrillButton kind="miss" />,
+  slowdrill: () => <DrillButton kind="slow" />,
   resulthistory: () => <ResultHistory />,
 };
 

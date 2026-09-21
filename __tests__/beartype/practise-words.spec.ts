@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { __testing } from "../../src/ts/config/testing";
 import {
   before,
+  drillKind,
   initFromWords,
   resetBefore,
 } from "../../src/ts/test/practise-words";
@@ -20,12 +21,12 @@ describe("initFromWords", () => {
   });
 
   it("does nothing with an empty word list", () => {
-    expect(initFromWords([])).toBe(false);
+    expect(initFromWords([], "miss")).toBe(false);
     expect(getConfig().mode).toBe("time");
   });
 
   it("switches to a shuffled custom test built from the given words", () => {
-    const started = initFromWords(["mot", "hai", "ba"]);
+    const started = initFromWords(["mot", "hai", "ba"], "miss");
 
     expect(started).toBe(true);
     expect(getConfig().mode).toBe("custom");
@@ -36,20 +37,29 @@ describe("initFromWords", () => {
 
   it("sizes the drill by the previous mode's time or word count", () => {
     replaceConfig({ mode: "time", time: 45 });
-    initFromWords(["mot"]);
+    initFromWords(["mot"], "miss");
     expect(CustomText.getLimitMode()).toBe("time");
     expect(CustomText.getLimitValue()).toBe(45);
 
     replaceConfig({ mode: "words", words: 20 });
     resetBefore();
-    initFromWords(["mot"]);
+    initFromWords(["mot"], "miss");
     expect(CustomText.getLimitMode()).toBe("word");
     expect(CustomText.getLimitValue()).toBe(20);
   });
 
+  it("remembers which book the drill came from, until it is over", () => {
+    initFromWords(["mot"], "slow");
+    expect(drillKind()).toBe("slow");
+    initFromWords(["hai"], "miss");
+    expect(drillKind()).toBe("miss");
+    resetBefore();
+    expect(drillKind()).toBeNull();
+  });
+
   it("remembers the mode to restore once the drill is over", () => {
     replaceConfig({ mode: "words", words: 25 });
-    initFromWords(["mot", "hai"]);
+    initFromWords(["mot", "hai"], "miss");
 
     expect(before.mode).toBe("words");
   });

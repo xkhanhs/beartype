@@ -598,7 +598,7 @@ button.bt-options-summary {
   padding: 0.55rem 1.6rem;
 }
 
-// beartype: the restart button shares its row with the miss-book drill.
+// beartype: the restart button shares its row with the two drill buttons.
 // Upstream centres it with auto margins, which in a row would push its
 // neighbour to the edge; the row does the centring instead. Tab still reaches
 // restart first, so tab + enter is unchanged.
@@ -1089,6 +1089,108 @@ button.bt-settings-choice {
 .bt-history-label {
   color: var(--kb-text-f1);
   font-size: 0.875rem;
+}
+
+// the slow word book: the word list as one strip, after keybear's memory
+// bar. No `overflow: hidden` on the strip for its rounded ends: each part's
+// balloon hangs off its slot, and clipping the strip would clip them too; the
+// first and last parts are rounded instead.
+.bt-slow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  inline-size: 100%;
+  margin-block-start: 0.6rem;
+}
+
+.bt-slow-bar {
+  display: flex;
+  block-size: 1.4rem;
+  border-radius: 999px;
+  background-color: var(--kb-sunk-rim);
+}
+
+.bt-slow-slot {
+  display: flex;
+  min-inline-size: 0;
+}
+
+.bt-slow-slot:focus-visible {
+  outline: var(--kb-focus);
+  outline-offset: 2px;
+}
+
+.bt-slow-bar > :first-child .bt-slow-part {
+  border-start-start-radius: 999px;
+  border-end-start-radius: 999px;
+}
+
+.bt-slow-bar > :last-child .bt-slow-part {
+  border-start-end-radius: 999px;
+  border-end-end-radius: 999px;
+}
+
+.bt-slow-part {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--text-color);
+}
+
+.bt-slow-count {
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.bt-slow-count-hidden {
+  opacity: 0;
+}
+
+// at pace is the calm part, the slow part is what to look at, and not
+// measured is the way still to go, so it carries no colour of its own
+.bt-slow-caughtUp {
+  background-color: color-mix(in srgb, var(--main-color) 40%, var(--bg-color));
+}
+
+.bt-slow-slow {
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+}
+
+.bt-slow-unmeasured {
+  background-color: color-mix(in srgb, var(--text-color) 14%, var(--bg-color));
+}
+
+.bt-slow-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  justify-content: center;
+  color: var(--kb-text-f1);
+  font-size: 0.8rem;
+}
+
+.bt-slow-legend-item {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.bt-slow-dot {
+  inline-size: 0.7rem;
+  block-size: 0.7rem;
+  border-radius: 999px;
+}
+
+.bt-slow-legend-count {
+  color: var(--text-color);
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
 }
 
 .bt-chart {
