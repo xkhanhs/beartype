@@ -1,9 +1,12 @@
 import {
+  createEffect,
   createMemo,
   createResource,
   createSignal,
   For,
   JSXElement,
+  on,
+  onCleanup,
   Show,
 } from "solid-js";
 
@@ -77,44 +80,141 @@ export function ResultHistory(): JSXElement {
           <Show when={s().recent.length >= MIN_BARS}>
             <SpeedChart recent={s().recent} usual={s().usual} />
           </Show>
-          <SlowWordsLine />
+          <SlowWordsBar />
         </div>
       )}
     </Show>
   );
 }
 
-/** The slow words named on the line; the drill button has them all. */
+/** The slow words the slow part's balloon names; the drill has them all. */
 const SLOW_NAMED = 5;
 
 /**
- * How far the book of slow words has got through the word list, and the
- * slowest of them by name: the one line that says which words, not how many
- * tests, are holding the speed back. See `beartype/slow-words.ts`.
+ * Room either side of a count printed in its part: a number touching both
+ * edges reads as squeezed, so the part must be this much wider to print it.
  */
-function SlowWordsLine(): JSXElement {
+const COUNT_PAD = 8;
+
+type SlowPart = {
+  key: "caughtUp" | "slow" | "unmeasured";
+  count: number;
+  label: () => string;
+};
+
+/**
+ * The word list as one strip, after keybear's memory bar on its Colemak
+ * screen: the words typed at pace, the slow ones, and the ones not typed
+ * enough yet to judge, which add up to the whole list. "Not measured" is
+ * drawn rather than dropped: it is the way still to go, and without it the
+ * strip reads full after a week. See `beartype/slow-words.ts`.
+ *
+ * Each part prints its count when it has room -- measured, not guessed from
+ * its share, since the share knows neither the strip's width nor the digits
+ * -- and its balloon says the rest: the count, the share of the list, and for
+ * the slow part the slowest words by name.
+ */
+function SlowWordsBar(): JSXElement {
   const [list] = createResource(
     () => getConfig.language,
     async (language) => new Set((await getLanguage(language)).words).size,
   );
   const measured = createMemo(() => measuredCount(getConfig.language));
   const slow = createMemo(() => slowWords(getConfig.language));
+  const parts = createMemo((): SlowPart[] => {
+    const total = list() ?? 0;
+    return [
+      {
+        key: "caughtUp",
+        count: measured() - slow().length,
+        label: () => t("slowCaughtUp"),
+      },
+      { key: "slow", count: slow().length, label: () => t("slowSlow") },
+      {
+        key: "unmeasured",
+        count: Math.max(0, total - measured()),
+        label: () => t("slowUnmeasured"),
+      },
+    ];
+  });
+  // an empty part has nothing to point at, and would throw off which part
+  // is first and last for the rounded ends and the balloons
+  const drawn = createMemo(() => parts().filter((part) => part.count > 0));
+  const total = (): number => Math.max(1, list() ?? 0);
+
+  const balloon = (part: SlowPart): string => {
+    const share = Math.round((100 * part.count) / total());
+    const head = t("slowPart", part.label(), part.count, share);
+    if (part.key !== "slow") return head;
+    const named = slow().slice(0, SLOW_NAMED).join(", ");
+    return `${head}\n${named}${slow().length > SLOW_NAMED ? ", …" : ""}`;
+  };
+
+  // a signal, not a plain ref: the strip only exists once the word list has
+  // loaded, which is after this component mounts
+  const [bar, setBar] = createSignal<HTMLDivElement>();
+  // a count that does not fit turns see-through rather than going away, so
+  // the next measurement still has something to measure
+  const fitCounts = (): void => {
+    for (const label of bar()?.querySelectorAll<HTMLElement>("[data-count]") ??
+      []) {
+      const room = label.parentElement?.clientWidth ?? 0;
+      label.classList.toggle(
+        "bt-slow-count-hidden",
+        label.scrollWidth + COUNT_PAD > room,
+      );
+    }
+  };
+  createEffect(on(drawn, () => queueMicrotask(fitCounts)));
+  createEffect(() => {
+    const node = bar();
+    if (node === undefined) return;
+    const observer = new ResizeObserver(fitCounts);
+    observer.observe(node);
+    onCleanup(() => observer.disconnect());
+  });
 
   return (
-    <Show when={measured() > 0 && list()}>
-      {(total) => (
-        <p class="bt-slow-line">
-          {t("slowMeasured", measured(), total())}
-          <Show when={slow().length > 0}>
-            {" · "}
-            {t("slowNamed", slow().length)}{" "}
-            <span class="bt-slow-words">
-              {slow().slice(0, SLOW_NAMED).join(", ")}
-              {slow().length > SLOW_NAMED ? ", …" : ""}
-            </span>
-          </Show>
+    <Show when={measured() > 0 && list() !== undefined}>
+      <div class="bt-slow">
+        <div class="bt-slow-bar" ref={setBar}>
+          <For each={drawn()}>
+            {(part, index) => (
+              <span
+                class="bt-slow-slot"
+                style={{ "inline-size": `${(100 * part.count) / total()}%` }}
+                tabIndex={0}
+                aria-label={balloon(part)}
+                data-balloon-pos={
+                  index() === 0
+                    ? "up-left"
+                    : index() === drawn().length - 1
+                      ? "up-right"
+                      : "up"
+                }
+                data-balloon-break=""
+              >
+                <span class={`bt-slow-part bt-slow-${part.key}`}>
+                  <span class="bt-slow-count" data-count="" aria-hidden="true">
+                    {part.count}
+                  </span>
+                </span>
+              </span>
+            )}
+          </For>
+        </div>
+        <p class="bt-slow-legend">
+          <For each={parts()}>
+            {(part) => (
+              <span class="bt-slow-legend-item">
+                <span class={`bt-slow-dot bt-slow-${part.key}`}></span>
+                {part.label()}
+                <span class="bt-slow-legend-count">{part.count}</span>
+              </span>
+            )}
+          </For>
         </p>
-      )}
+      </div>
     </Show>
   );
 }

@@ -23,8 +23,8 @@ ngẫu nhiên đã gặp mỗi từ nhiều lần, nên một lịch ôn không 
 
 - Sau mỗi bài hợp lệ, mỗi từ gõ sạch có một mẫu tốc độ, đếm theo phím Telex
   (`wordCost`, có tính dấu cách).
-- Màn kết quả có một dòng kiểu `đã đo 540/663 từ · 38 từ chậm: nghiêng, khuya,
-  …`.
+- Màn kết quả có một thanh ngang theo kiểu dải nhớ của keybear: theo kịp /
+  chậm / chưa đo. Bong bóng của đoạn chậm nêu năm từ chậm nhất.
 - Nút `bt-action` thứ tư mở bài chỉ gồm những từ chậm, cùng cách chạy với bài
   luyện từ hay sai.
 - Một từ tự rời sổ khi những bài thường sau đó cho thấy nó đã theo kịp mốc.
@@ -36,7 +36,7 @@ ngẫu nhiên đã gặp mỗi từ nhiều lần, nên một lịch ôn không 
 | FSRS | **Không làm.** Chỉ lấy cách chấm tốc độ theo trung vị của chính mình. |
 | Từ sai và từ chậm | **Hai sổ riêng.** Từ gõ sai, kể cả sai rồi sửa, không bao giờ vào phép đo tốc độ. |
 | Nút luyện | **Nút riêng, thứ tư**, đứng cạnh nút luyện từ hay sai. |
-| Màn kết quả | **Một dòng số + vài từ chậm nhất.** |
+| Màn kết quả | Ban đầu là một dòng chữ; sau khi xem, người dùng đổi sang **thanh ngang như dải nhớ của keybear**, bỏ dòng chữ. |
 | Bộ từ đo | Chỉ `vietnamese.json` (663 từ) và `english.json` (200 từ). Không chép danh sách 3000 từ của keybear. |
 | Bộ ẩn `#khanh` | **Xoá hẳn** (commit riêng). Cấu hình còn lưu `vietnamese_khanh` nạp lại thành `vietnamese`. |
 

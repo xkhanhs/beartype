@@ -114,14 +114,14 @@ const STRINGS = {
   },
 
   // the slow word book, on the result screen
-  slowMeasured: {
-    vi: (measured: number, total: number) => `đã đo ${measured}/${total} từ`,
-    en: (measured: number, total: number) =>
-      `${measured}/${total} words measured`,
-  },
-  slowNamed: {
-    vi: (words: number) => `${words} từ chậm:`,
-    en: (words: number) => `${words} slow:`,
+  slowCaughtUp: { vi: "theo kịp", en: "at pace" },
+  slowSlow: { vi: "chậm", en: "slow" },
+  slowUnmeasured: { vi: "chưa đo", en: "not measured" },
+  slowPart: {
+    vi: (part: string, words: number, share: number) =>
+      `${part} · ${words} từ · ${share}% bộ từ`,
+    en: (part: string, words: number, share: number) =>
+      `${part} · ${words} words · ${share}% of the list`,
   },
 
   // the slow word drill

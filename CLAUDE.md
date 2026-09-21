@@ -53,7 +53,7 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
   (`LanguageMenu`), hai nút luyện (`DrillButton`, một cho từ hay sai, một
-  cho từ chậm), sổ bài gần đây và dòng từ chậm dưới màn kết quả
+  cho từ chậm), sổ bài gần đây và thanh từ chậm dưới màn kết quả
   (`ResultHistory`), icon (`Icon`).
 - Màu: chín bảng của keybear, hai mươi hai bảng tối và bảy bảng sáng chép từ
   monkeytype (`src/ts/constants/themes.ts`, tên trong
@@ -198,7 +198,10 @@ Test của beartype nằm ở `__tests__/beartype/`.
   nhất: quãng đổi từ gần như cố định, nên một mốc chung sẽ luôn xếp `à`,
   `có` vào sổ. Gõ nhanh lên thì từ tự rời sổ, không cần luật riêng. Không
   dùng lịch ôn FSRS như màn Colemak của keybear: bộ từ chỉ vài trăm từ, rút
-  ngẫu nhiên đã gặp mỗi từ nhiều lần, nên lịch không còn gì để sắp.
+  ngẫu nhiên đã gặp mỗi từ nhiều lần, nên lịch không còn gì để sắp. Màn kết
+  quả vẽ sổ thành một thanh ngang theo kiểu dải nhớ của keybear: theo kịp,
+  chậm, chưa đo, cộng lại đủ cả bộ từ. Số trong mỗi đoạn được đo xem có vừa
+  không rồi mới hiện, không đoán theo phần trăm.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
