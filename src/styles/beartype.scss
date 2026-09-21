@@ -598,7 +598,7 @@ button.bt-options-summary {
   padding: 0.55rem 1.6rem;
 }
 
-// beartype: the restart button shares its row with the miss-book drill.
+// beartype: the restart button shares its row with the two drill buttons.
 // Upstream centres it with auto margins, which in a row would push its
 // neighbour to the edge; the row does the centring instead. Tab still reaches
 // restart first, so tab + enter is unchanged.
@@ -1089,6 +1089,17 @@ button.bt-settings-choice {
 .bt-history-label {
   color: var(--kb-text-f1);
   font-size: 0.875rem;
+}
+
+// the slow word book, one line under the chart
+.bt-slow-line {
+  color: var(--kb-text-f1);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.bt-slow-words {
+  color: var(--text-color);
 }
 
 .bt-chart {

@@ -1,9 +1,19 @@
-import { createSignal, For, JSXElement, Show } from "solid-js";
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  JSXElement,
+  Show,
+} from "solid-js";
 
 import type { RecentSummary, RecentTest } from "../../beartype/local-results";
 
+import { measuredCount, slowWords } from "../../beartype/slow-words";
 import { locale, t } from "../../beartype/strings";
+import { getConfig } from "../../config/store";
 import Format from "../../singletons/format";
+import { getLanguage } from "../../utils/json-data";
 
 /**
  * The foot of the result screen, after keybear's `TypeTestStats`: how long
@@ -67,7 +77,43 @@ export function ResultHistory(): JSXElement {
           <Show when={s().recent.length >= MIN_BARS}>
             <SpeedChart recent={s().recent} usual={s().usual} />
           </Show>
+          <SlowWordsLine />
         </div>
+      )}
+    </Show>
+  );
+}
+
+/** The slow words named on the line; the drill button has them all. */
+const SLOW_NAMED = 5;
+
+/**
+ * How far the book of slow words has got through the word list, and the
+ * slowest of them by name: the one line that says which words, not how many
+ * tests, are holding the speed back. See `beartype/slow-words.ts`.
+ */
+function SlowWordsLine(): JSXElement {
+  const [list] = createResource(
+    () => getConfig.language,
+    async (language) => new Set((await getLanguage(language)).words).size,
+  );
+  const measured = createMemo(() => measuredCount(getConfig.language));
+  const slow = createMemo(() => slowWords(getConfig.language));
+
+  return (
+    <Show when={measured() > 0 && list()}>
+      {(total) => (
+        <p class="bt-slow-line">
+          {t("slowMeasured", measured(), total())}
+          <Show when={slow().length > 0}>
+            {" · "}
+            {t("slowNamed", slow().length)}{" "}
+            <span class="bt-slow-words">
+              {slow().slice(0, SLOW_NAMED).join(", ")}
+              {slow().length > SLOW_NAMED ? ", …" : ""}
+            </span>
+          </Show>
+        </p>
       )}
     </Show>
   );

@@ -54,7 +54,7 @@ const LANGUAGE_TAGS: Record<(typeof LANGUAGES)[number], string> = {
   english: "en",
 };
 
-// a miss-book drill runs as upstream's custom mode, but as long as the test
+// a drill runs as upstream's custom mode, but as long as the test
 // it stands in for; the bar lights that one, time or words, so the typist
 // still sees how long the round is
 function mode(): string {

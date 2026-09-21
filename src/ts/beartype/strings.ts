@@ -113,6 +113,17 @@ const STRINGS = {
     en: (words: number) => `drill ${words} missed words`,
   },
 
+  // the slow word book, on the result screen
+  slowMeasured: {
+    vi: (measured: number, total: number) => `đã đo ${measured}/${total} từ`,
+    en: (measured: number, total: number) =>
+      `${measured}/${total} words measured`,
+  },
+  slowNamed: {
+    vi: (words: number) => `${words} từ chậm:`,
+    en: (words: number) => `${words} slow:`,
+  },
+
   // the slow word drill
   slowDrillRunningHint: {
     vi: "đang luyện từ chậm · quay về bài thường",
