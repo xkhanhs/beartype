@@ -24,7 +24,8 @@ ngẫu nhiên đã gặp mỗi từ nhiều lần, nên một lịch ôn không 
 - Sau mỗi bài hợp lệ, mỗi từ gõ sạch có một mẫu tốc độ, đếm theo phím Telex
   (`wordCost`, có tính dấu cách).
 - Màn kết quả có một thanh ngang theo kiểu dải nhớ của keybear: theo kịp /
-  chậm / chưa đo. Bong bóng của đoạn chậm nêu năm từ chậm nhất.
+  chậm / chưa đo. Bong bóng mỗi đoạn ghi luật xếp từ vào đoạn đó (85% tốc độ
+  các từ cùng độ dài, hay 3 lần gõ đúng).
 - Nút `bt-action` thứ tư mở bài chỉ gồm những từ chậm, cùng cách chạy với bài
   luyện từ hay sai.
 - Một từ tự rời sổ khi những bài thường sau đó cho thấy nó đã theo kịp mốc.

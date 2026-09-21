@@ -117,6 +117,22 @@ const STRINGS = {
   slowCaughtUp: { vi: "theo kịp", en: "at pace" },
   slowSlow: { vi: "chậm", en: "slow" },
   slowUnmeasured: { vi: "chưa đo", en: "not measured" },
+  slowCaughtUpRule: {
+    vi: (percent: number) =>
+      `từ ${percent}% tốc độ bạn gõ các từ cùng độ dài trở lên`,
+    en: (percent: number) =>
+      `at ${percent}% or more of your speed on words as long`,
+  },
+  slowSlowRule: {
+    vi: (percent: number) =>
+      `gõ đúng nhưng dưới ${percent}% tốc độ bạn gõ các từ cùng độ dài`,
+    en: (percent: number) =>
+      `typed right, under ${percent}% of your speed on words as long`,
+  },
+  slowUnmeasuredRule: {
+    vi: (times: number) => `cần gõ đúng ít nhất ${times} lần mới xét`,
+    en: (times: number) => `judged once typed right ${times} times`,
+  },
   slowPart: {
     vi: (part: string, words: number, share: number) =>
       `${part} · ${words} từ · ${share}% bộ từ`,

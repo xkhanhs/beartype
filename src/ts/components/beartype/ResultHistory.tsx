@@ -12,7 +12,12 @@ import {
 
 import type { RecentSummary, RecentTest } from "../../beartype/local-results";
 
-import { measuredCount, slowWords } from "../../beartype/slow-words";
+import {
+  measuredCount,
+  MIN_WORD_SAMPLES,
+  SLOW_BELOW,
+  slowWords,
+} from "../../beartype/slow-words";
 import { locale, t } from "../../beartype/strings";
 import { getConfig } from "../../config/store";
 import Format from "../../singletons/format";
@@ -87,9 +92,6 @@ export function ResultHistory(): JSXElement {
   );
 }
 
-/** The slow words the slow part's balloon names; the drill has them all. */
-const SLOW_NAMED = 5;
-
 /**
  * Room either side of a count printed in its part: a number touching both
  * edges reads as squeezed, so the part must be this much wider to print it.
@@ -111,8 +113,10 @@ type SlowPart = {
  *
  * Each part prints its count when it has room -- measured, not guessed from
  * its share, since the share knows neither the strip's width nor the digits
- * -- and its balloon says the rest: the count, the share of the list, and for
- * the slow part the slowest words by name.
+ * -- and its balloon says the rest: the count, the share of the list, and
+ * the rule that put a word there. The bar a word is held against is not the
+ * usual speed shown above it, and differs with the word's length, so the
+ * balloon names the rule rather than a number.
  */
 function SlowWordsBar(): JSXElement {
   const [list] = createResource(
@@ -145,9 +149,14 @@ function SlowWordsBar(): JSXElement {
   const balloon = (part: SlowPart): string => {
     const share = Math.round((100 * part.count) / total());
     const head = t("slowPart", part.label(), part.count, share);
-    if (part.key !== "slow") return head;
-    const named = slow().slice(0, SLOW_NAMED).join(", ");
-    return `${head}\n${named}${slow().length > SLOW_NAMED ? ", …" : ""}`;
+    const percent = Math.round(SLOW_BELOW * 100);
+    const rule =
+      part.key === "unmeasured"
+        ? t("slowUnmeasuredRule", MIN_WORD_SAMPLES)
+        : part.key === "slow"
+          ? t("slowSlowRule", percent)
+          : t("slowCaughtUpRule", percent);
+    return `${head}\n${rule}`;
   };
 
   // a signal, not a plain ref: the strip only exists once the word list has

@@ -40,7 +40,7 @@ const PER_WORD = 5;
  * Fewer samples than this and a word is not judged: one hesitation on one
  * typing is a slip, not a slow word.
  */
-const MIN_WORD_SAMPLES = 3;
+export const MIN_WORD_SAMPLES = 3;
 
 /**
  * Clean words kept for the bar, per language. Enough for a median per key
@@ -59,7 +59,7 @@ const MIN_BUCKET = 20;
  * half of everything sits under a median, and a book that always holds half
  * the words points at nothing.
  */
-const SLOW_BELOW = 0.85;
+export const SLOW_BELOW = 0.85;
 
 const SlowPageSchema = z.object({
   /** The last speeds of each word, oldest first, wpm. */
