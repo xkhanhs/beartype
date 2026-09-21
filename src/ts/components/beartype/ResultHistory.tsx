@@ -109,7 +109,11 @@ type SlowPart = {
  * screen: the words typed at pace, the slow ones, and the ones not typed
  * enough yet to judge, which add up to the whole list. "Not measured" is
  * drawn rather than dropped: it is the way still to go, and without it the
- * strip reads full after a week. See `beartype/slow-words.ts`.
+ * strip reads full after a week. For the same reason the strip is there from
+ * the first test, all of it not measured yet: a word needs three clean
+ * typings to be judged, and out of several hundred that takes a few tests,
+ * which is a stretch the strip should show filling rather than hide. See
+ * `beartype/slow-words.ts`.
  *
  * Each part prints its count when it has room -- measured, not guessed from
  * its share, since the share knows neither the strip's width nor the digits
@@ -184,7 +188,7 @@ function SlowWordsBar(): JSXElement {
   });
 
   return (
-    <Show when={measured() > 0 && list() !== undefined}>
+    <Show when={list() !== undefined}>
       <div class="bt-slow">
         <div class="bt-slow-bar" ref={setBar}>
           <For each={drawn()}>
@@ -195,11 +199,13 @@ function SlowWordsBar(): JSXElement {
                 tabIndex={0}
                 aria-label={balloon(part)}
                 data-balloon-pos={
-                  index() === 0
-                    ? "up-left"
-                    : index() === drawn().length - 1
-                      ? "up-right"
-                      : "up"
+                  drawn().length === 1
+                    ? "up"
+                    : index() === 0
+                      ? "up-left"
+                      : index() === drawn().length - 1
+                        ? "up-right"
+                        : "up"
                 }
                 data-balloon-break=""
               >

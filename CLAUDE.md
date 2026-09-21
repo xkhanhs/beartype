@@ -200,7 +200,8 @@ Test của beartype nằm ở `__tests__/beartype/`.
   dùng lịch ôn FSRS như màn Colemak của keybear: bộ từ chỉ vài trăm từ, rút
   ngẫu nhiên đã gặp mỗi từ nhiều lần, nên lịch không còn gì để sắp. Màn kết
   quả vẽ sổ thành một thanh ngang theo kiểu dải nhớ của keybear: theo kịp,
-  chậm, chưa đo, cộng lại đủ cả bộ từ. Số trong mỗi đoạn được đo xem có vừa
+  chậm, chưa đo, cộng lại đủ cả bộ từ, hiện từ bài hợp lệ đầu tiên (lúc đó
+  toàn "chưa đo"). Số trong mỗi đoạn được đo xem có vừa
   không rồi mới hiện, không đoán theo phần trăm. Bong bóng của mỗi đoạn ghi
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
