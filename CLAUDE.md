@@ -201,7 +201,10 @@ Test của beartype nằm ở `__tests__/beartype/`.
   ngẫu nhiên đã gặp mỗi từ nhiều lần, nên lịch không còn gì để sắp. Màn kết
   quả vẽ sổ thành một thanh ngang theo kiểu dải nhớ của keybear: theo kịp,
   chậm, chưa đo, cộng lại đủ cả bộ từ. Số trong mỗi đoạn được đo xem có vừa
-  không rồi mới hiện, không đoán theo phần trăm.
+  không rồi mới hiện, không đoán theo phần trăm. Bong bóng của mỗi đoạn ghi
+  luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
+  không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
+  `MIN_WORD_SAMPLES` từ `slow-words.ts`.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
