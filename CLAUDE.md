@@ -119,13 +119,6 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
 - `src/styles/beartype.scss`: mọi style riêng của beartype.
 - `scripts/build-vietnamese.ts`: dựng `static/languages/vietnamese.json` từ danh
   sách từ của keybear.
-- Bộ từ ẩn: không có viên nào trên thanh tuỳ chọn, mở bằng hash trên thanh địa
-  chỉ (`HASH_LANGUAGES` trong `beartype/config-lock.ts`). Hiện có `#khanh` →
-  `static/languages/vietnamese_khanh.json`, từ hay dùng của chủ repo, xếp theo
-  số lần xuất hiện; bổ sung thì sửa thẳng file đó. Tên bắt đầu bằng
-  `vietnamese` nên kết quả, kỷ lục và sổ từ hay sai tính chung với tiếng Việt.
-  Đang gõ bộ ẩn thì thanh hiện thêm một viên cho nó; bấm viên ngôn ngữ khác là
-  rời bộ đó và xoá hash.
 
 Test của beartype nằm ở `__tests__/beartype/`.
 

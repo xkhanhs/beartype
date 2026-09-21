@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { configLS } from "../../src/ts/config/persistence";
 import { lockConfig } from "../../src/ts/beartype/config-lock";
 
@@ -95,6 +95,25 @@ describe("a production localStorage config", () => {
     // config stored with upstream's "average" cannot bring a setting back
     // that means nothing here
     expect(locked.paceCaret).toBe("off");
+  });
+
+  it("falls back to Vietnamese from the word list #khanh opened", async () => {
+    // the hidden list is gone, but a browser that last typed it still has
+    // its name stored
+    window.localStorage.setItem(
+      "config",
+      JSON.stringify({ ...PRODUCTION_CONFIG, language: "vietnamese_khanh" }),
+    );
+    // configLS keeps what it read last; a fresh module reads the entry above
+    vi.resetModules();
+    const { configLS: freshLS } =
+      await import("../../src/ts/config/persistence");
+
+    const locked = lockConfig(freshLS.get());
+
+    expect(locked.language).toBe("vietnamese");
+    expect(locked.words).toBe(25);
+    expect(freshLS.set(locked)).toBe(true);
   });
 
   it("can be saved back without failing schema validation", () => {
