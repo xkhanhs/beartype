@@ -3,8 +3,9 @@ import { StringNumberSchema } from "./util";
 
 /**
  * A person picks time or words (`MODES` in `beartype/config-lock.ts`). Custom
- * is the miss-book drill's: `test/practise-words.ts#initFromWords` sets it
- * directly, unsaved, to run a shuffled test of the words kept being missed.
+ * is the drills': `test/practise-words.ts#initFromWords` sets it directly,
+ * unsaved, to run a shuffled test of the words kept being missed, or of the
+ * words typed right but slowly.
  */
 export const ModeSchema = z.enum(["time", "words", "custom"]);
 export type Mode = z.infer<typeof ModeSchema>;

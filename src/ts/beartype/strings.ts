@@ -113,6 +113,16 @@ const STRINGS = {
     en: (words: number) => `drill ${words} missed words`,
   },
 
+  // the slow word drill
+  slowDrillRunningHint: {
+    vi: "đang luyện từ chậm · quay về bài thường",
+    en: "drilling slow words · back to the normal test",
+  },
+  slowDrillCount: {
+    vi: (words: number) => `luyện ${words} từ gõ đúng mà chậm`,
+    en: (words: number) => `drill ${words} words typed right but slowly`,
+  },
+
   // while typing
   repeatedTest: { vi: "bài gõ lại", en: "repeated test" },
   unfocusedWindow: {

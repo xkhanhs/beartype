@@ -107,7 +107,7 @@ type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
   event?: KeyboardEvent;
-  practiseMissed?: boolean;
+  practise?: boolean;
   // beartype: the drill button turning a drill off
   leaveDrill?: boolean;
   noAnim?: boolean;
@@ -116,7 +116,7 @@ type RestartOptions = {
 export async function restart(options = {} as RestartOptions): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
-    practiseMissed: false,
+    practise: false,
     noAnim: false,
     nosave: false,
   };
@@ -154,7 +154,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   if (
     PractiseWords.before.mode !== null &&
     !options.withSameWordset &&
-    !options.practiseMissed &&
+    !options.practise &&
     (options.leaveDrill === true || !PractiseWords.continueDrill())
   ) {
     setConfig("mode", PractiseWords.before.mode);
