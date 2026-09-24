@@ -79,11 +79,24 @@ export type Stroke =
 
 const BREAK: Stroke = { key: null };
 
-/** The Telex keys of a word as typed so far, `a` to `z` only. */
+/**
+ * The Telex keys of a word as typed so far, `a` to `z` only. `ươ` is one `w`,
+ * not two: Telex types it `uow`, and counting the horn of `ư` on its own
+ * turns the one key that makes `người` into a jump of two, which drops the
+ * move.
+ */
 function keysOf(value: string): string[] {
   const keys: string[] = [];
-  for (const char of value) {
-    for (const key of telexKeysOf(char)) {
+  const chars = [...value];
+  for (const [index, char] of chars.entries()) {
+    const lower = char.toLowerCase();
+    const next = chars[index + 1]?.toLowerCase().normalize("NFD") ?? "";
+    const horned = lower.normalize("NFD").startsWith("u\u031B");
+    const letters =
+      horned && next.startsWith("o\u031B")
+        ? telexKeysOf(char).replace("w", "")
+        : telexKeysOf(char);
+    for (const key of letters) {
       const lower = key.toLowerCase();
       if (lower >= "a" && lower <= "z") keys.push(lower);
     }
