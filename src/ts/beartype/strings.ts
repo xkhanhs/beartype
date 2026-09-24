@@ -155,14 +155,24 @@ const STRINGS = {
     en: (rounds: number, total: number) =>
       `${rounds} of ${total} Vietnamese tests logged on this layout; the table opens once there are enough`,
   },
+  movesRounds: {
+    vi: (rounds: number) => `đã ghi ${rounds} bài tiếng Việt trên bố cục này`,
+    en: (rounds: number) => `${rounds} Vietnamese tests logged on this layout`,
+  },
   movesLegend: {
-    vi: "mỗi cú chuyển phím so với nhịp thường của chính tay bạn trên bố cục này: +30% là chậm hơn thường 30%; bài gần đây nặng ký hơn",
-    en: "each key move against your own usual pace on this layout: +30% is 30% slower than usual; recent tests weigh more",
+    vi: "mỗi cú chuyển phím so với nhịp thường của chính tay bạn trên bố cục này: +30% là chậm hơn thường 30%; gõ sai tính vào cặp định gõ, không tính giờ; bài gần đây nặng ký hơn",
+    en: "each key move against your own usual pace on this layout: +30% is 30% slower than usual; a miss counts against the move that was meant, untimed; recent tests weigh more",
   },
   movesPairs: { vi: "cặp phím", en: "key pairs" },
   movesTriples: { vi: "bộ ba phím", en: "key triples" },
   movesSlowPairs: { vi: "cặp chậm nhất", en: "slowest pairs" },
   movesSlowTriples: { vi: "bộ ba chậm nhất", en: "slowest triples" },
+  movesMissedPairs: { vi: "cặp hay gõ sai", en: "pairs missed most" },
+  movesMissedTriples: { vi: "bộ ba hay gõ sai", en: "triples missed most" },
+  movesMissCount: {
+    vi: (missed: number, seen: number) => `sai ${missed}/${seen}`,
+    en: (missed: number, seen: number) => `${missed} of ${seen}`,
+  },
   movesShare: { vi: "tỉ phần", en: "share" },
   movesRelative: { vi: "so thường", en: "vs usual" },
   movesMissed: { vi: "hụt", en: "missed" },

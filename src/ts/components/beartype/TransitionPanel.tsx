@@ -101,6 +101,9 @@ export function TransitionPanel(): JSXElement {
           )}
         </For>
       </div>
+      <Show when={page().rounds >= MIN_ROUNDS}>
+        <p class="bt-moves-note">{t("movesRounds", page().rounds)}</p>
+      </Show>
       <Show
         when={page().rounds >= MIN_ROUNDS}
         fallback={
@@ -120,6 +123,16 @@ export function TransitionPanel(): JSXElement {
           <SlowList
             title={t("movesSlowTriples")}
             rows={report().trigrams.slowest.slice(0, LIST_LENGTH)}
+          />
+        </div>
+        <div class="bt-moves-lists">
+          <MissList
+            title={t("movesMissedPairs")}
+            rows={report().bigrams.missed.slice(0, LIST_LENGTH)}
+          />
+          <MissList
+            title={t("movesMissedTriples")}
+            rows={report().trigrams.missed.slice(0, LIST_LENGTH)}
           />
         </div>
       </Show>
@@ -192,6 +205,37 @@ function SlowList(props: {
                 {relative(row.relative)}
               </span>
               <span class="bt-moves-kind">{KIND_LABEL[row.kind]()}</span>
+            </li>
+          )}
+        </For>
+      </ol>
+    </div>
+  );
+}
+
+/** Counts shown whole: the book holds decayed ones, `0.73` is one slip. */
+const whole = (value: number): number => Math.max(1, Math.round(value));
+
+function MissList(props: {
+  title: string;
+  rows: GramRow<BigramKind | TrigramKind>[];
+}): JSXElement {
+  return (
+    <div>
+      <div class="bt-moves-caption">{props.title}</div>
+      <ol class="bt-moves-list">
+        <For each={props.rows}>
+          {(row) => (
+            <li>
+              <span class="bt-moves-gram">{row.gram}</span>
+              <span>{percent(row.missRate)}</span>
+              <span class="bt-moves-kind">
+                {t(
+                  "movesMissCount",
+                  whole(row.count * row.missRate),
+                  whole(row.count),
+                )}
+              </span>
             </li>
           )}
         </For>
