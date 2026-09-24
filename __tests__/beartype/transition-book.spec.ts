@@ -61,6 +61,13 @@ describe("strokesOf", () => {
     expect(keys(typed(0, 0, ["t", "to", "tô", "tôt", "tốt"]))).toBe("|toots");
   });
 
+  it("counts the one `w` of `ươ` as one key", () => {
+    // `người` typed `n g u o w i f`
+    expect(
+      keys(typed(0, 0, ["n", "ng", "ngu", "nguo", "ngươ", "ngươi", "người"])),
+    ).toBe("|nguowif");
+  });
+
   it("reads an input method's delete-and-insert burst as one key", () => {
     const events = [
       ...typed(0, 0, ["v", "vo"]),
