@@ -1275,3 +1275,126 @@ button.bt-settings-choice {
     transition: none;
   }
 }
+
+// ----- the book of key moves, under the slow word strip -----
+
+// beartype: keybear's `TransitionCard`. Folded under its title: a table to
+// open now and then, not one to read after every test.
+.bt-moves {
+  inline-size: 100%;
+  margin-block-start: 0.6rem;
+  color: var(--kb-text-f1);
+  font-size: 0.8rem;
+}
+
+.bt-moves-title {
+  color: var(--text-color);
+  font-size: 0.875rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bt-moves-layouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  margin-block: 0.8rem;
+}
+
+.bt-moves-label {
+  margin-inline-end: 0.2rem;
+}
+
+// `#result` in the selector: upstream sizes every button under the result
+// with `#result .wrapper button`, and only a selector as high wins
+#result button.bt-moves-pill {
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--kb-sunk-rim);
+  border-radius: 999px;
+  color: var(--text-color);
+  font-size: 0.8rem;
+  background: none;
+}
+
+#result button.bt-moves-pill-on {
+  border-color: var(--main-color);
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+}
+
+.bt-moves-note {
+  margin-block: 0 0.8rem;
+  text-align: center;
+}
+
+.bt-moves-table {
+  inline-size: 100%;
+  margin-block-end: 0.8rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  caption,
+  th[scope="row"] {
+    text-align: start;
+  }
+
+  caption {
+    margin-block-end: 0.3rem;
+    color: var(--text-color);
+    font-weight: bold;
+  }
+
+  th,
+  td {
+    padding: 0.1rem 0.3rem;
+    font-weight: normal;
+    text-align: end;
+  }
+
+  td,
+  th[scope="row"] {
+    color: var(--text-color);
+  }
+}
+
+.bt-moves-lists {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-block-end: 0.8rem;
+}
+
+.bt-moves-caption {
+  margin-block-end: 0.3rem;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+.bt-moves-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+
+  li {
+    display: grid;
+    grid-template-columns: 2.6rem 3rem 1fr;
+    gap: 0.3rem;
+    color: var(--text-color);
+  }
+}
+
+.bt-moves-gram {
+  font-weight: bold;
+}
+
+.bt-moves-kind {
+  color: var(--kb-text-f1);
+}
+
+.bt-moves-slow {
+  color: var(--main-color);
+  font-weight: bold;
+}

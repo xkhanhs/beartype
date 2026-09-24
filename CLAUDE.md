@@ -206,6 +206,19 @@ Test của beartype nằm ở `__tests__/beartype/`.
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
+- **Sổ cú chuyển phím** (`beartype/transition-book.ts`, `transition-kinds.ts`,
+  `components/beartype/TransitionPanel.tsx`), chép từ màn Colemak của keybear
+  (giữ hai bên khớp nhau, cả dạng JSON xuất ra): mỗi bài tiếng Việt được lưu
+  (không tính bài luyện) ghi thời gian từng cặp và bộ ba phím Telex trong một
+  từ, một trang cho mỗi bố cục, số cũ nhân 0.98 mỗi bài. Event log **không có
+  tên phím** (VTX gửi mọi phím mã 0), nên phím được suy ngược từ chỗ dãy phím
+  Telex của từ tăng thêm đúng một phím giữa hai lần ô nhập đổi (`to` → `tô` là
+  `o`, `tôt` → `tốt` là `s`); các sự kiện cùng một tick là một lần bấm (bộ gõ
+  xoá rồi chèn). Trình duyệt không biết máy đang ở bố cục nào, nên người gõ
+  chọn trong bảng gập "tay chậm ở đâu" dưới thanh từ chậm. Mọi số so với nhịp
+  thường của chính tay ấy trên bố cục ấy, không so mili giây trần; nút "chép
+  sổ" xuất JSON cho `scripts/layout-eval-vi.mjs` của keybear. Nút trong bảng
+  cần `#result` trong selector, vì upstream đặt cỡ mọi nút dưới màn kết quả.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
