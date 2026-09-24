@@ -18,10 +18,12 @@ import {
   SLOW_BELOW,
   slowWords,
 } from "../../beartype/slow-words";
+import { statsLanguage } from "../../beartype/stats-language";
 import { locale, t } from "../../beartype/strings";
 import { getConfig } from "../../config/store";
 import Format from "../../singletons/format";
 import { getLanguage } from "../../utils/json-data";
+import { TransitionPanel } from "./TransitionPanel";
 
 /**
  * The foot of the result screen, after keybear's `TypeTestStats`: how long
@@ -86,6 +88,9 @@ export function ResultHistory(): JSXElement {
             <SpeedChart recent={s().recent} usual={s().usual} />
           </Show>
           <SlowWordsBar />
+          <Show when={statsLanguage(getConfig.language) === "vietnamese"}>
+            <TransitionPanel />
+          </Show>
         </div>
       )}
     </Show>
