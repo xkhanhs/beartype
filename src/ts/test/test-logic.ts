@@ -666,7 +666,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // beartype/transition-book.ts. Vietnamese only: the keystream it
     // measures is Telex.
     if (statsLanguage(Config.language) === "vietnamese") {
-      recordTransitions(eventLog.events);
+      recordTransitions(
+        eventLog.events,
+        TestWords.words.get().map((word) => word.text),
+      );
     }
   }
 }

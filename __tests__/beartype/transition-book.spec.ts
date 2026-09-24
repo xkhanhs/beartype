@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addRound,
+  dueKey,
   EMPTY_PAGE,
   movesOf,
   strokesOf,
@@ -50,8 +51,8 @@ function typed(
   );
 }
 
-const keys = (events: TestEventNoMs[]): string =>
-  strokesOf(events)
+const keys = (events: TestEventNoMs[], targets: string[] = []): string =>
+  strokesOf(events, targets)
     .map((stroke) => stroke.key ?? "|")
     .join("");
 
@@ -75,7 +76,7 @@ describe("strokesOf", () => {
       input(0, 200, "v", { inputType: "deleteContentBackward" }),
       input(0, 200, "vơ"),
     ];
-    const strokes = strokesOf(events);
+    const strokes = strokesOf(events, []);
     expect(keys(events)).toBe("|vow");
     expect(strokes.at(-1)).toEqual({ key: "w", ms: 100, miss: false });
   });
@@ -90,23 +91,59 @@ describe("strokesOf", () => {
     expect(keys(events)).toBe("|tr|h|a");
   });
 
-  it("cuts the run after a missed key", () => {
+  it("files a miss under the key the word wanted, then cuts the run", () => {
+    // `trong`: after `tr` the `x` landed where `o` was due
     const events = [
       ...typed(0, 0, ["t", "tr"]),
       input(0, 200, "trx", { correct: false }),
+      input(0, 300, "tr", { inputType: "deleteContentBackward" }),
+      input(0, 400, "tro"),
     ];
-    const { bigrams } = movesOf(strokesOf(events));
+    const { bigrams } = movesOf(strokesOf(events, ["trong"]));
     expect(bigrams).toEqual([
       { gram: "tr", ms: 100, miss: false },
-      { gram: "rx", ms: null, miss: true },
+      { gram: "ro", ms: null, miss: true },
     ]);
+  });
+
+  it("counts a slip once while the word stays wrong", () => {
+    // `trong` typed on past a wrong `x`: every key after it reads wrong too
+    const events = [
+      ...typed(0, 0, ["t", "tr"]),
+      input(0, 200, "trx", { correct: false }),
+      input(0, 300, "trxo", { correct: false }),
+      input(0, 400, "trxon", { correct: false }),
+    ];
+    const { bigrams } = movesOf(strokesOf(events, ["trong"]));
+    expect(bigrams.filter((move) => move.miss)).toEqual([
+      { gram: "ro", ms: null, miss: true },
+    ]);
+  });
+
+  it("drops a miss where the word had nothing left to type", () => {
+    const events = [
+      ...typed(0, 0, ["t", "to"]),
+      input(0, 200, "tô", { correct: false }),
+    ];
+    expect(keys(events, ["to"])).toBe("|to|");
+  });
+});
+
+describe("dueKey", () => {
+  it("wants the letters in order and the tone last", () => {
+    expect(dueKey(["t", "o", "o"], "tốt")).toBe("t");
+    expect(dueKey(["t", "o", "o", "t"], "tốt")).toBe("s");
+    expect(dueKey(["n", "g", "u", "o"], "người")).toBe("w");
+    expect(dueKey(["n", "g"], "Người")).toBe("u");
+    expect(dueKey(["d"], "đường")).toBe("d");
+    expect(dueKey(["t", "o"], "to")).toBeNull();
   });
 });
 
 describe("addRound", () => {
   it("weighs the newer round more", () => {
     const events = typed(0, 0, ["v", "va"]);
-    const page = addRound(addRound(EMPTY_PAGE, events), events);
+    const page = addRound(addRound(EMPTY_PAGE, events, []), events, []);
     expect(page.rounds).toBe(2);
     expect(page.bigrams["va"]?.[0]).toBe(1.98);
   });

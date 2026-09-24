@@ -174,7 +174,7 @@ function summarize<K extends string>(
   kindOf: (gram: string) => K | null,
   kinds: readonly K[],
   inBaseline: (gram: string) => boolean,
-): { kinds: Row<K>[]; slowest: GramRow<K>[] } {
+): { kinds: Row<K>[]; slowest: GramRow<K>[]; missed: GramRow<K>[] } {
   let baseMs = 0;
   let baseTimed = 0;
   for (const [gram, [, ms, timed]] of Object.entries(grams)) {
@@ -186,6 +186,7 @@ function summarize<K extends string>(
   const baseline = baseTimed > 0 ? baseMs / baseTimed : 0;
   const totals = new Map<K, [number, number, number, number]>();
   const slowest: GramRow<K>[] = [];
+  const missedRows: GramRow<K>[] = [];
   let all = 0;
   for (const [gram, [seen, ms, timed, missed]] of Object.entries(grams)) {
     const kind = kindOf(gram);
@@ -193,6 +194,16 @@ function summarize<K extends string>(
     all += seen;
     const [s, m, t, x] = totals.get(kind) ?? [0, 0, 0, 0];
     totals.set(kind, [s + seen, m + ms, t + timed, x + missed]);
+    if (missed > 0) {
+      missedRows.push({
+        gram,
+        kind,
+        count: seen,
+        ms: timed > 0 ? ms / timed : 0,
+        relative: timed > 0 && baseline > 0 ? ms / timed / baseline : 0,
+        missRate: missed / seen,
+      });
+    }
     if (timed >= MIN_TIMED && baseline > 0) {
       slowest.push({
         gram,
@@ -220,6 +231,10 @@ function summarize<K extends string>(
       ];
     }),
     slowest: slowest.sort((x, y) => y.relative - x.relative),
+    // by how often, not how likely: one slip on a rare pair is a 100% rate
+    missed: missedRows.sort(
+      (x, y) => y.count * y.missRate - x.count * x.missRate,
+    ),
   };
 }
 

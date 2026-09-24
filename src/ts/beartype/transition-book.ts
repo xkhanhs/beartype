@@ -28,6 +28,11 @@ import { telexKeysOf } from "./telex-keys";
  *
  * Only Vietnamese rounds, and only keys inside a word: the space is the thumb,
  * not the layout, and across it the move is a pause between two words.
+ *
+ * **A miss belongs to the move that was meant**, not the key that landed:
+ * after `n`, hitting `t` where `g` was due is a missed `ng`. A book that
+ * filed it under `nt` would say which keys the hand hits by accident, never
+ * which moves it cannot make.
  */
 
 export const LAYOUTS = ["dh-viet", "dh-viet-vb", "dh-viet-vt"] as const;
@@ -104,6 +109,40 @@ function keysOf(value: string): string[] {
   return keys;
 }
 
+/** Tone marks and their Telex keys, typed anywhere in a syllable. */
+const TONE_KEYS: Record<string, string> = {
+  "\u0301": "s",
+  "\u0300": "f",
+  "\u0309": "r",
+  "\u0303": "x",
+  "\u0323": "j",
+};
+const TONES = /[\u0300\u0301\u0303\u0309\u0323]/gu;
+
+/**
+ * The key the word wanted next, given the keys typed so far: its letters in
+ * order, tones after them, since a typist puts the tone at the end of the
+ * syllable far more often than inside it (`tốt` is `toots`, not `tost`).
+ * `null` once every key of the word is in -- the key due was the space.
+ */
+export function dueKey(
+  typed: readonly string[],
+  target: string,
+): string | null {
+  const plain = target.normalize("NFD").replace(TONES, "").normalize("NFC");
+  const tones = (target.normalize("NFD").match(TONES) ?? []).map(
+    (mark) => TONE_KEYS[mark] ?? "",
+  );
+  const left = new Map<string, number>();
+  for (const key of typed) left.set(key, (left.get(key) ?? 0) + 1);
+  for (const key of [...keysOf(plain), ...tones]) {
+    const count = left.get(key) ?? 0;
+    if (count === 0) return key;
+    left.set(key, count - 1);
+  }
+  return null;
+}
+
 /**
  * The one key that turns `before` into `after`: `"same"` when the keys did
  * not change (an input method rewriting what is there, `too` into `tô`), or
@@ -141,11 +180,16 @@ const SAME_PRESS_MS = 2;
  * each change, so a key is what the Telex keys of the word gained: `to` to
  * `tô` is `o`, `tôt` to `tốt` is `s`.
  */
-export function strokesOf(events: readonly TestEventNoMs[]): Stroke[] {
+export function strokesOf(
+  events: readonly TestEventNoMs[],
+  targets: readonly string[],
+): Stroke[] {
   const strokes: Stroke[] = [];
   let word = -1;
   let keys: string[] = [];
   let lastAt: number | null = null;
+  // Past an uncorrected miss every key reads wrong: one slip, counted once.
+  let slipped = false;
   const inputs = events.filter((event) => event.type === "input");
   for (let index = 0; index < inputs.length; index++) {
     const event = inputs[index];
@@ -171,10 +215,23 @@ export function strokesOf(events: readonly TestEventNoMs[]): Stroke[] {
     const after = keysOf(last.data.inputValue.trimEnd());
     if (event.data.wordIndex !== word) {
       word = event.data.wordIndex;
+      slipped = false;
       keys = [];
       lastAt = null;
       strokes.push(BREAK);
     }
+    if (miss && !automatic) {
+      // Filed under the key the word wanted, whatever landed instead. A miss
+      // is followed by a correction: nothing after it is a clean move.
+      const due = slipped ? null : dueKey(keys, targets[word] ?? "");
+      if (due !== null) strokes.push({ key: due, ms: null, miss: true });
+      strokes.push(BREAK);
+      slipped = true;
+      keys = after;
+      lastAt = null;
+      continue;
+    }
+    if (last.data.inputType === "insertText") slipped = false;
     const key = automatic ? null : addedKey(keys, after);
     keys = after;
     if (key === "same") continue;
@@ -189,11 +246,6 @@ export function strokesOf(events: readonly TestEventNoMs[]): Stroke[] {
       miss,
     });
     lastAt = last.testMs;
-    // A miss is followed by a correction: nothing after it is a clean move.
-    if (miss) {
-      strokes.push(BREAK);
-      lastAt = null;
-    }
   }
   return strokes;
 }
@@ -265,8 +317,12 @@ function merge(grams: Grams, samples: readonly Sample[]): Grams {
 const round2 = (value: number): number => Math.round(value * 100) / 100;
 
 /** A page with one more round in it. A round with no pair leaves it as is. */
-export function addRound(page: Page, events: readonly TestEventNoMs[]): Page {
-  const { bigrams, trigrams } = movesOf(strokesOf(events));
+export function addRound(
+  page: Page,
+  events: readonly TestEventNoMs[],
+  targets: readonly string[],
+): Page {
+  const { bigrams, trigrams } = movesOf(strokesOf(events, targets));
   if (bigrams.length === 0) return page;
   return {
     rounds: page.rounds + 1,
@@ -290,10 +346,17 @@ export function pageFor(layout: Layout): Page {
   return book().pages[layout] ?? EMPTY_PAGE;
 }
 
-/** Writes a finished Vietnamese round into the page of the current layout. */
-export function recordTransitions(events: readonly TestEventNoMs[]): void {
+/**
+ * Writes a finished Vietnamese round into the page of the current layout.
+ * `targets` are the words of the test, by word index: a miss is filed under
+ * the key its word wanted.
+ */
+export function recordTransitions(
+  events: readonly TestEventNoMs[],
+  targets: readonly string[],
+): void {
   const layout = currentLayout();
-  const page = addRound(pageFor(layout), events);
+  const page = addRound(pageFor(layout), events, targets);
   if (page === pageFor(layout)) return;
   const next = { ...book(), pages: { ...book().pages, [layout]: page } };
   storage.set(next);
