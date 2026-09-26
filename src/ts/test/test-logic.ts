@@ -10,8 +10,6 @@ import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
 import { recordSpeeds, wordSpeeds } from "../beartype/slow-words";
-import { recordTransitions } from "../beartype/transition-book";
-import { statsLanguage } from "../beartype/stats-language";
 import { idleReason } from "../beartype/idle";
 import { t } from "../beartype/strings";
 import * as Result from "./result";
@@ -661,16 +659,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
         stumbledAt,
       ),
     );
-    // beartype: how long each move between two Telex keys took, for the
-    // book of key moves on the layout the typist is on; see
-    // beartype/transition-book.ts. Vietnamese only: the keystream it
-    // measures is Telex.
-    if (statsLanguage(Config.language) === "vietnamese") {
-      recordTransitions(
-        eventLog.events,
-        TestWords.words.get().map((word) => word.text),
-      );
-    }
   }
 }
 

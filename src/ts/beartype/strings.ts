@@ -140,59 +140,6 @@ const STRINGS = {
       `${part} · ${words} words · ${share}% of the list`,
   },
 
-  // the book of key moves, on the result screen
-  movesTitle: { vi: "tay chậm ở đâu", en: "where the hand slows down" },
-  movesLayout: { vi: "đang gõ bố cục", en: "typing on" },
-  movesLayoutHint: {
-    vi: "trình duyệt không biết máy đang ở bố cục nào, nên chọn đúng bố cục trước khi gõ để sổ không lẫn",
-    en: "the browser cannot tell which layout the system is on, so pick it before typing to keep the book clean",
-  },
-  movesVb: { vi: "DH-Việt · v ở B", en: "DH-Việt · v on B" },
-  movesVt: { vi: "DH-Việt · v ở T", en: "DH-Việt · v on T" },
-  movesEmpty: {
-    vi: (rounds: number, total: number) =>
-      `đã ghi ${rounds}/${total} bài tiếng Việt trên bố cục này; đủ bài thì bảng mới hiện`,
-    en: (rounds: number, total: number) =>
-      `${rounds} of ${total} Vietnamese tests logged on this layout; the table opens once there are enough`,
-  },
-  movesRounds: {
-    vi: (rounds: number) => `đã ghi ${rounds} bài tiếng Việt trên bố cục này`,
-    en: (rounds: number) => `${rounds} Vietnamese tests logged on this layout`,
-  },
-  movesLegend: {
-    vi: "mỗi cú chuyển phím so với nhịp thường của chính tay bạn trên bố cục này: +30% là chậm hơn thường 30%; gõ sai tính vào cặp định gõ, không tính giờ; bài gần đây nặng ký hơn",
-    en: "each key move against your own usual pace on this layout: +30% is 30% slower than usual; a miss counts against the move that was meant, untimed; recent tests weigh more",
-  },
-  movesPairs: { vi: "cặp phím", en: "key pairs" },
-  movesTriples: { vi: "bộ ba phím", en: "key triples" },
-  movesSlowPairs: { vi: "cặp chậm nhất", en: "slowest pairs" },
-  movesSlowTriples: { vi: "bộ ba chậm nhất", en: "slowest triples" },
-  movesMissedPairs: { vi: "cặp hay gõ sai", en: "pairs missed most" },
-  movesMissedTriples: { vi: "bộ ba hay gõ sai", en: "triples missed most" },
-  movesMissCount: {
-    vi: (missed: number, seen: number) => `sai ${missed}/${seen}`,
-    en: (missed: number, seen: number) => `${missed} of ${seen}`,
-  },
-  movesShare: { vi: "tỉ phần", en: "share" },
-  movesRelative: { vi: "so thường", en: "vs usual" },
-  movesMissed: { vi: "hụt", en: "missed" },
-  movesCopy: { vi: "chép sổ", en: "copy the log" },
-  movesCopied: { vi: "đã chép", en: "copied" },
-  moveSfbFar: { vi: "cùng ngón, nhảy xa", en: "same finger, far jump" },
-  moveSfbNear: { vi: "cùng ngón, phím kề", en: "same finger, next key" },
-  moveScissor: { vi: "chéo", en: "scissor" },
-  moveRollIn: { vi: "lướt vào", en: "roll inward" },
-  moveRollOut: { vi: "lướt ra", en: "roll outward" },
-  moveAlternate: { vi: "đổi tay", en: "hand switch" },
-  moveRepeat: { vi: "lặp phím", en: "same key again" },
-  moveRedirect: { vi: "một tay, đổi chiều", en: "one hand, turns back" },
-  moveSfs: {
-    vi: "cùng ngón, cách một phím",
-    en: "same finger, one key between",
-  },
-  moveRoll: { vi: "một tay, một chiều", en: "one hand, one way" },
-  moveSplit: { vi: "hai tay, chia 2–1", en: "two hands, split 2–1" },
-
   // the slow word drill
   slowDrillRunningHint: {
     vi: "đang luyện từ chậm · quay về bài thường",
