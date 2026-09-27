@@ -1,7 +1,7 @@
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
 import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
-import { textOnAccent } from "../../beartype/contrast";
+import { textOnAccent, typedLetterColor } from "../../beartype/contrast";
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
@@ -36,6 +36,12 @@ export function Theme(): JSXElement {
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {
+    const typed = typedLetterColor(
+      colors.main,
+      colors.bg,
+      colors.error,
+      colors.text,
+    );
     styleEl()?.setHtml(`
 :root {
     --bg-color: ${colors.bg};
@@ -48,9 +54,11 @@ export function Theme(): JSXElement {
     --error-extra-color: ${colors.errorExtra};
     --colorful-error-color: ${colors.colorfulError};
     --colorful-error-extra-color: ${colors.colorfulErrorExtra};
-    --kb-on-accent: ${textOnAccent(colors.main, colors.bg, colors.text)};${
-      // left out unless the palette sets one, so the stylesheet's fallback to
-      // the accent applies
+    --kb-on-accent: ${textOnAccent(colors.main, colors.bg, colors.text)};
+    --kb-typed-letter: ${typed};
+    --kb-building-letter: ${typed === colors.main ? colors.text : colors.main};${
+      // left out unless the palette sets one, so the stylesheet's fallback
+      // applies
       colors.partialLetter === undefined
         ? ""
         : `\n    --partial-letter-color: ${colors.partialLetter};`
