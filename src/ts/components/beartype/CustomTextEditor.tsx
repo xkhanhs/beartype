@@ -195,19 +195,17 @@ export function CustomTextEditor(): JSXElement {
                         {t("customTextWords", wordsOf(saved.text).length)}
                       </span>
                     </button>
-                    <Show
-                      when={confirming() === saved.name}
-                      fallback={
-                        <button
-                          type="button"
-                          class="bt-custom-icon-button"
-                          aria-label={t("customTextDelete", saved.name)}
-                          onClick={() => setConfirming(saved.name)}
-                        >
-                          <Icon name="x" />
-                        </button>
-                      }
+                    <button
+                      type="button"
+                      class="bt-custom-icon-button"
+                      aria-label={t("customTextDelete", saved.name)}
+                      onClick={() => setConfirming(saved.name)}
                     >
+                      <Icon name="x" />
+                    </button>
+                    {/* laid over the row's end rather than in place of the
+                        ×, so nothing in the row or the list moves */}
+                    <Show when={confirming() === saved.name}>
                       <div
                         class="bt-custom-confirm"
                         role="group"

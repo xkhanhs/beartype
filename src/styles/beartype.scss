@@ -1066,6 +1066,7 @@ button.bt-settings-choice.bt-custom-start:hover {
   }
 
   li {
+    position: relative;
     display: flex;
     gap: 0.3rem;
     align-items: center;
@@ -1096,12 +1097,24 @@ button.bt-custom-saved-load {
   }
 }
 
-// the × turned into a second question, in place, so the eye does not have to
-// go looking for it
+// the second question laid over the end of the row, over the word count and
+// the ×, on the card's own colour: the row keeps its height and everything in
+// it stays where it was
 .bt-custom-confirm {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
   display: flex;
-  flex: none;
   gap: 0.35rem;
+  align-items: center;
+  padding-inline-start: 1rem;
+  background-color: var(--kb-card);
+
+  button.bt-settings-choice {
+    padding-block: 0;
+    block-size: 1.75rem;
+    line-height: 1;
+  }
 }
 
 button.bt-settings-choice.bt-custom-delete,
