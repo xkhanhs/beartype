@@ -971,10 +971,21 @@ button.bt-settings-choice {
   }
 }
 
+// one height for every control in the card -- the rows, the buttons at their
+// ends and the pill buttons -- so a row reads as one line of equal parts
+.bt-custom-card {
+  --bt-custom-control: 2.25rem;
+}
+
 button.bt-custom-icon-button {
   display: inline-flex;
   flex: none;
-  padding: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  inline-size: var(--bt-custom-control);
+  block-size: var(--bt-custom-control);
+  padding: 0;
   border: none;
   border-radius: 99px;
   color: var(--kb-text-f1);
@@ -1036,7 +1047,7 @@ button.bt-custom-icon-button {
   // the name box and the buttons beside it, all one height
   > * {
     box-sizing: border-box;
-    block-size: 2.25rem;
+    block-size: var(--bt-custom-control);
   }
 
   > button.bt-settings-choice {
@@ -1091,10 +1102,12 @@ button.bt-custom-saved-load {
   gap: 0.6rem;
   align-items: center;
   justify-content: space-between;
+  box-sizing: border-box;
   min-inline-size: 0;
-  padding: 0.4rem 0.8rem;
+  block-size: var(--bt-custom-control);
+  padding: 0 0.8rem;
   border: none;
-  border-radius: 0.6rem;
+  border-radius: 99px;
   color: var(--text-color);
   background: transparent;
   text-align: start;
@@ -1124,8 +1137,9 @@ button.bt-custom-saved-load {
   background-color: var(--kb-card);
 
   button.bt-settings-choice {
+    box-sizing: border-box;
     padding-block: 0;
-    block-size: 1.75rem;
+    block-size: var(--bt-custom-control);
     line-height: 1;
   }
 }
