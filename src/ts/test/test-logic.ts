@@ -51,6 +51,7 @@ import * as TestInitFailed from "../elements/test-init-failed";
 import { setInputElementValue } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
+import { customText, wordsOf } from "../beartype/custom-text";
 import { setConfig } from "../config/setters";
 import {
   resetTestEvents,
@@ -243,6 +244,23 @@ async function init(): Promise<boolean> {
   // the language was changed while it loaded
   if (language.name !== Config.language) {
     return await init();
+  }
+
+  // beartype: the custom mode runs the typist's own text, copied into the
+  // buffer the generator reads each time -- a drill, which runs in the same
+  // mode, writes its words there too. A text wiped from storage leaves
+  // nothing to type, and the test goes back to the default mode.
+  if (Config.mode === "custom" && PractiseWords.before.mode === null) {
+    const words = wordsOf(customText());
+    if (words.length === 0) {
+      setConfig("mode", "time");
+    } else {
+      CustomText.setPipeDelimiter(false);
+      CustomText.setText(words);
+      CustomText.setMode("repeat");
+      CustomText.setLimitMode("word");
+      CustomText.setLimitValue(words.length);
+    }
   }
 
   if (Config.mode === "custom") {
@@ -617,7 +635,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   await resultUpdatePromise;
-  // a drill from the miss book is practice, not a test to measure against
+  // a drill, or the typist's own text, is practice, not a test to measure
+  // against
   if (!dontSave && Config.mode !== "custom") {
     LocalResults.saveResult(completedEvent);
   }
@@ -630,6 +649,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const history = getInputHistory(eventLog);
   learnToneStyle(history);
   if (dontSave) return;
+  // the typist's own text keeps its capitals and punctuation, and words like
+  // `Hà` or `nay,` have no place among the list's words in a drill
+  if (Config.mode === "custom" && PractiseWords.before.mode === null) return;
   const stumbledAt = new Set<number>();
   for (const event of eventLog.events) {
     if (

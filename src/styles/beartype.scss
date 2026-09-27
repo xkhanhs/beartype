@@ -332,6 +332,7 @@ body,
 button.bt-options-pill {
   display: inline-flex;
   flex: none;
+  gap: 0.3rem;
   align-items: center;
   block-size: 1.75rem;
   padding: 0 0.8rem;
@@ -925,6 +926,200 @@ button.bt-settings-choice {
     outline-offset: 2px;
     box-shadow: none;
   }
+}
+
+// ----- the custom text card -----
+
+// beartype: the custom mode's card, made like the settings card but opened in
+// the middle of the page as a native dialog, since the text wants room
+.bt-custom-card {
+  // Tailwind's preflight zeroes the margin the browser centres a dialog with
+  margin: auto;
+  inline-size: min(40rem, calc(100vw - 2rem));
+  max-block-size: calc(100dvh - 2rem);
+  padding: 1.3rem;
+  border: 2px solid var(--kb-border);
+  border-radius: 1.1rem;
+  color: var(--text-color);
+  background-color: var(--kb-card);
+  box-shadow: var(--kb-popup-shadow);
+  font-size: 1rem;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  &::backdrop {
+    background-color: color-mix(in srgb, var(--bg-color) 70%, transparent);
+  }
+}
+
+.bt-custom-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .bt-settings-title {
+    margin: 0;
+  }
+}
+
+button.bt-custom-icon-button {
+  display: inline-flex;
+  flex: none;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 99px;
+  color: var(--kb-text-f1);
+  background: transparent;
+
+  &:hover {
+    color: var(--text-color);
+    background-color: var(--kb-accent-xlt);
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 2px;
+  }
+}
+
+.bt-custom-box,
+.bt-custom-name {
+  border: 2px solid var(--kb-border);
+  border-radius: 0.8rem;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  font: inherit;
+
+  &::placeholder {
+    color: var(--kb-text-f1);
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    border-color: var(--main-color);
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.bt-custom-box {
+  min-block-size: 10rem;
+  padding: 0.7rem 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.bt-custom-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  justify-content: space-between;
+  color: var(--kb-text-f1);
+  font-size: 0.9rem;
+}
+
+.bt-custom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+
+  button.bt-settings-choice:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.bt-custom-name {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+  padding: 0.35rem 0.8rem;
+}
+
+button.bt-settings-choice.bt-custom-start,
+button.bt-settings-choice.bt-custom-start:hover {
+  border-color: var(--main-color);
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+}
+
+.bt-custom-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-block-size: 0;
+  padding-block-start: 0.7rem;
+  border-block-start: 1px solid var(--kb-border);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+  }
+}
+
+button.bt-custom-saved-load {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 1rem;
+  justify-content: space-between;
+  min-inline-size: 0;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.6rem;
+  color: var(--text-color);
+  background: transparent;
+  text-align: start;
+
+  &:hover {
+    color: var(--text-color);
+    background-color: var(--kb-accent-xlt);
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: -2px;
+  }
+}
+
+// the × turned into a second question, in place, so the eye does not have to
+// go looking for it
+.bt-custom-confirm {
+  display: flex;
+  flex: none;
+  gap: 0.35rem;
+}
+
+button.bt-settings-choice.bt-custom-delete,
+button.bt-settings-choice.bt-custom-delete:hover {
+  border-color: var(--error-color);
+  color: var(--bg-color);
+  background-color: var(--error-color);
+}
+
+.bt-custom-saved-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bt-custom-saved-count {
+  flex: none;
+  color: var(--kb-text-f1);
 }
 
 // ----- the result screen -----

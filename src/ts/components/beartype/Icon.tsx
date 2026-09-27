@@ -17,6 +17,7 @@ export type IconName =
   | "loader-circle"
   | "lock"
   | "pause"
+  | "pencil"
   | "rotate-cw"
   | "settings"
   | "x";
