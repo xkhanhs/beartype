@@ -113,10 +113,24 @@ const STRINGS = {
     vi: "tên để lưu (tuỳ chọn)",
     en: "name to save (optional)",
   },
-  customTextSaved: { vi: "đã lưu", en: "saved" },
   customTextDelete: {
     vi: (name: string) => `xoá “${name}”`,
     en: (name: string) => `delete “${name}”`,
+  },
+  customTextNew: { vi: "đoạn mới", en: "new text" },
+  customTextEditing: {
+    vi: (name: string) => `sửa: ${name}`,
+    en: (name: string) => `edit: ${name}`,
+  },
+  customTextAdd: { vi: "+ đoạn mới", en: "+ new text" },
+  customTextBack: { vi: "quay lại danh sách", en: "back to the list" },
+  customTextPlay: {
+    vi: (name: string) => `gõ “${name}”`,
+    en: (name: string) => `type “${name}”`,
+  },
+  customTextEditOne: {
+    vi: (name: string) => `sửa “${name}”`,
+    en: (name: string) => `edit “${name}”`,
   },
   customTextConfirmDelete: { vi: "xoá", en: "delete" },
   cancel: { vi: "huỷ", en: "cancel" },

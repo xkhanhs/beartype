@@ -70,14 +70,22 @@ function defaultName(text: string): string {
 }
 
 /**
- * Keeps `text` under `name` (its first words when blank), newest first. A
- * name already on the list is overwritten, as upstream did.
+ * Keeps `text` under `name` (its first words when blank). A new text goes to
+ * the top; `replacing` names the saved text being edited, which keeps its
+ * place in the list under its new name and words. Either way a name already
+ * on the list is overwritten, as upstream did.
  */
-export function saveText(name: string, text: string): void {
+export function saveText(name: string, text: string, replacing?: string): void {
   const entry = { name: name.trim() || defaultName(text), text };
+  const saved = store().saved;
+  const at = saved.findIndex((s) => s.name === replacing);
+  const kept = saved.filter(
+    (s) => s.name !== entry.name && s.name !== replacing,
+  );
+  const place = at === -1 ? 0 : Math.min(at, kept.length);
   write({
     ...store(),
-    saved: [entry, ...store().saved.filter((s) => s.name !== entry.name)],
+    saved: [...kept.slice(0, place), entry, ...kept.slice(place)],
   });
 }
 

@@ -48,3 +48,30 @@ describe("custom text", () => {
     expect(book.savedTexts()).toEqual([{ name: "b", text: "khác" }]);
   });
 });
+
+describe("editing a saved text", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("keeps its place in the list, under a new name too", async () => {
+    const book = await import("../../src/ts/beartype/custom-text");
+    book.saveText("c", "ba");
+    book.saveText("b", "hai");
+    book.saveText("a", "một");
+    book.saveText("bb", "hai hai", "b");
+    expect(book.savedTexts()).toEqual([
+      { name: "a", text: "một" },
+      { name: "bb", text: "hai hai" },
+      { name: "c", text: "ba" },
+    ]);
+  });
+
+  it("goes to the top when the text it edited was deleted meanwhile", async () => {
+    const book = await import("../../src/ts/beartype/custom-text");
+    book.saveText("a", "một");
+    book.saveText("b", "hai", "gone");
+    expect(book.savedTexts().map((s) => s.name)).toEqual(["b", "a"]);
+  });
+});

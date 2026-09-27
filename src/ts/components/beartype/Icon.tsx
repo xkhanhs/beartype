@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 
 /** The icons in src/html/icons.html, by their id without the `i-`. */
 export type IconName =
+  | "arrow-left"
   | "arrow-right"
   | "check"
   | "chevron-down"
@@ -18,6 +19,7 @@ export type IconName =
   | "lock"
   | "pause"
   | "pencil"
+  | "play"
   | "rotate-cw"
   | "settings"
   | "x";
