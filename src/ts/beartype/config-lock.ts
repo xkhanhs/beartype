@@ -20,7 +20,7 @@ import {
 export const TIMES = [15, 30, 60, 120] as const;
 export const WORD_COUNTS = [10, 25, 50, 100] as const;
 export const LANGUAGES = ["vietnamese", "english"] as const;
-export const MODES = ["time", "words"] as const;
+export const MODES = ["time", "words", "custom"] as const;
 export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 /**
  * Chrome's zoom steps from 80% to 200%, in rem around upstream's 2rem. The

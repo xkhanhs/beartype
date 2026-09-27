@@ -44,7 +44,8 @@ describe("lockConfig", () => {
   it("drops values no longer on offer", () => {
     const config = lockConfig({
       ...getDefaultConfig(),
-      mode: "custom",
+      // upstream's quote mode, from a config older than the fork
+      mode: "quote" as Config["mode"],
       time: 45,
       words: 500,
       // an upstream language that no longer exists
@@ -56,6 +57,11 @@ describe("lockConfig", () => {
     expect(config.words).toBe(50);
     expect(config.language).toBe("vietnamese");
     expect(config.fontSize).toBe(2);
+  });
+
+  it("keeps the custom mode, which runs the typist's own text", () => {
+    const config = lockConfig({ ...getDefaultConfig(), mode: "custom" });
+    expect(config.mode).toBe("custom");
   });
 });
 

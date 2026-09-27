@@ -13,6 +13,7 @@ import {
   TIMES,
   WORD_COUNTS,
 } from "../../../beartype/config-lock";
+import { customText, wordsOf } from "../../../beartype/custom-text";
 import { t } from "../../../beartype/strings";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
@@ -20,26 +21,34 @@ import { restartTestEvent } from "../../../events/test";
 import { getFocus } from "../../../states/test";
 import { drillBaseMode } from "../../../test/practise-words";
 import { cn } from "../../../utils/cn";
-import { Icon } from "../../beartype/Icon";
+import {
+  CustomTextEditor,
+  openCustomTextEditor,
+} from "../../beartype/CustomTextEditor";
+import { Icon, type IconName } from "../../beartype/Icon";
 import { SettingsRow } from "../../beartype/SettingsRow";
 
-// beartype: upstream's bar also carried punctuation, numbers, quote, zen,
-// custom text and a custom length behind a modal. What is left is the test's
-// length and its language, drawn as keybear's options bar: one rounded strip,
-// the groups split by a thin rule, the choice in use filled with the accent.
+// beartype: upstream's bar also carried punctuation, numbers, quote, zen
+// and a custom length behind a modal. What is left is the test's language,
+// its length and the custom text, drawn as keybear's options bar: one rounded
+// strip, the groups split by a thin rule, the choice in use filled with the
+// accent. In the custom mode the lengths give way to one pill with the text's
+// word count, which opens the text's card.
 //
-// The strip is about 37.5rem wide in either language, and wants an inch of
-// air on each side, so under 40rem it folds into one pill saying what is set
-// -- the language, then the length in the accent with a clock or a hash for
-// which of the two it counts. The pill opens a card with the same choices in
-// rows, where they are free to wrap. A strip that scrolled sideways instead
-// would hide the choices at its end with nothing to say they are there.
+// The strip is at most about 44rem wide (the Vietnamese page, counting
+// words), and wants an inch of air on each side, so under 47rem it folds into
+// one pill saying what is set -- the language, then the length in the accent
+// with a clock, a hash or a pencil for which of the three it counts. The pill
+// opens a card with the same choices in rows, where they are free to wrap. A
+// strip that scrolled sideways instead would hide the choices at its end with
+// nothing to say they are there.
 
-const NARROW_SCREEN = "(width < 40rem)";
+const NARROW_SCREEN = "(width < 47rem)";
 
 const MODE_LABELS: Record<(typeof MODES)[number], () => string> = {
   time: () => t("modeTime"),
   words: () => t("modeWords"),
+  custom: () => t("modeCustom"),
 };
 
 const LANGUAGE_LABELS: Record<(typeof LANGUAGES)[number], () => string> = {
@@ -65,11 +74,12 @@ function mode(): string {
 
 /** The mode's own name, for the label a screen reader hears. */
 function modeLabel(): string {
-  return mode() === "words" ? t("modeWords") : t("modeTime");
+  return MODE_LABELS[mode() as (typeof MODES)[number]]();
 }
 
 /** What the test is set to run for, in the unit the mode counts. */
 function length(): number {
+  if (mode() === "custom") return wordsOf(customText()).length;
   return mode() === "words" ? getConfig.words : getConfig.time;
 }
 
@@ -79,7 +89,13 @@ const pickLanguage = (value: (typeof LANGUAGES)[number]): void => {
   setConfig("language", value);
   restartTestEvent.dispatch();
 };
+// the custom mode opens its card instead, and turns on from there once
+// there is a text to type -- again, when it is on, to change the text
 const pickMode = (value: (typeof MODES)[number]): void => {
+  if (value === "custom") {
+    openCustomTextEditor();
+    return;
+  }
   setConfig("mode", value);
   restartTestEvent.dispatch();
 };
@@ -129,6 +145,7 @@ export function TestConfig(): JSXElement {
       <Show when={narrow()} fallback={<Strip />}>
         <Summary />
       </Show>
+      <CustomTextEditor />
     </div>
   );
 }
@@ -158,28 +175,41 @@ function Strip(): JSXElement {
       </For>
       <span class="bt-options-divider"></span>
       <Show
-        when={mode() === "words"}
+        when={mode() !== "custom"}
         fallback={
-          <For each={TIMES}>
-            {(time) => (
+          <Pill
+            text={t("customTextWords", length())}
+            icon="pencil"
+            label={t("customTextEdit")}
+            active={false}
+            onClick={openCustomTextEditor}
+          />
+        }
+      >
+        <Show
+          when={mode() === "words"}
+          fallback={
+            <For each={TIMES}>
+              {(time) => (
+                <Pill
+                  text={`${time}`}
+                  active={getConfig.time === time}
+                  onClick={() => pickTime(time)}
+                />
+              )}
+            </For>
+          }
+        >
+          <For each={WORD_COUNTS}>
+            {(count) => (
               <Pill
-                text={`${time}`}
-                active={getConfig.time === time}
-                onClick={() => pickTime(time)}
+                text={`${count}`}
+                active={getConfig.words === count}
+                onClick={() => pickWords(count)}
               />
             )}
           </For>
-        }
-      >
-        <For each={WORD_COUNTS}>
-          {(count) => (
-            <Pill
-              text={`${count}`}
-              active={getConfig.words === count}
-              onClick={() => pickWords(count)}
-            />
-          )}
-        </For>
+        </Show>
       </Show>
     </div>
   );
@@ -187,6 +217,9 @@ function Strip(): JSXElement {
 
 function Pill(props: {
   text: string;
+  icon?: IconName;
+  /** What a screen reader hears, when the text alone does not say it. */
+  label?: string;
   active: boolean;
   onClick: () => void;
 }): JSXElement {
@@ -195,9 +228,11 @@ function Pill(props: {
       type="button"
       class="bt-options-pill"
       aria-pressed={props.active}
+      aria-label={props.label}
       onClick={() => props.onClick()}
       disabled={getFocus()}
     >
+      <Show when={props.icon}>{(icon) => <Icon name={icon()} />}</Show>
       {props.text}
     </button>
   );
@@ -250,7 +285,15 @@ function Summary(): JSXElement {
           ·
         </span>
         <span class="bt-options-summary-length">
-          <Icon name={mode() === "words" ? "hash" : "clock"} />
+          <Icon
+            name={
+              mode() === "custom"
+                ? "pencil"
+                : mode() === "words"
+                  ? "hash"
+                  : "clock"
+            }
+          />
           {length()}
         </span>
       </button>
@@ -273,29 +316,52 @@ function Summary(): JSXElement {
           <SettingsRow
             label={t("optionsMode")}
             options={MODES}
-            labels={{ time: MODE_LABELS.time(), words: MODE_LABELS.words() }}
+            labels={{
+              time: MODE_LABELS.time(),
+              words: MODE_LABELS.words(),
+              custom: MODE_LABELS.custom(),
+            }}
             value={mode()}
             onPick={pickMode}
           />
           <Show
-            when={mode() === "words"}
+            when={mode() !== "custom"}
             fallback={
-              <SettingsRow
-                label={t("optionsLength")}
-                options={TIMES}
-                labels={numberLabels(TIMES)}
-                value={getConfig.time}
-                onPick={pickTime}
-              />
+              <div class="bt-settings-row">
+                <div class="bt-settings-row-name">{t("customText")}</div>
+                <div class="bt-settings-choices">
+                  <button
+                    type="button"
+                    class="bt-settings-choice"
+                    aria-label={t("customTextEdit")}
+                    onClick={openCustomTextEditor}
+                  >
+                    {t("customTextWords", length())}
+                  </button>
+                </div>
+              </div>
             }
           >
-            <SettingsRow
-              label={t("optionsLength")}
-              options={WORD_COUNTS}
-              labels={numberLabels(WORD_COUNTS)}
-              value={getConfig.words}
-              onPick={pickWords}
-            />
+            <Show
+              when={mode() === "words"}
+              fallback={
+                <SettingsRow
+                  label={t("optionsLength")}
+                  options={TIMES}
+                  labels={numberLabels(TIMES)}
+                  value={getConfig.time}
+                  onPick={pickTime}
+                />
+              }
+            >
+              <SettingsRow
+                label={t("optionsLength")}
+                options={WORD_COUNTS}
+                labels={numberLabels(WORD_COUNTS)}
+                value={getConfig.words}
+                onPick={pickWords}
+              />
+            </Show>
           </Show>
         </div>
       </Show>

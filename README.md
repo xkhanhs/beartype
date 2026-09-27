@@ -25,6 +25,9 @@ không quote, không funbox. Chỉ còn một màn:
   phím mà chính bạn gõ gần đây. Từ nào chậm hẳn thì vào một sổ riêng, có nút
   luyện riêng, và màn kết quả vẽ cả bộ từ thành một thanh: theo kịp, chậm, chưa
   đo.
+- **Chữ tuỳ chỉnh**: dán một đoạn chữ của riêng bạn để gõ, đúng như viết (hoa
+  thường và dấu câu đều tính), và lưu lại nhiều đoạn để gõ hôm khác. Bài chữ
+  tuỳ chỉnh là bài tập, không vào sổ bài.
 - **Hai bài tập đẩy tốc độ**: một **con trỏ dẫn tốc** chạy trước theo 80, 100
   hay 120% tốc độ thường của máy này — 80% để tập cho thật chuẩn, 120% để ép
   nhanh hơn — và chế độ **chuẩn tuyệt đối**, gõ sai một phím là bài dừng.

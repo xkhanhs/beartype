@@ -81,6 +81,7 @@ const STRINGS = {
   // always has; a name a reader recognises beats a translated one.
   modeTime: { vi: "thời gian", en: "time" },
   modeWords: { vi: "số từ", en: "words" },
+  modeCustom: { vi: "tuỳ chỉnh", en: "custom" },
   languageVietnamese: { vi: "tiếng việt", en: "vietnamese" },
   languageEnglish: { vi: "english", en: "english" },
 
@@ -90,6 +91,36 @@ const STRINGS = {
   optionsLanguage: { vi: "ngôn ngữ", en: "language" },
   optionsMode: { vi: "kiểu", en: "mode" },
   optionsLength: { vi: "độ dài", en: "length" },
+
+  // the custom mode's card: the text to type, and the ones kept for later
+  customText: { vi: "chữ tuỳ chỉnh", en: "custom text" },
+  customTextEdit: { vi: "sửa chữ tuỳ chỉnh", en: "edit custom text" },
+  customTextPlaceholder: {
+    vi: "dán hoặc gõ đoạn chữ muốn luyện",
+    en: "paste or type the text to practise",
+  },
+  customTextCase: {
+    vi: "gõ đúng như viết: hoa thường và dấu câu đều tính",
+    en: "typed as written: capitals and punctuation count",
+  },
+  customTextWords: {
+    vi: (words: number) => `${words} từ`,
+    en: (words: number) => `${words} words`,
+  },
+  customTextStart: { vi: "gõ", en: "start" },
+  customTextSave: { vi: "lưu", en: "save" },
+  customTextName: {
+    vi: "tên để lưu (tuỳ chọn)",
+    en: "name to save (optional)",
+  },
+  customTextSaved: { vi: "đã lưu", en: "saved" },
+  customTextDelete: {
+    vi: (name: string) => `xoá “${name}”`,
+    en: (name: string) => `delete “${name}”`,
+  },
+  customTextConfirmDelete: { vi: "xoá", en: "delete" },
+  cancel: { vi: "huỷ", en: "cancel" },
+  close: { vi: "đóng", en: "close" },
 
   // the buttons under the words, and on the result
   newTestHint: {

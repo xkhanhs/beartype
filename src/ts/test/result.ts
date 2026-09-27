@@ -172,8 +172,8 @@ function updateCrownText(text: string): void {
 // The crown shows a new best and nothing else: a test that cannot count has
 // no place in the ranking at all.
 function updateCrown(dontSave: boolean): void {
-  // beartype: a drill from the miss book is practice, not a test with a best,
-  // and neither is a test too short to stand as one
+  // beartype: a drill, or the typist's own text, is practice, not a test
+  // with a best, and neither is a test too short to stand as one
   if (Config.mode === "custom" || dontSave || !DB.isStandard(result)) {
     hideCrown();
     return;

@@ -159,12 +159,12 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đặt mọi `svg` là `display: block`, nên icon nằm trong một nút `block`
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
-- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 40rem nó thu thành một viên
-  ghi cái đang chọn (ngôn ngữ, rồi độ dài trên nền accent kèm icon đồng hồ
-  hay `#`); bấm vào mở một thẻ cùng kiểu với thẻ cài đặt, ba hàng
+- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 47rem nó thu thành một viên
+  ghi cái đang chọn (ngôn ngữ, rồi độ dài trên nền accent kèm icon đồng hồ,
+  `#` hay bút chì); bấm vào mở một thẻ cùng kiểu với thẻ cài đặt, ba hàng
   `SettingsRow`, đóng bằng bấm ra ngoài hoặc Escape — chọn xong thẻ vẫn mở,
   vì người ta hay đổi mấy thứ một lúc. Dưới 20rem thì tên ngôn ngữ rút thành
-  `vi`/`en`. Đổi số lựa chọn trong thanh thì đo lại bề rộng và sửa mốc 40rem
+  `vi`/`en`. Đổi số lựa chọn trong thanh thì đo lại bề rộng và sửa mốc 47rem
   (`NARROW_SCREEN` trong `TestConfig.tsx`).
 - Cỡ chữ bài gõ đặt bằng `min(<cỡ đã chọn>rem, calc((100vw - 2rem) / 4.8))`:
   từ dài nhất của hai bộ từ là tám chữ và mỗi chữ rộng chừng 0.6em, nên màn
@@ -206,6 +206,18 @@ Test của beartype nằm ở `__tests__/beartype/`.
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
+- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): viên
+  "tuỳ chỉnh" trong thanh tuỳ chọn mở một `<dialog>` để dán chữ, bấm "gõ"
+  (hoặc Ctrl/Cmd + Enter) mới bật chế độ, nên chế độ không bao giờ chạy với
+  ô trống. Chữ và các bản đã lưu nằm ở khoá `beartype:v1:customtext`, không
+  ở `customTextSettings` của upstream: kho đó chỉ là bộ đệm bài gõ đọc ra, và
+  bài luyện cũng ghi vào đó, nên `init` của `test-logic.ts` chép chữ vào bộ
+  đệm mỗi lần chạy. Gõ đúng như viết, hoa thường và dấu câu đều tính (chế độ
+  `custom` là chế độ duy nhất generator không hạ chữ thường). Bài chữ tuỳ
+  chỉnh là bài tập như bài luyện: không lưu vào sổ bài, không vương miện,
+  không ghi vào sổ từ hay sai hay sổ từ chậm. Phím trong dialog dừng ở
+  dialog (listener gốc, không qua `onKeyDown` của Solid, vì Solid gắn
+  handler ở `document`), không thì trang bài gõ cướp phím.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.
