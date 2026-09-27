@@ -207,9 +207,13 @@ Test của beartype nằm ở `__tests__/beartype/`.
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
 - **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): viên
-  "tuỳ chỉnh" trong thanh tuỳ chọn mở một `<dialog>` để dán chữ, bấm "gõ"
-  (hoặc Ctrl/Cmd + Enter) mới bật chế độ, nên chế độ không bao giờ chạy với
-  ô trống. Chữ và các bản đã lưu nằm ở khoá `beartype:v1:customtext`, không
+  "tuỳ chỉnh" trong thanh tuỳ chọn mở một `<dialog>` có hai màn. Màn danh
+  sách: bấm một đoạn đã lưu là gõ luôn, bút chì để sửa, × để xoá (hỏi lại,
+  hai nút nổi đè lên cuối hàng để hàng không xê dịch), "+ đoạn mới" mở màn
+  soạn. Màn soạn luôn ghi rõ "đoạn mới" hay "sửa: <tên>", và lưu một đoạn
+  đang sửa thì ghi đè đúng đoạn đó, giữ chỗ trong danh sách. Chưa lưu gì thì
+  mở thẳng màn soạn. Chế độ chỉ bật khi bấm gõ, nên không bao giờ chạy với ô
+  trống. Chữ và các bản đã lưu nằm ở khoá `beartype:v1:customtext`, không
   ở `customTextSettings` của upstream: kho đó chỉ là bộ đệm bài gõ đọc ra, và
   bài luyện cũng ghi vào đó, nên `init` của `test-logic.ts` chép chữ vào bộ
   đệm mỗi lần chạy. Gõ đúng như viết, hoa thường và dấu câu đều tính (chế độ
