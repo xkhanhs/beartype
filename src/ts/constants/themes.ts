@@ -12,9 +12,10 @@ const ThemeSchema = z.object({
   hasCss: z.boolean().optional(),
   /**
    * beartype: the colour of a letter the input method is still building -- `o`
-   * typed toward `ơ`. It falls back to the accent; a palette sets one here
-   * when its accent cannot be told from the letters on either side of it, as
-   * keybear does with the amber in its racing and pixel files.
+   * typed toward `ơ`. It falls back to whichever of the accent and the text
+   * colour the letters typed right do not take; a palette sets one here when
+   * that cannot be told from the letters on either side of it, as keybear
+   * does with the amber in its racing and pixel files.
    */
   partialLetter: hexColorSchema.optional(),
   bg: hexColorSchema,

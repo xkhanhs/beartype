@@ -73,10 +73,17 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   chọn. Mặc định là `auto`: xoay trong nhóm sáng hay tối tuỳ cài đặt của máy.
   Cấu hình lưu từ trước khi có khoá này, của người đã tự chọn màu
   (`autoSwitchTheme` tắt), được `lockConfig` để yên ở `off`.
-- Chữ đang dựng dấu lấy `--partial-letter-color`, mặc định là màu accent. Bảng
-  nào có accent lẫn với chữ đã gõ hoặc chữ chưa gõ thì đặt `partialLetter`
-  trong `constants/themes.ts` (midnight lấy màu hổ phách của keybear, như
-  racing và pixel đặt trong file css của chúng).
+- Chữ gõ đúng lấy màu accent, như colorful mode của monkeytype, trừ hai
+  trường hợp thì giữ màu chữ: accent cùng sắc với màu chữ sai (đỏ, hồng, cam,
+  lệch dưới 45° trong OKLab, như bushido, carbon, vesper) hoặc accent quá mờ
+  trên nền (APCA dưới Lc 45, như serika, midnight). `typedLetterColor` trong
+  `beartype/contrast.ts` đo từng bảng, `Theme.tsx` ghi ra `--kb-typed-letter`.
+  Chữ sai vẫn là `--error-color`.
+- Chữ đang dựng dấu lấy `--partial-letter-color`, mặc định là màu nào trong
+  hai màu accent và màu chữ mà chữ gõ đúng không lấy (`--kb-building-letter`).
+  Bảng nào vẫn lẫn thì đặt `partialLetter` trong `constants/themes.ts`
+  (midnight lấy màu hổ phách của keybear, như racing và pixel đặt trong file
+  css của chúng).
 - Bàn phím ảo: `src/ts/components/pages/test/Keymap.tsx` và `keymapLayouts.ts`
   (chỉ QWERTY, hàng chữ và phím cách, chế độ `react`), trạng thái trong
   `src/ts/states/test.ts`. Phím sáng theo ký tự hệ thống nhận (`event.key`), chữ

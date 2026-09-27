@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { THEMES } from "../../src/ts/beartype/config-lock";
-import { readability, textOnAccent } from "../../src/ts/beartype/contrast";
+import {
+  MIN_TYPED_READABILITY,
+  readability,
+  sameHue,
+  textOnAccent,
+  typedLetterColor,
+} from "../../src/ts/beartype/contrast";
 import { themes } from "../../src/ts/constants/themes";
 
 describe("readability", () => {
@@ -76,5 +82,55 @@ describe("textOnAccent", () => {
         `${name} labels its filled pills too faintly`,
       ).toBeGreaterThanOrEqual(FLOOR);
     }
+  });
+});
+
+describe("typedLetterColor", () => {
+  const typed = (name: keyof typeof themes): string => {
+    const { main, bg, error, text } = themes[name];
+    return typedLetterColor(main, bg, error, text);
+  };
+
+  it("writes typed letters in the accent", () => {
+    expect(typed("nord")).toBe(themes.nord.main);
+    expect(typed("keybear_light")).toBe(themes.keybear_light.main);
+    // mustard is the nearest hue to red that still counts as apart
+    expect(typed("gruvbox_dark")).toBe(themes.gruvbox_dark.main);
+  });
+
+  it("keeps the text colour where the accent is a red", () => {
+    for (const name of [
+      "bushido",
+      "modern_ink",
+      "carbon",
+      "keybear_racing",
+      "vesper",
+    ] as const) {
+      expect(typed(name), name).toBe(themes[name].text);
+    }
+  });
+
+  it("keeps the text colour where the accent is too faint on the page", () => {
+    expect(typed("serika")).toBe(themes.serika.text);
+    expect(typed("midnight")).toBe(themes.midnight.text);
+  });
+
+  it("never gives a typed letter the hue of a wrong one", () => {
+    for (const name of THEMES) {
+      const { main, bg, error, text } = themes[name];
+      const chosen = typedLetterColor(main, bg, error, text);
+      if (chosen === main) {
+        expect(sameHue(main, error), name).toBe(false);
+        expect(readability(main, bg), name).toBeGreaterThanOrEqual(
+          MIN_TYPED_READABILITY,
+        );
+      } else {
+        expect(chosen, name).toBe(text);
+      }
+    }
+  });
+
+  it("does not take a grey for a red", () => {
+    expect(sameHue("#5f605e", "#c43c53")).toBe(false);
   });
 });

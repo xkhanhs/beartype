@@ -67,6 +67,8 @@ describe("Theme component", () => {
     --colorful-error-color: #f55;
     --colorful-error-extra-color: #c55;
     --kb-on-accent: #000;
+    --kb-typed-letter: #fff;
+    --kb-building-letter: #fff;
 }`);
   });
 
@@ -76,6 +78,7 @@ describe("Theme component", () => {
       bg: "#f00",
       main: "#fff",
       text: "#000",
+      error: "#f00",
     } as any);
     const { style } = renderComponent();
 
@@ -92,7 +95,13 @@ describe("Theme component", () => {
   });
 
   it("removes CSS when theme has no CSS", async () => {
-    const theme = { name: "light", bg: "#fff", main: "#000", text: "#111" };
+    const theme = {
+      name: "light",
+      bg: "#fff",
+      main: "#000",
+      text: "#111",
+      error: "#f00",
+    };
     // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => theme as any);
     const { css } = renderComponent();
@@ -100,7 +109,13 @@ describe("Theme component", () => {
   });
 
   it("removes CSS when theme is custom", async () => {
-    const theme = { name: "custom", bg: "#fff", main: "#000", text: "#111" };
+    const theme = {
+      name: "custom",
+      bg: "#fff",
+      main: "#000",
+      text: "#111",
+      error: "#f00",
+    };
     // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => theme as any);
     const { css } = renderComponent();

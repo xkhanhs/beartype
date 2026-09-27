@@ -74,3 +74,75 @@ export function textOnAccent(main: string, bg: string, text: string): string {
     readability(candidate, main) > readability(best, main) ? candidate : best,
   );
 }
+
+/** A colour in OKLab: lightness, then the two axes its hue and chroma sit on. */
+function oklab(hex: string): [number, number, number] {
+  let digits = hex.replace("#", "");
+  if (digits.length === 3) {
+    digits = [...digits].map((d) => d + d).join("");
+  }
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(digits.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  }) as [number, number, number];
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+
+/**
+ * Below this OKLab chroma a colour reads as a grey, and a grey has no hue to
+ * be mistaken for red.
+ */
+const GREY_CHROMA = 0.04;
+
+/**
+ * How far apart two hues must be, in degrees, before a letter in one is not
+ * taken for a letter in the other. The accents that fall inside are the reds,
+ * pinks, oranges and peaches: bushido and modern ink sit on their own red,
+ * carbon and vesper light at 20 to 25 degrees, vesper's peach at 39. Gruvbox's
+ * mustard, at 47, is the nearest that stays.
+ */
+const MIN_HUE_APART = 45;
+
+/** Whether `a` and `b` share a hue closely enough to be taken for each other. */
+export function sameHue(a: string, b: string): boolean {
+  const [, a1, a2] = oklab(a);
+  const [, b1, b2] = oklab(b);
+  if (Math.hypot(a1, a2) < GREY_CHROMA || Math.hypot(b1, b2) < GREY_CHROMA) {
+    return false;
+  }
+  let apart =
+    Math.abs(Math.atan2(a2, a1) - Math.atan2(b2, b1)) * (180 / Math.PI);
+  if (apart > 180) apart = 360 - apart;
+  return apart < MIN_HUE_APART;
+}
+
+/**
+ * What APCA asks of large text, which the words are: below it the letters
+ * already typed would grey out against the page.
+ */
+export const MIN_TYPED_READABILITY = 45;
+
+/**
+ * The colour of a letter typed right. The accent, so the words already typed
+ * carry the palette, as monkeytype's colourful mode has it -- unless the
+ * accent is a red, where a right letter would look like a wrong one, or too
+ * faint on the page to read (serika's yellow, midnight's blue-grey, which
+ * that palette lifted its text away from). There they keep the text colour.
+ */
+export function typedLetterColor(
+  main: string,
+  bg: string,
+  error: string,
+  text: string,
+): string {
+  if (sameHue(main, error)) return text;
+  if (readability(main, bg) < MIN_TYPED_READABILITY) return text;
+  return main;
+}

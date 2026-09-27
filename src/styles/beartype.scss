@@ -28,13 +28,25 @@ body.darkMode #words {
   text-shadow: none;
 }
 
+// beartype: letters typed right take the accent, as in monkeytype's colourful
+// mode, except on a red accent where they would read as wrong ones or one too
+// faint on the page; Theme.tsx measures that per palette (`typedLetterColor`
+// in beartype/contrast.ts).
+#words {
+  --correct-letter-color: var(--kb-typed-letter, var(--text-color));
+}
+
 // beartype: a letter the input method is still building -- `e` typed toward
 // `ế`. The target letter is what shows, fully marked, so without a sign of
 // its own an unfinished `ế` looks exactly like a finished one; keybear learnt
 // that a colour alone does not say it, hence the dotted underline, set deep
-// enough to clear the dot below of `ạ`.
+// enough to clear the dot below of `ạ`. Its colour is whichever of the accent
+// and the text colour the finished letters are not.
 #words .word letter.correct.partial {
-  color: var(--partial-letter-color, var(--main-color));
+  color: var(
+    --partial-letter-color,
+    var(--kb-building-letter, var(--main-color))
+  );
   text-decoration: underline dotted;
   text-decoration-color: currentColor;
   text-decoration-thickness: 2px;
