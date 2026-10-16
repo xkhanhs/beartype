@@ -16,8 +16,8 @@ không quote, không funbox. Chỉ còn một màn:
   hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
   trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
   tối tuỳ cài đặt của máy; đổi nhóm hoặc tắt hẳn trong thẻ cài đặt. Phông bài
-  gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh),
-  cỡ chữ theo các mức phóng của Chrome (80% tới 200%), và con trỏ mượt tuỳ
+  gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh;
+  chữ tuỳ chỉnh thì theo dấu trong đoạn), cỡ chữ theo các mức phóng của Chrome (80% tới 200%), và con trỏ mượt tuỳ
   chỉnh được.
 - **Luyện từ hay sai**: một sổ lưu những từ gõ sai, và một nút mở bài chỉ gồm
   những từ đó.
@@ -26,8 +26,9 @@ không quote, không funbox. Chỉ còn một màn:
   luyện riêng, và màn kết quả vẽ cả bộ từ thành một thanh: theo kịp, chậm, chưa
   đo.
 - **Chữ tuỳ chỉnh**: dán một đoạn chữ của riêng bạn để gõ, đúng như viết (hoa
-  thường và dấu câu đều tính), và lưu lại nhiều đoạn để gõ hôm khác. Bài chữ
-  tuỳ chỉnh là bài tập, không vào sổ bài.
+  thường và dấu câu đều tính), và lưu lại nhiều đoạn để gõ hôm khác. Gõ theo
+  thời gian, theo số từ hay cả đoạn một lượt, theo thứ tự hoặc xáo trộn. Bài
+  chữ tuỳ chỉnh là bài tập, không vào sổ bài.
 - **Hai bài tập đẩy tốc độ**: một **con trỏ dẫn tốc** chạy trước theo 80, 100
   hay 120% tốc độ thường của máy này — 80% để tập cho thật chuẩn, 120% để ép
   nhanh hơn — và chế độ **chuẩn tuyệt đối**, gõ sai một phím là bài dừng.

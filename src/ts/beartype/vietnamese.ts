@@ -132,6 +132,14 @@ export function marksOf(char: string): readonly string[] {
   return marks.every((mark) => MARKS.has(mark)) ? marks : [];
 }
 
+/**
+ * Đoạn chữ có chữ nào đội dấu tiếng Việt không: `Hà Nội` có, `Hanoi` không.
+ * Chữ tuỳ chỉnh không mang ngôn ngữ, nên phông bài gõ đoán theo cái này.
+ */
+export function hasVietnameseMarks(text: string): boolean {
+  return [...text.toLowerCase()].some((char) => marksOf(char).length > 0);
+}
+
 const TONES = "̣̀́̃̉";
 
 /**

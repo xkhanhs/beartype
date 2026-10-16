@@ -14,6 +14,7 @@ import {
   deleteText,
   savedTexts,
   saveText,
+  setCustomLength,
   setCustomText,
   wordsOf,
 } from "../../beartype/custom-text";
@@ -40,11 +41,19 @@ export function openCustomTextEditor(): void {
  */
 type View = { kind: "list" } | { kind: "edit"; editing: string | null };
 
-/** Runs `text` as the custom test, closing the card. */
-function start(text: string): void {
+/**
+ * Runs the custom test -- on `text` when given, else on the text it last ran
+ * -- closing the card. Coming from the word list, or a drill, the test keeps
+ * the length it had: 30 seconds of the list become 30 seconds of the text.
+ */
+export function startCustomText(text = customText()): void {
   if (wordsOf(text).length === 0) return;
   setCustomText(text);
   setOpen(false);
+  if (!PractiseWords.customSource()) {
+    const base = PractiseWords.drillBaseMode() ?? getConfig.mode;
+    setCustomLength(base === "words" ? "words" : "time");
+  }
   // a drill runs in this mode too, and would otherwise go on
   PractiseWords.resetBefore();
   setConfig("mode", "custom");
@@ -53,11 +62,7 @@ function start(text: string): void {
 
 /** The custom test running now, from outside a drill. */
 function running(text: string): boolean {
-  return (
-    getConfig.mode === "custom" &&
-    PractiseWords.drillKind() === null &&
-    text === customText()
-  );
+  return PractiseWords.customSource() && text === customText();
 }
 
 /**
@@ -138,7 +143,7 @@ export function CustomTextEditor(): JSXElement {
     if (e.key !== "Enter" || view().kind !== "edit") return;
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
-      start(draft());
+      startCustomText(draft());
     } else if (e.target === nameBox()) {
       e.preventDefault();
       save();
@@ -205,7 +210,7 @@ export function CustomTextEditor(): JSXElement {
                         class="bt-custom-saved-load"
                         aria-label={t("customTextPlay", saved.name)}
                         aria-current={running(saved.text) ? "true" : undefined}
-                        onClick={() => start(saved.text)}
+                        onClick={() => startCustomText(saved.text)}
                       >
                         <Icon name="play" />
                         <span class="bt-custom-saved-name">{saved.name}</span>
@@ -315,7 +320,7 @@ export function CustomTextEditor(): JSXElement {
               type="button"
               class="bt-settings-choice bt-custom-start"
               disabled={words() === 0}
-              onClick={() => start(draft())}
+              onClick={() => startCustomText(draft())}
             >
               {t("customTextStart")}
             </button>

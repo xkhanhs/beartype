@@ -33,7 +33,7 @@ monkeytype, tìm ở đây trước.
 | `test/test-ui.ts` | `updateWordLetters` vẽ từ đang gõ bằng `beartype/word-html.ts` | mỗi chữ đích một ô, chữ đang dựng dấu là `partial` |
 | `test/test-ui.ts` | phím gõ sai dưới chữ (`indicateTypos: "below"`) lấy từ `typoHints` của `beartype/word-html.ts` | cùng phép so với cách vẽ từ, nên chữ đang dựng dấu không bao giờ bị treo phím sai |
 | `components/pages/test/Keymap.tsx` | bàn phím ảo sáng theo **ký tự của `keydown`** (`event.key`), chữ có dấu sáng phím Telex cuối của nó (`ơ` sáng `w`, `ế` sáng `s`); `event.code` chỉ dùng khi không có ký tự; ký tự sai (từ `insert-text.ts`) tô đỏ phím của chính ký tự ấy | upstream sáng theo ký tự chèn vào ô nhập, mà `ế` không phải phím nào; còn `event.code` thì sai với bố cục không phải QWERTY (Colemak), và VTX gõ bằng phím giả mã 0 nên mọi phím thành `KeyA` |
-| `ui.ts` | `applyTypingFont`: phông bài gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh), không có bộ chọn phông; hai phông preload và `font-display: block` | con trỏ và chỗ xuống dòng đo theo phông của chữ, nên phông không được đổi giữa lúc vẽ |
+| `ui.ts` | một `createEffect`: phông bài gõ theo ngôn ngữ (Be Vietnam Pro cho tiếng Việt, Roboto Mono cho tiếng Anh), chữ tuỳ chỉnh thì theo dấu trong đoạn (`hasVietnameseMarks`), không có bộ chọn phông; hai phông preload và `font-display: block` | con trỏ và chỗ xuống dòng đo theo phông của chữ, nên phông không được đổi giữa lúc vẽ |
 | `test/caret.ts` | `updatePosition`: chỉ số chữ lấy từ `caretIndex` | con trỏ không nhảy tới rồi lùi khi bộ gõ viết lại chữ |
 | `test/words-generator.ts` | `withToneStyle(từ, getToneStyle())` trước khi trả từ | vẽ `hoà`/`hòa` theo kiểu bộ gõ của máy |
 | `test/test-logic.ts` | `learnToneStyle(getInputHistory(eventLog))` khi kết thúc bài | học kiểu bỏ dấu từ chính những gì đã gõ |
@@ -44,8 +44,9 @@ monkeytype, tìm ở đây trước.
 | `test/test-logic.ts` | kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với kỷ lục cũ | không có tài khoản; mọi thứ nằm trên máy |
 | `test/test-logic.ts` | `init`: không tải được danh sách từ hay không tạo được bài thì dừng ngay, ghi lý do lên màn (`elements/test-init-failed.ts`) và đưa focus vào nút gõ lại; `utils/json-data.ts` không giữ lần tải hỏng | upstream gọi lại `init` ba lần liền, báo bằng thông báo nổi mà beartype không gắn, và giữ lần tải hỏng nên gõ lại không bao giờ tải được |
 | `test/test-logic.ts` | hai chốt chống gian lận (cửa sổ lấy lại focus, tab hiện lại) khởi động lại với `withSameWordset: isRepeated()` | bài gõ lại giữ nguyên từ |
+| `test/result.ts` | màn kết quả hiện ra mà không gọi `scrollToCenterOrTop` | ở cửa sổ thấp trang nhảy đúng lúc kết quả hiện |
 | `test/practise-words.ts` | chỉ còn `initFromWords`: bài luyện là một bài `custom` nội bộ | luyện từ hay sai dùng lại đường chạy bài custom của upstream |
-| `test/test-logic.ts` | `init`: chế độ `custom` ngoài bài luyện chép chữ của người gõ (`beartype/custom-text.ts`) vào `customTextSettings` rồi mới dựng bài, chạy theo thứ tự (`repeat`), đúng một lượt | kho của upstream là bộ đệm chung với bài luyện; chữ tuỳ chỉnh không mất khi luyện xong |
+| `test/test-logic.ts` | `init`: chế độ `custom` ngoài bài luyện chép chữ của người gõ (`beartype/custom-text.ts`) vào `customTextSettings` rồi mới dựng bài, theo thứ tự (`repeat`) hay xáo (`shuffle`), giới hạn theo thời gian, số từ hay đúng một lượt (`customRun`) | kho của upstream là bộ đệm chung với bài luyện; chữ tuỳ chỉnh không mất khi luyện xong |
 
 Đường vận chuyển phím (`input/handlers`, `input/listeners`, `input-element.ts`),
 gom khung hình (`utils/debounced-animation-frame.ts`), cuộn dòng và

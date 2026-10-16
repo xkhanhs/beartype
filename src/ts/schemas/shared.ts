@@ -2,8 +2,9 @@ import { literal, z } from "zod";
 import { StringNumberSchema } from "./util";
 
 /**
- * A person picks time or words (`MODES` in `beartype/config-lock.ts`). Custom
- * is the drills': `test/practise-words.ts#initFromWords` sets it directly,
+ * Time and words run the word list. Custom runs the typist's own text
+ * (`beartype/custom-text.ts`), which keeps its own time-or-words choice, and
+ * the drills: `test/practise-words.ts#initFromWords` sets it directly,
  * unsaved, to run a shuffled test of the words kept being missed, or of the
  * words typed right but slowly.
  */

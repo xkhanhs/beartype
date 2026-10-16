@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import {
+  hasVietnameseMarks,
   markCount,
   stepsToward,
   toneStyleOf,
@@ -93,4 +94,11 @@ test("đổi lối không đụng tới từ hai lối viết như nhau", () => 
     expect(withToneStyle(word, "old")).toBe(word);
     expect(withToneStyle(word, "new")).toBe(word);
   }
+});
+
+test("đoạn chữ có một chữ đội dấu tiếng Việt là đủ", () => {
+  expect(hasVietnameseMarks("Hà Nội mùa thu")).toBe(true);
+  expect(hasVietnameseMarks("ĐI DI")).toBe(true);
+  expect(hasVietnameseMarks("The quick, brown fox.")).toBe(false);
+  expect(hasVietnameseMarks("")).toBe(false);
 });

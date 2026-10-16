@@ -116,8 +116,10 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   Cấu hình lưu từ trước khi có khoá này lấy ngôn ngữ trang theo bộ từ đang
   gõ, không theo trình duyệt.
 - Phông: giao diện là Quicksand; bài gõ dùng một phông theo ngôn ngữ, Be Vietnam
-  Pro cho tiếng Việt và Roboto Mono cho tiếng Anh (`applyTypingFont` trong
-  `ui.ts`, `@font-face` trong `beartype.scss`, preload trong
+  Pro cho tiếng Việt và Roboto Mono cho tiếng Anh (một `createEffect` trong
+  `ui.ts`; chữ tuỳ chỉnh có chữ đội dấu tiếng Việt thì lấy Be Vietnam Pro,
+  không thì Roboto Mono, bất kể ngôn ngữ đang chọn; `@font-face` trong
+  `beartype.scss`, preload trong
   `src/html/head.html`). File ở `static/fonts-ui/` (mỗi phông một bộ `latin` và
   một bộ `vietnamese`) và `static/webfonts/` (phần latin của Roboto Mono).
 - Icon: một sprite SVG ở `src/html/icons.html` (Lucide, và dấu GitHub của
@@ -166,13 +168,26 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đặt mọi `svg` là `display: block`, nên icon nằm trong một nút `block`
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
-- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 47rem nó thu thành một viên
-  ghi cái đang chọn (ngôn ngữ, rồi độ dài trên nền accent kèm icon đồng hồ,
-  `#` hay bút chì); bấm vào mở một thẻ cùng kiểu với thẻ cài đặt, ba hàng
-  `SettingsRow`, đóng bằng bấm ra ngoài hoặc Escape — chọn xong thẻ vẫn mở,
-  vì người ta hay đổi mấy thứ một lúc. Dưới 20rem thì tên ngôn ngữ rút thành
-  `vi`/`en`. Đổi số lựa chọn trong thanh thì đo lại bề rộng và sửa mốc 47rem
-  (`NARROW_SCREEN` trong `TestConfig.tsx`).
+- Thanh tuỳ chọn mở đầu bằng hai tab **nguồn chữ**: ngẫu nhiên (bộ từ của
+  app) và tuỳ chỉnh (chữ của người gõ). Nhóm sau đổi theo tab: ngẫu nhiên thì
+  là ngôn ngữ, tuỳ chỉnh thì là bút chì (sửa chữ) và nút xáo trộn — chữ tuỳ
+  chỉnh không có ngôn ngữ để chọn. Rồi tới **chế độ** (thời gian hay số từ,
+  cho cả hai nguồn, cùng `Config.time` / `Config.words`; tuỳ chỉnh có thêm
+  "cả đoạn", gõ hết đoạn một lần) và độ dài. Đổi nguồn thì giữ chế độ và độ
+  dài: 30 giây bộ từ thành 30 giây chữ của mình; từ "cả đoạn" về bộ từ thì
+  lấy thời gian. Thanh không ghi tên nhóm nào, nên mỗi nhóm là một
+  `role="group"` có bong bóng ghi tên khi rê chuột (trừ nhóm bút chì và xáo
+  trộn, mỗi icon đã có bong bóng riêng). `.bt-options` không được là hộp
+  cuộn, vì hộp cuộn cắt bong bóng.
+- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 55rem nó thu thành một viên
+  ghi cái đang chọn (ngôn ngữ, hay "tuỳ chỉnh", rồi độ dài trên nền accent
+  kèm icon đồng hồ, `#` hay bút chì); bấm vào mở một thẻ cùng kiểu với thẻ
+  cài đặt, mỗi nhóm một hàng `SettingsRow`, đóng bằng bấm ra ngoài hoặc
+  Escape — chọn xong thẻ vẫn mở, vì người ta hay đổi mấy thứ một lúc. Dưới
+  20rem thì tên ngôn ngữ rút thành `vi`/`en`. Đổi số lựa chọn trong thanh
+  thì đo lại bề rộng (rộng nhất là trang tiếng Việt, tab ngẫu nhiên, chế độ
+  thời gian: 52rem) và sửa mốc 55rem (`NARROW_SCREEN` trong
+  `TestConfig.tsx`).
 - Cỡ chữ bài gõ đặt bằng `min(<cỡ đã chọn>rem, calc((100vw - 2rem) / 4.8))`:
   từ dài nhất của hai bộ từ là tám chữ và mỗi chữ rộng chừng 0.6em, nên màn
   hẹp tự hạ cỡ thay vì để chữ tràn ra. Chỗ nào cần chiều cao một chữ thì đọc
@@ -213,15 +228,19 @@ Test của beartype nằm ở `__tests__/beartype/`.
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
-- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): viên
-  "tuỳ chỉnh" trong thanh tuỳ chọn mở một `<dialog>` có hai màn. Màn danh
+- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): bút
+  chì trên thanh tuỳ chọn (hoặc tab "tuỳ chỉnh" khi chưa có chữ, hay khi đang
+  ở tab đó rồi) mở một
+  `<dialog>` có hai màn. Màn danh
   sách: bấm một đoạn đã lưu là gõ luôn, bút chì để sửa, × để xoá (hỏi lại,
   hai nút nổi đè lên cuối hàng để hàng không xê dịch), "+ đoạn mới" mở màn
   soạn. Màn soạn luôn ghi rõ "đoạn mới" hay "sửa: <tên>", và lưu một đoạn
   đang sửa thì ghi đè đúng đoạn đó, giữ chỗ trong danh sách. Chưa lưu gì thì
   mở thẳng màn soạn. Chế độ chỉ bật khi bấm gõ, nên không bao giờ chạy với ô
-  trống. Chữ và các bản đã lưu nằm ở khoá `beartype:v1:customtext`, không
-  ở `customTextSettings` của upstream: kho đó chỉ là bộ đệm bài gõ đọc ra, và
+  trống. Chữ, các bản đã lưu, chế độ (`by`) và xáo trộn (`shuffle`) nằm ở
+  khoá `beartype:v1:customtext` (kho lưu trước khi có `by` chạy cả đoạn,
+  theo thứ tự), không ở `customTextSettings` của upstream: kho đó chỉ là bộ
+  đệm bài gõ đọc ra, và
   bài luyện cũng ghi vào đó, nên `init` của `test-logic.ts` chép chữ vào bộ
   đệm mỗi lần chạy. Gõ đúng như viết, hoa thường và dấu câu đều tính (chế độ
   `custom` là chế độ duy nhất generator không hạ chữ thường). Bài chữ tuỳ
