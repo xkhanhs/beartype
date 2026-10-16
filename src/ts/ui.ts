@@ -1,26 +1,33 @@
-import { Config, getConfig } from "./config/store";
+import { getConfig } from "./config/store";
 import * as Caret from "./test/caret";
-import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { getActivePage } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
+import { customText } from "./beartype/custom-text";
+import { hasVietnameseMarks } from "./beartype/vietnamese";
+import { customSource } from "./test/practise-words";
 import { convertRemToPixels } from "./utils/numbers";
 import { getResultVisible } from "./states/test";
 import { translateDom } from "./beartype/dom-strings";
 import { updateTitle } from "./utils/misc";
 
 // One typing font per language, each falling back to a system font of the
-// same kind; see the @font-face rules in beartype.scss.
-function applyTypingFont(): void {
-  const font =
-    Config.language === "vietnamese"
-      ? '"Be Vietnam Pro", system-ui, sans-serif'
-      : '"Roboto Mono", ui-monospace, monospace';
+// same kind; see the @font-face rules in beartype.scss. The typist's own text
+// has no language: a text with Vietnamese marks on it gets the Vietnamese
+// font, whichever word list was picked before -- Roboto Mono is loaded for
+// latin only, and would leave the marks to a fallback font.
+createEffect(() => {
+  const vietnamese = customSource()
+    ? hasVietnameseMarks(customText())
+    : getConfig.language === "vietnamese";
+  const font = vietnamese
+    ? '"Be Vietnam Pro", system-ui, sans-serif'
+    : '"Roboto Mono", ui-monospace, monospace';
   document.documentElement.style.setProperty("--font", font);
-}
+});
 
 if (isDevEnvironment()) {
   qs("head title")?.setText(
@@ -70,8 +77,4 @@ createEffect(() => {
   document.documentElement.lang = getConfig.uiLanguage;
   updateTitle();
   translateDom();
-});
-
-configEvent.subscribe(({ key }) => {
-  if (key === "language") applyTypingFont();
 });
