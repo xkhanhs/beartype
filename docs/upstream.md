@@ -44,6 +44,7 @@ monkeytype, tìm ở đây trước.
 | `test/test-logic.ts` | kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với kỷ lục cũ | không có tài khoản; mọi thứ nằm trên máy |
 | `test/test-logic.ts` | `init`: không tải được danh sách từ hay không tạo được bài thì dừng ngay, ghi lý do lên màn (`elements/test-init-failed.ts`) và đưa focus vào nút gõ lại; `utils/json-data.ts` không giữ lần tải hỏng | upstream gọi lại `init` ba lần liền, báo bằng thông báo nổi mà beartype không gắn, và giữ lần tải hỏng nên gõ lại không bao giờ tải được |
 | `test/test-logic.ts` | hai chốt chống gian lận (cửa sổ lấy lại focus, tab hiện lại) khởi động lại với `withSameWordset: isRepeated()` | bài gõ lại giữ nguyên từ |
+| `test/result.ts` | màn kết quả hiện ra mà không gọi `scrollToCenterOrTop` | ở cửa sổ thấp trang nhảy đúng lúc kết quả hiện |
 | `test/practise-words.ts` | chỉ còn `initFromWords`: bài luyện là một bài `custom` nội bộ | luyện từ hay sai dùng lại đường chạy bài custom của upstream |
 | `test/test-logic.ts` | `init`: chế độ `custom` ngoài bài luyện chép chữ của người gõ (`beartype/custom-text.ts`) vào `customTextSettings` rồi mới dựng bài, theo thứ tự (`repeat`) hay xáo (`shuffle`), giới hạn theo thời gian, số từ hay đúng một lượt (`customRun`) | kho của upstream là bộ đệm chung với bài luyện; chữ tuỳ chỉnh không mất khi luyện xong |
 
