@@ -82,6 +82,9 @@ const STRINGS = {
   modeTime: { vi: "thời gian", en: "time" },
   modeWords: { vi: "số từ", en: "words" },
   modeCustom: { vi: "tuỳ chỉnh", en: "custom" },
+  modeText: { vi: "cả đoạn", en: "all" },
+  sourceRandom: { vi: "ngẫu nhiên", en: "random" },
+  shuffle: { vi: "xáo trộn", en: "shuffle" },
   languageVietnamese: { vi: "tiếng việt", en: "vietnamese" },
   languageEnglish: { vi: "english", en: "english" },
 
@@ -89,7 +92,8 @@ const STRINGS = {
   // card it opens, whose rows need the names the bar itself never showed
   testOptions: { vi: "tuỳ chọn bài gõ", en: "test options" },
   optionsLanguage: { vi: "ngôn ngữ", en: "language" },
-  optionsMode: { vi: "kiểu", en: "mode" },
+  optionsSource: { vi: "nguồn chữ", en: "words from" },
+  optionsMode: { vi: "chế độ", en: "mode" },
   optionsLength: { vi: "độ dài", en: "length" },
 
   // the custom mode's card: the text to type, and the ones kept for later

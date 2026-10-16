@@ -315,20 +315,19 @@ body,
 // shade below the page, keybear's border colour, inside a rim of its own.
 .bt-options {
   display: flex;
-  // one row always; a narrow screen scrolls it sideways instead
+  // one row always: a screen too narrow for it gets the folded pill instead,
+  // so the strip never scrolls -- and must not be a scroll box, which would
+  // clip the balloons of its icon pills
   flex-wrap: nowrap;
   gap: 0.4rem;
   align-items: center;
-  // `safe`, so a strip wider than the screen scrolls from its first pill
-  justify-content: safe center;
+  justify-content: center;
   // the same on every side, so a filled pill at either end sits as far from
   // the rim across as it does above and below. In whole pixels, with the
   // pill 28px tall, so no edge falls on half a pixel: the strip's round ends
   // (radius 20px inside the rim) and the pill's (14px) share a centre, and
   // the gap is 6px all the way round.
   padding: 0.375rem;
-  overflow-x: auto;
-  scrollbar-width: none;
   border: 2px solid var(--kb-strip-rim);
   border-radius: 99px;
   background-color: var(--kb-border);
@@ -376,6 +375,21 @@ button.bt-options-pill {
     outline-offset: 2px;
     box-shadow: none;
   }
+}
+
+// a group of pills, which names itself in a balloon
+.bt-options-group {
+  display: inline-flex;
+  flex: none;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+// an icon alone (the custom text's pencil and shuffle): a circle, not a pill
+button.bt-options-pill.bt-options-pill-icon {
+  justify-content: center;
+  inline-size: 1.75rem;
+  padding: 0;
 }
 
 // ----- the same bar on a narrow screen -----

@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-import { Config } from "../config/store";
+import { Config, getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import { configEvent } from "../events/config";
@@ -29,6 +29,11 @@ export const before: Before = {
 // the plain field wherever it is written.
 const [drillBaseMode, setDrillBaseMode] = createSignal<Mode | null>(null);
 export { drillBaseMode };
+
+/** Whether the words come from the typist's own text, not the word list. */
+export function customSource(): boolean {
+  return getConfig.mode === "custom" && drillBaseMode() === null;
+}
 
 // beartype: the book the drill that is on was built from, so each drill
 // button lights only for its own drill, and the next round is built again

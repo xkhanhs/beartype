@@ -22,6 +22,7 @@ export type IconName =
   | "play"
   | "rotate-cw"
   | "settings"
+  | "shuffle"
   | "x";
 
 /** One of the page's icons, as tall as the text around it. */

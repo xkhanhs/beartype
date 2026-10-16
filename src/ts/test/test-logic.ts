@@ -51,7 +51,13 @@ import * as TestInitFailed from "../elements/test-init-failed";
 import { setInputElementValue } from "../input/input-element";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
-import { customText, wordsOf } from "../beartype/custom-text";
+import {
+  customLength,
+  customRun,
+  customShuffle,
+  customText,
+  wordsOf,
+} from "../beartype/custom-text";
 import { setConfig } from "../config/setters";
 import {
   resetTestEvents,
@@ -249,17 +255,25 @@ async function init(): Promise<boolean> {
   // beartype: the custom mode runs the typist's own text, copied into the
   // buffer the generator reads each time -- a drill, which runs in the same
   // mode, writes its words there too. A text wiped from storage leaves
-  // nothing to type, and the test goes back to the default mode.
+  // nothing to type, and the test goes back to the word list, as long as the
+  // text was set to run.
   if (Config.mode === "custom" && PractiseWords.before.mode === null) {
     const words = wordsOf(customText());
     if (words.length === 0) {
-      setConfig("mode", "time");
+      setConfig("mode", customLength() === "words" ? "words" : "time");
     } else {
+      const run = customRun(
+        words.length,
+        customLength(),
+        customShuffle(),
+        Config.time,
+        Config.words,
+      );
       CustomText.setPipeDelimiter(false);
       CustomText.setText(words);
-      CustomText.setMode("repeat");
-      CustomText.setLimitMode("word");
-      CustomText.setLimitValue(words.length);
+      CustomText.setMode(run.mode);
+      CustomText.setLimitMode(run.limitMode);
+      CustomText.setLimitValue(run.limitValue);
     }
   }
 
