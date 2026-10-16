@@ -351,7 +351,9 @@ export async function update(
     duration: Misc.applyReducedMotion(125),
   });
 
-  Misc.scrollToCenterOrTop(resultEl?.native ?? null);
+  // beartype: upstream scrolled the result into the middle of the window,
+  // or to its top when taller -- on a short window the page jumped as the
+  // result came in. It stays where the test was; the reader scrolls.
   setResultCalculating(false);
   qs("#words")?.empty();
 }
