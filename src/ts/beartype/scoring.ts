@@ -492,6 +492,12 @@ export function isWrongKey(
  *
  * `creditPartial` is upstream's flag for the word the clock or a bail-out cut
  * short: its unfinished letters are not held against it.
+ *
+ * `correctWord`, what WPM is read from, is upstream's too: a word's keys count
+ * only when the whole word came out right, or when it is the cut-short word
+ * and nothing typed so far is wrong. A word committed with one wrong letter
+ * earns no speed at all, so typing fast and sloppy cannot outscore typing
+ * clean. `allCorrect` still holds every right key, for the raw speed.
  */
 export function countKeysAsChars(
   typed: string,
@@ -512,9 +518,11 @@ export function countKeysAsChars(
     !committed && creditPartial ? "cutoff" : "all",
     committed,
   );
+  const clean =
+    counts.incorrect === 0 && counts.extra === 0 && counts.missed === 0;
   return {
     allCorrect: counts.correct,
-    correctWord: counts.correct,
+    correctWord: clean ? counts.correct : 0,
     incorrect: counts.incorrect,
     extra: counts.extra,
     missed: counts.missed,

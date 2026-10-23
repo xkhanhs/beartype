@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   commitScore,
+  countKeysAsChars,
   cutoffScore,
   inTargetStyle,
   keyCounts,
@@ -115,5 +116,44 @@ describe("tone style", () => {
   it("leaves words with one place for the tone alone", () => {
     expect(inTargetStyle("toàn", "toàn")).toBe("toàn");
     expect(inTargetStyle("quý", "quý")).toBe("quý");
+  });
+});
+
+describe("speed counts whole right words only", () => {
+  it("counts every key and the space of a word typed right", () => {
+    const c = countKeysAsChars("cái ", "cái ", false);
+    expect(c.correctWord).toBe(5);
+    expect(c.allCorrect).toBe(5);
+  });
+
+  it("gives no speed to a word committed with one wrong letter", () => {
+    const c = countKeysAsChars("cáo ", "cái ", false);
+    expect(c.correctWord).toBe(0);
+    // the raw speed still sees the right keys
+    expect(c.allCorrect).toBeGreaterThan(0);
+  });
+
+  it("gives no speed to a word committed without its marks", () => {
+    expect(countKeysAsChars("tieng ", "tiếng ", false).correctWord).toBe(0);
+  });
+
+  it("gives no speed to a word committed short", () => {
+    expect(countKeysAsChars("ti ", "tiếng ", false).correctWord).toBe(0);
+  });
+
+  it("takes the other tone style as a right word", () => {
+    expect(countKeysAsChars("hoà ", "hòa ", false).correctWord).toBe(5);
+  });
+
+  it("credits the clock's last word while nothing in it is wrong", () => {
+    expect(countKeysAsChars("tie", "tiếng", true).correctWord).toBe(3);
+  });
+
+  it("gives no speed to the clock's last word once a key in it is wrong", () => {
+    expect(countKeysAsChars("tix", "tiếng", true).correctWord).toBe(0);
+  });
+
+  it("gives no speed to an unfinished last word the clock did not cut", () => {
+    expect(countKeysAsChars("tie", "tiếng", false).correctWord).toBe(0);
   });
 });

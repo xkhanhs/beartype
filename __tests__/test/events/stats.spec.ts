@@ -1284,10 +1284,10 @@ describe("stats.ts", () => {
       );
 
       const chars = getChars(buildEventLog());
-      // word 0 "しり " is fully correct (2 chars + separator); beartype also
-      // credits the "か" already typed toward the unfinished word 1, the way
-      // keybear counts a word in progress
-      expect(chars.correctWord).toBe(4);
+      // word 0 "しり " is fully correct (2 chars + separator); the "か" typed
+      // toward the unfinished word 1 earns no speed, since only whole right
+      // words do and the clock did not cut this one short
+      expect(chars.correctWord).toBe(3);
       expect(chars.incorrect).toBe(0);
       expect(chars.extra).toBe(0);
     });
