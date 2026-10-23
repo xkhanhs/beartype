@@ -25,7 +25,11 @@ import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
 import { getFocus } from "../../../states/test";
-import { customSource, drillBaseMode } from "../../../test/practise-words";
+import {
+  customSource,
+  drillBaseMode,
+  textDrill,
+} from "../../../test/practise-words";
 import { cn } from "../../../utils/cn";
 import {
   CustomTextEditor,
@@ -89,16 +93,18 @@ const LANGUAGE_TAGS: Record<(typeof LANGUAGES)[number], string> = {
   english: "en",
 };
 
-// a drill runs as upstream's custom mode, but on the list's words and as
-// long as the test it stands in for: the bar lights the word list and that
-// length, so the typist still sees how long the round is
+// a drill runs as upstream's custom mode, but on its source's words and as
+// long as the test it stands in for: the bar lights the source it came from
+// and that length, so the typist still sees how long the round is
 function source(): Source {
-  return customSource() ? "custom" : "random";
+  return customSource() || textDrill() ? "custom" : "random";
 }
 
 /** What the test counts: time or words, or the whole of a custom text. */
 function kind(): CustomLength {
   if (customSource()) return customLength();
+  // a text run once through has no length a drill shares: it takes a count
+  if (textDrill()) return customLength() === "time" ? "time" : "words";
   const mode = drillBaseMode() ?? getConfig.mode;
   return mode === "words" ? "words" : "time";
 }

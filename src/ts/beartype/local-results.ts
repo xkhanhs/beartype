@@ -45,13 +45,20 @@ export function getResults(): LocalResult[] {
   return storage.get();
 }
 
-export function saveResult(event: CompletedEvent): void {
+/**
+ * Keeps a test. `pool` stands in for its language when the words were not
+ * the word list's: a saved text's rounds are kept under the text's own pool.
+ */
+export function saveResult(
+  event: CompletedEvent,
+  pool: string = event.language,
+): void {
   const results = storage.get();
   results.push({
     timestamp: event.timestamp,
     mode: event.mode,
     mode2: event.mode2,
-    language: event.language,
+    language: pool,
     wpm: event.wpm,
     acc: event.acc,
     rawWpm: event.rawWpm,
@@ -61,6 +68,16 @@ export function saveResult(event: CompletedEvent): void {
     incompleteTestSeconds: event.incompleteTestSeconds,
   });
   storage.set(results.slice(-MAX_RESULTS));
+}
+
+/** Throws away every test in a pool: a saved text deleted takes its rounds. */
+export function forgetPool(pool: string): void {
+  storage.set(storage.get().filter((r) => statsLanguage(r.language) !== pool));
+}
+
+/** How many tests a pool holds. */
+export function countIn(pool: string): number {
+  return matching(pool).length;
 }
 
 /** Every test in `language`'s pool, whatever its mode and length. */
@@ -167,7 +184,9 @@ export function recentSummary(
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
   const recent = tests.slice(-RECENT);
-  const standard = tests.filter(isStandard);
+  // a saved text's rounds are all the same text, so any of them stands as
+  // its best; only the word list runs from sprints to minutes
+  const standard = tests.filter((t) => t.mode === "custom" || isStandard(t));
   return {
     best:
       standard.length === 0 ? null : Math.max(...standard.map((t) => t.wpm)),

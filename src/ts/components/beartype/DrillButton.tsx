@@ -10,6 +10,7 @@ import {
   drillKind,
   drillWords,
   initFromWords,
+  statsPool,
 } from "../../test/practise-words";
 import { cn } from "../../utils/cn";
 import { buildBalloonHtmlProperties } from "../common/Balloon";
@@ -24,7 +25,8 @@ const CLOSE_ICON =
   "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z";
 
 /**
- * Starts a round of nothing but one book's words, in the language on screen:
+ * Starts a round of nothing but one book's words, from what is on screen --
+ * the language of the word list, or the saved text being typed:
  * the words this pair of hands keeps missing (`miss`), or the ones it types
  * right but slowly (`slow`). It stands beside the restart button from the
  * moment the page opens, not only after a test: the book outlives the tab.
@@ -38,7 +40,7 @@ const CLOSE_ICON =
  * upstream's custom mode, which nothing else in beartype reaches.
  */
 export function DrillButton(props: { kind: DrillKind }): JSXElement {
-  const words = createMemo(() => drillWords(props.kind, getConfig.language));
+  const words = createMemo(() => drillWords(props.kind, statsPool()));
   const ready = (): boolean => words().length >= MIN_DRILL_WORDS;
   const active = (): boolean =>
     getConfig.mode === "custom" && drillKind() === props.kind;

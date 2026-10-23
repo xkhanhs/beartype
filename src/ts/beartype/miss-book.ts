@@ -153,12 +153,7 @@ export function recordMisses(
     stumbled,
   );
   // the merged page replaces every page it was merged from
-  const next: MissBook = { [pool]: page };
-  for (const [name, other] of Object.entries(current)) {
-    if (statsLanguage(name) !== pool) next[name] = other;
-  }
-  storage.set(next);
-  setBook(next);
+  writePage(pool, page);
 }
 
 /**
@@ -188,4 +183,28 @@ export function committedWords(
     }
   });
   return { words, typed, stumbled };
+}
+
+/** Writes the book, every page but `pool`'s as it was, and `pool`'s as given. */
+function writePage(pool: string, page: MissPage | null): void {
+  const next: MissBook = {};
+  for (const [name, other] of Object.entries(book())) {
+    if (statsLanguage(name) !== pool) next[name] = other;
+  }
+  if (page !== null) next[pool] = page;
+  storage.set(next);
+  setBook(next);
+}
+
+/** Throws away a pool's page: a saved text deleted takes its book with it. */
+export function forgetPool(pool: string): void {
+  writePage(pool, null);
+}
+
+/** Keeps only the words of a pool's page that are still in `words`. */
+export function keepWords(pool: string, words: ReadonlySet<string>): void {
+  const page = pageOf(book(), pool);
+  const kept = Object.entries(page).filter(([word]) => words.has(word));
+  if (kept.length === Object.keys(page).length) return;
+  writePage(pool, Object.fromEntries(kept));
 }

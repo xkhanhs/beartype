@@ -42,6 +42,8 @@ monkeytype, tìm ở đây trước.
 | `test/test-logic.ts` | cuối `finish`: ghi tốc độ từng từ gõ sạch vào sổ từ chậm (`beartype/slow-words.ts`); chỉ khi bài hợp lệ và không phải bài luyện | nút luyện từ chậm |
 | `test/test-logic.ts` | `restart`: tuỳ chọn `practise` và `leaveDrill`; bài mới trong lúc luyện là lượt luyện kế, dựng lại từ đúng sổ đang luyện (`PractiseWords.continueDrill`) | chế độ luyện giữ tới khi người gõ tự tắt |
 | `test/test-logic.ts` | kết quả hợp lệ lưu vào `beartype/local-results.ts` **sau** khi màn kết quả đã so với kỷ lục cũ | không có tài khoản; mọi thứ nằm trên máy |
+| `test/test-logic.ts`, `test/result.ts` | sổ bài, hai sổ từ và tóm tắt dưới màn kết quả ghi và đọc theo khoá sổ `PractiseWords.statsPool()`: ngôn ngữ của bộ từ, hay `text:<id>` của đoạn tuỳ chỉnh đã lưu; đoạn chưa lưu không ghi gì | phân tích cho cả hai nguồn chữ, đoạn nào sổ nấy |
+| `test/test-logic.ts` | cuối `finish`: dựng lịch sử từ (`beartype/word-history.ts`) cho mọi lượt, trước khi tốc độ của lượt vào sổ | words history và burst heatmap của upstream, đo như sổ từ chậm |
 | `test/test-logic.ts` | `init`: không tải được danh sách từ hay không tạo được bài thì dừng ngay, ghi lý do lên màn (`elements/test-init-failed.ts`) và đưa focus vào nút gõ lại; `utils/json-data.ts` không giữ lần tải hỏng | upstream gọi lại `init` ba lần liền, báo bằng thông báo nổi mà beartype không gắn, và giữ lần tải hỏng nên gõ lại không bao giờ tải được |
 | `test/test-logic.ts` | hai chốt chống gian lận (cửa sổ lấy lại focus, tab hiện lại) khởi động lại với `withSameWordset: isRepeated()` | bài gõ lại giữ nguyên từ |
 | `test/result.ts` | màn kết quả hiện ra mà không gọi `scrollToCenterOrTop` | ở cửa sổ thấp trang nhảy đúng lúc kết quả hiện |

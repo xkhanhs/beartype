@@ -8,6 +8,7 @@ import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as PbCrown from "./pb-crown";
 import * as Focus from "./focus";
+import * as PractiseWords from "./practise-words";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
 import { CompletedEvent } from "../schemas/results";
@@ -21,7 +22,10 @@ import {
 import { getAccuracy, getInputHistory } from "./events/stats";
 import type { IdleReason } from "../beartype/idle";
 import { locale, t } from "../beartype/strings";
-import { setResultHistory } from "../components/beartype/ResultHistory";
+import {
+  setResultHistory,
+  setUnsavedText,
+} from "../components/beartype/ResultHistory";
 
 let result: CompletedEvent;
 
@@ -142,13 +146,18 @@ function updateWords(): void {
 // language, whatever the mode, so the number just typed has something to be
 // read against
 function updateRecent(dontSave: boolean): void {
-  if (Config.mode === "custom") {
+  // a drill is practice and has no history; a saved text has its own, and a
+  // text not saved none, which the screen says
+  const pool = PractiseWords.statsPool();
+  const drill = PractiseWords.before.mode !== null;
+  setUnsavedText(PractiseWords.customSource() && pool === null);
+  if (drill || pool === null) {
     setResultHistory(null);
     return;
   }
   setResultHistory(
     DB.recentSummary(
-      result.language,
+      pool,
       // an invalid test is not kept, so it does not count here either
       dontSave
         ? null
