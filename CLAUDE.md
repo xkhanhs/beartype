@@ -269,7 +269,8 @@ Test của beartype nằm ở `__tests__/beartype/`.
   tỉ lệ với mốc của từ cùng số phím trong sổ (chưa có mốc thì lấy trung vị
   của chính lượt đó): năm nấc, hai nấc chậm nhất nằm dưới `SLOW_BELOW`,
   nấc chậm nhất mang accent và nấc nhanh nhất mờ đi, như thanh từ chậm. Từ
-  có phím sai là chữ đỏ gạch lượn. Gập sau nút "xem từng từ", mở rồi thì
+  có phím sai chỉ là chữ đỏ, không gạch chân: gạch lượn dưới cả dòng chữ
+  khó đọc. Gập sau nút "xem từng từ", mở rồi thì
   giữ mở cho các lượt sau. Mở ra là một hộp cuộn cao tối đa 11rem nên đoạn
   dài cũng vừa; vì thế từ không mang bong bóng (hộp cuộn cắt bong bóng) mà
   ghi tốc độ và chữ đã gõ ở một dòng ngay dưới hộp khi rê chuột hay tab tới.
