@@ -46,15 +46,16 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   bỏ dấu (`vietnamese.ts`, `tone-style.ts`), vẽ từ đang gõ (`word-html.ts`), khoá
   cấu hình (`config-lock.ts`: những khoá người dùng được đổi và giá trị cho
   phép), kết quả lưu trên máy (`local-results.ts`), sổ từ hay sai
-  (`miss-book.ts`), sổ từ gõ đúng mà chậm (`slow-words.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
+  (`miss-book.ts`), sổ từ gõ đúng mà chậm (`slow-words.ts`), từng từ của
+  lượt vừa gõ tô theo tốc độ (`word-history.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
   `dom-strings.ts`), tốc độ để chạy theo (`pace.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
   con trỏ dẫn tốc, chuẩn tuyệt đối, cỡ chữ, hiện phím gõ sai, xoay màu, bàn
   phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
   (`LanguageMenu`), hai nút luyện (`DrillButton`, một cho từ hay sai, một
-  cho từ chậm), sổ bài gần đây và thanh từ chậm dưới màn kết quả
-  (`ResultHistory`), icon (`Icon`).
+  cho từ chậm), từng từ của lượt vừa gõ (`WordHistory`), sổ bài gần đây và
+  thanh từ chậm dưới màn kết quả (`ResultHistory`), icon (`Icon`).
 - Màu: chín bảng của keybear, hai mươi hai bảng tối và bảy bảng sáng chép từ
   monkeytype (`src/ts/constants/themes.ts`, tên trong
   `src/ts/schemas/themes.ts`). Chữ trên nền accent (`--kb-on-accent`) không
@@ -243,11 +244,33 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đệm bài gõ đọc ra, và
   bài luyện cũng ghi vào đó, nên `init` của `test-logic.ts` chép chữ vào bộ
   đệm mỗi lần chạy. Gõ đúng như viết, hoa thường và dấu câu đều tính (chế độ
-  `custom` là chế độ duy nhất generator không hạ chữ thường). Bài chữ tuỳ
-  chỉnh là bài tập như bài luyện: không lưu vào sổ bài, không vương miện,
-  không ghi vào sổ từ hay sai hay sổ từ chậm. Phím trong dialog dừng ở
+  `custom` là chế độ duy nhất generator không hạ chữ thường). Ngẫu nhiên
+  hay tuỳ chỉnh chỉ là nguồn chữ, phân tích có cho cả hai: mỗi **đoạn đã
+  lưu** có sổ bài, sổ từ hay sai, sổ từ chậm và hai nút luyện của riêng nó,
+  dưới khoá sổ `text:<id>` (`textPool` trong `stats-language.ts`, chọn bởi
+  `statsPool` trong `test/practise-words.ts`) — không trộn vào trung bình,
+  kỷ lục hay con trỏ dẫn tốc của bộ từ. `id` gắn lúc lưu (đoạn lưu trước khi
+  có `id` được gắn lúc nạp) nên đổi tên hay sửa chữ vẫn giữ sổ; sửa bỏ từ
+  nào thì từ đó rời sổ. Một đoạn là "đoạn đã lưu" khi chữ đang chạy trùng
+  từng chữ với nó; đoạn chưa lưu vẫn có lịch sử từ nhưng không ghi sổ, màn
+  kết quả nhắc lưu lại. Xoá đoạn thì xoá luôn sổ bài và hai sổ từ của nó,
+  hộp xác nhận ghi rõ mất bao nhiêu lượt và bao nhiêu từ. Bài của đoạn
+  không có vương miện; ô "tốt nhất" là lượt nhanh nhất của đoạn, bất kể độ
+  dài. Bài luyện dựng từ sổ của đoạn chạy theo độ dài của đoạn (cả đoạn thì
+  lấy số từ), thanh tuỳ chọn vẫn sáng tab tuỳ chỉnh. Phím trong dialog dừng ở
   dialog (listener gốc, không qua `onKeyDown` của Solid, vì Solid gắn
   handler ở `document`), không thì trang bài gõ cướp phím.
+- **Lịch sử từ** (`beartype/word-history.ts`, `WordHistory`): dưới các nút
+  ở màn kết quả, mọi từ của lượt vừa gõ, cả lượt không hợp lệ, như words
+  history có burst heatmap của monkeytype. Tốc độ mỗi từ đo như sổ từ chậm
+  (từ lúc chốt từ trước đến lúc chốt từ này, theo phím Telex) và tô theo
+  tỉ lệ với mốc của từ cùng số phím trong sổ (chưa có mốc thì lấy trung vị
+  của chính lượt đó): năm nấc, hai nấc chậm nhất nằm dưới `SLOW_BELOW`,
+  nấc chậm nhất mang accent và nấc nhanh nhất mờ đi, như thanh từ chậm. Từ
+  có phím sai là chữ đỏ gạch lượn. Gập sau nút "xem từng từ", mở rồi thì
+  giữ mở cho các lượt sau. Mở ra là một hộp cuộn cao tối đa 11rem nên đoạn
+  dài cũng vừa; vì thế từ không mang bong bóng (hộp cuộn cắt bong bóng) mà
+  ghi tốc độ và chữ đã gõ ở một dòng ngay dưới hộp khi rê chuột hay tab tới.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.

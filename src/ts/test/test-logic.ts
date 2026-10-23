@@ -9,7 +9,9 @@ import * as PaceCaret from "./pace-caret";
 import * as LocalResults from "../beartype/local-results";
 import { learnToneStyle } from "../beartype/tone-style";
 import { committedWords, recordMisses } from "../beartype/miss-book";
-import { recordSpeeds, wordSpeeds } from "../beartype/slow-words";
+import { poolBar, recordSpeeds, wordSpeeds } from "../beartype/slow-words";
+import { wordRuns } from "../beartype/word-history";
+import { setWordHistory } from "../components/beartype/WordHistory";
 import { idleReason } from "../beartype/idle";
 import { t } from "../beartype/strings";
 import * as Result from "./result";
@@ -649,10 +651,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   await resultUpdatePromise;
-  // a drill, or the typist's own text, is practice, not a test to measure
-  // against
-  if (!dontSave && Config.mode !== "custom") {
-    LocalResults.saveResult(completedEvent);
+  // beartype: the pool this round is measured in -- the list's language, or
+  // a saved text's own; a text not saved keeps nothing. A drill is practice,
+  // not a test to measure against: it keeps no round and no speeds, only
+  // what it does to the miss book it came from.
+  const pool = PractiseWords.statsPool();
+  const drill = PractiseWords.before.mode !== null;
+  const fromText = PractiseWords.customSource();
+  if (!dontSave && !drill && pool !== null) {
+    LocalResults.saveResult(completedEvent, fromText ? pool : undefined);
   }
   // beartype: the words this round missed go into the book behind the drill
   // button; see beartype/miss-book.ts. A wrong key counts even when it was
@@ -662,10 +669,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // typed twice says little about which words the hands miss.
   const history = getInputHistory(eventLog);
   learnToneStyle(history);
-  if (dontSave) return;
-  // the typist's own text keeps its capitals and punctuation, and words like
-  // `Hà` or `nay,` have no place among the list's words in a drill
-  if (Config.mode === "custom" && PractiseWords.before.mode === null) return;
   const stumbledAt = new Set<number>();
   for (const event of eventLog.events) {
     if (
@@ -676,24 +679,25 @@ export async function finish(difficultyFailed = false): Promise<void> {
       stumbledAt.add(event.data.wordIndex);
     }
   }
-  const round = committedWords(
-    TestWords.words.get().map((word) => word.text),
-    history,
-    stumbledAt,
+  const targets = TestWords.words.get().map((word) => word.text);
+  // beartype: every word of the round, coloured by its speed, under the
+  // result -- for any round, kept or not; see beartype/word-history.ts. Read
+  // before the round's own speeds go into the bar it is drawn against.
+  setWordHistory(
+    wordRuns(targets, history, eventLog.events, stumbledAt, (keys) =>
+      pool === null ? null : poolBar(pool, keys),
+    ),
   );
-  recordMisses(Config.language, round.words, round.typed, round.stumbled);
+  if (dontSave || pool === null) return;
+  const round = committedWords(targets, history, stumbledAt);
+  recordMisses(pool, round.words, round.typed, round.stumbled);
   // beartype: how fast each word went in, for the book of words typed right
   // but slowly; see beartype/slow-words.ts. Not from a drill: the same few
   // words over and over run faster than they do among the rest.
-  if (Config.mode !== "custom") {
+  if (!drill) {
     recordSpeeds(
-      Config.language,
-      wordSpeeds(
-        TestWords.words.get().map((word) => word.text),
-        history,
-        eventLog.events,
-        stumbledAt,
-      ),
+      pool,
+      wordSpeeds(targets, history, eventLog.events, stumbledAt),
     );
   }
 }

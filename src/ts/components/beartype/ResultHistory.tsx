@@ -12,6 +12,7 @@ import {
 
 import type { RecentSummary, RecentTest } from "../../beartype/local-results";
 
+import { customText, wordsOf } from "../../beartype/custom-text";
 import {
   measuredCount,
   MIN_WORD_SAMPLES,
@@ -21,6 +22,7 @@ import {
 import { locale, t } from "../../beartype/strings";
 import { getConfig } from "../../config/store";
 import Format from "../../singletons/format";
+import { statsPool } from "../../test/practise-words";
 import { getLanguage } from "../../utils/json-data";
 
 /**
@@ -35,6 +37,11 @@ import { getLanguage } from "../../utils/json-data";
 
 const [summary, setSummary] = createSignal<RecentSummary | null>(null);
 export { setSummary as setResultHistory };
+
+// a round of a text not saved: there is no history to show, and the screen
+// says how to get one rather than leaving the space blank
+const [unsavedText, setUnsavedText] = createSignal(false);
+export { setUnsavedText };
 
 /**
  * Below this many tests there is no chart: four fat bars side by side read
@@ -59,14 +66,25 @@ function balloonPos(index: number, count: number): string {
 
 export function ResultHistory(): JSXElement {
   return (
-    <Show when={summary()}>
+    <Show
+      when={summary()}
+      fallback={
+        <Show when={unsavedText()}>
+          <p class="bt-history-note">{t("historyUnsavedText")}</p>
+        </Show>
+      }
+    >
       {(s) => (
         <div class="bt-history">
           <div class="bt-history-row">
             <Figure
               value={s().best === null ? "-" : wpm(s().best as number)}
               label={t("historyBest")}
-              hint={t("historyBestHint")}
+              hint={
+                statsPool()?.startsWith("text:") === true
+                  ? t("historyBestTextHint")
+                  : t("historyBestHint")
+              }
             />
             <Figure value={wpm(s().usual)} label={t("historyUsual")} />
             <Figure
@@ -123,12 +141,17 @@ type SlowPart = {
  * balloon names the rule rather than a number.
  */
 function SlowWordsBar(): JSXElement {
+  // the whole of what is measured: the word list, or the words of the text
   const [list] = createResource(
-    () => getConfig.language,
-    async (language) => new Set((await getLanguage(language)).words).size,
+    () => ({ pool: statsPool(), text: customText() }),
+    async ({ pool, text }) =>
+      pool?.startsWith("text:") === true
+        ? new Set(wordsOf(text)).size
+        : new Set((await getLanguage(getConfig.language)).words).size,
   );
-  const measured = createMemo(() => measuredCount(getConfig.language));
-  const slow = createMemo(() => slowWords(getConfig.language));
+  const pool = (): string => statsPool() ?? "";
+  const measured = createMemo(() => measuredCount(pool()));
+  const slow = createMemo(() => slowWords(pool()));
   const parts = createMemo((): SlowPart[] => {
     const total = list() ?? 0;
     return [

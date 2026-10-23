@@ -128,7 +128,7 @@ export function wordSpeeds(
  * finished it. A word typed into again after its commit has no time, nor
  * does one with input the app made up itself.
  */
-function commitTimes(
+export function commitTimes(
   history: readonly string[],
   targets: readonly string[],
   events: readonly TestEventNoMs[],
@@ -221,16 +221,29 @@ function pageOf(language: string): SlowPage {
   return book()[statsLanguage(language)] ?? EMPTY;
 }
 
+/**
+ * The bar a word costing `keys` is held against in a pool, or `null` while
+ * the pool has too few samples for one.
+ */
+export function poolBar(pool: string, keys: number): number | null {
+  return barFor(keys, pageOf(pool).recent);
+}
+
 /** The slow words for a language, slowest first. */
 export function slowWords(language: string): string[] {
   return slowIn(pageOf(language));
 }
 
+/** The words of a language typed often enough to be judged. */
+export function measuredWords(language: string): string[] {
+  return Object.entries(pageOf(language).words)
+    .filter(([, speeds]) => speeds.length >= MIN_WORD_SAMPLES)
+    .map(([word]) => word);
+}
+
 /** How many words of a language have been typed enough to be judged. */
 export function measuredCount(language: string): number {
-  return Object.values(pageOf(language).words).filter(
-    (speeds) => speeds.length >= MIN_WORD_SAMPLES,
-  ).length;
+  return measuredWords(language).length;
 }
 
 /** Writes a finished round's speeds into the book. */
@@ -241,6 +254,32 @@ export function recordSpeeds(
   if (speeds.length === 0) return;
   const pool = statsLanguage(language);
   const next = { ...book(), [pool]: addSpeeds(pageOf(pool), speeds) };
+  storage.set(next);
+  setBook(next);
+}
+
+/** Throws away a pool's page: a saved text deleted takes its book with it. */
+export function forgetPool(pool: string): void {
+  const next = { ...book() };
+  // oxlint-disable-next-line typescript/no-dynamic-delete
+  delete next[pool];
+  storage.set(next);
+  setBook(next);
+}
+
+/**
+ * Keeps only the words of a pool's page that are still in `words`. The bar's
+ * samples stay: they say how fast the hands are, whichever word gave them.
+ */
+export function keepWords(pool: string, words: ReadonlySet<string>): void {
+  const page = book()[pool];
+  if (page === undefined) return;
+  const kept = Object.entries(page.words).filter(([word]) => words.has(word));
+  if (kept.length === Object.keys(page.words).length) return;
+  const next = {
+    ...book(),
+    [pool]: { ...page, words: Object.fromEntries(kept) },
+  };
   storage.set(next);
   setBook(next);
 }

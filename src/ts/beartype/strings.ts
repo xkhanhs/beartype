@@ -137,6 +137,12 @@ const STRINGS = {
     en: (name: string) => `edit “${name}”`,
   },
   customTextConfirmDelete: { vi: "xoá", en: "delete" },
+  customTextDeleteWarning: {
+    vi: (rounds: number, words: number) =>
+      `xoá luôn ${rounds} lượt gõ và ${words} từ trong sổ của đoạn này`,
+    en: (rounds: number, words: number) =>
+      `also deletes this text's ${rounds} rounds and the ${words} words in its books`,
+  },
   cancel: { vi: "huỷ", en: "cancel" },
   close: { vi: "đóng", en: "close" },
 
@@ -255,6 +261,36 @@ const STRINGS = {
   historyBestHint: {
     vi: "chỉ tính bài 60 giây hoặc 50 từ trở lên",
     en: "only tests of 60 seconds or 50 words and up",
+  },
+  historyBestTextHint: {
+    vi: "lượt nhanh nhất của đoạn này",
+    en: "your fastest round of this text",
+  },
+  historyUnsavedText: {
+    vi: "đoạn này chưa lưu nên không có sổ: lưu đoạn để theo dõi tiến bộ, từ hay sai và từ chậm",
+    en: "this text is not saved, so nothing is kept: save it to follow your progress, missed words and slow words",
+  },
+
+  // every word of the round, coloured by speed, under the result
+  wordHistoryShow: {
+    vi: (words: number) => `xem từng từ (${words})`,
+    en: (words: number) => `show each word (${words})`,
+  },
+  wordHistoryHide: { vi: "ẩn từng từ", en: "hide words" },
+  wordHistoryPoint: {
+    vi: "rê chuột vào một từ để xem tốc độ",
+    en: "point at a word to see its speed",
+  },
+  wordHistorySlow: { vi: "chậm", en: "slow" },
+  wordHistoryFast: { vi: "nhanh", en: "fast" },
+  wordHistoryWrong: { vi: "sai", en: "wrong" },
+  wordHistoryTyped: {
+    vi: (typed: string) => `đã gõ: ${typed}`,
+    en: (typed: string) => `typed: ${typed}`,
+  },
+  wordHistoryNoSpeed: {
+    vi: "không đo được tốc độ",
+    en: "no speed for this word",
   },
   practiceTime: {
     vi: (hours: number, minutes: number) =>

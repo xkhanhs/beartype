@@ -10,3 +10,12 @@ export function statsLanguage(language: string): string {
   if (language.startsWith("english")) return "english";
   return language;
 }
+
+/**
+ * The pool of a saved custom text: its own, apart from both languages. The
+ * text is the typist's, with its own words, capitals and punctuation, and how
+ * it goes says nothing about the word list -- nor the list about it.
+ */
+export function textPool(id: string): string {
+  return `text:${id}`;
+}

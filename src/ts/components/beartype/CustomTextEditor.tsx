@@ -12,6 +12,7 @@ import { Portal } from "solid-js/web";
 import {
   customText,
   deleteText,
+  measuredOn,
   savedTexts,
   saveText,
   setCustomLength,
@@ -23,6 +24,7 @@ import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../events/test";
 import * as PractiseWords from "../../test/practise-words";
+import { cn } from "../../utils/cn";
 import { Icon } from "./Icon";
 
 const [open, setOpen] = createSignal(false);
@@ -60,6 +62,16 @@ export function startCustomText(text = customText()): void {
   restartTestEvent.dispatch();
 }
 
+/**
+ * What deleting a saved text also throws away -- its rounds and its books --
+ * said before the second press, or `null` when it was never measured.
+ */
+function lost(id: string): string | null {
+  const { rounds, words } = measuredOn(id);
+  if (rounds === 0 && words === 0) return null;
+  return t("customTextDeleteWarning", rounds, words);
+}
+
 /** The custom test running now, from outside a drill. */
 function running(text: string): boolean {
   return PractiseWords.customSource() && text === customText();
@@ -68,7 +80,8 @@ function running(text: string): boolean {
 /**
  * The custom mode's card, upstream's custom text and saved texts modals made
  * into one card with two faces. It opens on the saved texts, where a press
- * starts one, the pencil edits it and the × deletes it after asking; "new
+ * starts one, the pencil edits it and the × deletes it after asking -- and,
+ * when the text has rounds or books, after saying they go with it; "new
  * text" opens an empty box. With nothing saved it opens straight on the box,
  * holding whatever text the mode last ran. The mode only turns on from a
  * start, so it never runs with nothing to type.
@@ -238,10 +251,19 @@ export function CustomTextEditor(): JSXElement {
                           buttons, so nothing in the row or the list moves */}
                       <Show when={confirming() === saved.name}>
                         <div
-                          class="bt-custom-confirm"
+                          class={cn("bt-custom-confirm", {
+                            "bt-custom-confirm-wide": lost(saved.id) !== null,
+                          })}
                           role="group"
                           aria-label={t("customTextDelete", saved.name)}
                         >
+                          <Show when={lost(saved.id)}>
+                            {(warning) => (
+                              <span class="bt-custom-confirm-warning">
+                                {warning()}
+                              </span>
+                            )}
+                          </Show>
                           <button
                             type="button"
                             class="bt-settings-choice bt-custom-delete"

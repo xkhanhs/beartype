@@ -1,6 +1,10 @@
 import { createSignal } from "solid-js";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import * as LocalResults from "./local-results";
+import * as MissBook from "./miss-book";
+import * as SlowWords from "./slow-words";
+import { textPool } from "./stats-language";
 
 /**
  * The typist's own text, for the custom mode: the one on the test, and the
@@ -19,13 +23,21 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
  * runs for as long as the list would: for a time or a number of words, the
  * same `Config.time` and `Config.words` -- or, which only a text of one's own
  * can do, once through to its end. It is typed in order, or shuffled.
+ *
+ * A saved text is measured like the word list: its rounds, the words it
+ * misses and the ones it types slowly each go into a book of its own (see
+ * `textPool`), found by the text's `id` so that a new name or a fixed typo
+ * keeps them. A text not saved is typed and shown, but leaves nothing behind:
+ * there is no entry to keep it under, nor one to delete it with.
  */
 const SavedTextSchema = z.object({
   name: z.string(),
   text: z.string(),
+  // came later: a text saved before it is given one on load
+  id: z.string().optional(),
 });
 
-type SavedText = z.infer<typeof SavedTextSchema>;
+type SavedText = z.infer<typeof SavedTextSchema> & { id: string };
 
 /** How long the text runs: for a time, for a number of words, or once. */
 export const CUSTOM_LENGTHS = ["time", "words", "text"] as const;
@@ -41,15 +53,30 @@ const CustomTextSchema = z.object({
   shuffle: z.boolean().optional(),
 });
 
-type CustomText = z.infer<typeof CustomTextSchema>;
+type CustomText = Omit<z.infer<typeof CustomTextSchema>, "saved"> & {
+  saved: SavedText[];
+};
 
-const storage = new LocalStorageWithSchema<CustomText>({
+const storage = new LocalStorageWithSchema<z.infer<typeof CustomTextSchema>>({
   key: "beartype:v1:customtext",
   schema: CustomTextSchema,
   fallback: { text: "", saved: [] },
 });
 
-const [store, setStore] = createSignal<CustomText>(storage.get());
+function newId(): string {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/** The store as read, every saved text given an id it keeps from now on. */
+function load(): CustomText {
+  const read = storage.get();
+  const saved = read.saved.map((s) => ({ ...s, id: s.id ?? newId() }));
+  const loaded = { ...read, saved };
+  if (read.saved.some((s) => s.id === undefined)) storage.set(loaded);
+  return loaded;
+}
+
+const [store, setStore] = createSignal<CustomText>(load());
 
 function write(next: CustomText): void {
   storage.set(next);
@@ -130,9 +157,14 @@ function defaultName(text: string): string {
  * on the list is overwritten, as upstream did.
  */
 export function saveText(name: string, text: string, replacing?: string): void {
-  const entry = { name: name.trim() || defaultName(text), text };
   const saved = store().saved;
   const at = saved.findIndex((s) => s.name === replacing);
+  const entry = {
+    name: name.trim() || defaultName(text),
+    text,
+    // the text being edited keeps its books, under its new name and words
+    id: saved[at]?.id ?? newId(),
+  };
   const kept = saved.filter(
     (s) => s.name !== entry.name && s.name !== replacing,
   );
@@ -141,8 +173,45 @@ export function saveText(name: string, text: string, replacing?: string): void {
     ...store(),
     saved: [...kept.slice(0, place), entry, ...kept.slice(place)],
   });
+  // a text overwritten by name is gone, and its books with it
+  for (const gone of saved) {
+    if (gone.id !== entry.id && !kept.includes(gone)) forget(gone.id);
+  }
+  // words taken out of the text are no longer drilled or counted
+  const words = new Set(wordsOf(text));
+  MissBook.keepWords(textPool(entry.id), words);
+  SlowWords.keepWords(textPool(entry.id), words);
 }
 
+/**
+ * Deletes a saved text, and everything measured on it: its rounds and its
+ * two books. A drill built from those books has nothing left to build from,
+ * and ends with its round.
+ */
 export function deleteText(name: string): void {
+  const gone = store().saved.find((s) => s.name === name);
   write({ ...store(), saved: store().saved.filter((s) => s.name !== name) });
+  if (gone !== undefined) forget(gone.id);
+}
+
+function forget(id: string): void {
+  const pool = textPool(id);
+  LocalResults.forgetPool(pool);
+  MissBook.forgetPool(pool);
+  SlowWords.forgetPool(pool);
+}
+
+/** The saved text the custom mode would run for `text`, if it is saved. */
+export function savedTextId(text: string): string | null {
+  return store().saved.find((s) => s.text === text)?.id ?? null;
+}
+
+/** What deleting a saved text throws away, for the warning before it does. */
+export function measuredOn(id: string): { rounds: number; words: number } {
+  const pool = textPool(id);
+  const words = new Set([
+    ...MissBook.missWords(pool),
+    ...SlowWords.measuredWords(pool),
+  ]);
+  return { rounds: LocalResults.countIn(pool), words: words.size };
 }
