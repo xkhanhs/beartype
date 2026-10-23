@@ -4,7 +4,9 @@
 [docs/upstream.md](docs/upstream.md)), giờ chỉ còn một màn: bài đo, phân tích
 cuối bài, luyện từ hay sai và luyện từ chậm. Giao diện theo keybear
 (`~/Documents/GitHub/keybear`). Độ chính xác đếm trên từng phím lúc gõ (lỗi
-đã sửa vẫn bị trừ), phím nào đúng thì chấm theo keybear. Kế hoạch gần
+đã sửa vẫn bị trừ), phím nào đúng thì chấm theo keybear. Tốc độ (wpm) chấm
+như monkeytype: chỉ đếm phím của từ gõ đúng hoàn toàn, từ chốt mà còn sai
+không được tính gì. Kế hoạch gần
 nhất: [plans/260921-2030-slow-words/plan.md](plans/260921-2030-slow-words/plan.md).
 
 **Lý do repo này tồn tại:** keybear dựng lại màn đo tốc độ theo monkeytype
