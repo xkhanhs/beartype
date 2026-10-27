@@ -120,6 +120,25 @@ const SUPPLEMENT = [
   "trừ",
 ];
 
+/**
+ * Words the owner types every day at work that the frequency list misses, and
+ * that VTX's word log (13 days to 2026-10-27) shows as slow or often mistyped.
+ */
+const WORK_WORDS = [
+  "riêng",
+  "duyệt",
+  "sung",
+  "mã",
+  "vẽ",
+  "gõ",
+  "rỉ",
+  "gợi",
+  "kiện",
+  "bảng",
+  "kèm",
+  "khoản",
+];
+
 const keybear = process.argv[2];
 if (keybear === undefined) {
   console.error("usage: tsx scripts/build-vietnamese.ts <path to keybear>");
@@ -139,7 +158,7 @@ const frequent = (JSON.parse(fs.readFileSync(source, "utf8")) as string[])
 
 const words = [
   ...new Set(
-    [...frequent, ...SUPPLEMENT].map((word) =>
+    [...frequent, ...SUPPLEMENT, ...WORK_WORDS].map((word) =>
       withToneStyle(word.normalize("NFC"), "new"),
     ),
   ),
