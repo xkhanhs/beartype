@@ -52,7 +52,7 @@ Một package duy nhất ở gốc repo: `src/`, `static/`, `__tests__/`,
   lượt vừa gõ tô theo tốc độ (`word-history.ts`), ngôn ngữ giao diện (`ui-language.ts`, `strings.ts`,
   `dom-strings.ts`), tốc độ để chạy theo (`pace.ts`).
 - `src/ts/components/beartype/`: thẻ cài đặt (`SettingsPopover`: con trỏ mượt,
-  con trỏ dẫn tốc, chuẩn tuyệt đối, cỡ chữ, hiện phím gõ sai, xoay màu, bàn
+  con trỏ dẫn tốc, cỡ chữ, hiện phím gõ sai, xoay màu, bàn
   phím ảo), viên chọn màu ở chân trang
   (`ThemeMenu`, rê chuột là xem thử), viên chuyển ngôn ngữ giao diện
   (`LanguageMenu`), hai nút luyện (`DrillButton`, một cho từ hay sai, một
@@ -171,26 +171,26 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đặt mọi `svg` là `display: block`, nên icon nằm trong một nút `block`
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
-- Thanh tuỳ chọn mở đầu bằng hai tab **nguồn chữ**: ngẫu nhiên (bộ từ của
-  app) và tuỳ chỉnh (chữ của người gõ). Nhóm sau đổi theo tab: ngẫu nhiên thì
-  là ngôn ngữ, tuỳ chỉnh thì là bút chì (sửa chữ) và nút xáo trộn — chữ tuỳ
-  chỉnh không có ngôn ngữ để chọn. Rồi tới **chế độ** (thời gian hay số từ,
-  cho cả hai nguồn, cùng `Config.time` / `Config.words`; tuỳ chỉnh có thêm
-  "cả đoạn", gõ hết đoạn một lần) và độ dài. Đổi nguồn thì giữ chế độ và độ
-  dài: 30 giây bộ từ thành 30 giây chữ của mình; từ "cả đoạn" về bộ từ thì
-  lấy thời gian. Thanh không ghi tên nhóm nào, nên mỗi nhóm là một
-  `role="group"` có bong bóng ghi tên khi rê chuột (trừ nhóm bút chì và xáo
-  trộn, mỗi icon đã có bong bóng riêng). `.bt-options` không được là hộp
-  cuộn, vì hộp cuộn cắt bong bóng.
-- Thanh tuỳ chọn không bao giờ xuống dòng. Dưới 55rem nó thu thành một viên
-  ghi cái đang chọn (ngôn ngữ, hay "tuỳ chỉnh", rồi độ dài trên nền accent
-  kèm icon đồng hồ, `#` hay bút chì); bấm vào mở một thẻ cùng kiểu với thẻ
-  cài đặt, mỗi nhóm một hàng `SettingsRow`, đóng bằng bấm ra ngoài hoặc
-  Escape — chọn xong thẻ vẫn mở, vì người ta hay đổi mấy thứ một lúc. Dưới
-  20rem thì tên ngôn ngữ rút thành `vi`/`en`. Đổi số lựa chọn trong thanh
-  thì đo lại bề rộng (rộng nhất là trang tiếng Việt, tab ngẫu nhiên, chế độ
-  thời gian: 52rem) và sửa mốc 55rem (`NARROW_SCREEN` trong
-  `TestConfig.tsx`).
+- Thanh tuỳ chọn là ba viên trong một dải, mỗi viên chỉ ghi cái đang chọn:
+  **chữ** (tiếng Việt, tiếng Anh hay "tuỳ chỉnh" kèm bút chì), **độ dài**
+  (con số trên nền accent, kèm đồng hồ, `#` hay bút chì cho "cả đoạn") và
+  **độ khó** (chỉ một icon). Rê chuột, bấm hay tab tới viên nào thì viên đó
+  thả xuống một thẻ cùng kiểu thẻ cài đặt, mỗi thứ một hàng có tên (thẻ chữ:
+  nguồn chữ, rồi với chữ tuỳ chỉnh thì sửa chữ và xáo trộn; thẻ độ dài: hàng
+  thời gian, hàng số từ, và "cả đoạn" cho chữ tuỳ chỉnh — chọn một con số là
+  chọn luôn đếm theo gì). Chọn xong thẻ vẫn mở, vì người ta hay đổi mấy thứ
+  một lúc; đóng khi chuột rời đi, bấm ra ngoài hoặc Escape. Đổi sang bộ từ
+  thì giữ độ dài: 30 giây chữ của mình thành 30 giây bộ từ; từ "cả đoạn" thì
+  lấy thời gian.
+- Thẻ phải sống sót khi chuột đi từ viên xuống nó (`TestConfig.tsx`): thẻ
+  thẳng mép với viên của nó (viên đầu theo mép trái, viên cuối theo mép phải),
+  không bao giờ nằm dưới viên bên cạnh, vì chuột đi ngang viên khác sẽ mở thẻ
+  của viên đó; một dải trong suốt (`::before`) lấp khe giữa dải và thẻ, nhưng
+  không được cao hơn khe, không thì nó che mép dưới viên bên cạnh; rời đi thì
+  chờ `CLOSE_DELAY` mới đóng. Trên màn cảm ứng, bấm mới mở, còn `pointerleave`
+  sau mỗi lần nhấc ngón tay bị bỏ qua. Thanh ngắn nên màn hẹp dùng chung kiểu
+  này; dưới 20rem tên ngôn ngữ rút thành `vi`/`en`. `.bt-options` không được
+  là hộp cuộn, vì hộp cuộn cắt thẻ.
 - Cỡ chữ bài gõ đặt bằng `min(<cỡ đã chọn>rem, calc((100vw - 2rem) / 4.8))`:
   từ dài nhất của hai bộ từ là tám chữ và mỗi chữ rộng chừng 0.6em, nên màn
   hẹp tự hạ cỡ thay vì để chữ tràn ra. Chỗ nào cần chiều cao một chữ thì đọc
@@ -203,13 +203,21 @@ Test của beartype nằm ở `__tests__/beartype/`.
   đường đó. Hai ô lớn (wpm, chính xác) trên ba ô nhỏ (số từ, thời gian, đều
   tay); mọi ô rộng như nhau nên hai hàng cùng cân giữa, và hàng nhỏ xuống dòng
   ở màn hẹp.
-- Hai bài tập phá plateau, đều tắt sẵn: **con trỏ dẫn tốc**
+- **Độ khó** (`Config.difficulty`, viên cuối của thanh tuỳ chọn): bình
+  thường gõ sai vẫn gõ tiếp; **khó** dừng bài khi chốt một từ còn sai (sai
+  rồi sửa đúng trước khi bấm cách thì không sao); **chuyên gia** dừng ở phím
+  sai đầu tiên, và đọc `correct` nên chữ đang dựng dấu (`e` trên đường thành
+  `ế`) không bị tính là sai. Cả hai luật nằm cuối `insert-text.ts`, sau khi
+  phím đã ghi vào log, nên phím làm dừng bài vẫn được chấm như mọi phím, và
+  gọi `TestLogic.fail("hard")` / `fail("expert")`. Khoá này thay công tắc
+  "chuẩn tuyệt đối" (`strictAccuracy`) từng nằm trong thẻ cài đặt; cấu hình
+  cũ có công tắc đó bật thì `config/persistence.ts` chuyển thành `expert`.
+- Bài tập phá plateau, tắt sẵn: **con trỏ dẫn tốc**
   (`test/pace-caret.ts`, tính trong `beartype/pace.ts`) chạy trước theo 80 /
   100 / 120% tốc độ trung bình (trung vị 20 bài gần nhất, như ô trung bình ở
   màn kết quả) của máy này trong ngôn ngữ đang gõ — không có bài
-  nào trong sổ thì không có gì để chạy theo và nó im lặng không hiện; và
-  **chuẩn tuyệt đối** (`input/handlers/insert-text.ts`), gõ sai một phím là
-  `TestLogic.fail("strict")`. Con trỏ dẫn tốc đi **theo phím chứ không theo
+  nào trong sổ thì không có gì để chạy theo và nó im lặng không hiện. Con
+  trỏ dẫn tốc đi **theo phím chứ không theo
   chữ**, vì tốc độ của app đếm phím: `ế` là một chữ và ba phím. Nó không đụng
   vào đường xử lý phím — chỉ đọc danh sách từ, xem đồng hồ và dời một thẻ
   riêng — nên bài gõ khi bật vẫn chấm y hệt khi tắt.
@@ -231,9 +239,9 @@ Test của beartype nằm ở `__tests__/beartype/`.
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
-- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): bút
-  chì trên thanh tuỳ chọn (hoặc tab "tuỳ chỉnh" khi chưa có chữ, hay khi đang
-  ở tab đó rồi) mở một
+- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): hàng
+  sửa chữ trong thẻ chữ của thanh tuỳ chọn (hoặc chọn "tuỳ chỉnh" khi chưa có
+  chữ, hay khi đang ở đó rồi) mở một
   `<dialog>` có hai màn. Màn danh
   sách: bấm một đoạn đã lưu là gõ luôn, bút chì để sửa, × để xoá (hỏi lại,
   hai nút nổi đè lên cuối hàng để hàng không xê dịch), "+ đoạn mới" mở màn
@@ -259,7 +267,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
   hộp xác nhận ghi rõ mất bao nhiêu lượt và bao nhiêu từ. Bài của đoạn
   không có vương miện; ô "tốt nhất" là lượt nhanh nhất của đoạn, bất kể độ
   dài. Bài luyện dựng từ sổ của đoạn chạy theo độ dài của đoạn (cả đoạn thì
-  lấy số từ), thanh tuỳ chọn vẫn sáng tab tuỳ chỉnh. Phím trong dialog dừng ở
+  lấy số từ), viên chữ của thanh tuỳ chọn vẫn ghi "tuỳ chỉnh". Phím trong dialog dừng ở
   dialog (listener gốc, không qua `onKeyDown` của Solid, vì Solid gắn
   handler ở `document`), không thì trang bài gõ cướp phím.
 - **Lịch sử từ** (`beartype/word-history.ts`, `WordHistory`): dưới các nút

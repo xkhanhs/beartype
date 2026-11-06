@@ -63,7 +63,6 @@ describe("a production localStorage config", () => {
       "customTheme",
       "customThemeColors",
       "quickRestart",
-      "difficulty",
       "layout",
       "resultSaving",
       "themeLight",
@@ -114,6 +113,36 @@ describe("a production localStorage config", () => {
     expect(locked.language).toBe("vietnamese");
     expect(locked.words).toBe(25);
     expect(freshLS.set(locked)).toBe(true);
+  });
+
+  it("turns the strict switch, once on, into the expert difficulty", async () => {
+    const { difficulty: _upstream, ...withoutDifficulty } = PRODUCTION_CONFIG;
+    window.localStorage.setItem(
+      "config",
+      JSON.stringify({ ...withoutDifficulty, strictAccuracy: "on" }),
+    );
+    vi.resetModules();
+    const { configLS: freshLS } =
+      await import("../../src/ts/config/persistence");
+
+    const locked = lockConfig(freshLS.get());
+
+    expect(locked.difficulty).toBe("expert");
+    expect(locked).not.toHaveProperty("strictAccuracy");
+    expect(freshLS.set(locked)).toBe(true);
+  });
+
+  it("leaves the strict switch, once off, on the normal difficulty", async () => {
+    const { difficulty: _upstream, ...withoutDifficulty } = PRODUCTION_CONFIG;
+    window.localStorage.setItem(
+      "config",
+      JSON.stringify({ ...withoutDifficulty, strictAccuracy: "off" }),
+    );
+    vi.resetModules();
+    const { configLS: freshLS } =
+      await import("../../src/ts/config/persistence");
+
+    expect(lockConfig(freshLS.get()).difficulty).toBe("normal");
   });
 
   it("can be saved back without failing schema validation", () => {

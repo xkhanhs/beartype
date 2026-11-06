@@ -44,11 +44,6 @@ const STRINGS = {
     vi: "một con trỏ mờ chạy trước theo phần trăm tốc độ thường của bạn: 80% để tập cho thật chuẩn, 120% để ép nhanh hơn. Cần vài bài đã gõ mới biết tốc độ thường.",
     en: "a faint caret runs ahead at a share of your usual speed: 80% to drill accuracy, 120% to push. It needs a few tests before there is a usual speed to take.",
   },
-  strictAccuracy: { vi: "chuẩn tuyệt đối", en: "strict" },
-  strictAccuracyHint: {
-    vi: "gõ sai một phím là bài dừng ngay: bài tập ép chính xác tuyệt đối, không phải cách gõ hằng ngày",
-    en: "one wrong key ends the test: a drill for perfect accuracy, not a way to type every day",
-  },
   fontSize: { vi: "cỡ chữ", en: "text size" },
   indicateTypos: { vi: "hiện phím gõ sai", en: "show typos" },
   indicateTyposHint: {
@@ -83,18 +78,29 @@ const STRINGS = {
   modeWords: { vi: "số từ", en: "words" },
   modeCustom: { vi: "tuỳ chỉnh", en: "custom" },
   modeText: { vi: "cả đoạn", en: "all" },
-  sourceRandom: { vi: "ngẫu nhiên", en: "random" },
   shuffle: { vi: "xáo trộn", en: "shuffle" },
   languageVietnamese: { vi: "tiếng việt", en: "vietnamese" },
   languageEnglish: { vi: "english", en: "english" },
 
-  // the same bar on a narrow screen: one pill saying what is set, and the
-  // card it opens, whose rows need the names the bar itself never showed
-  testOptions: { vi: "tuỳ chọn bài gõ", en: "test options" },
-  optionsLanguage: { vi: "ngôn ngữ", en: "language" },
+  // the cards the bar's pills drop, whose rows need the names the bar itself
+  // never shows
   optionsSource: { vi: "nguồn chữ", en: "words from" },
-  optionsMode: { vi: "chế độ", en: "mode" },
-  optionsLength: { vi: "độ dài", en: "length" },
+  optionsDifficulty: { vi: "độ khó", en: "difficulty" },
+  difficultyNormal: { vi: "bình thường", en: "normal" },
+  difficultyHard: { vi: "khó", en: "hard" },
+  difficultyExpert: { vi: "chuyên gia", en: "expert" },
+  difficultyNormalRule: {
+    vi: "gõ sai vẫn gõ tiếp",
+    en: "mistakes don't stop the test",
+  },
+  difficultyHardRule: {
+    vi: "chốt một từ còn sai là bài dừng",
+    en: "a word sent with a mistake ends the test",
+  },
+  difficultyExpertRule: {
+    vi: "gõ sai một phím là bài dừng",
+    en: "one wrong key ends the test",
+  },
 
   // the custom mode's card: the text to type, and the ones kept for later
   customText: { vi: "chữ tuỳ chỉnh", en: "custom text" },
@@ -314,9 +320,13 @@ const STRINGS = {
     vi: "máy chạy chậm, đồng hồ trễ nên bài bị dừng",
     en: "the computer is slow, the clock lagged and the test was stopped",
   },
-  failedStrict: {
-    vi: "gõ sai một phím, bài dừng vì đang bật chuẩn tuyệt đối",
-    en: "a wrong key, and the strict setting stopped the test",
+  failedHard: {
+    vi: "chốt một từ còn sai, bài dừng vì đang ở mức khó",
+    en: "a word committed wrong, and the hard difficulty stopped the test",
+  },
+  failedExpert: {
+    vi: "gõ sai một phím, bài dừng vì đang ở mức chuyên gia",
+    en: "a wrong key, and the expert difficulty stopped the test",
   },
   failed: {
     vi: (reason: string) => `không đạt (${reason})`,

@@ -11,6 +11,8 @@ export type IconName =
   | "clock"
   | "corner-down-left"
   | "crown"
+  | "feather"
+  | "flame"
   | "github"
   | "hash"
   | "info"
@@ -23,6 +25,7 @@ export type IconName =
   | "rotate-cw"
   | "settings"
   | "shuffle"
+  | "skull"
   | "x";
 
 /** One of the page's icons, as tall as the text around it. */

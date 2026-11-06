@@ -15,8 +15,11 @@ export const KeymapModeSchema = z.enum(["off", "react"]);
  */
 export const PaceCaretSchema = z.enum(["off", "80", "100", "120"]);
 
-/** Whether one wrong key ends the test. */
-export const StrictAccuracySchema = z.enum(["off", "on"]);
+/**
+ * What a mistake costs. "normal" types on past it; "hard" ends the test when
+ * a word is committed wrong; "expert" ends it on the first wrong key.
+ */
+export const DifficultySchema = z.enum(["normal", "hard", "expert"]);
 
 /**
  * Which language the page itself speaks, as opposed to the words being typed.
@@ -64,7 +67,7 @@ export const ConfigSchema = z
     paceCaret: PaceCaretSchema,
 
     // difficulty
-    strictAccuracy: StrictAccuracySchema,
+    difficulty: DifficultySchema,
 
     // appearance
     fontSize: FontSizeSchema,

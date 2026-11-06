@@ -29,9 +29,11 @@ không quote, không funbox. Chỉ còn một màn:
   thường và dấu câu đều tính), và lưu lại nhiều đoạn để gõ hôm khác. Gõ theo
   thời gian, theo số từ hay cả đoạn một lượt, theo thứ tự hoặc xáo trộn. Bài
   chữ tuỳ chỉnh là bài tập, không vào sổ bài.
-- **Hai bài tập đẩy tốc độ**: một **con trỏ dẫn tốc** chạy trước theo 80, 100
-  hay 120% tốc độ thường của máy này — 80% để tập cho thật chuẩn, 120% để ép
-  nhanh hơn — và chế độ **chuẩn tuyệt đối**, gõ sai một phím là bài dừng.
+- **Con trỏ dẫn tốc**: chạy trước theo 80, 100 hay 120% tốc độ thường của
+  máy này — 80% để tập cho thật chuẩn, 120% để ép nhanh hơn.
+- **Ba mức độ khó** trên thanh tuỳ chọn: bình thường (gõ sai vẫn gõ tiếp),
+  khó (chốt một từ còn sai là bài dừng) và chuyên gia (sai một phím là bài
+  dừng).
 - **Tuỳ chọn trong thẻ cài đặt, mặc định tắt**: phím đã gõ nhầm hiện nhỏ dưới
   chữ, và bàn phím QWERTY dưới bài gõ, phím sáng lên khi gõ, kể cả khi gõ Telex.
 

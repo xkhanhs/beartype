@@ -180,9 +180,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // going to next word
+  const correctInsert = testInput + data === currentWord;
   if (goingToNextWord) {
     await goToNextWord({
-      correctInsert: testInput + data === currentWord,
+      correctInsert,
       now,
     });
   }
@@ -201,13 +202,20 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }
   }
 
-  // beartype: the strict drill, one wrong key and the test is over. It stands
+  // beartype: the two harder difficulties. Expert ends the test on one wrong
+  // key, hard on a word committed with anything wrong left in it. Both stand
   // at the end, after the key has been logged and the word moved on, so the
-  // key that ended the test is counted in the result like any other; and it
+  // key that ended the test is counted in the result like any other. Expert
   // reads `correct`, which knows that the `e` on the way to `ế` is unfinished
-  // rather than wrong.
-  if (!correct && Config.strictAccuracy === "on") {
-    TestLogic.fail("strict");
+  // rather than wrong; hard asks only what the word was when it was sent.
+  if (!correct && Config.difficulty === "expert") {
+    TestLogic.fail("expert");
+  } else if (
+    goingToNextWord &&
+    !correctInsert &&
+    Config.difficulty === "hard"
+  ) {
+    TestLogic.fail("hard");
   }
 }
 
