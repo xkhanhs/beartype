@@ -17,12 +17,21 @@ export const configLS = new LocalStorageWithSchema({
     if (!isObject(value)) {
       return getDefaultConfig();
     }
+    const stored = { ...value };
     // beartype: the hidden word list `#khanh` opened is gone; a browser that
     // last typed it goes on typing Vietnamese, not the default
-    if (value["language"] === "vietnamese_khanh") {
-      return migrateConfig({ ...value, language: "vietnamese" });
+    if (stored["language"] === "vietnamese_khanh") {
+      stored["language"] = "vietnamese";
     }
-    return migrateConfig(value);
+    // beartype: the strict switch in the settings card became the expert
+    // difficulty in the options bar; whoever had it on keeps it on
+    if (
+      stored["strictAccuracy"] === "on" &&
+      stored["difficulty"] === undefined
+    ) {
+      stored["difficulty"] = "expert";
+    }
+    return migrateConfig(stored);
   },
 });
 

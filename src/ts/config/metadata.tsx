@@ -117,9 +117,9 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "pace caret",
   },
   // difficulty
-  strictAccuracy: {
-    key: "strictAccuracy",
-    displayString: "strict accuracy",
+  difficulty: {
+    key: "difficulty",
+    displayString: "difficulty",
   },
   // appearance
   fontSize: {

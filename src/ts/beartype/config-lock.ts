@@ -1,10 +1,10 @@
 import {
   type Config,
+  DifficultySchema,
   IndicateTyposSchema,
   KeymapModeSchema,
   PaceCaretSchema,
   RandomThemeSchema,
-  StrictAccuracySchema,
 } from "../schemas/configs";
 import { ThemeNameSchema } from "../schemas/themes";
 import { getDefaultConfig } from "../constants/default-config";
@@ -30,7 +30,7 @@ export const SMOOTH_CARETS = ["off", "slow", "medium", "fast"] as const;
 export const FONT_SIZES = [1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4] as const;
 export const KEYMAP_MODES = KeymapModeSchema.options;
 export const PACE_CARETS = PaceCaretSchema.options;
-export const STRICT_ACCURACIES = StrictAccuracySchema.options;
+export const DIFFICULTIES = DifficultySchema.options;
 export const TYPO_INDICATORS = IndicateTyposSchema.options;
 /** Every palette on offer, in the order the colour list shows them. */
 export const THEMES = ThemeNameSchema.options;
@@ -48,7 +48,7 @@ function allowed(key: keyof Config, value: unknown): boolean {
     theme: THEMES,
     keymapMode: KEYMAP_MODES,
     paceCaret: PACE_CARETS,
-    strictAccuracy: STRICT_ACCURACIES,
+    difficulty: DIFFICULTIES,
     indicateTypos: TYPO_INDICATORS,
     randomTheme: RANDOM_THEMES,
   };

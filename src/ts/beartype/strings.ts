@@ -44,11 +44,6 @@ const STRINGS = {
     vi: "một con trỏ mờ chạy trước theo phần trăm tốc độ thường của bạn: 80% để tập cho thật chuẩn, 120% để ép nhanh hơn. Cần vài bài đã gõ mới biết tốc độ thường.",
     en: "a faint caret runs ahead at a share of your usual speed: 80% to drill accuracy, 120% to push. It needs a few tests before there is a usual speed to take.",
   },
-  strictAccuracy: { vi: "chuẩn tuyệt đối", en: "strict" },
-  strictAccuracyHint: {
-    vi: "gõ sai một phím là bài dừng ngay: bài tập ép chính xác tuyệt đối, không phải cách gõ hằng ngày",
-    en: "one wrong key ends the test: a drill for perfect accuracy, not a way to type every day",
-  },
   fontSize: { vi: "cỡ chữ", en: "text size" },
   indicateTypos: { vi: "hiện phím gõ sai", en: "show typos" },
   indicateTyposHint: {
@@ -314,9 +309,13 @@ const STRINGS = {
     vi: "máy chạy chậm, đồng hồ trễ nên bài bị dừng",
     en: "the computer is slow, the clock lagged and the test was stopped",
   },
-  failedStrict: {
-    vi: "gõ sai một phím, bài dừng vì đang bật chuẩn tuyệt đối",
-    en: "a wrong key, and the strict setting stopped the test",
+  failedHard: {
+    vi: "chốt một từ còn sai, bài dừng vì đang ở mức khó",
+    en: "a word committed wrong, and the hard difficulty stopped the test",
+  },
+  failedExpert: {
+    vi: "gõ sai một phím, bài dừng vì đang ở mức chuyên gia",
+    en: "a wrong key, and the expert difficulty stopped the test",
   },
   failed: {
     vi: (reason: string) => `không đạt (${reason})`,

@@ -256,8 +256,10 @@ function updateOther(
   if (difficultyFailed) {
     if (failReason === "slow timer") {
       reasons.push(t("failedSlowTimer"));
-    } else if (failReason === "strict") {
-      reasons.push(t("failedStrict"));
+    } else if (failReason === "hard") {
+      reasons.push(t("failedHard"));
+    } else if (failReason === "expert") {
+      reasons.push(t("failedExpert"));
     } else {
       reasons.push(t("failed", failReason));
     }
