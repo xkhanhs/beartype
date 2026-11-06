@@ -40,7 +40,7 @@ const SavedTextSchema = z.object({
 type SavedText = z.infer<typeof SavedTextSchema> & { id: string };
 
 /** How long the text runs: for a time, for a number of words, or once. */
-export const CUSTOM_LENGTHS = ["time", "words", "text"] as const;
+const CUSTOM_LENGTHS = ["time", "words", "text"] as const;
 export type CustomLength = (typeof CUSTOM_LENGTHS)[number];
 
 const CustomTextSchema = z.object({

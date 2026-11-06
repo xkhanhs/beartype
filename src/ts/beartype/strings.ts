@@ -78,18 +78,29 @@ const STRINGS = {
   modeWords: { vi: "số từ", en: "words" },
   modeCustom: { vi: "tuỳ chỉnh", en: "custom" },
   modeText: { vi: "cả đoạn", en: "all" },
-  sourceRandom: { vi: "ngẫu nhiên", en: "random" },
   shuffle: { vi: "xáo trộn", en: "shuffle" },
   languageVietnamese: { vi: "tiếng việt", en: "vietnamese" },
   languageEnglish: { vi: "english", en: "english" },
 
-  // the same bar on a narrow screen: one pill saying what is set, and the
-  // card it opens, whose rows need the names the bar itself never showed
-  testOptions: { vi: "tuỳ chọn bài gõ", en: "test options" },
-  optionsLanguage: { vi: "ngôn ngữ", en: "language" },
+  // the cards the bar's pills drop, whose rows need the names the bar itself
+  // never shows
   optionsSource: { vi: "nguồn chữ", en: "words from" },
-  optionsMode: { vi: "chế độ", en: "mode" },
-  optionsLength: { vi: "độ dài", en: "length" },
+  optionsDifficulty: { vi: "độ khó", en: "difficulty" },
+  difficultyNormal: { vi: "bình thường", en: "normal" },
+  difficultyHard: { vi: "khó", en: "hard" },
+  difficultyExpert: { vi: "chuyên gia", en: "expert" },
+  difficultyNormalRule: {
+    vi: "gõ sai vẫn gõ tiếp",
+    en: "mistakes don't stop the test",
+  },
+  difficultyHardRule: {
+    vi: "chốt một từ còn sai là bài dừng",
+    en: "a word sent with a mistake ends the test",
+  },
+  difficultyExpertRule: {
+    vi: "gõ sai một phím là bài dừng",
+    en: "one wrong key ends the test",
+  },
 
   // the custom mode's card: the text to type, and the ones kept for later
   customText: { vi: "chữ tuỳ chỉnh", en: "custom text" },

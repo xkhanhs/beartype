@@ -310,14 +310,12 @@ body,
 
 // ----- the options bar above the words -----
 
-// beartype: keybear's `.options` -- one rounded strip, the groups split by a
-// thin rule, the choice in use filled with the accent. The strip is sunk a
-// shade below the page, keybear's border colour, inside a rim of its own.
+// beartype: keybear's `.options` -- one rounded strip, the pills split by a
+// thin rule. The strip is sunk a shade below the page, keybear's border
+// colour, inside a rim of its own. It holds three pills, each saying what is
+// set; the rest hangs in a card under each (TestConfig.tsx).
 .bt-options {
   display: flex;
-  // one row always: a screen too narrow for it gets the folded pill instead,
-  // so the strip never scrolls -- and must not be a scroll box, which would
-  // clip the balloons of its icon pills
   flex-wrap: nowrap;
   gap: 0.4rem;
   align-items: center;
@@ -336,17 +334,21 @@ body,
 .bt-options-divider {
   inline-size: 1px;
   block-size: 1.4rem;
-  margin-inline: 0.4rem;
+  margin-inline: 0.2rem;
   background-color: color-mix(in srgb, var(--kb-text-f1) 25%, var(--kb-border));
+}
+
+// a pill and the card it drops: the card hangs from here, under its own pill
+.bt-options-segment {
+  position: relative;
+  display: inline-flex;
+  flex: none;
 }
 
 button.bt-options-pill {
   display: inline-flex;
-  flex: none;
-  gap: 0.3rem;
   align-items: center;
-  block-size: 1.75rem;
-  padding: 0 0.8rem;
+  padding: 0;
   border-radius: 99px;
   color: var(--kb-text-f1);
   background: transparent;
@@ -354,15 +356,10 @@ button.bt-options-pill {
   line-height: 1.2;
   white-space: nowrap;
 
-  &:hover {
+  &:hover,
+  &[aria-expanded="true"] {
     color: var(--text-color);
     background: transparent;
-  }
-
-  &[aria-pressed="true"],
-  &[aria-pressed="true"]:hover {
-    color: var(--kb-on-accent);
-    background-color: var(--main-color);
   }
 
   // the bar is faded out while typing; the buttons in it only stop working
@@ -377,56 +374,149 @@ button.bt-options-pill {
   }
 }
 
-// a group of pills, which names itself in a balloon
-.bt-options-group {
+// what a pill shows: the words by name, the length filled with the accent,
+// the difficulty as an icon alone
+.bt-options-face {
   display: inline-flex;
-  flex: none;
-  gap: 0.4rem;
+  gap: 0.3rem;
   align-items: center;
+  block-size: 1.75rem;
+  padding: 0 0.8rem;
+  border-radius: 99px;
 }
 
-// an icon alone (the custom text's pencil and shuffle): a circle, not a pill
-button.bt-options-pill.bt-options-pill-icon {
+// the pill whose card is open is ringed, so the card reads as its own
+button.bt-options-pill[aria-expanded="true"] .bt-options-face {
+  box-shadow: inset 0 0 0 2px var(--kb-strip-rim);
+  background-color: var(--bg-color);
+}
+
+button.bt-options-pill .bt-options-face-accent,
+button.bt-options-pill[aria-expanded="true"] .bt-options-face-accent {
+  color: var(--kb-on-accent);
+  background-color: var(--main-color);
+  box-shadow: none;
+}
+
+.bt-options-face-icon {
   justify-content: center;
   inline-size: 1.75rem;
   padding: 0;
+
+  // the two harder difficulties stand out: the accent for hard, the colour
+  // of a wrong letter for expert
+  &[data-difficulty="hard"] {
+    color: var(--main-color);
+  }
+
+  &[data-difficulty="expert"] {
+    color: var(--error-color);
+  }
 }
 
-// ----- the same bar on a narrow screen -----
+// the language by name, until even that is too wide -- then by its two-letter
+// tag, which says as much to anyone who picked it
+.bt-options-tag {
+  display: none;
+}
 
-// One pill standing for the whole strip: the language, then the length
-// filled with the accent, a clock or a hash beside it for which of the two
-// it counts. It wears the strip's own rim and ground, so folding the bar
-// does not change what the page is made of.
-button.bt-options-summary {
-  display: inline-flex;
-  gap: 0.4rem;
+@media (width < 20rem) {
+  .bt-options-name:has(+ .bt-options-tag) {
+    display: none;
+  }
+
+  .bt-options-tag {
+    display: inline;
+  }
+}
+
+// the card a pill drops: keybear's settings card, hung under the pill rather
+// than over the footer. Its look lives with that card, below. It lines up
+// with an edge of its own pill (the first pill's start, the last one's end),
+// so the pointer on its way down never crosses a neighbour, which would open
+// that one's card instead.
+.bt-options-card {
+  position: absolute;
+  // the strip's padding and rim, and a little air
+  inset-block-start: calc(100% + 0.375rem + 2px + 0.5rem);
+  // over upstream's "click here to focus" hint, which sits at 999
+  z-index: 1000;
+  inline-size: max-content;
+  max-inline-size: min(30rem, calc(100vw - 2rem));
+
+  &[data-align="start"] {
+    inset-inline-start: calc(-0.375rem - 2px);
+  }
+
+  &[data-align="center"] {
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &[data-align="end"] {
+    inset-inline-end: calc(-0.375rem - 2px);
+  }
+
+  // the gap between the strip and the card belongs to the card, so the
+  // pointer crossing it counts as still on it. No higher than the gap: any
+  // taller and a wide card would lie over the bottom of its neighbours. The
+  // strip's own padding and rim in between are crossed within CLOSE_DELAY.
+  &::before {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 100%;
+    block-size: calc(0.5rem + 2px);
+    content: "";
+  }
+
+  // no title above the first row, so it needs no rule over it either
+  .bt-settings-row:first-child {
+    padding-block-start: 0;
+    border-block-start: none;
+  }
+}
+
+// the difficulties, one to a line: the icon, the name, and the rule it plays
+// by, dimmed, so the three can be told apart before one is tried
+// the three lines share their columns, so the names and the rules line up
+.bt-difficulty-list {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.4rem 0;
+}
+
+button.bt-difficulty-choice {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  column-gap: 0.6rem;
+  // a button centres what it holds
+  justify-items: start;
   align-items: center;
-  // as tall as the strip it stands for, with the same 6px of ground around
-  // the filled pill inside it
-  block-size: 2.75rem;
-  padding: 0 0.375rem 0 0.9rem;
-  border: 2px solid var(--kb-strip-rim);
+  padding: 0.45rem 0.9rem;
+  border: 2px solid var(--kb-border);
   border-radius: 99px;
-  color: var(--kb-text-f1);
-  background-color: var(--kb-border);
-  font-size: 1rem;
-  line-height: 1.2;
-  white-space: nowrap;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  text-align: start;
 
   &:hover {
     color: var(--text-color);
+    background-color: var(--kb-accent-xlt);
+  }
+
+  &[aria-pressed="true"],
+  &[aria-pressed="true"]:hover {
+    border-color: var(--main-color);
     background-color: var(--kb-border);
   }
 
-  // open, it is rimmed in the accent, so the card below belongs to it
-  &[aria-expanded="true"] {
-    border-color: var(--main-color);
+  &[data-difficulty="hard"] .bt-icon {
+    color: var(--main-color);
   }
 
-  // the bar is faded out while typing; the button in it only stops working
-  &[disabled] {
-    opacity: 1;
+  &[data-difficulty="expert"] .bt-icon {
+    color: var(--error-color);
   }
 
   &:focus-visible {
@@ -436,54 +526,14 @@ button.bt-options-summary {
   }
 }
 
-.bt-options-summary-dot {
-  color: color-mix(in srgb, var(--kb-text-f1) 45%, var(--kb-border));
+.bt-difficulty-name {
+  font-weight: bold;
+  white-space: nowrap;
 }
 
-.bt-options-summary-length {
-  display: inline-flex;
-  gap: 0.3rem;
-  align-items: center;
-  block-size: 1.75rem;
-  padding: 0 0.75rem;
-  border-radius: 99px;
-  color: var(--kb-on-accent);
-  background-color: var(--main-color);
-}
-
-// the language by name, until even that is too wide -- then by its two-letter
-// tag, which says as much to anyone who picked it
-.bt-options-summary-tag {
-  display: none;
-}
-
-@media (width < 20rem) {
-  .bt-options-summary-name {
-    display: none;
-  }
-
-  .bt-options-summary-tag {
-    display: inline;
-  }
-}
-
-// the card the pill opens: keybear's settings card, hung under the pill
-// rather than over the footer. Its look lives with that card, below.
-.bt-options-card {
-  position: absolute;
-  inset-block-start: calc(100% + 0.4rem);
-  inset-inline-start: 50%;
-  // over upstream's "click here to focus" hint, which sits at 999
-  z-index: 1000;
-  inline-size: max-content;
-  max-inline-size: min(24rem, calc(100vw - 2rem));
-  transform: translateX(-50%);
-
-  // no title above the first row, so it needs no rule over it either
-  .bt-settings-row:first-child {
-    padding-block-start: 0;
-    border-block-start: none;
-  }
+.bt-difficulty-rule {
+  color: var(--kb-text-f1);
+  font-size: 0.9rem;
 }
 
 // ----- the pace caret -----
@@ -823,9 +873,9 @@ footer {
 // ----- the settings card -----
 
 // beartype: keybear's settings card: name and hint on the left of each row,
-// the choices on the right, a rule between rows. The options bar on a narrow
-// screen opens a card of the same make, downward instead of up, so the two
-// share everything but where they hang.
+// the choices on the right, a rule between rows. Each pill of the options
+// bar drops a card of the same make, downward instead of up, so the two share
+// everything but where they hang.
 .bt-settings-card,
 .bt-options-card {
   display: flex;
