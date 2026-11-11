@@ -18,6 +18,7 @@ import {
   customLength,
   customShuffle,
   customText,
+  savedTextName,
   setCustomLength,
   setCustomShuffle,
   wordsOf,
@@ -50,11 +51,11 @@ import { SettingsRow } from "../../beartype/SettingsRow";
 // rows, named -- so the strip stays short however many choices there are,
 // and the same strip fits a phone.
 //
-// A card has to survive the trip from its pill down into it. It hangs right
-// under its own pill, never across a neighbour, so the pointer going down
-// crosses nothing that would open another card; a transparent strip over its
-// top edge fills the gap, and leaving waits CLOSE_DELAY before it closes, for
-// a hand that cuts the corner. A tap or a click opens it as well (a touch
+// A card has to survive the trip from its pill down into it. It hangs centred
+// under its own pill, where the hand goes straight down to it: the pointer
+// leaves the strip downward, never across a neighbour. A transparent strip
+// over its top edge fills the gap, and leaving waits CLOSE_DELAY before it
+// closes, for a hand that cuts the corner. A tap or a click opens it as well (a touch
 // screen points at nothing), and so does the focus arriving by tab; a tap
 // outside it or Escape closes it.
 
@@ -120,6 +121,12 @@ function isCustom(): boolean {
 
 function wordsChoice(): WordsChoice {
   return isCustom() ? "custom" : getConfig.language;
+}
+
+/** What the words pill says: the language, or the saved text by its name. */
+function wordsName(): string {
+  if (isCustom()) return savedTextName(customText()) ?? t("modeCustom");
+  return WORDS_LABELS[getConfig.language]();
 }
 
 /** What the test counts: time or words, or the whole of a custom text. */
@@ -227,15 +234,13 @@ export function TestConfig(): JSXElement {
           id="words"
           open={open}
           setOpen={setOpen}
-          label={`${t("optionsSource")}: ${WORDS_LABELS[wordsChoice()]()}`}
+          label={`${t("optionsSource")}: ${wordsName()}`}
           face={
             <span class="bt-options-face">
               <Show when={isCustom()}>
                 <Icon name="pencil" />
               </Show>
-              <span class="bt-options-name">
-                {WORDS_LABELS[wordsChoice()]()}
-              </span>
+              <span class="bt-options-name">{wordsName()}</span>
               <Show when={!isCustom()}>
                 <span class="bt-options-tag">
                   {LANGUAGE_TAGS[getConfig.language]}
@@ -243,7 +248,6 @@ export function TestConfig(): JSXElement {
               </Show>
             </span>
           }
-          align="start"
         >
           <WordsCard />
         </Pill>
@@ -259,7 +263,6 @@ export function TestConfig(): JSXElement {
               {length()}
             </span>
           }
-          align="center"
         >
           <LengthCard />
         </Pill>
@@ -279,7 +282,6 @@ export function TestConfig(): JSXElement {
               <Icon name={DIFFICULTY_ICONS[getConfig.difficulty]} />
             </span>
           }
-          align="end"
         >
           <DifficultyCard />
         </Pill>
@@ -301,8 +303,6 @@ function Pill(props: {
   /** What a screen reader hears for the pill: the name and what is set. */
   label: string;
   face: JSXElement;
-  /** Which edge of the pill the card lines up with: never a neighbour's. */
-  align: "start" | "center" | "end";
   children: JSXElement;
 }): JSXElement {
   let closing: ReturnType<typeof setTimeout> | undefined;
@@ -363,12 +363,7 @@ function Pill(props: {
         {props.face}
       </button>
       <Show when={isOpen()}>
-        <div
-          class="bt-options-card"
-          data-align={props.align}
-          role="group"
-          aria-label={props.label}
-        >
+        <div class="bt-options-card" role="group" aria-label={props.label}>
           {props.children}
         </div>
       </Show>
@@ -391,20 +386,6 @@ function WordsCard(): JSXElement {
         onPick={pickWords}
       />
       <Show when={isCustom()}>
-        <div class="bt-settings-row">
-          <div class="bt-settings-row-name">{t("customText")}</div>
-          <div class="bt-settings-choices">
-            <button
-              type="button"
-              class="bt-settings-choice"
-              aria-label={t("customTextEdit")}
-              onClick={openCustomTextEditor}
-            >
-              <Icon name="pencil" />
-              {t("customTextWords", wordsOf(customText()).length)}
-            </button>
-          </div>
-        </div>
         <SettingsRow
           label={t("shuffle")}
           options={["off", "on"] as const}

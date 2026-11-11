@@ -13,6 +13,7 @@ import {
   customText,
   deleteText,
   measuredOn,
+  NAME_MAX,
   savedTexts,
   saveText,
   setCustomLength,
@@ -87,7 +88,7 @@ function running(text: string): boolean {
  * start, so it never runs with nothing to type.
  *
  * A native `<dialog>`: it holds the focus, and Escape or a click on the
- * backdrop closes it. Its keys stop at the dialog, or the test page would
+ * backdrop closes it -- after asking, when the box holds a text not saved. Its keys stop at the dialog, or the test page would
  * take them -- any key focuses the words, and Enter on the result starts a
  * new test. In the box, Ctrl or Cmd + Enter starts; Enter in the name saves.
  */
@@ -101,6 +102,12 @@ export function CustomTextEditor(): JSXElement {
   // the saved text whose × was pressed, waiting for a second, deliberate
   // press: a text typed out by hand is gone for good once deleted
   const [confirming, setConfirming] = createSignal<string | null>(null);
+  // what the box held when it opened, so leaving it can tell whether
+  // anything typed since would be lost
+  const [baseline, setBaseline] = createSignal({ draft: "", name: "" });
+  // where the typist was going when the box stopped them to ask: a draft
+  // they have not saved is lost on the way out, so the way out asks first
+  const [leaving, setLeaving] = createSignal<"close" | "list" | null>(null);
   const words = (): number => wordsOf(draft()).length;
   const editing = (): string | null => {
     const v = view();
@@ -110,19 +117,72 @@ export function CustomTextEditor(): JSXElement {
   const edit = (editing: string | null, text: string, title: string): void => {
     setDraft(text);
     setName(title);
+    setBaseline({ draft: text, name: title });
+    setLeaving(null);
     setView({ kind: "edit", editing });
   };
 
-  // the box takes the focus each time it is shown, once it is in the page
+  // the backdrop is the dialog element itself, and so is the card's padding:
+  // a click counts as outside only by where it lands. And only when it was
+  // pressed out there too, or text selected in the box with the button let
+  // go past its edge would read as a click on the backdrop.
+  let pressedOutside = false;
+  const outside = (e: MouseEvent): boolean => {
+    const el = dialog();
+    if (el === undefined || e.target !== el) return false;
+    const r = el.getBoundingClientRect();
+    return (
+      e.clientX < r.left ||
+      e.clientX > r.right ||
+      e.clientY < r.top ||
+      e.clientY > r.bottom
+    );
+  };
+
+  const unsaved = (): boolean =>
+    view().kind === "edit" &&
+    (draft() !== baseline().draft || name() !== baseline().name);
+
+  // the box takes the focus each time it is shown, once it is in the page,
+  // and back from the question when the typist stays: the button they
+  // pressed is gone, and the focus would fall out of the dialog with it
   createEffect(
-    on([view, box], ([v, el]) => {
-      if (v.kind === "edit") el?.focus();
+    on([view, box, leaving], ([v, el, asking]) => {
+      if (v.kind === "edit" && asking === null) el?.focus();
     }),
   );
 
   const showList = (): void => {
     setConfirming(null);
+    setLeaving(null);
     setView({ kind: "list" });
+  };
+
+  // the backdrop, Escape, the × and the arrow back all go through here: a
+  // click beside the card is easy to make by accident, a page of text typed
+  // out by hand is not easy to make again
+  const leave = (to: "close" | "list"): void => {
+    if (unsaved()) {
+      setLeaving(to);
+    } else if (to === "close") {
+      setOpen(false);
+    } else {
+      showList();
+    }
+  };
+  // asked already, Escape answers "keep editing"
+  const escape = (): void => {
+    if (leaving() === null) {
+      leave("close");
+    } else {
+      setLeaving(null);
+    }
+  };
+  const discard = (): void => {
+    const to = leaving();
+    setLeaving(null);
+    setBaseline({ draft: draft(), name: name() });
+    if (to !== null) leave(to);
   };
 
   // on opening only: saving writes the store the draft is read from, and must
@@ -131,6 +191,7 @@ export function CustomTextEditor(): JSXElement {
     on([dialog, open], ([el, isOpen]) => {
       if (el === undefined) return;
       if (isOpen) {
+        setLeaving(null);
         if (savedTexts().length === 0) {
           edit(null, customText(), "");
         } else {
@@ -153,6 +214,14 @@ export function CustomTextEditor(): JSXElement {
   // past the point where this one stops the key
   const onKeyDown = (e: KeyboardEvent): void => {
     e.stopPropagation();
+    // Escape is answered here, the browser's own close held back: Chrome lets
+    // a dialog refuse its `cancel` only once without a click or key between,
+    // and the second Escape would close it over a draft not saved
+    if (e.key === "Escape") {
+      e.preventDefault();
+      escape();
+      return;
+    }
     if (e.key !== "Enter" || view().kind !== "edit") return;
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
@@ -184,8 +253,15 @@ export function CustomTextEditor(): JSXElement {
         class="bt-custom-card"
         aria-label={t("customText")}
         onClose={() => setOpen(false)}
+        onCancel={(e) => {
+          e.preventDefault();
+          escape();
+        }}
+        onPointerDown={(e) => {
+          pressedOutside = outside(e);
+        }}
         onClick={(e) => {
-          if (e.target === dialog()) setOpen(false);
+          if (pressedOutside && outside(e)) leave("close");
         }}
       >
         <div class="bt-custom-head">
@@ -194,7 +270,7 @@ export function CustomTextEditor(): JSXElement {
               type="button"
               class="bt-custom-icon-button"
               aria-label={t("customTextBack")}
-              onClick={showList}
+              onClick={() => leave("list")}
             >
               <Icon name="arrow-left" />
             </button>
@@ -204,7 +280,7 @@ export function CustomTextEditor(): JSXElement {
             type="button"
             class="bt-custom-icon-button"
             aria-label={t("close")}
-            onClick={() => setOpen(false)}
+            onClick={() => leave("close")}
           >
             <Icon name="x" />
           </button>
@@ -214,7 +290,17 @@ export function CustomTextEditor(): JSXElement {
           when={view().kind === "edit"}
           fallback={
             <>
-              <ul class="bt-custom-saved">
+              <ul
+                class="bt-custom-saved"
+                ref={(el) =>
+                  // the text running now, in sight however long the list
+                  queueMicrotask(() =>
+                    el
+                      .querySelector("[aria-current]")
+                      ?.scrollIntoView({ block: "nearest" }),
+                  )
+                }
+              >
                 <For each={savedTexts()}>
                   {(saved) => (
                     <li>
@@ -316,37 +402,76 @@ export function CustomTextEditor(): JSXElement {
             <span>{t("customTextWords", words())}</span>
             <span>{t("customTextCase")}</span>
           </div>
-          <div class="bt-custom-actions">
-            <input
-              ref={(el) => {
-                el.spellcheck = false;
-                setNameBox(el);
-              }}
-              class="bt-custom-name"
-              type="text"
-              value={name()}
-              placeholder={t("customTextName")}
-              aria-label={t("customTextName")}
-              autocomplete="off"
-              onInput={(e) => setName(e.currentTarget.value)}
-            />
-            <button
-              type="button"
-              class="bt-settings-choice"
-              disabled={words() === 0}
-              onClick={save}
-            >
-              {t("customTextSave")}
-            </button>
-            <button
-              type="button"
-              class="bt-settings-choice bt-custom-start"
-              disabled={words() === 0}
-              onClick={() => startCustomText(draft())}
-            >
-              {t("customTextStart")}
-            </button>
-          </div>
+          <Show
+            when={leaving() === null}
+            fallback={
+              <div
+                class="bt-custom-actions bt-custom-leave"
+                role="group"
+                aria-label={t("customTextDiscardAsk")}
+              >
+                <span class="bt-custom-confirm-warning">
+                  {t("customTextDiscardAsk")}
+                </span>
+                <button
+                  type="button"
+                  class="bt-settings-choice bt-custom-delete"
+                  onClick={discard}
+                >
+                  {t("customTextDiscard")}
+                </button>
+                <button
+                  type="button"
+                  class="bt-settings-choice"
+                  // staying is the answer to a slip of the hand
+                  ref={(el) => queueMicrotask(() => el.focus())}
+                  onClick={() => setLeaving(null)}
+                >
+                  {t("customTextKeepEditing")}
+                </button>
+              </div>
+            }
+          >
+            <div class="bt-custom-actions">
+              <span class="bt-custom-name-field">
+                <input
+                  ref={(el) => {
+                    el.spellcheck = false;
+                    setNameBox(el);
+                  }}
+                  class="bt-custom-name"
+                  type="text"
+                  maxLength={NAME_MAX}
+                  value={name()}
+                  placeholder={t("customTextName")}
+                  aria-label={t("customTextName")}
+                  autocomplete="off"
+                  onInput={(e) => setName(e.currentTarget.value)}
+                />
+                {/* the name stands in the options bar, so it has a limit,
+                    shown before it is reached */}
+                <span class="bt-custom-name-count" aria-hidden="true">
+                  {[...name()].length}/{NAME_MAX}
+                </span>
+              </span>
+              <button
+                type="button"
+                class="bt-settings-choice"
+                disabled={words() === 0}
+                onClick={save}
+              >
+                {t("customTextSave")}
+              </button>
+              <button
+                type="button"
+                class="bt-settings-choice bt-custom-start"
+                disabled={words() === 0}
+                onClick={() => startCustomText(draft())}
+              >
+                {t("customTextStart")}
+              </button>
+            </div>
+          </Show>
         </Show>
       </dialog>
     </Portal>
