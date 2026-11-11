@@ -172,20 +172,22 @@ Test của beartype nằm ở `__tests__/beartype/`.
   (upstream làm thế với nút "bài mới" trên màn cảm ứng) sẽ đứng đè lên chữ, trừ
   khi được đặt lại thành `inline-block` (`.bt-icon` đã làm sẵn).
 - Thanh tuỳ chọn là ba viên trong một dải, mỗi viên chỉ ghi cái đang chọn:
-  **chữ** (tiếng Việt, tiếng Anh hay "tuỳ chỉnh" kèm bút chì), **độ dài**
+  **chữ** (tiếng Việt, tiếng Anh, hay bút chì kèm tên đoạn đang gõ, chưa lưu
+  thì "tuỳ chỉnh"), **độ dài**
   (con số trên nền accent, kèm đồng hồ, `#` hay bút chì cho "cả đoạn") và
   **độ khó** (chỉ một icon). Rê chuột, bấm hay tab tới viên nào thì viên đó
   thả xuống một thẻ cùng kiểu thẻ cài đặt, mỗi thứ một hàng có tên (thẻ chữ:
-  nguồn chữ, rồi với chữ tuỳ chỉnh thì sửa chữ và xáo trộn; thẻ độ dài: hàng
+  nguồn chữ, rồi với chữ tuỳ chỉnh thì xáo trộn; bấm lại "tuỳ chỉnh" là mở
+  danh sách đoạn, nên không còn hàng "chữ tuỳ chỉnh"; thẻ độ dài: hàng
   thời gian, hàng số từ, và "cả đoạn" cho chữ tuỳ chỉnh — chọn một con số là
   chọn luôn đếm theo gì). Chọn xong thẻ vẫn mở, vì người ta hay đổi mấy thứ
   một lúc; đóng khi chuột rời đi, bấm ra ngoài hoặc Escape. Đổi sang bộ từ
   thì giữ độ dài: 30 giây chữ của mình thành 30 giây bộ từ; từ "cả đoạn" thì
   lấy thời gian.
 - Thẻ phải sống sót khi chuột đi từ viên xuống nó (`TestConfig.tsx`): thẻ
-  thẳng mép với viên của nó (viên đầu theo mép trái, viên cuối theo mép phải),
-  không bao giờ nằm dưới viên bên cạnh, vì chuột đi ngang viên khác sẽ mở thẻ
-  của viên đó; một dải trong suốt (`::before`) lấp khe giữa dải và thẻ, nhưng
+  canh giữa ngay dưới viên của nó, tay đi thẳng xuống là tới, không ngang qua
+  viên nào khác; viên đang mở chỉ đổi nền, không có vòng viền riêng (dải đã
+  có viền); một dải trong suốt (`::before`) lấp khe giữa dải và thẻ, nhưng
   không được cao hơn khe, không thì nó che mép dưới viên bên cạnh; rời đi thì
   chờ `CLOSE_DELAY` mới đóng. Trên màn cảm ứng, bấm mới mở, còn `pointerleave`
   sau mỗi lần nhấc ngón tay bị bỏ qua. Thanh ngắn nên màn hẹp dùng chung kiểu
@@ -239,14 +241,21 @@ Test của beartype nằm ở `__tests__/beartype/`.
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
   không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
-- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): hàng
-  sửa chữ trong thẻ chữ của thanh tuỳ chọn (hoặc chọn "tuỳ chỉnh" khi chưa có
-  chữ, hay khi đang ở đó rồi) mở một
+- **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): chọn
+  "tuỳ chỉnh" khi chưa có chữ, hay khi đang ở đó rồi, mở một
   `<dialog>` có hai màn. Màn danh
   sách: bấm một đoạn đã lưu là gõ luôn, bút chì để sửa, × để xoá (hỏi lại,
   hai nút nổi đè lên cuối hàng để hàng không xê dịch), "+ đoạn mới" mở màn
-  soạn. Màn soạn luôn ghi rõ "đoạn mới" hay "sửa: <tên>", và lưu một đoạn
-  đang sửa thì ghi đè đúng đoạn đó, giữ chỗ trong danh sách. Chưa lưu gì thì
+  soạn. Đoạn đang gõ tô nền accent; dialog cao tối đa 34rem, danh sách cuộn
+  bên trong còn tiêu đề và "+ đoạn mới" đứng yên. Màn soạn luôn ghi rõ "đoạn
+  mới" hay "sửa: <tên>", và lưu một đoạn
+  đang sửa thì ghi đè đúng đoạn đó, giữ chỗ trong danh sách. Tên tối đa
+  `NAME_MAX` (20) ký tự, ô tên đếm sẵn, vì tên đứng trên viên chữ; tên cũ dài
+  hơn thì viên cắt bằng "…". Màn soạn còn chữ chưa lưu thì bấm nền, Escape, ×
+  hay mũi tên về đều hỏi trước khi bỏ. Escape tự xử lý ở `keydown`, không dựa
+  vào `cancel`: Chrome chỉ cho chặn `cancel` một lần nếu không có thao tác
+  xen giữa, lần Escape thứ hai sẽ đóng luôn. Bấm nền chỉ tính khi cả nhấn lẫn
+  thả đều ngoài thẻ (phần đệm của thẻ cũng là phần tử dialog). Chưa lưu gì thì
   mở thẳng màn soạn. Chế độ chỉ bật khi bấm gõ, nên không bao giờ chạy với ô
   trống. Chữ, các bản đã lưu, chế độ (`by`) và xáo trộn (`shuffle`) nằm ở
   khoá `beartype:v1:customtext` (kho lưu trước khi có `by` chạy cả đoạn,
