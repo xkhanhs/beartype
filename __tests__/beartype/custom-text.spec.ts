@@ -159,6 +159,18 @@ describe("what is measured on a saved text", () => {
     expect(book.savedTextId("một hai ba")).toBeNull();
   });
 
+  it("cuts a name to NAME_MAX, and names the running text by it", async () => {
+    const book = await import("../../src/ts/beartype/custom-text");
+    book.saveText("a".repeat(book.NAME_MAX + 5), "một hai");
+    const name = book.savedTextName("một hai") as string;
+    expect([...name]).toHaveLength(book.NAME_MAX);
+    expect(name.endsWith("…")).toBe(true);
+    book.saveText("", "chữ chữ chữ chữ chữ chữ chữ chữ");
+    const fallback = book.savedTextName("chữ chữ chữ chữ chữ chữ chữ chữ");
+    expect([...(fallback as string)].length).toBeLessThanOrEqual(book.NAME_MAX);
+    expect(book.savedTextName("không có")).toBeNull();
+  });
+
   it("keeps a text's id, and so its books, when it is edited", async () => {
     const book = await import("../../src/ts/beartype/custom-text");
     book.saveText("a", "một hai");

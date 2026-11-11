@@ -104,7 +104,6 @@ const STRINGS = {
 
   // the custom mode's card: the text to type, and the ones kept for later
   customText: { vi: "chữ tuỳ chỉnh", en: "custom text" },
-  customTextEdit: { vi: "sửa chữ tuỳ chỉnh", en: "edit custom text" },
   customTextPlaceholder: {
     vi: "dán hoặc gõ đoạn chữ muốn luyện",
     en: "paste or type the text to practise",
@@ -123,6 +122,12 @@ const STRINGS = {
     vi: "tên để lưu (tuỳ chọn)",
     en: "name to save (optional)",
   },
+  customTextDiscardAsk: {
+    vi: "đoạn này chưa lưu, bỏ đi?",
+    en: "this text is not saved: discard it?",
+  },
+  customTextDiscard: { vi: "bỏ đi", en: "discard" },
+  customTextKeepEditing: { vi: "soạn tiếp", en: "keep editing" },
   customTextDelete: {
     vi: (name: string) => `xoá “${name}”`,
     en: (name: string) => `delete “${name}”`,

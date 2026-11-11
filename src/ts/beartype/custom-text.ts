@@ -143,11 +143,28 @@ export function savedTexts(): readonly SavedText[] {
   return store().saved;
 }
 
+/**
+ * The longest name a saved text takes, in characters: the name stands in the
+ * options bar, so it is kept short enough to sit there whole. The box says so
+ * before the typist runs into it, and cuts at it.
+ */
+export const NAME_MAX = 20;
+
+/** `name` cut to `NAME_MAX`, an ellipsis saying where. */
+function clipName(name: string): string {
+  const chars = [...name];
+  if (chars.length <= NAME_MAX) return name;
+  return `${chars
+    .slice(0, NAME_MAX - 1)
+    .join("")
+    .trimEnd()}…`;
+}
+
 /** How a text is listed when it was saved without a name: its first words. */
 function defaultName(text: string): string {
   const words = wordsOf(text);
   const head = words.slice(0, 4).join(" ");
-  return words.length > 4 ? `${head}…` : head;
+  return clipName(words.length > 4 ? `${head}…` : head);
 }
 
 /**
@@ -160,7 +177,7 @@ export function saveText(name: string, text: string, replacing?: string): void {
   const saved = store().saved;
   const at = saved.findIndex((s) => s.name === replacing);
   const entry = {
-    name: name.trim() || defaultName(text),
+    name: clipName(name.trim()) || defaultName(text),
     text,
     // the text being edited keeps its books, under its new name and words
     id: saved[at]?.id ?? newId(),
@@ -204,6 +221,11 @@ function forget(id: string): void {
 /** The saved text the custom mode would run for `text`, if it is saved. */
 export function savedTextId(text: string): string | null {
   return store().saved.find((s) => s.text === text)?.id ?? null;
+}
+
+/** The name `text` is saved under, if it is saved. */
+export function savedTextName(text: string): string | null {
+  return store().saved.find((s) => s.text === text)?.name ?? null;
 }
 
 /** What deleting a saved text throws away, for the warning before it does. */
