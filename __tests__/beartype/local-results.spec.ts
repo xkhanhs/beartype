@@ -17,6 +17,7 @@ function save(
   language = "vietnamese",
   mode: { mode: string; mode2: string } = time30,
   shape = `${mode.mode} ${mode.mode2}`,
+  testDuration = 30,
 ): void {
   saveResult(
     {
@@ -27,7 +28,7 @@ function save(
       acc: 98,
       rawWpm: wpm + 2,
       consistency: 80,
-      testDuration: 30,
+      testDuration,
       afkDuration: 0,
       incompleteTestSeconds: 0,
     } as unknown as CompletedEvent,
@@ -204,16 +205,38 @@ describe("local results", () => {
   });
 
   it("counts every test but draws only the last twenty", () => {
-    for (let wpm = 1; wpm <= 25; wpm++) save(wpm, "vietnamese", time60);
+    // a minute at over 100 wpm: twenty rounds hold well over 500 words
+    for (let wpm = 101; wpm <= 125; wpm++) {
+      save(wpm, "vietnamese", time60, "time 60", 60);
+    }
     const summary = recentSummary("vietnamese", "time 60", null);
-    // the usual speed is the median of the twenty drawn, 6 to 25
+    // the usual speed is the median of the twenty drawn, 106 to 125
     expect(summary).toMatchObject({
-      practiceSeconds: 750,
-      best: 25,
-      usual: 15.5,
+      practiceSeconds: 1500,
+      best: 125,
+      usual: 115.5,
+      usualCount: 20,
     });
     expect(summary?.recent.map((t) => t.wpm)).toEqual(
-      Array.from({ length: 20 }, (_, i) => i + 6),
+      Array.from({ length: 20 }, (_, i) => i + 106),
     );
+  });
+
+  it("reads the usual figures over about 500 words, from 20 rounds up to 50", () => {
+    // 60 wpm for 20 seconds is 20 words a round: 25 rounds hold 500
+    for (let i = 0; i < 30; i++) save(60, "vietnamese", time30, "time 30", 20);
+    expect(recentSummary("vietnamese", "time 30", null)).toMatchObject({
+      usualCount: 25,
+    });
+  });
+
+  it("stops at 50 rounds of short sprints, and still draws twenty", () => {
+    // a few words a round: the window runs to its cap, rounds 11 to 60
+    for (let wpm = 1; wpm <= 60; wpm++) {
+      save(wpm, "vietnamese", words10, "words 10", 5);
+    }
+    const summary = recentSummary("vietnamese", "words 10", null);
+    expect(summary).toMatchObject({ usualCount: 50, usual: 35.5 });
+    expect(summary?.recent).toHaveLength(20);
   });
 });

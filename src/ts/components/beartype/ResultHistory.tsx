@@ -86,7 +86,7 @@ export function ResultHistory(): JSXElement {
             <Figure
               value={wpm(s().usual)}
               label={t("historyUsual")}
-              hint={t("historyUsualHint")}
+              hint={t("historyUsualHint", s().usualCount)}
             />
             <Figure
               value={`${Math.round(s().usualAcc)}%`}
