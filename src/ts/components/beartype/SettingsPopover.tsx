@@ -132,6 +132,7 @@ export function SettingsPopover(): JSXElement {
             hint={t("smoothCaretHint")}
             options={SMOOTH_CARETS}
             labels={smoothCaretLabels()}
+            control="select"
             value={getConfig.smoothCaret}
             onPick={(value) => setConfig("smoothCaret", value)}
           />
@@ -140,6 +141,7 @@ export function SettingsPopover(): JSXElement {
             hint={t("paceCaretHint")}
             options={PACE_CARETS}
             labels={paceCaretLabels()}
+            control="select"
             value={getConfig.paceCaret}
             onPick={(value) => setConfig("paceCaret", value)}
           />
@@ -147,6 +149,7 @@ export function SettingsPopover(): JSXElement {
             label={t("fontSize")}
             options={FONT_SIZES}
             labels={FONT_SIZE_LABELS}
+            control="stepper"
             value={getConfig.fontSize}
             onPick={(value) => setConfig("fontSize", value)}
           />
@@ -163,6 +166,7 @@ export function SettingsPopover(): JSXElement {
             hint={t("randomThemeHint")}
             options={RANDOM_THEMES}
             labels={randomThemeLabels()}
+            control="select"
             value={getConfig.randomTheme}
             onPick={(value) => setConfig("randomTheme", value)}
           />

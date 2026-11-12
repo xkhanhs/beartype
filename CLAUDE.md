@@ -163,7 +163,11 @@ Test của beartype nằm ở `__tests__/beartype/`.
   bóng `aria-label` + `data-balloon-pos`. Mô tả trong thẻ cài đặt cũng vậy:
   một nút `i` nhỏ cạnh tên hàng (`bt-settings-info`), không còn dòng chữ mờ
   bên dưới. Thêm hàng cài đặt mới thì `hint` là tuỳ chọn, hàng nào tên đã đủ
-  rõ thì bỏ hẳn.
+  rõ thì bỏ hẳn. Mỗi hàng nằm gọn một dòng (`SettingsRow`): hai nấc mà nấc
+  đầu là `off` thì tự thành công tắc gạt kiểu iOS; một thang nhiều nấc (cỡ
+  chữ) là `control="stepper"`, nút − giá trị +; hàng nhiều lựa chọn khác
+  (hai con trỏ, xoay màu) là `control="select"`. Hàng không ghi `control`
+  thì là các viên, viên đang chọn tô nền accent (thẻ của thanh tuỳ chọn).
 - Icon của các nút `bt-action` (bài mới, gõ lại, hai nút luyện) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
   với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
@@ -296,7 +300,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
   và độ dài (`time 30`, `words 10`), với chữ tuỳ chỉnh thì cách chạy
   (`custom time 30`, `custom words 25`, `custom text`). Ô tốt nhất, trung
   vị, chính xác, đều tay, biểu đồ, vương miện và con trỏ dẫn tốc chỉ đọc
-  các bài cùng nguồn (ngôn ngữ hay đoạn) và cùng kiểu; giờ luyện vẫn cộng
+  các bài cùng nguồn (ngôn ngữ hay đoạn) và cùng kiểu; ô thời gian (tổng đã luyện) vẫn cộng
   mọi kiểu. Bài luyện lấy kiểu của bài nó dựng từ. Kết quả cũ chưa có kiểu
   thì đọc từ `mode`/`mode2`; bài chữ tuỳ chỉnh từ hồi đó chỉ ghi `custom` nên
   không khớp kiểu nào. Vương miện không còn chỉ dành cho bài 60 giây / 50 từ:

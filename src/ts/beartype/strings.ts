@@ -64,6 +64,8 @@ const STRINGS = {
   // the values those rows offer
   off: { vi: "tắt", en: "off" },
   on: { vi: "bật", en: "on" },
+  stepDown: { vi: "nhỏ hơn", en: "smaller" },
+  stepUp: { vi: "lớn hơn", en: "larger" },
   slow: { vi: "chậm", en: "slow" },
   medium: { vi: "vừa", en: "medium" },
   fast: { vi: "nhanh", en: "fast" },
@@ -268,7 +270,7 @@ const STRINGS = {
   // the book of recent tests under the result
   historyBest: { vi: "tốt nhất", en: "best" },
   historyUsual: { vi: "trung vị", en: "median" },
-  historyPractice: { vi: "giờ luyện", en: "practice" },
+  historyPractice: { vi: "thời gian", en: "time" },
   historyBestHint: {
     vi: "lượt nhanh nhất cùng kiểu bài: cùng nguồn chữ, cùng độ dài",
     en: "your fastest round of the same kind: same words, same length",

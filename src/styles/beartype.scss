@@ -981,6 +981,141 @@ button.bt-settings-info {
   max-inline-size: 24rem;
 }
 
+// an on and off setting, as iOS draws it: the track fills with the accent
+// when on and the knob slides across (`SettingsRow`)
+button.bt-switch {
+  position: relative;
+  flex: none;
+  inline-size: 3rem;
+  block-size: 1.75rem;
+  padding: 0;
+  border: 2px solid var(--kb-border);
+  border-radius: 99px;
+  background-color: var(--kb-border);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--kb-border);
+    filter: brightness(1.08);
+  }
+
+  &[aria-checked="true"],
+  &[aria-checked="true"]:hover {
+    border-color: var(--main-color);
+    background-color: var(--main-color);
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+.bt-switch-knob {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0.15rem;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: 50%;
+  background-color: var(--text-color);
+  transform: translateY(-50%);
+  transition: transform 0.15s ease;
+
+  [aria-checked="true"] > & {
+    background-color: var(--kb-on-accent);
+    transform: translate(1.25rem, -50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// a scale of steps, the size of the words: one value between two buttons
+.bt-stepper {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem;
+  border: 2px solid var(--kb-border);
+  border-radius: 99px;
+  background-color: var(--bg-color);
+}
+
+button.bt-stepper-button {
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--text-color);
+  background: transparent;
+  font-size: 1.15rem;
+  font-weight: bold;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    color: var(--text-color);
+    background-color: var(--kb-accent-xlt);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+}
+
+.bt-stepper-value {
+  min-inline-size: 3.2rem;
+  font-weight: bold;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+// many long names: a dropdown, so the row stays on one line
+.bt-settings-select {
+  flex: none;
+  padding: 0.32rem 2rem 0.32rem 0.9rem;
+  border: 2px solid var(--kb-border);
+  border-radius: 99px;
+  color: var(--text-color);
+  // the arrow is drawn in the text colour, so it follows the theme
+  background:
+    linear-gradient(45deg, transparent 50%, var(--text-color) 50%) right 1.05rem
+      center / 0.35rem 0.35rem no-repeat,
+    linear-gradient(135deg, var(--text-color) 50%, transparent 50%) right 0.7rem
+      center / 0.35rem 0.35rem no-repeat,
+    var(--bg-color);
+  font: inherit;
+  font-weight: bold;
+  appearance: none;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--main-color);
+  }
+
+  &:focus-visible {
+    outline: var(--kb-focus);
+    outline-offset: 2px;
+  }
+
+  option {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+  }
+}
+
 button.bt-settings-choice {
   padding: 0.32rem 0.75rem;
   border: 2px solid var(--kb-border);

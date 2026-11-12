@@ -10,7 +10,7 @@ không quote, không funbox. Chỉ còn một màn:
 - **Bài đo** theo thời gian (15/30/60/120 giây) hoặc theo số từ (10/25/50/100),
   bằng tiếng Việt hoặc tiếng Anh.
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, độ đều tay,
-  rồi tổng giờ luyện từ trước tới nay, và với các bài cùng kiểu với bài vừa gõ
+  rồi tổng thời gian đã luyện, và với các bài cùng kiểu với bài vừa gõ
   (cùng nguồn chữ, cùng độ dài): mức tốt nhất, trung vị tốc độ, độ
   chính xác, độ đều tay và biểu đồ cột của 20 bài gần nhất.
 - **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
@@ -62,7 +62,7 @@ Tiếng Anh vẫn được chấm y hệt monkeytype, vì mỗi chữ cái Latin
 Mọi thứ nằm trong `localStorage` của trình duyệt: cấu hình, kết quả, sổ từ hay
 sai, sổ từ chậm. Không có gì được gửi đi. Xoá dữ liệu trang web là mất hết.
 
-Sổ từ hay sai, sổ từ chậm và giờ luyện chỉ tách tiếng Việt với tiếng Anh (và
+Sổ từ hay sai, sổ từ chậm và ô thời gian (tổng thời gian đã luyện) chỉ tách tiếng Việt với tiếng Anh (và
 từng đoạn chữ tuỳ chỉnh đã lưu): bài theo thời gian hay theo số từ, dài hay
 ngắn, đều gộp chung. Tốc độ thì không: mức tốt nhất, trung vị, biểu đồ,
 vương miện kỷ lục và con trỏ dẫn tốc chỉ so bài vừa gõ với các bài cùng kiểu,
