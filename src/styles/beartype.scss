@@ -499,10 +499,12 @@ button.bt-difficulty-choice {
     background-color: var(--kb-accent-xlt);
   }
 
+  // the one chosen is filled, not only ringed: a ring alone reads as focus
   &[aria-pressed="true"],
   &[aria-pressed="true"]:hover {
     border-color: var(--main-color);
-    background-color: var(--kb-border);
+    color: var(--kb-on-accent);
+    background-color: var(--main-color);
   }
 
   &[data-difficulty="hard"] .bt-icon {
@@ -511,6 +513,13 @@ button.bt-difficulty-choice {
 
   &[data-difficulty="expert"] .bt-icon {
     color: var(--error-color);
+  }
+
+  // on the accent fill the icon and the dimmed rule take the label's colour;
+  // after the two above, which it has to beat at the same specificity
+  &[aria-pressed="true"] .bt-icon,
+  &[aria-pressed="true"] .bt-difficulty-rule {
+    color: inherit;
   }
 
   &:focus-visible {
@@ -985,10 +994,12 @@ button.bt-settings-choice {
     background-color: var(--kb-accent-xlt);
   }
 
+  // the one chosen is filled, not only ringed: a ring alone reads as focus
   &[aria-pressed="true"],
   &[aria-pressed="true"]:hover {
     border-color: var(--main-color);
-    background-color: var(--kb-border);
+    color: var(--kb-on-accent);
+    background-color: var(--main-color);
   }
 
   &:focus-visible {
