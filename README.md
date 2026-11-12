@@ -12,7 +12,8 @@ không quote, không funbox. Chỉ còn một màn:
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, độ đều tay,
   rồi tổng thời gian đã luyện, và với các bài cùng kiểu với bài vừa gõ
   (cùng nguồn chữ, cùng độ dài): mức tốt nhất, trung vị tốc độ, độ
-  chính xác, độ đều tay và biểu đồ cột của 20 bài gần nhất.
+  chính xác và độ đều tay của các bài gần nhất (đủ khoảng 500 từ, từ 20 tới
+  50 bài), và biểu đồ cột của 20 bài gần nhất.
 - **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
   hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
   trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay

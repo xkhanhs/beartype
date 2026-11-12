@@ -220,7 +220,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
   cũ có công tắc đó bật thì `config/persistence.ts` chuyển thành `expert`.
 - Bài tập phá plateau, tắt sẵn: **con trỏ dẫn tốc**
   (`test/pace-caret.ts`, tính trong `beartype/pace.ts`) chạy trước theo 80 /
-  100 / 120% tốc độ trung bình (trung vị 20 bài gần nhất, như ô trung vị ở
+  100 / 120% tốc độ trung bình (trung vị các bài gần nhất, như ô trung vị ở
   màn kết quả) của máy này trong ngôn ngữ hay đoạn đang gõ, cùng kiểu bài —
   không có bài nào như vậy trong sổ thì không có gì để chạy theo và nó im
   lặng không hiện. Con
@@ -304,7 +304,11 @@ Test của beartype nằm ở `__tests__/beartype/`.
   mọi kiểu. Bài luyện lấy kiểu của bài nó dựng từ. Kết quả cũ chưa có kiểu
   thì đọc từ `mode`/`mode2`; bài chữ tuỳ chỉnh từ hồi đó chỉ ghi `custom` nên
   không khớp kiểu nào. Vương miện không còn chỉ dành cho bài 60 giây / 50 từ:
-  kỷ lục giờ tách theo kiểu, nên bài 10 từ đua với bài 10 từ.
+  kỷ lục giờ tách theo kiểu, nên bài 10 từ đua với bài 10 từ. Trung vị,
+  chính xác và đều tay đọc ngược từ bài mới nhất cho đủ khoảng 500 từ, ít
+  nhất 20 bài và nhiều nhất 50 (`usualWindow`): 20 bài 10 từ mới hơn hai phút
+  gõ nên trung vị còn nhảy theo may rủi, còn cửa sổ dài hơn thì đi sau tay
+  đang nhanh lên. Biểu đồ vẫn chỉ vẽ 20 bài.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.

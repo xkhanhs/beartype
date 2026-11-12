@@ -149,6 +149,38 @@ export function getLocalPB(
 /** How many recent tests the result screen draws a bar for. */
 const RECENT = 20;
 
+/**
+ * The usual figures are read over enough rounds to hold about this many
+ * words: twenty 10-word sprints are two minutes of typing and their median
+ * still swings by luck, while twenty one-minute tests are twenty minutes and
+ * hold steady. So the window grows for short rounds, from `RECENT` up to
+ * `USUAL_MAX`, never past it: a window of a week's rounds lags behind hands
+ * that are getting faster, and the pace caret runs on it.
+ */
+const USUAL_WORDS = 500;
+const USUAL_MAX = 50;
+
+/** Words a round held, from its speed and length. */
+function wordsTyped(t: RecentTest): number {
+  return (t.wpm * t.testDuration) / 60;
+}
+
+/**
+ * The last rounds the usual figures read: back from the newest until they
+ * hold `USUAL_WORDS` words, at least `RECENT` of them and at most
+ * `USUAL_MAX`.
+ */
+function usualWindow(tests: RecentTest[]): RecentTest[] {
+  let words = 0;
+  let count = 0;
+  for (let i = tests.length - 1; i >= 0 && count < USUAL_MAX; i--) {
+    if (count >= RECENT && words >= USUAL_WORDS) break;
+    words += wordsTyped(tests[i] as RecentTest);
+    count++;
+  }
+  return tests.slice(-count);
+}
+
 export type RecentTest = {
   wpm: number;
   acc: number;
@@ -164,6 +196,8 @@ export type RecentSummary = {
   usual: number;
   usualAcc: number;
   usualConsistency: number;
+  /** How many rounds the usual figures were read over. */
+  usualCount: number;
   /**
    * Seconds typed over every test in this language, whatever its shape, not
    * only the ones drawn.
@@ -189,9 +223,9 @@ export function median(values: number[]): number {
  * the tests of the same shape only (see `testShape`): the speed of a 10-word
  * sprint swings over a wide range and runs well above what the hands hold
  * for a minute, so set against a mix of both it reads as nothing. The usual
- * figures come from those
- * last `RECENT` only: over hundreds of tests a median no longer moves, and it
- * should say how fast you type now, not since the first day. `current` is
+ * figures come from the last few only (see `usualWindow`): over hundreds of
+ * tests a median no longer moves, and it should say how fast you type now,
+ * not since the first day. `current` is
  * included -- it is not saved until the result screen has been drawn; `null`
  * when it will not be saved at all.
  * "Usual" is the median: one interrupted test should not drag it down the way
@@ -216,15 +250,17 @@ export function recentSummary(
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
   const recent = tests.slice(-RECENT);
+  const usual = usualWindow(tests);
   const practised = [
     ...matching(language),
     ...(current === null ? [] : [current]),
   ];
   return {
     best: Math.max(...tests.map((t) => t.wpm)),
-    usual: median(recent.map((t) => t.wpm)),
-    usualAcc: median(recent.map((t) => t.acc)),
-    usualConsistency: median(recent.map((t) => t.consistency)),
+    usual: median(usual.map((t) => t.wpm)),
+    usualAcc: median(usual.map((t) => t.acc)),
+    usualConsistency: median(usual.map((t) => t.consistency)),
+    usualCount: usual.length,
     practiceSeconds: practised.reduce((sum, t) => sum + t.testDuration, 0),
     recent,
   };
