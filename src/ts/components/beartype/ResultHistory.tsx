@@ -27,9 +27,10 @@ import { getLanguage } from "../../utils/json-data";
 
 /**
  * The foot of the result screen, after keybear's `TypeTestStats`: how long
- * this language has been practised (time and words alike), the best on a
- * standard test, the usual speed, accuracy and consistency, and a
- * bar for each of the last few. It answers the question that comes after the number just typed:
+ * this language has been practised (time and words alike), and over the
+ * rounds of the same kind as the one just typed -- same words, same length --
+ * the best, the usual speed, accuracy and consistency, and a bar for each of
+ * the last few. It answers the question that comes after the number just typed:
  * is that good, for me?
  *
  * `result.ts` sets the summary when it draws the result.
@@ -78,15 +79,15 @@ export function ResultHistory(): JSXElement {
         <div class="bt-history">
           <div class="bt-history-row">
             <Figure
-              value={s().best === null ? "-" : wpm(s().best as number)}
+              value={wpm(s().best)}
               label={t("historyBest")}
-              hint={
-                statsPool()?.startsWith("text:") === true
-                  ? t("historyBestTextHint")
-                  : t("historyBestHint")
-              }
+              hint={t("historyBestHint")}
             />
-            <Figure value={wpm(s().usual)} label={t("historyUsual")} />
+            <Figure
+              value={wpm(s().usual)}
+              label={t("historyUsual")}
+              hint={t("historyUsualHint")}
+            />
             <Figure
               value={`${Math.round(s().usualAcc)}%`}
               label={t("accuracy")}

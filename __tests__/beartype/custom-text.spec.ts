@@ -206,6 +206,7 @@ describe("what is measured on a saved text", () => {
           afkDuration: 0,
           incompleteTestSeconds: 0,
         } as never,
+        "custom text",
         pool,
       );
     }

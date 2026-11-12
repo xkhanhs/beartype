@@ -28,6 +28,11 @@ const LocalResultSchema = z.object({
   testDuration: z.number(),
   afkDuration: z.number(),
   incompleteTestSeconds: z.number(),
+  /**
+   * The kind of round it was, as `testShape` names it. Absent on results
+   * kept before rounds were told apart; `shapeOf` reads those off their mode.
+   */
+  shape: z.string().optional(),
 });
 
 export type LocalResult = z.infer<typeof LocalResultSchema>;
@@ -46,11 +51,42 @@ export function getResults(): LocalResult[] {
 }
 
 /**
+ * The kind of round a test is, and the one thing its figures are compared
+ * against: 10 words is not read against 60 seconds, nor a text run for 30
+ * seconds against the same text run through once. A word list round is its
+ * mode and length (`time 30`, `words 10`); a text round is `custom` with how
+ * long the text was set to run (`custom time 30`, `custom words 25`,
+ * `custom text`).
+ */
+export function testShape(
+  mode: string,
+  time: number,
+  words: number,
+  textLength: "time" | "words" | "text",
+): string {
+  if (mode === "custom") {
+    if (textLength === "text") return "custom text";
+    return `custom ${textLength} ${textLength === "time" ? time : words}`;
+  }
+  return `${mode} ${mode === "time" ? time : words}`;
+}
+
+/**
+ * The shape a kept result was. One kept before shapes were stored is read off
+ * its mode, which says it all for the word list; a text round from then
+ * stored only `custom` and matches no shape of today.
+ */
+function shapeOf(r: LocalResult): string {
+  return r.shape ?? `${r.mode} ${r.mode2}`;
+}
+
+/**
  * Keeps a test. `pool` stands in for its language when the words were not
  * the word list's: a saved text's rounds are kept under the text's own pool.
  */
 export function saveResult(
   event: CompletedEvent,
+  shape: string,
   pool: string = event.language,
 ): void {
   const results = storage.get();
@@ -66,6 +102,7 @@ export function saveResult(
     testDuration: event.testDuration,
     afkDuration: event.afkDuration,
     incompleteTestSeconds: event.incompleteTestSeconds,
+    shape,
   });
   storage.set(results.slice(-MAX_RESULTS));
 }
@@ -86,30 +123,22 @@ function matching(language: string): LocalResult[] {
   return storage.get().filter((r) => statsLanguage(r.language) === pool);
 }
 
-/**
- * A test long enough for its speed to stand as a best: 60 seconds or more,
- * or 50 words or more. A 10-word sprint runs a good deal faster than the
- * hands can hold, and a best set there says nothing a longer test can reach.
- * Time and words both count, so neither mode is left without a best.
- */
-export function isStandard(test: { mode: string; mode2: string }): boolean {
-  const length = parseInt(test.mode2);
-  return (
-    (test.mode === "time" && length >= 60) ||
-    (test.mode === "words" && length >= 50)
-  );
+/** Every test in `language`'s pool of the same shape (see `testShape`). */
+function matchingShape(language: string, shape: string): LocalResult[] {
+  return matching(language).filter((r) => shapeOf(r) === shape);
 }
 
 /**
- * Upstream's `DB.getLocalPB`, but one best per language and over standard
- * tests only: the crown agrees with the best figure the result screen prints
- * under it.
+ * Upstream's `DB.getLocalPB`, one best per language and shape, as upstream
+ * keeps one per mode and length: the crown agrees with the best figure the
+ * result screen prints under it.
  */
 export function getLocalPB(
   language: string,
+  shape: string,
 ): { wpm: number; acc: number } | undefined {
   let best: LocalResult | undefined;
-  for (const r of matching(language).filter(isStandard)) {
+  for (const r of matchingShape(language, shape)) {
     if (best === undefined || r.wpm > best.wpm) {
       best = r;
     }
@@ -131,13 +160,13 @@ export type RecentTest = {
 };
 
 export type RecentSummary = {
-  /** Over standard tests only; `null` before the first of them. */
-  best: number | null;
+  best: number;
   usual: number;
   usualAcc: number;
   usualConsistency: number;
   /**
-   * Seconds typed over every test in this language, not only the ones drawn.
+   * Seconds typed over every test in this language, whatever its shape, not
+   * only the ones drawn.
    * Tests run from ten words to two minutes, so a count of them says little
    * about how much practice went in; the time does.
    */
@@ -156,9 +185,11 @@ export function median(values: number[]): number {
 
 /**
  * The practice time over every test in the same language, whatever its mode
- * and length (see `statsLanguage`), the best over the standard ones (see
- * `isStandard`), and the last `RECENT` of them all for the chart, as keybear's
- * `testStats` does. The usual figures come from those
+ * and length (see `statsLanguage`), and the best and the last `RECENT` over
+ * the tests of the same shape only (see `testShape`): the speed of a 10-word
+ * sprint swings over a wide range and runs well above what the hands hold
+ * for a minute, so set against a mix of both it reads as nothing. The usual
+ * figures come from those
  * last `RECENT` only: over hundreds of tests a median no longer moves, and it
  * should say how fast you type now, not since the first day. `current` is
  * included -- it is not saved until the result screen has been drawn; `null`
@@ -168,9 +199,10 @@ export function median(values: number[]): number {
  */
 export function recentSummary(
   language: string,
+  shape: string,
   current: RecentTest | null,
 ): RecentSummary | null {
-  const tests: RecentTest[] = matching(language).map(
+  const tests: RecentTest[] = matchingShape(language, shape).map(
     ({ wpm, acc, consistency, timestamp, mode, mode2, testDuration }) => ({
       wpm,
       acc,
@@ -184,16 +216,16 @@ export function recentSummary(
   if (current !== null) tests.push(current);
   if (tests.length === 0) return null;
   const recent = tests.slice(-RECENT);
-  // a saved text's rounds are all the same text, so any of them stands as
-  // its best; only the word list runs from sprints to minutes
-  const standard = tests.filter((t) => t.mode === "custom" || isStandard(t));
+  const practised = [
+    ...matching(language),
+    ...(current === null ? [] : [current]),
+  ];
   return {
-    best:
-      standard.length === 0 ? null : Math.max(...standard.map((t) => t.wpm)),
+    best: Math.max(...tests.map((t) => t.wpm)),
     usual: median(recent.map((t) => t.wpm)),
     usualAcc: median(recent.map((t) => t.acc)),
     usualConsistency: median(recent.map((t) => t.consistency)),
-    practiceSeconds: tests.reduce((sum, t) => sum + t.testDuration, 0),
+    practiceSeconds: practised.reduce((sum, t) => sum + t.testDuration, 0),
     recent,
   };
 }

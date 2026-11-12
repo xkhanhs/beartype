@@ -10,8 +10,9 @@ không quote, không funbox. Chỉ còn một màn:
 - **Bài đo** theo thời gian (15/30/60/120 giây) hoặc theo số từ (10/25/50/100),
   bằng tiếng Việt hoặc tiếng Anh.
 - **Kết quả gọn như keybear**: WPM, độ chính xác, số từ, thời gian, độ đều tay,
-  rồi mức tốt nhất và tổng giờ luyện từ trước tới nay, mức trung bình, độ chính xác,
-  độ đều tay và biểu đồ cột của 20 bài gần nhất cùng ngôn ngữ.
+  rồi tổng giờ luyện từ trước tới nay, và với các bài cùng kiểu với bài vừa gõ
+  (cùng nguồn chữ, cùng độ dài): mức tốt nhất, trung vị tốc độ, độ
+  chính xác, độ đều tay và biểu đồ cột của 20 bài gần nhất.
 - **Giao diện của keybear**: ba mươi tám bảng màu — chín của keybear, hai mươi
   hai bảng tối và bảy bảng sáng của monkeytype — chọn trong danh sách ở chân
   trang (rê chuột để xem thử). Mặc định mỗi bài mới tự rút một bảng khác, sáng hay
@@ -61,10 +62,13 @@ Tiếng Anh vẫn được chấm y hệt monkeytype, vì mỗi chữ cái Latin
 Mọi thứ nằm trong `localStorage` của trình duyệt: cấu hình, kết quả, sổ từ hay
 sai, sổ từ chậm. Không có gì được gửi đi. Xoá dữ liệu trang web là mất hết.
 
-Thống kê tốc độ, kỷ lục, sổ từ hay sai và sổ từ chậm chỉ tách tiếng Việt với tiếng Anh. Bài
-theo thời gian hay theo số từ, dài hay ngắn, đều gộp chung vào ngôn ngữ của nó.
-Riêng kỷ lục chỉ tính bài chuẩn, 60 giây hoặc 50 từ trở lên: bài 10 từ chạy
-nhanh hơn sức tay giữ được lâu, nên không đứng làm kỷ lục.
+Sổ từ hay sai, sổ từ chậm và giờ luyện chỉ tách tiếng Việt với tiếng Anh (và
+từng đoạn chữ tuỳ chỉnh đã lưu): bài theo thời gian hay theo số từ, dài hay
+ngắn, đều gộp chung. Tốc độ thì không: mức tốt nhất, trung vị, biểu đồ,
+vương miện kỷ lục và con trỏ dẫn tốc chỉ so bài vừa gõ với các bài cùng kiểu,
+10 từ với 10 từ, 60 giây với 60 giây. Bài 10 từ chạy nhanh hơn sức tay giữ được
+một phút và lên xuống trên một khoảng rộng, nên đặt cạnh bài dài thì con số
+không nói lên gì.
 Bài không hợp lệ thì không được ghi vào đâu cả, kể cả bài có lúc ngừng gõ liền
 5 giây hoặc tổng thời gian ngừng gõ quá 20% bài. Đồng hồ vẫn chạy khi ô gõ mất
 focus hay khi chuyển tab, nên bỏ đi giữa bài cũng tính là ngừng gõ.

@@ -6,6 +6,7 @@ import * as CustomText from "./custom-text";
 import { configEvent } from "../events/config";
 import { Mode } from "../schemas/shared";
 import { customLength, customText, savedTextId } from "../beartype/custom-text";
+import { testShape } from "../beartype/local-results";
 import { MIN_DRILL_WORDS, missWords } from "../beartype/miss-book";
 import { slowWords } from "../beartype/slow-words";
 import { statsLanguage, textPool } from "../beartype/stats-language";
@@ -62,6 +63,20 @@ export function statsPool(): string | null {
     return id === null ? null : textPool(id);
   }
   return statsLanguage(getConfig.language);
+}
+
+/**
+ * The shape the round about to be typed is measured as (see `testShape`). A
+ * drill takes the shape of the rounds it was built from, so its pace is
+ * theirs.
+ */
+export function statsShape(): string {
+  return testShape(
+    drillBaseMode() ?? getConfig.mode,
+    getConfig.time,
+    getConfig.words,
+    customLength(),
+  );
 }
 
 // beartype: the book the drill that is on was built from, so each drill

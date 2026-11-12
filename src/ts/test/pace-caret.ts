@@ -4,6 +4,7 @@ import { qsr } from "../utils/dom";
 import * as TestWords from "./test-words";
 import { recentSummary } from "../beartype/local-results";
 import { pacePosition, paceTargetWpm } from "../beartype/pace";
+import { statsPool, statsShape } from "./practise-words";
 
 /**
  * beartype: a second caret running at a share of the usual speed on this
@@ -34,12 +35,17 @@ export function reset(): void {
 
 /**
  * Start the pace for the test about to be typed. It does nothing at all when
- * the setting is off, and nothing when this browser has no test behind it in
- * this language: a pace taken from no measurement is a number made up.
+ * the setting is off, and nothing when this browser has no test behind it of
+ * the same language or text and the same shape: a pace taken from no
+ * measurement is a number made up.
  */
 export function start(): void {
   reset();
-  const usual = recentSummary(Config.language, null)?.usual ?? null;
+  const pool = statsPool();
+  const usual =
+    pool === null
+      ? null
+      : (recentSummary(pool, statsShape(), null)?.usual ?? null);
   const wpm = paceTargetWpm(usual, Config.paceCaret);
   if (wpm === null) return;
 
