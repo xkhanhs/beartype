@@ -66,6 +66,8 @@ body.darkMode #words {
   --kb-card: hsl(from var(--bg-color) h s calc(l + 5));
   // darken(primary, 5%): upstream's sub-alt is that already
   --kb-border: var(--sub-alt-color);
+  // a round not kept: amber, apart from the theme's red for a wrong key
+  --kb-warning: #f0a33a;
   // mix(primary, secondary, 20%)
   --kb-text-f1: color-mix(in srgb, var(--text-color) 80%, var(--bg-color));
   // keybear picks this one by hand per palette; a sixth of the accent is close
@@ -1552,26 +1554,49 @@ button.bt-custom-saved-load[aria-current="true"] {
       font-weight: normal;
     }
 
-    // "không hợp lệ" belongs to the figures, just under them; with nothing to
-    // say the row goes, so it adds no space of its own
+    // "không hợp lệ" stands halfway between the figures and the buttons, the
+    // gap above it the same as the one below (see `.buttons`); with nothing
+    // to say the row goes, so it adds no space of its own
     &.notes {
-      margin-block-start: 0.75rem;
+      margin-block-start: 1.5rem;
 
       &:not(:has(.group:not(.hidden))) {
         display: none;
       }
 
-      // "không hợp lệ" and an info icon; the reasons are in its balloon
+      // "không hợp lệ" and an info icon on an amber badge; the reasons are in
+      // its balloon. Amber rather than the theme's red: red is a wrong key,
+      // this only says the round was not kept. The label keeps the text
+      // colour on an amber tint, so it reads on light and dark themes alike.
       .group .bottom {
         display: inline-flex;
-        gap: 0.35em;
+        gap: 0.4em;
         align-items: center;
-        color: var(--kb-text-f1);
+        padding: 0.3rem 0.8rem;
+        border: 1px solid color-mix(in srgb, var(--kb-warning) 45%, transparent);
+        border-radius: 99px;
+        color: var(--text-color);
+        background-color: color-mix(
+          in srgb,
+          var(--kb-warning) 18%,
+          var(--bg-color)
+        );
         font-size: 0.9rem;
-        font-weight: normal;
+        font-weight: bold;
+        line-height: 1.2;
         cursor: help;
+
+        .bt-icon {
+          color: var(--kb-warning);
+        }
       }
     }
+  }
+
+  // under "không hợp lệ" the gap is split, half above the badge and half
+  // below it
+  .stats.notes:has(.group:not(.hidden)) + .buttons {
+    margin-block-start: 1.5rem;
   }
 
   .buttons {
