@@ -659,7 +659,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const drill = PractiseWords.before.mode !== null;
   const fromText = PractiseWords.customSource();
   if (!dontSave && !drill && pool !== null) {
-    LocalResults.saveResult(completedEvent, fromText ? pool : undefined);
+    LocalResults.saveResult(
+      completedEvent,
+      PractiseWords.statsShape(),
+      fromText ? pool : undefined,
+    );
   }
   // beartype: the words this round missed go into the book behind the drill
   // button; see beartype/miss-book.ts. A wrong key counts even when it was

@@ -3,31 +3,36 @@ import type { CompletedEvent } from "../../src/ts/schemas/results";
 import {
   __testing,
   getLocalPB,
-  isStandard,
   recentSummary,
   saveResult,
+  testShape,
 } from "../../src/ts/beartype/local-results";
 
 const time30 = { mode: "time", mode2: "30" };
 const time60 = { mode: "time", mode2: "60" };
+const words10 = { mode: "words", mode2: "10" };
 
 function save(
   wpm: number,
   language = "vietnamese",
   mode: { mode: string; mode2: string } = time30,
+  shape = `${mode.mode} ${mode.mode2}`,
 ): void {
-  saveResult({
-    ...mode,
-    language,
-    timestamp: Date.now(),
-    wpm,
-    acc: 98,
-    rawWpm: wpm + 2,
-    consistency: 80,
-    testDuration: 30,
-    afkDuration: 0,
-    incompleteTestSeconds: 0,
-  } as unknown as CompletedEvent);
+  saveResult(
+    {
+      ...mode,
+      language,
+      timestamp: Date.now(),
+      wpm,
+      acc: 98,
+      rawWpm: wpm + 2,
+      consistency: 80,
+      testDuration: 30,
+      afkDuration: 0,
+      incompleteTestSeconds: 0,
+    } as unknown as CompletedEvent,
+    shape,
+  );
 }
 
 describe("local results", () => {
@@ -35,49 +40,95 @@ describe("local results", () => {
     __testing.reset();
   });
 
-  it("answers the personal best for the same language only", () => {
+  it("names a round by its mode and length, a text's by how long it runs", () => {
+    expect(testShape("time", 30, 25, "text")).toBe("time 30");
+    expect(testShape("words", 30, 10, "time")).toBe("words 10");
+    expect(testShape("custom", 30, 25, "time")).toBe("custom time 30");
+    expect(testShape("custom", 30, 25, "words")).toBe("custom words 25");
+    expect(testShape("custom", 30, 25, "text")).toBe("custom text");
+  });
+
+  it("answers the personal best for the same language and shape only", () => {
     save(50, "vietnamese", time60);
     save(62, "vietnamese", time60);
+    save(80, "vietnamese", words10);
     save(90, "english", time60);
-    expect(getLocalPB("vietnamese")).toEqual({ wpm: 62, acc: 98 });
+    expect(getLocalPB("vietnamese", "time 60")).toEqual({ wpm: 62, acc: 98 });
+    expect(getLocalPB("vietnamese", "words 10")).toEqual({ wpm: 80, acc: 98 });
+    expect(getLocalPB("vietnamese", "time 30")).toBeUndefined();
   });
 
-  it("pools every mode and length of a language, but a best needs a standard test", () => {
+  it("reads a round only against rounds of its own shape, but counts all practice", () => {
     save(40);
-    save(70, "vietnamese", { mode: "words", mode2: "25" });
+    save(70, "vietnamese", words10);
+    save(90, "vietnamese", words10);
     save(55, "vietnamese", time60);
-    save(58, "vietnamese", { mode: "words", mode2: "50" });
-    save(90, "english", { mode: "words", mode2: "25" });
-    expect(getLocalPB("vietnamese")).toEqual({ wpm: 58, acc: 98 });
-    expect(recentSummary("vietnamese", null)).toMatchObject({
-      best: 58,
-      usual: 56.5,
+    save(90, "english", words10);
+    expect(recentSummary("vietnamese", "words 10", null)).toMatchObject({
+      best: 90,
+      usual: 80,
       practiceSeconds: 120,
     });
-    expect(getLocalPB("english")).toBeUndefined();
-    expect(recentSummary("english", null)).toMatchObject({
-      best: null,
-      practiceSeconds: 30,
+    expect(
+      recentSummary("vietnamese", "words 10", null)?.recent.map((t) => t.wpm),
+    ).toEqual([70, 90]);
+    expect(recentSummary("vietnamese", "time 60", null)).toMatchObject({
+      best: 55,
+      usual: 55,
     });
+    expect(recentSummary("vietnamese", "words 25", null)).toBeNull();
   });
 
-  it("tells a standard test from a short one", () => {
-    expect(isStandard({ mode: "time", mode2: "30" })).toBe(false);
-    expect(isStandard({ mode: "time", mode2: "60" })).toBe(true);
-    expect(isStandard({ mode: "time", mode2: "120" })).toBe(true);
-    expect(isStandard({ mode: "words", mode2: "25" })).toBe(false);
-    expect(isStandard({ mode: "words", mode2: "50" })).toBe(true);
-    expect(isStandard({ mode: "custom", mode2: "custom" })).toBe(false);
+  it("reads a result kept before shapes were stored off its mode", async () => {
+    window.localStorage.setItem(
+      "beartype:v1:results",
+      JSON.stringify([
+        {
+          timestamp: 1,
+          mode: "words",
+          mode2: "10",
+          language: "vietnamese",
+          wpm: 70,
+          acc: 98,
+          rawWpm: 72,
+          consistency: 80,
+          testDuration: 8,
+          afkDuration: 0,
+          incompleteTestSeconds: 0,
+        },
+        {
+          timestamp: 2,
+          mode: "custom",
+          mode2: "custom",
+          language: "text:a",
+          wpm: 50,
+          acc: 98,
+          rawWpm: 52,
+          consistency: 80,
+          testDuration: 30,
+          afkDuration: 0,
+          incompleteTestSeconds: 0,
+        },
+      ]),
+    );
+    vi.resetModules();
+    const fresh = await import("../../src/ts/beartype/local-results");
+    expect(fresh.recentSummary("vietnamese", "words 10", null)).toMatchObject({
+      usual: 70,
+    });
+    // a text round from then did not say how long it ran
+    expect(fresh.recentSummary("text:a", "custom text", null)).toBeNull();
   });
 
   it("counts an old Vietnamese or English list as the language itself", () => {
     save(40, "vietnamese_1k");
     save(60);
     save(80, "english_1k", time60);
-    expect(recentSummary("vietnamese", null)).toMatchObject({
+    expect(recentSummary("vietnamese", "time 30", null)).toMatchObject({
+      usual: 50,
       practiceSeconds: 60,
     });
-    expect(getLocalPB("english")).toEqual({ wpm: 80, acc: 98 });
+    expect(getLocalPB("english", "time 60")).toEqual({ wpm: 80, acc: 98 });
   });
 
   it("still loads and matches an old entry stored with punctuation, numbers, lazyMode and difficulty", async () => {
@@ -110,15 +161,16 @@ describe("local results", () => {
     const fresh = await import("../../src/ts/beartype/local-results");
 
     expect(fresh.getResults()).toMatchObject([{ wpm: 70 }]);
-    expect(fresh.getLocalPB("vietnamese")).toEqual({
+    expect(fresh.getLocalPB("vietnamese", "time 60")).toEqual({
       wpm: 70,
       acc: 98,
     });
   });
 
   it("sums up the recent tests with the one just typed", () => {
-    save(40);
-    save(60);
+    save(40, "vietnamese", time60);
+    save(60, "vietnamese", time60);
+    save(99);
     const current = {
       wpm: 80,
       acc: 96,
@@ -127,13 +179,13 @@ describe("local results", () => {
       ...time60,
       testDuration: 60,
     };
-    const summary = recentSummary("vietnamese", current);
+    const summary = recentSummary("vietnamese", "time 60", current);
     expect(summary).toMatchObject({
       best: 80,
       usual: 60,
       usualAcc: 98,
       usualConsistency: 80,
-      practiceSeconds: 120,
+      practiceSeconds: 150,
     });
     expect(summary?.recent.map((t) => t.wpm)).toEqual([40, 60, 80]);
     expect(summary?.recent.at(-1)).toEqual(current);
@@ -141,19 +193,19 @@ describe("local results", () => {
 
   it("leaves out a test that will not be kept", () => {
     save(40);
-    expect(recentSummary("vietnamese", null)).toMatchObject({
-      best: null,
+    expect(recentSummary("vietnamese", "time 30", null)).toMatchObject({
+      best: 40,
       practiceSeconds: 30,
     });
   });
 
   it("has nothing to say before the first test", () => {
-    expect(recentSummary("vietnamese", null)).toBeNull();
+    expect(recentSummary("vietnamese", "time 30", null)).toBeNull();
   });
 
   it("counts every test but draws only the last twenty", () => {
     for (let wpm = 1; wpm <= 25; wpm++) save(wpm, "vietnamese", time60);
-    const summary = recentSummary("vietnamese", null);
+    const summary = recentSummary("vietnamese", "time 60", null);
     // the usual speed is the median of the twenty drawn, 6 to 25
     expect(summary).toMatchObject({
       practiceSeconds: 750,

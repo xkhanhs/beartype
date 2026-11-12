@@ -143,8 +143,8 @@ function updateWords(): void {
 }
 
 // beartype: best and usual speed over the tests on this browser in the same
-// language, whatever the mode, so the number just typed has something to be
-// read against
+// language and of the same shape -- mode and length -- so the number just
+// typed has something like it to be read against
 function updateRecent(dontSave: boolean): void {
   // a drill is practice and has no history; a saved text has its own, and a
   // text not saved none, which the screen says
@@ -158,6 +158,7 @@ function updateRecent(dontSave: boolean): void {
   setResultHistory(
     DB.recentSummary(
       pool,
+      PractiseWords.statsShape(),
       // an invalid test is not kept, so it does not count here either
       dontSave
         ? null
@@ -182,13 +183,13 @@ function updateCrownText(text: string): void {
 // no place in the ranking at all.
 function updateCrown(dontSave: boolean): void {
   // beartype: a drill, or the typist's own text, is practice, not a test
-  // with a best, and neither is a test too short to stand as one
-  if (Config.mode === "custom" || dontSave || !DB.isStandard(result)) {
+  // with a best; a word list test is ranked against its own shape only
+  if (Config.mode === "custom" || dontSave) {
     hideCrown();
     return;
   }
 
-  const localPb = DB.getLocalPB(Config.language);
+  const localPb = DB.getLocalPB(Config.language, PractiseWords.statsShape());
   const pbDiff = result.wpm - (localPb?.wpm ?? 0);
   if (pbDiff <= 0) {
     hideCrown();

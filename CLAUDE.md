@@ -163,7 +163,11 @@ Test của beartype nằm ở `__tests__/beartype/`.
   bóng `aria-label` + `data-balloon-pos`. Mô tả trong thẻ cài đặt cũng vậy:
   một nút `i` nhỏ cạnh tên hàng (`bt-settings-info`), không còn dòng chữ mờ
   bên dưới. Thêm hàng cài đặt mới thì `hint` là tuỳ chọn, hàng nào tên đã đủ
-  rõ thì bỏ hẳn.
+  rõ thì bỏ hẳn. Mỗi hàng nằm gọn một dòng (`SettingsRow`): hai nấc mà nấc
+  đầu là `off` thì tự thành công tắc gạt kiểu iOS; một thang nhiều nấc (cỡ
+  chữ) là `control="stepper"`, nút − giá trị +; hàng nhiều lựa chọn khác
+  (hai con trỏ, xoay màu) là `control="select"`. Hàng không ghi `control`
+  thì là các viên, viên đang chọn tô nền accent (thẻ của thanh tuỳ chọn).
 - Icon của các nút `bt-action` (bài mới, gõ lại, hai nút luyện) là icon
   Material Design keybear dùng, viết thẳng thành `<svg class="bt-action-icon">`
   với path chép từ `@mdi/js` của keybear, không qua sprite. Trong `.tsx` thì
@@ -216,9 +220,10 @@ Test của beartype nằm ở `__tests__/beartype/`.
   cũ có công tắc đó bật thì `config/persistence.ts` chuyển thành `expert`.
 - Bài tập phá plateau, tắt sẵn: **con trỏ dẫn tốc**
   (`test/pace-caret.ts`, tính trong `beartype/pace.ts`) chạy trước theo 80 /
-  100 / 120% tốc độ trung bình (trung vị 20 bài gần nhất, như ô trung bình ở
-  màn kết quả) của máy này trong ngôn ngữ đang gõ — không có bài
-  nào trong sổ thì không có gì để chạy theo và nó im lặng không hiện. Con
+  100 / 120% tốc độ trung bình (trung vị 20 bài gần nhất, như ô trung vị ở
+  màn kết quả) của máy này trong ngôn ngữ hay đoạn đang gõ, cùng kiểu bài —
+  không có bài nào như vậy trong sổ thì không có gì để chạy theo và nó im
+  lặng không hiện. Con
   trỏ dẫn tốc đi **theo phím chứ không theo
   chữ**, vì tốc độ của app đếm phím: `ế` là một chữ và ba phím. Nó không đụng
   vào đường xử lý phím — chỉ đọc danh sách từ, xem đồng hồ và dời một thẻ
@@ -239,7 +244,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
   toàn "chưa đo"). Số trong mỗi đoạn được đo xem có vừa
   không rồi mới hiện, không đoán theo phần trăm. Bong bóng của mỗi đoạn ghi
   luật chứ không ghi một con số mốc, vì mỗi độ dài từ có mốc riêng và mốc ấy
-  không phải ô "trung bình" ở trên; chữ lấy `SLOW_BELOW` và
+  không phải ô "trung vị" ở trên; chữ lấy `SLOW_BELOW` và
   `MIN_WORD_SAMPLES` từ `slow-words.ts`.
 - **Chữ tuỳ chỉnh** (`beartype/custom-text.ts`, thẻ `CustomTextEditor`): chọn
   "tuỳ chỉnh" khi chưa có chữ, hay khi đang ở đó rồi, mở một
@@ -274,8 +279,7 @@ Test của beartype nằm ở `__tests__/beartype/`.
   từng chữ với nó; đoạn chưa lưu vẫn có lịch sử từ nhưng không ghi sổ, màn
   kết quả nhắc lưu lại. Xoá đoạn thì xoá luôn sổ bài và hai sổ từ của nó,
   hộp xác nhận ghi rõ mất bao nhiêu lượt và bao nhiêu từ. Bài của đoạn
-  không có vương miện; ô "tốt nhất" là lượt nhanh nhất của đoạn, bất kể độ
-  dài. Bài luyện dựng từ sổ của đoạn chạy theo độ dài của đoạn (cả đoạn thì
+  không có vương miện. Bài luyện dựng từ sổ của đoạn chạy theo độ dài của đoạn (cả đoạn thì
   lấy số từ), viên chữ của thanh tuỳ chọn vẫn ghi "tuỳ chỉnh". Phím trong dialog dừng ở
   dialog (listener gốc, không qua `onKeyDown` của Solid, vì Solid gắn
   handler ở `document`), không thì trang bài gõ cướp phím.
@@ -291,6 +295,16 @@ Test của beartype nằm ở `__tests__/beartype/`.
   giữ mở cho các lượt sau. Mở ra là một hộp cuộn cao tối đa 11rem nên đoạn
   dài cũng vừa; vì thế từ không mang bong bóng (hộp cuộn cắt bong bóng) mà
   ghi tốc độ và chữ đã gõ ở một dòng ngay dưới hộp khi rê chuột hay tab tới.
+- **Kiểu bài** (`testShape` trong `beartype/local-results.ts`, `statsShape`
+  trong `test/practise-words.ts`): mỗi kết quả lưu kèm kiểu của nó — chế độ
+  và độ dài (`time 30`, `words 10`), với chữ tuỳ chỉnh thì cách chạy
+  (`custom time 30`, `custom words 25`, `custom text`). Ô tốt nhất, trung
+  vị, chính xác, đều tay, biểu đồ, vương miện và con trỏ dẫn tốc chỉ đọc
+  các bài cùng nguồn (ngôn ngữ hay đoạn) và cùng kiểu; ô thời gian (tổng đã luyện) vẫn cộng
+  mọi kiểu. Bài luyện lấy kiểu của bài nó dựng từ. Kết quả cũ chưa có kiểu
+  thì đọc từ `mode`/`mode2`; bài chữ tuỳ chỉnh từ hồi đó chỉ ghi `custom` nên
+  không khớp kiểu nào. Vương miện không còn chỉ dành cho bài 60 giây / 50 từ:
+  kỷ lục giờ tách theo kiểu, nên bài 10 từ đua với bài 10 từ.
 - Không có thông báo nổi, cũng không có store cho chúng. Cần báo gì cho người
   gõ thì viết thẳng lên màn, như lý do không lưu ở màn kết quả; lỗi chỉ dành
   cho người sửa code thì `console.error`.

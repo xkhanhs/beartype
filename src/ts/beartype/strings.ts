@@ -64,6 +64,8 @@ const STRINGS = {
   // the values those rows offer
   off: { vi: "tắt", en: "off" },
   on: { vi: "bật", en: "on" },
+  stepDown: { vi: "nhỏ hơn", en: "smaller" },
+  stepUp: { vi: "lớn hơn", en: "larger" },
   slow: { vi: "chậm", en: "slow" },
   medium: { vi: "vừa", en: "medium" },
   fast: { vi: "nhanh", en: "fast" },
@@ -267,15 +269,15 @@ const STRINGS = {
 
   // the book of recent tests under the result
   historyBest: { vi: "tốt nhất", en: "best" },
-  historyUsual: { vi: "trung bình", en: "average" },
-  historyPractice: { vi: "giờ luyện", en: "practice" },
+  historyUsual: { vi: "trung vị", en: "median" },
+  historyPractice: { vi: "thời gian", en: "time" },
   historyBestHint: {
-    vi: "chỉ tính bài 60 giây hoặc 50 từ trở lên",
-    en: "only tests of 60 seconds or 50 words and up",
+    vi: "lượt nhanh nhất cùng kiểu bài: cùng nguồn chữ, cùng độ dài",
+    en: "your fastest round of the same kind: same words, same length",
   },
-  historyBestTextHint: {
-    vi: "lượt nhanh nhất của đoạn này",
-    en: "your fastest round of this text",
+  historyUsualHint: {
+    vi: "trung vị 20 lượt gần nhất cùng kiểu bài",
+    en: "median of your last 20 rounds of the same kind",
   },
   historyUnsavedText: {
     vi: "đoạn này chưa lưu nên không có sổ: lưu đoạn để theo dõi tiến bộ, từ hay sai và từ chậm",
